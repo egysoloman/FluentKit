@@ -362,11 +362,19 @@ public struct FluentSliderStyleConfiguration {
 public struct FluentSliderAppearance {
     public let trackColor: NSColor
     public let fillColor: NSColor
+    /// The inner thumb fill. Kept under its original name for source compatibility.
     public let knobColor: NSColor
+    /// Retained for custom styles compiled against the original single-layer slider.
     public let haloColor: NSColor
     public let trackHeight: CGFloat
+    /// The current inner thumb diameter. Kept under its original name for source compatibility.
     public let knobDiameter: CGFloat
+    /// Retained for custom styles compiled against the original single-layer slider.
     public let haloDiameter: CGFloat
+    public let outerThumbColor: NSColor
+    public let outerThumbBorderColor: NSColor
+    public let outerThumbBorderWidth: CGFloat
+    public let outerThumbDiameter: CGFloat
 
     public init(
         trackColor: NSColor,
@@ -375,7 +383,11 @@ public struct FluentSliderAppearance {
         haloColor: NSColor,
         trackHeight: CGFloat = 4,
         knobDiameter: CGFloat = 14,
-        haloDiameter: CGFloat = 22
+        haloDiameter: CGFloat = 22,
+        outerThumbColor: NSColor = .windowBackgroundColor,
+        outerThumbBorderColor: NSColor = .separatorColor,
+        outerThumbBorderWidth: CGFloat = 1,
+        outerThumbDiameter: CGFloat? = nil
     ) {
         self.trackColor = trackColor
         self.fillColor = fillColor
@@ -384,6 +396,10 @@ public struct FluentSliderAppearance {
         self.trackHeight = max(trackHeight, 1)
         self.knobDiameter = max(knobDiameter, 1)
         self.haloDiameter = max(haloDiameter, knobDiameter)
+        self.outerThumbColor = outerThumbColor
+        self.outerThumbBorderColor = outerThumbBorderColor
+        self.outerThumbBorderWidth = max(outerThumbBorderWidth, 0)
+        self.outerThumbDiameter = max(outerThumbDiameter ?? max(knobDiameter + 4, 18), knobDiameter)
     }
 }
 
@@ -397,15 +413,40 @@ public struct FluentAutomaticSliderStyle: FluentSliderStyle {
     public func appearance(for configuration: FluentSliderStyleConfiguration) -> FluentSliderAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let alpha: CGFloat = configuration.isEnabled ? 1 : 0.4
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isDragging {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
+        let accentAlpha: CGFloat = switch state {
+        case .pointerOver: 0.90
+        case .pressed: 0.80
+        case .disabled: 0.35
+        default: 1
+        }
+        let innerDiameter: CGFloat = switch state {
+        case .pointerOver, .disabled: 14
+        case .pressed: 10
+        default: 12
+        }
         return FluentSliderAppearance(
-            trackColor: theme.controlFillTertiary,
-            fillColor: theme.accent.withAlphaComponent(alpha),
-            knobColor: theme.accent.withAlphaComponent(alpha),
-            haloColor: theme.accent.withAlphaComponent(configuration.isPointerOver || configuration.isDragging ? 0.28 : 0),
+            trackColor: theme.controlStrokeStrong.withAlphaComponent(configuration.isEnabled ? 1 : 0.35),
+            fillColor: theme.accent.withAlphaComponent(accentAlpha),
+            knobColor: theme.accent.withAlphaComponent(accentAlpha),
+            haloColor: .clear,
             trackHeight: (theme.isHighContrast ? 6 : 4) * scale,
-            knobDiameter: (theme.isHighContrast ? 16 : 14) * scale,
-            haloDiameter: (theme.isHighContrast ? 24 : 22) * scale
+            knobDiameter: (theme.isHighContrast ? innerDiameter + 2 : innerDiameter) * scale,
+            haloDiameter: (theme.isHighContrast ? 24 : 22) * scale,
+            outerThumbColor: theme.isDark
+                ? NSColor(calibratedWhite: 0.271, alpha: configuration.isEnabled ? 1 : 0.70)
+                : NSColor(calibratedWhite: 1, alpha: configuration.isEnabled ? 1 : 0.70),
+            outerThumbBorderColor: theme.controlStroke,
+            outerThumbBorderWidth: theme.controlStrokeWidth,
+            outerThumbDiameter: (theme.isHighContrast ? 20 : 18) * scale
         )
     }
 }
@@ -416,15 +457,35 @@ public struct FluentNeutralSliderStyle: FluentSliderStyle {
     public func appearance(for configuration: FluentSliderStyleConfiguration) -> FluentSliderAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let alpha: CGFloat = configuration.isEnabled ? 1 : 0.4
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isDragging {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
+        let alpha: CGFloat = configuration.isEnabled ? (state == .pressed ? 0.70 : 0.90) : 0.35
+        let innerDiameter: CGFloat = switch state {
+        case .pointerOver, .disabled: 14
+        case .pressed: 10
+        default: 12
+        }
         return FluentSliderAppearance(
-            trackColor: theme.controlFillTertiary,
+            trackColor: theme.controlStrokeStrong.withAlphaComponent(configuration.isEnabled ? 1 : 0.35),
             fillColor: theme.controlStrokeStrong.withAlphaComponent(alpha),
             knobColor: theme.textPrimary.withAlphaComponent(alpha),
-            haloColor: theme.controlStrokeStrong.withAlphaComponent(configuration.isPointerOver || configuration.isDragging ? 0.24 : 0),
+            haloColor: .clear,
             trackHeight: (theme.isHighContrast ? 6 : 4) * scale,
-            knobDiameter: (theme.isHighContrast ? 16 : 14) * scale,
-            haloDiameter: (theme.isHighContrast ? 24 : 22) * scale
+            knobDiameter: (theme.isHighContrast ? innerDiameter + 2 : innerDiameter) * scale,
+            haloDiameter: (theme.isHighContrast ? 24 : 22) * scale,
+            outerThumbColor: theme.isDark
+                ? NSColor(calibratedWhite: 0.271, alpha: configuration.isEnabled ? 1 : 0.70)
+                : NSColor(calibratedWhite: 1, alpha: configuration.isEnabled ? 1 : 0.70),
+            outerThumbBorderColor: theme.controlStroke,
+            outerThumbBorderWidth: theme.controlStrokeWidth,
+            outerThumbDiameter: (theme.isHighContrast ? 20 : 18) * scale
         )
     }
 }

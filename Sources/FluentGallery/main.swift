@@ -410,8 +410,17 @@ private struct WinUIStyleGalleryScreen: FluentView {
                         )
                         .disabled()
                     }
-                    FluentSliderView(value: $slider)
-                        .frame(width: 360)
+                    FluentVStack(spacing: 6) {
+                        FluentText("Value \(Int(slider * 100))%", style: .caption, color: theme.textSecondary)
+                        FluentSliderView(value: $slider)
+                            .frame(width: 360)
+                    }
+                    FluentVStack(spacing: 6) {
+                        FluentText("Disabled", style: .caption, color: theme.textSecondary)
+                        FluentSliderView(value: FluentBinding(get: { 0.35 }, set: { _ in }))
+                            .disabled()
+                            .frame(width: 360)
+                    }
                     FluentHStack(spacing: 20) {
                         FluentCheckBoxView("Completed", isChecked: $checked)
                         FluentRadioButtonView("Primary", isSelected: $radio)

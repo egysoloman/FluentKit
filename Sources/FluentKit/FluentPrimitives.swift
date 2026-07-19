@@ -71,12 +71,16 @@ extension FluentSlider: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         theme = context.theme
+        reduceMotion = context.reduceMotion
+        fluentLayoutDirection = context.layoutDirection
         return self
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let slider = view as? FluentSlider else { return false }
         slider.theme = context.theme
+        slider.reduceMotion = context.reduceMotion
+        slider.fluentLayoutDirection = context.layoutDirection
         slider.applyDeclarativeConfiguration(from: self)
         return true
     }
@@ -202,10 +206,20 @@ extension FluentBoundToggle: FluentUpdatablePrimitiveView {
 
 extension FluentBoundSlider: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
-    public func _makeView(in context: FluentRenderContext) -> NSView { slider.theme = context.theme; return self }
+    public func _makeView(in context: FluentRenderContext) -> NSView {
+        slider.theme = context.theme
+        slider.reduceMotion = context.reduceMotion
+        slider.fluentLayoutDirection = context.layoutDirection
+        return self
+    }
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let slider = view as? FluentBoundSlider else { return false }
-        slider.update(binding: binding, theme: context.theme)
+        slider.update(
+            binding: binding,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion,
+            layoutDirection: context.layoutDirection
+        )
         slider.slider.applyDeclarativeConfiguration(from: self.slider)
         return true
     }

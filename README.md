@@ -406,6 +406,12 @@ The automatic ToggleSwitch style uses a 40 x 20 track with 12 x 12 normal, 14 x 
 committed once on release, while drag, cancellation, keyboard/accessibility activation, RTL, and
 Reduce Motion remain part of the same native control lifecycle.
 
+The automatic Slider style uses a stable 18 x 18 outer thumb around a 12 x 12 accent inner thumb.
+The inner visual grows to 14 x 14 on hover, contracts to 10 x 10 while pressed, and returns with the
+source-derived 167ms/250ms motion tokens. Pointer position stays direct during dragging; RTL,
+Home/End, accessibility increments, cancellation, external bindings, and Reduce Motion share the
+same control lifecycle.
+
 Combo-box fields keep their native `NSComboBox` identity and accessibility role, but their option
 popup is an application-owned `FluentMenuFlyout`. The popup uses the same Acrylic surface, checked
 state, keyboard navigation, type-ahead, Escape/outside-click dismissal, and RTL placement as other

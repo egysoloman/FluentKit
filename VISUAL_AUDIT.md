@@ -58,9 +58,22 @@ Completed in the ToggleSwitch pass:
   cancellation, exact geometry, single-commit behavior, and animation survival have executable
   coverage. Gallery exposes On, Off, and Disabled states together.
 
+Completed in the Slider pass:
+
+- `FluentSlider` now owns stable track, value-fill, 18 x 18 outer-thumb, inner-thumb, and focus
+  layers. The inner thumb uses 12 x 12 Normal, 14 x 14 PointerOver/Disabled, and 10 x 10 Pressed
+  geometry with source-derived 167ms/250ms `(0,0,0,1)` motion.
+- Value and pointer position remain direct while only inner-thumb geometry animates. Same-bounds
+  layout preserves active state motion; resizing and direction changes deliberately snap to a
+  defined model state.
+- RTL endpoints and arrow keys, Home/End, keyboard focus, accessibility increment/decrement,
+  disabled input rejection, external-binding drag cancellation, Escape restoration, and Reduce
+  Motion have executable coverage. Gallery exposes interactive and Disabled sliders in desktop and
+  Minimal Light/Dark captures.
+
 Still open by design:
 
-- Exact remaining control state machines and geometry are ordered in section 20: Slider,
+- Exact remaining control state machines and geometry are ordered in section 20:
   CheckBox/RadioButton, SegmentedControl, then ProgressBar.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
   Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
@@ -344,8 +357,10 @@ High-priority controls:
 - Stepper/NumberBox
 - ComboBox
 - TextField/SecureField
-- Slider
 - CheckBox and RadioButton
+
+Slider no longer uses native chrome or a single immediate-mode thumb; its full visual surface is
+owned by stable FluentKit layers. Exact state acceptance is recorded in section 20.
 
 Required approach:
 
@@ -354,12 +369,12 @@ Required approach:
 - Draw the Fluent visual surface and states in the owning wrapper.
 - Preserve native first responder, text input, selection, keyboard, and accessibility behavior.
 
-### P1-8: Control state animations can be overwritten by layout - resolved for ToggleSwitch
+### P1-8: Control state animations can be overwritten by layout - resolved for ToggleSwitch and Slider
 
 Original finding: Toggle geometry was changed in an animated transaction before a layout pass wrote
-the same geometry with actions disabled. The rewritten ToggleSwitch now skips same-bounds geometry
-work and only cancels/snap-resolves animation when bounds or layout direction actually changes.
-SegmentedControl and other audited controls retain their own layout/animation conflicts.
+the same geometry with actions disabled. The rewritten ToggleSwitch and Slider now skip same-bounds
+geometry work and only cancel/snap-resolve animation when bounds or layout direction actually
+changes. SegmentedControl and other audited controls retain their own layout/animation conflicts.
 
 Required correction:
 
@@ -558,10 +573,10 @@ The Gallery should be considered visually complete only when:
 
 FluentKit now has stable shell coordinates, transition hosting, reusable navigation choreography, and
 custom title-bar integration. The Gallery is a reliable proof of those structural paths, but it is
-not yet a complete proof of WinUI control fidelity. ToggleSwitch now passes its source-derived
-geometry, interaction, motion, RTL, accessibility, and Reduce Motion contract. The immediate
-non-material blockers are Slider, CheckBox/RadioButton, SegmentedControl, and ProgressBar in section
-20. The obsolete Acrylic surface path remains an explicit later phase.
+not yet a complete proof of WinUI control fidelity. ToggleSwitch and Slider now pass their
+source-derived geometry, interaction, motion, RTL, accessibility, and Reduce Motion contracts. The
+immediate non-material blockers are CheckBox/RadioButton, SegmentedControl, and ProgressBar in
+section 20. The obsolete Acrylic surface path remains an explicit later phase.
 
 The target architecture should remain AppKit-native in behavior while becoming WinUI-source-driven in visible state and motion, with Liquid Glass as the macOS material adaptation for transient surfaces.
 
@@ -656,9 +671,9 @@ Gallery composition defects:
   edge-placement popup scenarios remain incomplete
 ```
 
-The next non-material remediation order is Slider, CheckBox/RadioButton, SegmentedControl, and
-ProgressBar. Menu motion/placement follows the verified section 17 contract; Liquid Glass remains
-explicitly deferred until layout, state, and motion are stable.
+The next non-material remediation order is CheckBox/RadioButton, SegmentedControl, and ProgressBar.
+Menu motion/placement follows the verified section 17 contract; Liquid Glass remains explicitly
+deferred until layout, state, and motion are stable.
 
 ## 17. Menu Inventory and Gaps
 
@@ -831,7 +846,7 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 25. **Complete:** Button and ToggleSwitch foundations; ToggleSwitch includes source-derived
     interaction, geometry, RTL, accessibility, and Reduce Motion verification.
-26. CheckBox, RadioButton, Slider, ProgressBar, and SegmentedControl.
+26. **Slider complete; remaining:** CheckBox, RadioButton, SegmentedControl, and ProgressBar.
 27. TextBox, SearchBox, ComboBox, DatePicker, and NumberBox/Stepper.
 28. ListView, GridView/CollectionView, Table, and Outline.
 29. Dialogs, TeachingTip, Popover, Disclosure, and remaining long-tail controls.
@@ -874,7 +889,7 @@ Required correction:
 - Separate model geometry from presentation geometry and do not write nonanimated frames while a transition is active.
 - Derive the selected/pressed transition from the matching WinUI control template instead of treating the current approximation as verified WinUI motion.
 
-### Slider thumb
+### Slider thumb - resolved
 
 Owner: FluentKit component  
 Files: `Sources/FluentKit/FluentSlider.swift`, `Sources/FluentKit/FluentStyles.swift`
@@ -888,13 +903,24 @@ The circle at the end of the upper range track is the Slider thumb; the lower `F
 
 Source: `microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/Slider_themeresources.xaml`, especially the `SliderThumbStyle` CommonStates.
 
-The current FluentKit slider draws one 14 px accent circle and shows a larger translucent halo for hover/drag. It redraws immediately and has no animatable outer/inner thumb layers, so it cannot reproduce the WinUI pressed contraction or hover expansion.
+Original finding: FluentKit drew one 14 px accent circle and showed a larger translucent halo for
+hover/drag. It redrew immediately and had no animatable outer/inner thumb layers, so it could not
+reproduce the WinUI pressed contraction or hover expansion.
 
 Required correction:
 
 - Build a stable outer thumb layer and inner accent layer.
-- Animate only the inner circle scale/color using the WinUI state values and motion tokens.
+- Animate only the inner-circle geometry using the WinUI state values and motion tokens; apply the
+  template's state brushes immediately.
 - Keep drag position animation separate from thumb-state animation so pointer motion remains direct while the pressed visual remains interpolated.
+
+Current status: complete. `FluentSlider` uses stable named track, value-fill, outer-thumb,
+inner-thumb, and focus layers. The visible geometry is a 4pt track, 18 x 18 outer thumb, and
+12/14/10/14 inner thumb for Normal/PointerOver/Pressed/Disabled. Only inner bounds and corner radius
+animate with the source-derived 167ms/250ms cubic-bezier tokens; pointer position remains direct.
+Same-bounds layout, external binding updates during drag, Escape cancellation, RTL pointer and arrow
+direction, Home/End, accessibility increments, disabled input, and Reduce Motion are covered by the
+validation executable and desktop/Minimal Light/Dark Gallery captures.
 
 ### ToggleSwitch pressed and dragging states - resolved
 
@@ -950,7 +976,8 @@ The lower horizontal control is a determinate ProgressBar and should not receive
 ### Additional problem-list entries
 
 25. SegmentedControl mixes native segmented chrome with custom overlay chrome and allows nonanimated layout/update passes to interrupt its selection animation.
-26. Slider lacks the WinUI outer/inner thumb structure and Normal/PointerOver/Pressed scale transitions.
+26. **Resolved:** Slider has stable outer/inner thumb layers, direct value positioning, and
+    source-derived Normal/PointerOver/Pressed/Disabled geometry and motion.
 27. **Resolved:** ToggleSwitch commits on release, has a direct drag state, and protects active
     animations from same-bounds layout.
 28. CheckBox and RadioButton lack independent pressed state and selected-glyph motion.

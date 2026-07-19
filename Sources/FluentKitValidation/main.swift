@@ -508,6 +508,24 @@ func toggleMouseEvent(
     return event
 }
 
+func sliderKeyEvent(_ keyCode: UInt16, in view: NSView, eventNumber: Int) -> NSEvent {
+    guard let event = NSEvent.keyEvent(
+        with: .keyDown,
+        location: .zero,
+        modifierFlags: [],
+        timestamp: TimeInterval(eventNumber) / 100,
+        windowNumber: view.window?.windowNumber ?? 0,
+        context: nil,
+        characters: "",
+        charactersIgnoringModifiers: "",
+        isARepeat: false,
+        keyCode: keyCode
+    ) else {
+        fatalError("could not create Slider validation key event")
+    }
+    return event
+}
+
 let interactiveToggleState = FluentState(wrappedValue: false)
 var interactiveToggleCommits: [Bool] = []
 let interactiveToggleObserver = interactiveToggleState.observe { interactiveToggleCommits.append($0) }
@@ -670,6 +688,214 @@ styledSliderState.wrappedValue = 0.8
 drainMainQueue()
 require(firstSlider(in: styledSliderHost) === nativeStyledSlider, "styled slider binding updates preserve native identity")
 require(abs((nativeStyledSlider?.value ?? 0) - 0.8) < 0.0001, "styled slider binding updates native value")
+
+let interactiveSliderState = FluentState(wrappedValue: 0.25)
+let interactiveSliderHost = FluentViewHost(
+    FluentSliderView(value: interactiveSliderState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false)
+)
+let interactiveSliderWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 40),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+interactiveSliderWindow.contentView = interactiveSliderHost
+interactiveSliderHost.frame = NSRect(x: 0, y: 0, width: 260, height: 40)
+interactiveSliderWindow.orderFront(nil)
+interactiveSliderHost.layoutSubtreeIfNeeded()
+guard let interactiveSlider = firstSlider(in: interactiveSliderHost),
+      let sliderTrack = firstLayer(named: "FluentKit.Slider.Track", in: interactiveSliderHost),
+      let sliderFill = firstLayer(named: "FluentKit.Slider.Fill", in: interactiveSliderHost),
+      let sliderOuterThumb = firstLayer(named: "FluentKit.Slider.OuterThumb", in: interactiveSliderHost),
+      let sliderInnerThumb = firstLayer(named: "FluentKit.Slider.InnerThumb", in: interactiveSliderHost),
+      let sliderFocus = firstLayer(named: "FluentKit.Slider.FocusRing", in: interactiveSliderHost) else {
+    fatalError("Slider validation hierarchy did not mount")
+}
+require(
+    sliderTrack.bounds.height == 4
+        && sliderOuterThumb.bounds.size == CGSize(width: 18, height: 18)
+        && sliderInnerThumb.bounds.size == CGSize(width: 12, height: 12),
+    "mounted Slider starts with exact track and two-layer thumb geometry"
+)
+require(sliderFill.bounds.width > 0, "mounted Slider renders its current-value fill")
+
+let sliderHoverPoint = NSPoint(x: interactiveSlider.bounds.midX, y: interactiveSlider.bounds.midY)
+interactiveSlider.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: sliderHoverPoint, in: interactiveSlider, eventNumber: 20)
+)
+require(
+    sliderInnerThumb.bounds.size == CGSize(width: 14, height: 14),
+    "Slider PointerOver grows only the inner thumb to 14pt"
+)
+let sliderHoverAnimation = sliderInnerThumb.animation(forKey: "fluent.slider.inner.bounds") as? CABasicAnimation
+require(
+    abs((sliderHoverAnimation?.duration ?? 0) - 0.250) < 0.0001
+        && sliderHoverAnimation?.timingFunction != nil,
+    "Slider PointerOver uses the 250ms control-fast-out-slow-in motion"
+)
+interactiveSlider.layout()
+require(
+    sliderInnerThumb.animation(forKey: "fluent.slider.inner.bounds") != nil,
+    "same-bounds Slider layout preserves an active thumb-state animation"
+)
+
+let sliderPressPoint = NSPoint(x: interactiveSlider.bounds.width * 0.72, y: interactiveSlider.bounds.midY)
+interactiveSlider.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: sliderPressPoint, in: interactiveSlider, eventNumber: 21)
+)
+require(
+    abs(interactiveSliderState.wrappedValue - 0.72) < 0.03,
+    "Slider mouseDown updates its bound value directly"
+)
+require(
+    sliderInnerThumb.bounds.size == CGSize(width: 10, height: 10),
+    "Slider Pressed contracts only the inner thumb to 10pt"
+)
+let sliderPressedAnimation = sliderInnerThumb.animation(forKey: "fluent.slider.inner.bounds") as? CABasicAnimation
+require(
+    abs((sliderPressedAnimation?.duration ?? 0) - 0.250) < 0.0001,
+    "Slider Pressed geometry uses the 250ms state motion"
+)
+require(
+    sliderOuterThumb.animationKeys()?.isEmpty != false,
+    "Slider thumb position updates directly without Core Animation interpolation"
+)
+
+let sliderDragPoint = NSPoint(x: interactiveSlider.bounds.width * 0.90, y: interactiveSlider.bounds.midY)
+let pressedSliderX = sliderOuterThumb.frame.minX
+interactiveSlider.mouseDragged(
+    with: toggleMouseEvent(.leftMouseDragged, at: sliderDragPoint, in: interactiveSlider, eventNumber: 22)
+)
+require(
+    interactiveSliderState.wrappedValue > 0.85 && sliderOuterThumb.frame.minX > pressedSliderX,
+    "Slider dragging moves its bound value and thumb position directly"
+)
+interactiveSlider.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: sliderDragPoint, in: interactiveSlider, eventNumber: 23)
+)
+require(
+    sliderInnerThumb.bounds.size == CGSize(width: 14, height: 14),
+    "Slider release-inside returns to PointerOver geometry"
+)
+interactiveSlider.mouseExited(
+    with: toggleMouseEvent(.mouseMoved, at: NSPoint(x: -10, y: 20), in: interactiveSlider, eventNumber: 24)
+)
+let sliderNormalAnimation = sliderInnerThumb.animation(forKey: "fluent.slider.inner.bounds") as? CABasicAnimation
+require(
+    sliderInnerThumb.bounds.size == CGSize(width: 12, height: 12)
+        && abs((sliderNormalAnimation?.duration ?? 0) - 0.167) < 0.0001,
+    "Slider Normal uses 12pt inner geometry and the 167ms return motion"
+)
+
+interactiveSliderWindow.makeFirstResponder(interactiveSlider)
+require(sliderFocus.opacity == 1, "Slider renders a custom keyboard focus ring")
+let keyboardStart = interactiveSlider.value
+interactiveSlider.keyDown(with: sliderKeyEvent(123, in: interactiveSlider, eventNumber: 25))
+require(interactiveSlider.value < keyboardStart, "Slider Left Arrow decrements in LTR")
+interactiveSlider.keyDown(with: sliderKeyEvent(115, in: interactiveSlider, eventNumber: 26))
+require(interactiveSlider.value == 0, "Slider Home moves to its logical minimum")
+interactiveSlider.keyDown(with: sliderKeyEvent(119, in: interactiveSlider, eventNumber: 27))
+require(interactiveSlider.value == 1, "Slider End moves to its logical maximum")
+
+interactiveSlider.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: sliderHoverPoint, in: interactiveSlider, eventNumber: 28)
+)
+interactiveSliderState.wrappedValue = 0.35
+drainMainQueue()
+interactiveSlider.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: sliderDragPoint, in: interactiveSlider, eventNumber: 29)
+)
+require(
+    abs(interactiveSlider.value - 0.35) < 0.0001,
+    "external Slider binding updates cancel an in-flight drag without stale input"
+)
+
+interactiveSlider.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: sliderDragPoint, in: interactiveSlider, eventNumber: 30)
+)
+interactiveSlider.cancelOperation(nil)
+require(
+    abs(interactiveSlider.value - 0.35) < 0.0001,
+    "Slider Escape cancellation restores the value from interaction start"
+)
+let accessibilityStart = interactiveSlider.value
+require(
+    interactiveSlider.accessibilityPerformIncrement()
+        && interactiveSlider.value > accessibilityStart
+        && interactiveSlider.accessibilityPerformDecrement()
+        && abs(interactiveSlider.value - accessibilityStart) < 0.0001,
+    "Slider accessibility increment and decrement share the bounded step path"
+)
+interactiveSlider.isEnabled = false
+let disabledSliderValue = interactiveSlider.value
+require(
+    sliderInnerThumb.bounds.size == CGSize(width: 14, height: 14)
+        && !interactiveSlider.accessibilityPerformIncrement()
+        && interactiveSlider.value == disabledSliderValue,
+    "disabled Slider uses 14pt inner geometry and rejects accessibility input"
+)
+interactiveSliderWindow.orderOut(nil)
+
+let rtlSliderState = FluentState(wrappedValue: 0.0)
+let rtlSliderHost = FluentViewHost(
+    FluentSliderView(value: rtlSliderState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false, layoutDirection: .rightToLeft)
+)
+rtlSliderHost.frame = NSRect(x: 0, y: 0, width: 220, height: 40)
+rtlSliderHost.layoutSubtreeIfNeeded()
+guard let rtlSlider = firstSlider(in: rtlSliderHost),
+      let rtlSliderOuterThumb = firstLayer(named: "FluentKit.Slider.OuterThumb", in: rtlSliderHost) else {
+    fatalError("RTL Slider validation hierarchy did not mount")
+}
+let rtlMinimumX = rtlSliderOuterThumb.frame.minX
+rtlSlider.keyDown(with: sliderKeyEvent(123, in: rtlSlider, eventNumber: 31))
+require(
+    rtlSlider.value > 0 && rtlSliderOuterThumb.frame.minX < rtlMinimumX,
+    "Slider mirrors its logical direction and Left Arrow behavior in RTL"
+)
+rtlSlider.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: 9, y: rtlSlider.bounds.midY),
+        in: rtlSlider,
+        eventNumber: 32
+    )
+)
+rtlSlider.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: 9, y: rtlSlider.bounds.midY),
+        in: rtlSlider,
+        eventNumber: 33
+    )
+)
+require(rtlSlider.value > 0.99, "Slider maps the physical left endpoint to maximum in RTL")
+
+let reducedSliderState = FluentState(wrappedValue: 0.5)
+let reducedSliderHost = FluentViewHost(
+    FluentSliderView(value: reducedSliderState.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedSliderHost.frame = NSRect(x: 0, y: 0, width: 220, height: 40)
+reducedSliderHost.layoutSubtreeIfNeeded()
+guard let reducedSlider = firstSlider(in: reducedSliderHost),
+      let reducedSliderInnerThumb = firstLayer(named: "FluentKit.Slider.InnerThumb", in: reducedSliderHost) else {
+    fatalError("Reduce Motion Slider validation hierarchy did not mount")
+}
+reducedSlider.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: reducedSlider.bounds.midX, y: reducedSlider.bounds.midY),
+        in: reducedSlider,
+        eventNumber: 34
+    )
+)
+require(
+    reducedSliderInnerThumb.bounds.size == CGSize(width: 14, height: 14)
+        && reducedSliderInnerThumb.animationKeys()?.isEmpty != false,
+    "Slider Reduce Motion reaches PointerOver geometry without allocating animations"
+)
 
 let styledTextState = FluentState(wrappedValue: "styled")
 let styledTextHost = FluentViewHost(

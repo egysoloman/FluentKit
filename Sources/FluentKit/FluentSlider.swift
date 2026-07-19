@@ -2,8 +2,32 @@ import AppKit
 
 /// A Fluent-style continuous slider with native keyboard and pointer interaction.
 public final class FluentSlider: NSControl {
-    public var theme: FluentTheme = .current { didSet { needsDisplay = true; invalidateIntrinsicContentSize() } }
-    public var fluentStyle: (any FluentSliderStyle)? { didSet { needsDisplay = true; invalidateIntrinsicContentSize() } }
+    public var theme: FluentTheme = .current {
+        didSet {
+            refreshAppearance(animated: false)
+            invalidateIntrinsicContentSize()
+        }
+    }
+    public var fluentStyle: (any FluentSliderStyle)? {
+        didSet {
+            refreshAppearance(animated: false)
+            invalidateIntrinsicContentSize()
+        }
+    }
+    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+        didSet {
+            guard oldValue != reduceMotion else { return }
+            if reduceMotion { innerThumbLayer.removeAllAnimations() }
+            refreshAppearance(animated: false)
+        }
+    }
+    public var fluentLayoutDirection: FluentLayoutDirection = .system {
+        didSet {
+            guard oldValue != fluentLayoutDirection else { return }
+            userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+            refreshAppearance(animated: false)
+        }
+    }
     public var minimumValue: Double {
         didSet { normalizeRange() }
     }
@@ -15,23 +39,34 @@ public final class FluentSlider: NSControl {
     }
     public var onValueChanged: ((Double) -> Void)?
     public var fluentControlSize: FluentControlSize = .regular {
-        didSet { invalidateIntrinsicContentSize(); needsDisplay = true }
+        didSet {
+            guard oldValue != fluentControlSize else { return }
+            refreshAppearance(animated: false)
+            invalidateIntrinsicContentSize()
+        }
     }
 
     private var isPointerOver = false
     private var isDragging = false
+    private var interactionStartValue: Double?
+    private let focusLayer = CALayer()
+    private let trackLayer = CALayer()
+    private let fillLayer = CALayer()
+    private let outerThumbLayer = CALayer()
+    private let innerThumbLayer = CALayer()
+    private var lastLayoutSize = NSSize(width: -1, height: -1)
+    private var lastLayoutDirection: NSUserInterfaceLayoutDirection?
+
+    private var isRTL: Bool { userInterfaceLayoutDirection == .rightToLeft }
+
+    public override var acceptsFirstResponder: Bool { isEnabled }
 
     public init(value: Double = 0, range: ClosedRange<Double> = 0...1) {
         minimumValue = range.lowerBound
         maximumValue = range.upperBound
         self.value = min(max(value, minimumValue), maximumValue)
         super.init(frame: .zero)
-        wantsLayer = true
-        focusRingType = .none
-        setAccessibilityRole(.slider)
-        setAccessibilityMinValue(minimumValue)
-        setAccessibilityMaxValue(maximumValue)
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
+        configureView()
     }
 
     required init?(coder: NSCoder) {
@@ -39,92 +74,125 @@ public final class FluentSlider: NSControl {
         maximumValue = 1
         value = 0
         super.init(coder: coder)
+        configureView()
     }
 
     public override var intrinsicContentSize: NSSize {
         NSSize(
             width: 220 * fluentControlSize.metricScale * theme.density.metricScale,
-            height: theme.controlHeight(for: fluentControlSize)
-        )
-    }
-
-    public override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if trackingAreas.isEmpty {
-            addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil))
-        }
-    }
-
-    public override func draw(_ dirtyRect: NSRect) {
-        let appearance = resolvedAppearance()
-        let knobCenterX = knobCenterX(for: appearance)
-        let knobRadius = appearance.knobDiameter / 2
-        let track = NSRect(
-            x: knobRadius,
-            y: bounds.midY - appearance.trackHeight / 2,
-            width: max(bounds.width - appearance.knobDiameter, 0),
-            height: appearance.trackHeight
-        )
-        let progress = NSRect(x: track.minX, y: track.minY, width: max(knobCenterX - track.minX, 0), height: track.height)
-        let knob = NSRect(
-            x: knobCenterX - knobRadius,
-            y: bounds.midY - knobRadius,
-            width: appearance.knobDiameter,
-            height: appearance.knobDiameter
-        )
-
-        NSBezierPath(roundedRect: track, xRadius: track.height / 2, yRadius: track.height / 2).fill(using: appearance.trackColor)
-        NSBezierPath(roundedRect: progress, xRadius: track.height / 2, yRadius: track.height / 2).fill(using: appearance.fillColor)
-        if isPointerOver || isDragging {
-            let halo = NSRect(
-                x: knobCenterX - appearance.haloDiameter / 2,
-                y: bounds.midY - appearance.haloDiameter / 2,
-                width: appearance.haloDiameter,
-                height: appearance.haloDiameter
+            height: max(
+                theme.controlHeight(for: fluentControlSize),
+                resolvedAppearance().outerThumbDiameter + 6
             )
-            appearance.haloColor.setFill()
-            NSBezierPath(ovalIn: halo).fill()
-        }
-        let knobPath = NSBezierPath(ovalIn: knob)
-        appearance.knobColor.setFill()
-        knobPath.fill()
+        )
     }
 
-    public override func mouseEntered(with event: NSEvent) { isPointerOver = true; needsDisplay = true }
-    public override func mouseExited(with event: NSEvent) { isPointerOver = false; needsDisplay = true }
+    public override func layout() {
+        super.layout()
+        let direction = userInterfaceLayoutDirection
+        guard bounds.size != lastLayoutSize || direction != lastLayoutDirection else { return }
+        lastLayoutSize = bounds.size
+        lastLayoutDirection = direction
+        refreshAppearance(animated: false)
+    }
+
+    public override func mouseEntered(with event: NSEvent) {
+        isPointerOver = true
+        refreshAppearance(animated: true)
+    }
+
+    public override func mouseExited(with event: NSEvent) {
+        isPointerOver = false
+        refreshAppearance(animated: true)
+    }
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        window?.makeFirstResponder(self)
+        interactionStartValue = value
         isDragging = true
-        updateValue(for: convert(event.locationInWindow, from: nil).x)
+        let point = convert(event.locationInWindow, from: nil)
+        isPointerOver = bounds.contains(point)
+        updateValue(for: point.x)
+        refreshAppearance(animated: true)
     }
 
     public override func mouseDragged(with event: NSEvent) {
         guard isDragging else { return }
-        updateValue(for: convert(event.locationInWindow, from: nil).x)
+        let point = convert(event.locationInWindow, from: nil)
+        isPointerOver = bounds.contains(point)
+        updateValue(for: point.x)
     }
 
     public override func mouseUp(with event: NSEvent) {
+        guard isDragging else { return }
         isDragging = false
-        needsDisplay = true
+        interactionStartValue = nil
+        isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
+        refreshAppearance(animated: true)
     }
 
     public override func keyDown(with event: NSEvent) {
+        guard isEnabled else { return }
         let step = (maximumValue - minimumValue) / 20
         switch event.keyCode {
-        case 123: value -= step
-        case 124: value += step
+        case 123: value += isRTL ? step : -step
+        case 124: value += isRTL ? -step : step
+        case 125: value -= step
+        case 126: value += step
         case 115: value = minimumValue
         case 119: value = maximumValue
+        case 53: cancelInteraction(restoreValue: true)
         default: super.keyDown(with: event)
         }
-        needsDisplay = true
+    }
+
+    public override func cancelOperation(_ sender: Any?) {
+        cancelInteraction(restoreValue: true)
     }
 
     public override func accessibilityValue() -> Any? { value }
 
+    public override func accessibilityPerformIncrement() -> Bool {
+        guard isEnabled else { return false }
+        value += (maximumValue - minimumValue) / 20
+        return true
+    }
+
+    public override func accessibilityPerformDecrement() -> Bool {
+        guard isEnabled else { return false }
+        value -= (maximumValue - minimumValue) / 20
+        return true
+    }
+
     public override var isEnabled: Bool {
-        didSet { needsDisplay = true }
+        didSet {
+            if !isEnabled { cancelInteraction(restoreValue: true, refresh: false) }
+            setAccessibilityEnabled(isEnabled)
+            refreshAppearance(animated: true)
+        }
+    }
+
+    public override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { updateFocusRing() }
+        return result
+    }
+
+    public override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { updateFocusRing() }
+        return result
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateFocusRing()
+    }
+
+    public override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        refreshAppearance(animated: false)
     }
 
     func applyDeclarativeConfiguration(from source: FluentSlider) {
@@ -133,28 +201,26 @@ public final class FluentSlider: NSControl {
         fluentStyle = source.fluentStyle
         fluentControlSize = source.fluentControlSize
         if value != source.value {
-            let callback = onValueChanged
-            onValueChanged = nil
-            value = source.value
-            onValueChanged = callback
+            setValueFromBinding(source.value)
         }
-        needsDisplay = true
         invalidateIntrinsicContentSize()
     }
 
-    private func knobCenterX(for appearance: FluentSliderAppearance) -> CGFloat {
-        let radius = appearance.knobDiameter / 2
-        guard maximumValue > minimumValue else { return radius }
-        let fraction = CGFloat((value - minimumValue) / (maximumValue - minimumValue))
-        return radius + fraction * max(bounds.width - appearance.knobDiameter, 0)
+    func setValueFromBinding(_ newValue: Double) {
+        cancelInteraction(restoreValue: false, refresh: false)
+        let callback = onValueChanged
+        onValueChanged = nil
+        value = newValue
+        onValueChanged = callback
+        refreshAppearance(animated: false)
     }
 
     private func updateValue(for x: CGFloat) {
         let appearance = resolvedAppearance()
-        let radius = appearance.knobDiameter / 2
-        let fraction = min(max((x - radius) / max(bounds.width - appearance.knobDiameter, 1), 0), 1)
-        value = minimumValue + Double(fraction) * (maximumValue - minimumValue)
-        needsDisplay = true
+        let radius = appearance.outerThumbDiameter / 2
+        let physicalFraction = min(max((x - radius) / max(bounds.width - appearance.outerThumbDiameter, 1), 0), 1)
+        let logicalFraction = isRTL ? 1 - physicalFraction : physicalFraction
+        value = minimumValue + Double(logicalFraction) * (maximumValue - minimumValue)
     }
 
     private func resolvedAppearance() -> FluentSliderAppearance {
@@ -176,12 +242,174 @@ public final class FluentSlider: NSControl {
             ?? FluentAutomaticSliderStyle().appearance(for: configuration)
     }
 
+    private func configureView() {
+        wantsLayer = true
+        focusRingType = .none
+        userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+        setAccessibilityRole(.slider)
+        setAccessibilityMinValue(minimumValue)
+        setAccessibilityMaxValue(maximumValue)
+        setAccessibilityValue(value)
+        setAccessibilityEnabled(isEnabled)
+
+        focusLayer.name = "FluentKit.Slider.FocusRing"
+        trackLayer.name = "FluentKit.Slider.Track"
+        fillLayer.name = "FluentKit.Slider.Fill"
+        outerThumbLayer.name = "FluentKit.Slider.OuterThumb"
+        innerThumbLayer.name = "FluentKit.Slider.InnerThumb"
+        focusLayer.opacity = 0
+        layer?.addSublayer(focusLayer)
+        layer?.addSublayer(trackLayer)
+        layer?.addSublayer(fillLayer)
+        layer?.addSublayer(outerThumbLayer)
+        outerThumbLayer.addSublayer(innerThumbLayer)
+        addTrackingArea(
+            NSTrackingArea(
+                rect: .zero,
+                options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+                owner: self,
+                userInfo: nil
+            )
+        )
+        refreshAppearance(animated: false)
+    }
+
+    private func refreshAppearance(animated: Bool) {
+        let appearance = resolvedAppearance()
+        let oldInner = innerThumbLayer.presentation() ?? innerThumbLayer
+        let oldBounds = oldInner.bounds
+        let oldCornerRadius = oldInner.cornerRadius
+        innerThumbLayer.removeAllAnimations()
+        applyModelAppearance(appearance, updateInnerGeometry: true)
+
+        let motion = isPointerOver && isEnabled || isDragging
+            ? FluentMotion.controlNormal
+            : FluentMotion.controlFast
+        if animated, !reduceMotion, motion.duration > 0 {
+            addThumbAnimation(
+                key: "fluent.slider.inner.bounds",
+                keyPath: "bounds",
+                from: NSValue(rect: oldBounds),
+                to: NSValue(rect: innerThumbLayer.bounds),
+                motion: motion
+            )
+            addThumbAnimation(
+                key: "fluent.slider.inner.cornerRadius",
+                keyPath: "cornerRadius",
+                from: oldCornerRadius,
+                to: innerThumbLayer.cornerRadius,
+                motion: motion
+            )
+        }
+        updateFocusRing()
+    }
+
+    private func refreshPositionAndBrushes() {
+        applyModelAppearance(resolvedAppearance(), updateInnerGeometry: false)
+        updateFocusRing()
+    }
+
+    private func applyModelAppearance(
+        _ appearance: FluentSliderAppearance,
+        updateInnerGeometry: Bool
+    ) {
+        let outerDiameter = appearance.outerThumbDiameter
+        let radius = outerDiameter / 2
+        let trackRect = NSRect(
+            x: radius,
+            y: bounds.midY - appearance.trackHeight / 2,
+            width: max(bounds.width - outerDiameter, 0),
+            height: appearance.trackHeight
+        )
+        let fraction = valueFraction
+        let thumbCenterX = radius + (isRTL ? 1 - fraction : fraction) * trackRect.width
+        let fillWidth = fraction * trackRect.width
+        let fillRect = NSRect(
+            x: isRTL ? trackRect.maxX - fillWidth : trackRect.minX,
+            y: trackRect.minY,
+            width: fillWidth,
+            height: trackRect.height
+        )
+        let outerRect = NSRect(
+            x: thumbCenterX - radius,
+            y: bounds.midY - radius,
+            width: outerDiameter,
+            height: outerDiameter
+        )
+        let focusRect = outerRect.insetBy(dx: -3, dy: -3)
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        trackLayer.frame = trackRect
+        trackLayer.cornerRadius = trackRect.height / 2
+        trackLayer.backgroundColor = appearance.trackColor.cgColor
+        fillLayer.frame = fillRect
+        fillLayer.cornerRadius = fillRect.height / 2
+        fillLayer.backgroundColor = appearance.fillColor.cgColor
+        fillLayer.isHidden = fillRect.width <= 0
+        outerThumbLayer.frame = outerRect
+        outerThumbLayer.cornerRadius = radius
+        outerThumbLayer.backgroundColor = appearance.outerThumbColor.cgColor
+        outerThumbLayer.borderColor = appearance.outerThumbBorderColor.cgColor
+        outerThumbLayer.borderWidth = appearance.outerThumbBorderWidth
+        innerThumbLayer.position = CGPoint(x: radius, y: radius)
+        innerThumbLayer.backgroundColor = appearance.knobColor.cgColor
+        if updateInnerGeometry {
+            let innerDiameter = min(appearance.knobDiameter, outerDiameter)
+            innerThumbLayer.bounds = CGRect(x: 0, y: 0, width: innerDiameter, height: innerDiameter)
+            innerThumbLayer.cornerRadius = innerDiameter / 2
+        }
+        focusLayer.frame = focusRect
+        focusLayer.cornerRadius = focusRect.height / 2
+        focusLayer.borderColor = theme.accent.cgColor
+        focusLayer.borderWidth = theme.focusStrokeWidth
+        CATransaction.commit()
+    }
+
+    private var valueFraction: CGFloat {
+        guard maximumValue > minimumValue else { return 0 }
+        return min(max(CGFloat((value - minimumValue) / (maximumValue - minimumValue)), 0), 1)
+    }
+
+    private func addThumbAnimation(
+        key: String,
+        keyPath: String,
+        from: Any,
+        to: Any,
+        motion: FluentMotionToken
+    ) {
+        let animation = CABasicAnimation(keyPath: keyPath)
+        animation.fromValue = from
+        animation.toValue = to
+        animation.duration = motion.duration
+        animation.timingFunction = motion.curve.timingFunction
+        innerThumbLayer.add(animation, forKey: key)
+    }
+
+    private func cancelInteraction(restoreValue: Bool, refresh: Bool = true) {
+        guard isDragging else { return }
+        let original = interactionStartValue
+        isDragging = false
+        interactionStartValue = nil
+        if restoreValue, let original, value != original {
+            value = original
+        }
+        if refresh { refreshAppearance(animated: true) }
+    }
+
+    private func updateFocusRing() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        focusLayer.opacity = window?.firstResponder === self ? 1 : 0
+        CATransaction.commit()
+    }
+
     private func normalizeValue() {
         let clamped = min(max(value, minimumValue), maximumValue)
         if value != clamped { value = clamped }
         setAccessibilityMinValue(minimumValue)
         setAccessibilityMaxValue(maximumValue)
-        needsDisplay = true
+        refreshAppearance(animated: false)
     }
 
     private func normalizeRange() {
@@ -199,15 +427,8 @@ public final class FluentSlider: NSControl {
         sendAction(action, to: target)
         onValueChanged?(value)
         setAccessibilityValue(value)
-        needsDisplay = true
+        refreshPositionAndBrushes()
     }
 }
 
 extension FluentSlider: FluentControlSizeConfigurable {}
-
-private extension NSBezierPath {
-    func fill(using color: NSColor) {
-        color.setFill()
-        fill()
-    }
-}

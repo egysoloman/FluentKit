@@ -96,13 +96,20 @@ public struct FluentSliderView: FluentUpdatablePrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let slider = FluentBoundSlider(binding, range: range)
         slider.slider.theme = context.theme
+        slider.slider.reduceMotion = context.reduceMotion
+        slider.slider.fluentLayoutDirection = context.layoutDirection
         slider.slider.fluentStyle = style
         return slider
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let slider = view as? FluentBoundSlider else { return false }
-        slider.update(binding: binding, theme: context.theme)
+        slider.update(
+            binding: binding,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion,
+            layoutDirection: context.layoutDirection
+        )
         slider.slider.minimumValue = range.lowerBound
         slider.slider.maximumValue = range.upperBound
         slider.slider.fluentStyle = style

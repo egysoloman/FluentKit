@@ -153,7 +153,7 @@ public final class FluentBoundSlider: NSView {
                 DispatchQueue.main.async { [weak self] in
                     guard let self, self.slider.value != value else { return }
                     self.isApplyingBinding = true
-                    self.slider.value = value
+                    self.slider.setValueFromBinding(value)
                     self.isApplyingBinding = false
                 }
             }
@@ -162,17 +162,24 @@ public final class FluentBoundSlider: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func update(binding: FluentBinding<Double>, theme: FluentTheme) {
+    func update(
+        binding: FluentBinding<Double>,
+        theme: FluentTheme,
+        reduceMotion: Bool,
+        layoutDirection: FluentLayoutDirection
+    ) {
         if let observer { self.binding.removeObserver?(observer) }
         self.binding = binding
         slider.theme = theme
+        slider.reduceMotion = reduceMotion
+        slider.fluentLayoutDirection = layoutDirection
         let value = binding.get()
-        if slider.value != value { slider.value = value }
+        if slider.value != value { slider.setValueFromBinding(value) }
         observer = binding.observe? { [weak self] value in
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.slider.value != value else { return }
                 self.isApplyingBinding = true
-                self.slider.value = value
+                self.slider.setValueFromBinding(value)
                 self.isApplyingBinding = false
             }
         }

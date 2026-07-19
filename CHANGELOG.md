@@ -47,11 +47,18 @@ AppKit and Swift permit it.
   binding, removed the duplicate native-rendering label, and regenerated all 14 responsive
   Light/Dark/RTL snapshot baselines.
 - Reconciled the visual audit against completed divider, indicator, page-transition, NavigationView,
-  and TitleBar work. Exact Slider, CheckBox/RadioButton, SegmentedControl, ProgressBar, MenuFlyout
-  motion, and deferred Liquid Glass work remain open visual-acceptance items.
+  and TitleBar work. Exact CheckBox/RadioButton, SegmentedControl, ProgressBar, MenuFlyout motion,
+  and deferred Liquid Glass work remain open visual-acceptance items.
 - Rebuilt `FluentToggle` around independent idle, pressed, and dragging interaction state. Binding
   commits now occur once on release, drag positioning is direct, cancellation/external updates are
   deterministic, and keyboard/accessibility activation shares the same commit path.
 - Added ToggleSwitch-specific Light/Dark/High Contrast track and knob tokens, exact 40 x 20 and
   12/14/17 x 14 geometry, explicit 83ms state animations protected from same-bounds layout, RTL
   mirroring, custom focus, Reduce Motion, Gallery On/Off/Disabled examples, and executable coverage.
+- Rebuilt `FluentSlider` with stable track, value-fill, 18 x 18 outer-thumb, inner-thumb, and focus
+  layers. Normal, PointerOver, Pressed, and Disabled inner geometry now uses 12/14/10/14 sizes and
+  source-derived 167ms/250ms cubic-bezier motion while pointer position remains direct.
+- Added Slider RTL pointer and keyboard direction, Home/End, accessibility increment/decrement,
+  disabled input rejection, Escape restoration, external-binding drag cancellation, Reduce Motion,
+  exact layer/motion validation, interactive/Disabled Gallery examples, and regenerated desktop and
+  Minimal Light/Dark baselines.
