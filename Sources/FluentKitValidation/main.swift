@@ -354,6 +354,32 @@ let highContrastToggleAppearance = FluentAutomaticToggleStyle().appearance(
     for: FluentToggleStyleConfiguration(isOn: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: highContrastSelectionTheme)
 )
 require(highContrastToggleAppearance.trackBorderWidth > standardToggleAppearance.trackBorderWidth, "high contrast increases toggle border emphasis")
+let hoverToggleAppearance = FluentAutomaticToggleStyle().appearance(
+    for: FluentToggleStyleConfiguration(isOn: false, isEnabled: true, isPointerOver: true, controlSize: .regular, theme: standardSelectionTheme)
+)
+let pressedToggleAppearance = FluentAutomaticToggleStyle().appearance(
+    for: FluentToggleStyleConfiguration(isOn: false, isEnabled: true, isPointerOver: true, isPressed: true, controlSize: .regular, theme: standardSelectionTheme)
+)
+let onToggleAppearance = FluentAutomaticToggleStyle().appearance(
+    for: FluentToggleStyleConfiguration(isOn: true, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: standardSelectionTheme)
+)
+require(
+    standardToggleAppearance.trackSize == CGSize(width: 40, height: 20)
+        && standardToggleAppearance.knobSize == CGSize(width: 12, height: 12),
+    "ToggleSwitch normal state preserves the WinUI 40x20 track and 12x12 knob"
+)
+require(
+    hoverToggleAppearance.knobSize == CGSize(width: 14, height: 14),
+    "ToggleSwitch pointer-over state expands the knob to 14x14"
+)
+require(
+    pressedToggleAppearance.knobSize == CGSize(width: 17, height: 14),
+    "ToggleSwitch pressed and dragging states use the 17x14 knob"
+)
+require(
+    onToggleAppearance.trackBorderWidth == 0,
+    "ToggleSwitch standard On state uses the source template's borderless accent track"
+)
 let standardSliderAppearance = FluentAutomaticSliderStyle().appearance(
     for: FluentSliderStyleConfiguration(valueFraction: 0.5, isEnabled: true, isPointerOver: false, isDragging: false, controlSize: .regular, theme: standardSelectionTheme)
 )
@@ -458,6 +484,180 @@ styledToggleState.wrappedValue = false
 drainMainQueue()
 require(firstToggle(in: styledToggleHost) === nativeStyledToggle, "styled toggle binding updates preserve native identity")
 require(nativeStyledToggle?.isOn == false, "styled toggle binding updates native state")
+
+func toggleMouseEvent(
+    _ type: NSEvent.EventType,
+    at point: NSPoint,
+    in view: NSView,
+    eventNumber: Int
+) -> NSEvent {
+    let location = view.convert(point, to: nil)
+    guard let event = NSEvent.mouseEvent(
+        with: type,
+        location: location,
+        modifierFlags: [],
+        timestamp: TimeInterval(eventNumber) / 100,
+        windowNumber: view.window?.windowNumber ?? 0,
+        context: nil,
+        eventNumber: eventNumber,
+        clickCount: 1,
+        pressure: type == .leftMouseUp ? 0 : 1
+    ) else {
+        fatalError("could not create ToggleSwitch validation event")
+    }
+    return event
+}
+
+let interactiveToggleState = FluentState(wrappedValue: false)
+var interactiveToggleCommits: [Bool] = []
+let interactiveToggleObserver = interactiveToggleState.observe { interactiveToggleCommits.append($0) }
+interactiveToggleCommits.removeAll()
+let interactiveToggleHost = FluentViewHost(
+    FluentToggleView("Notifications", isOn: interactiveToggleState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false)
+)
+let interactiveToggleWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 40),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+interactiveToggleWindow.contentView = interactiveToggleHost
+interactiveToggleHost.frame = NSRect(x: 0, y: 0, width: 260, height: 40)
+interactiveToggleWindow.orderFront(nil)
+interactiveToggleHost.layoutSubtreeIfNeeded()
+guard let interactiveToggle = firstToggle(in: interactiveToggleHost),
+      let interactiveTrack = firstLayer(named: "FluentKit.Toggle.Track", in: interactiveToggleHost),
+      let interactiveKnob = firstLayer(named: "FluentKit.Toggle.Knob", in: interactiveToggleHost),
+      let interactiveFocus = firstLayer(named: "FluentKit.Toggle.FocusRing", in: interactiveToggleHost) else {
+    fatalError("ToggleSwitch validation hierarchy did not mount")
+}
+require(
+    interactiveTrack.frame.size == CGSize(width: 40, height: 20)
+        && interactiveKnob.frame.size == CGSize(width: 12, height: 12),
+    "mounted ToggleSwitch starts with exact normal geometry"
+)
+
+let togglePoint = NSPoint(x: interactiveToggle.bounds.maxX - 30, y: interactiveToggle.bounds.midY)
+interactiveToggle.mouseEntered(with: toggleMouseEvent(.mouseMoved, at: togglePoint, in: interactiveToggle, eventNumber: 1))
+require(
+    interactiveKnob.bounds.size == CGSize(width: 14, height: 14),
+    "mounted ToggleSwitch applies pointer-over knob geometry"
+)
+interactiveToggle.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: togglePoint, in: interactiveToggle, eventNumber: 2))
+require(
+    !interactiveToggleState.wrappedValue && interactiveToggleCommits.isEmpty,
+    "ToggleSwitch mouseDown enters Pressed without committing the binding"
+)
+require(
+    interactiveKnob.bounds.size == CGSize(width: 17, height: 14),
+    "ToggleSwitch Pressed applies the 17x14 target geometry"
+)
+let pressedBoundsAnimation = interactiveKnob.animation(forKey: "fluent.toggle.knob.bounds") as? CABasicAnimation
+require(
+    abs((pressedBoundsAnimation?.duration ?? 0) - 0.083) < 0.0001
+        && pressedBoundsAnimation?.timingFunction != nil,
+    "ToggleSwitch state geometry uses the 83ms control-fast-out-slow-in motion"
+)
+interactiveToggle.layout()
+require(
+    interactiveKnob.animation(forKey: "fluent.toggle.knob.bounds") != nil,
+    "same-bounds ToggleSwitch layout does not overwrite an active state animation"
+)
+interactiveToggle.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: togglePoint, in: interactiveToggle, eventNumber: 3))
+drainMainQueue()
+require(
+    interactiveToggleState.wrappedValue && interactiveToggleCommits == [true],
+    "ToggleSwitch release-inside commits its binding exactly once"
+)
+require(
+    interactiveTrack.borderWidth == 0,
+    "mounted ToggleSwitch On state removes the generic AppKit-style track border"
+)
+interactiveToggleWindow.makeFirstResponder(interactiveToggle)
+require(interactiveFocus.opacity == 1, "ToggleSwitch renders a custom keyboard focus ring")
+
+let dragStart = NSPoint(x: interactiveToggle.bounds.maxX - 10, y: interactiveToggle.bounds.midY)
+let dragEnd = NSPoint(x: interactiveToggle.bounds.maxX - 35, y: interactiveToggle.bounds.midY)
+interactiveToggle.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: dragStart, in: interactiveToggle, eventNumber: 4))
+let pressedOnKnobX = interactiveKnob.frame.minX
+interactiveToggle.mouseDragged(with: toggleMouseEvent(.leftMouseDragged, at: dragEnd, in: interactiveToggle, eventNumber: 5))
+require(
+    interactiveToggleState.wrappedValue
+        && interactiveKnob.bounds.size == CGSize(width: 17, height: 14)
+        && interactiveKnob.frame.minX < pressedOnKnobX,
+    "ToggleSwitch dragging moves the pressed knob directly without committing early"
+)
+interactiveToggle.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: dragEnd, in: interactiveToggle, eventNumber: 6))
+drainMainQueue()
+require(
+    !interactiveToggleState.wrappedValue && interactiveToggleCommits == [true, false],
+    "ToggleSwitch drag release resolves direction and commits once"
+)
+
+interactiveToggle.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: togglePoint, in: interactiveToggle, eventNumber: 7))
+let outsidePoint = NSPoint(x: -20, y: interactiveToggle.bounds.midY)
+interactiveToggle.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: outsidePoint, in: interactiveToggle, eventNumber: 8))
+require(
+    !interactiveToggleState.wrappedValue && interactiveToggleCommits == [true, false],
+    "ToggleSwitch release-outside cancels a non-drag click"
+)
+
+interactiveToggle.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: dragStart, in: interactiveToggle, eventNumber: 9))
+interactiveToggle.mouseDragged(with: toggleMouseEvent(.leftMouseDragged, at: dragEnd, in: interactiveToggle, eventNumber: 10))
+interactiveToggleState.wrappedValue = true
+drainMainQueue()
+interactiveToggle.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: dragEnd, in: interactiveToggle, eventNumber: 11))
+require(
+    interactiveToggleState.wrappedValue,
+    "external ToggleSwitch binding updates cancel an in-flight drag without a stale commit"
+)
+require(
+    interactiveToggle.accessibilityPerformPress() && !interactiveToggleState.wrappedValue,
+    "ToggleSwitch accessibility press uses the same single-commit path"
+)
+interactiveToggle.isEnabled = false
+require(
+    !interactiveToggle.accessibilityPerformPress() && !interactiveToggleState.wrappedValue,
+    "disabled ToggleSwitch rejects accessibility activation"
+)
+interactiveToggleState.observableValue.removeObserver(interactiveToggleObserver)
+interactiveToggleWindow.orderOut(nil)
+
+let rtlToggleState = FluentState(wrappedValue: false)
+let rtlToggleHost = FluentViewHost(
+    FluentToggleView("RTL", isOn: rtlToggleState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false, layoutDirection: .rightToLeft)
+)
+rtlToggleHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+rtlToggleHost.layoutSubtreeIfNeeded()
+guard let rtlToggle = firstToggle(in: rtlToggleHost),
+      let rtlTrack = firstLayer(named: "FluentKit.Toggle.Track", in: rtlToggleHost),
+      let rtlKnob = firstLayer(named: "FluentKit.Toggle.Knob", in: rtlToggleHost) else {
+    fatalError("RTL ToggleSwitch validation hierarchy did not mount")
+}
+let rtlOffX = rtlKnob.frame.minX
+rtlToggleState.wrappedValue = true
+drainMainQueue()
+require(
+    rtlTrack.frame.minX == 0 && rtlKnob.frame.minX < rtlOffX,
+    "ToggleSwitch mirrors track placement and On direction in RTL"
+)
+
+let reducedToggleState = FluentState(wrappedValue: false)
+let reducedToggleHost = FluentViewHost(
+    FluentToggleView("Reduced motion", isOn: reducedToggleState.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedToggleHost.frame = NSRect(x: 0, y: 0, width: 220, height: 40)
+reducedToggleHost.layoutSubtreeIfNeeded()
+let reducedToggleKnob = firstLayer(named: "FluentKit.Toggle.Knob", in: reducedToggleHost)
+reducedToggleState.wrappedValue = true
+drainMainQueue()
+require(
+    reducedToggleKnob?.animationKeys()?.isEmpty != false,
+    "ToggleSwitch Reduce Motion updates final geometry without allocating animations"
+)
 
 let styledSliderState = FluentState(wrappedValue: 0.4)
 let styledSliderHost = FluentViewHost(

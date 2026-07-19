@@ -181,10 +181,20 @@ extension FluentBoundTextField: FluentUpdatablePrimitiveView {
 
 extension FluentBoundToggle: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
-    public func _makeView(in context: FluentRenderContext) -> NSView { toggle.theme = context.theme; return self }
+    public func _makeView(in context: FluentRenderContext) -> NSView {
+        toggle.theme = context.theme
+        toggle.reduceMotion = context.reduceMotion
+        toggle.fluentLayoutDirection = context.layoutDirection
+        return self
+    }
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let toggle = view as? FluentBoundToggle else { return false }
-        toggle.update(binding: binding, theme: context.theme)
+        toggle.update(
+            binding: binding,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion,
+            layoutDirection: context.layoutDirection
+        )
         toggle.toggle.applyDeclarativeConfiguration(from: self.toggle)
         return true
     }

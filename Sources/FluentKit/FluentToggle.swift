@@ -1,9 +1,34 @@
 import AppKit
 
-/// A compact Fluent-style switch drawn with Core Animation rather than the system switch chrome.
+/// A compact Fluent-style switch with a native AppKit interaction surface and custom visual states.
 public final class FluentToggle: NSControl {
-    public var theme: FluentTheme = .current { didSet { refreshAppearance(animated: false); invalidateIntrinsicContentSize() } }
-    public var fluentStyle: (any FluentToggleStyle)? { didSet { refreshAppearance(animated: false); invalidateIntrinsicContentSize() } }
+    public var theme: FluentTheme = .current {
+        didSet {
+            refreshAppearance(animated: false)
+            invalidateIntrinsicContentSize()
+        }
+    }
+    public var fluentStyle: (any FluentToggleStyle)? {
+        didSet {
+            refreshAppearance(animated: false)
+            invalidateIntrinsicContentSize()
+        }
+    }
+    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+        didSet {
+            guard oldValue != reduceMotion else { return }
+            if reduceMotion { removeVisualAnimations() }
+            refreshAppearance(animated: false)
+        }
+    }
+    public var fluentLayoutDirection: FluentLayoutDirection = .system {
+        didSet {
+            guard oldValue != fluentLayoutDirection else { return }
+            userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+            refreshAppearance(animated: false)
+            needsDisplay = true
+        }
+    }
     public var isOn: Bool {
         didSet {
             guard oldValue != isOn else { return }
@@ -13,41 +38,72 @@ public final class FluentToggle: NSControl {
     }
     public var onValueChanged: ((Bool) -> Void)?
     public var fluentControlSize: FluentControlSize = .regular {
-        didSet { invalidateIntrinsicContentSize(); needsLayout = true; needsDisplay = true }
+        didSet {
+            guard oldValue != fluentControlSize else { return }
+            refreshAppearance(animated: false)
+            invalidateIntrinsicContentSize()
+            needsDisplay = true
+        }
     }
 
     private var titleText: String
     public var title: String {
         get { titleText }
-        set { titleText = newValue; setAccessibilityTitle(newValue); invalidateIntrinsicContentSize(); needsDisplay = true }
+        set {
+            guard titleText != newValue else { return }
+            titleText = newValue
+            setAccessibilityTitle(newValue)
+            invalidateIntrinsicContentSize()
+            needsDisplay = true
+        }
     }
+
+    private enum PointerState {
+        case idle
+        case pressed(origin: NSPoint, initialFraction: CGFloat)
+        case dragging(origin: NSPoint, initialFraction: CGFloat, fraction: CGFloat)
+    }
+
+    private let focusLayer = CALayer()
+    private let trackLayer = CALayer()
+    private let knobLayer = CALayer()
+    private var pointerState: PointerState = .idle
+    private var isPointerOver = false
+    private var lastLayoutSize = NSSize(width: -1, height: -1)
+    private var lastLayoutDirection: NSUserInterfaceLayoutDirection?
+
     private var titleFont: NSFont {
         let bodyFont = theme.typography.font(for: .body)
         return bodyFont.withSize(bodyFont.pointSize * fluentControlSize.metricScale)
     }
-    private let trackLayer = CALayer()
-    private let knobLayer = CALayer()
-    private var isPointerOver = false
-    private var isPressed = false
+    private var isPressed: Bool {
+        if case .idle = pointerState { return false }
+        return true
+    }
+    private var isDragging: Bool {
+        if case .dragging = pointerState { return true }
+        return false
+    }
+    private var dragFraction: CGFloat? {
+        if case let .dragging(_, _, fraction) = pointerState { return fraction }
+        return nil
+    }
+    private var isRTL: Bool { userInterfaceLayoutDirection == .rightToLeft }
+
+    public override var acceptsFirstResponder: Bool { isEnabled }
 
     public init(title: String = "Toggle", isOn: Bool = false) {
-        self.titleText = title
+        titleText = title
         self.isOn = isOn
         super.init(frame: .zero)
-        wantsLayer = true
-        layer?.addSublayer(trackLayer)
-        layer?.addSublayer(knobLayer)
-        focusRingType = .none
-        setAccessibilityRole(.checkBox)
-        setAccessibilityTitle(title)
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
-        refreshAppearance(animated: false)
+        configureView()
     }
 
     required init?(coder: NSCoder) {
         titleText = "Toggle"
         isOn = false
         super.init(coder: coder)
+        configureView()
     }
 
     public override var intrinsicContentSize: NSSize {
@@ -55,35 +111,40 @@ public final class FluentToggle: NSControl {
         let textSize = (titleText as NSString).size(withAttributes: [.font: titleFont])
         return NSSize(
             width: ceil(textSize.width + appearance.labelSpacing + appearance.trackSize.width),
-            height: ceil(max(theme.controlHeight(for: fluentControlSize), appearance.trackSize.height))
+            height: ceil(max(theme.controlHeight(for: fluentControlSize), appearance.trackSize.height + 6))
         )
-    }
-
-    public override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if trackingAreas.isEmpty {
-            addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil))
-        }
     }
 
     public override func layout() {
         super.layout()
-        let appearance = resolvedAppearance()
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        applyGeometry(appearance)
-        CATransaction.commit()
+        let direction = userInterfaceLayoutDirection
+        guard bounds.size != lastLayoutSize || direction != lastLayoutDirection else { return }
+        lastLayoutSize = bounds.size
+        lastLayoutDirection = direction
+        refreshAppearance(animated: false)
     }
 
     public override func draw(_ dirtyRect: NSRect) {
         let appearance = resolvedAppearance()
+        let track = trackRect(for: appearance)
+        let textWidth = max(bounds.width - track.width - appearance.labelSpacing, 0)
+        let textSize = (titleText as NSString).size(withAttributes: [.font: titleFont])
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = isRTL ? .right : .left
         let textRect = NSRect(
-            x: 0,
-            y: bounds.midY - titleFont.capHeight / 2,
-            width: max(bounds.width - appearance.trackSize.width - appearance.labelSpacing, 0),
-            height: titleFont.pointSize + 6
+            x: isRTL ? track.maxX + appearance.labelSpacing : 0,
+            y: bounds.midY - textSize.height / 2,
+            width: textWidth,
+            height: textSize.height
         )
-        (titleText as NSString).draw(in: textRect, withAttributes: [.font: titleFont, .foregroundColor: appearance.labelColor])
+        (titleText as NSString).draw(
+            in: textRect,
+            withAttributes: [
+                .font: titleFont,
+                .foregroundColor: appearance.labelColor,
+                .paragraphStyle: paragraph
+            ]
+        )
     }
 
     public override func mouseEntered(with event: NSEvent) {
@@ -98,59 +159,195 @@ public final class FluentToggle: NSControl {
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
-        isPressed = true
+        window?.makeFirstResponder(self)
+        let point = convert(event.locationInWindow, from: nil)
+        isPointerOver = bounds.contains(point)
+        pointerState = .pressed(origin: point, initialFraction: isOn ? 1 : 0)
         refreshAppearance(animated: true)
-        isOn.toggle()
-        DispatchQueue.main.asyncAfter(deadline: .now() + FluentMotion.controlFaster.duration) { [weak self] in
-            guard let self, self.isPressed else { return }
-            self.isPressed = false
-            self.refreshAppearance(animated: true)
+    }
+
+    public override func mouseDragged(with event: NSEvent) {
+        guard isEnabled else { return }
+        let point = convert(event.locationInWindow, from: nil)
+        isPointerOver = bounds.contains(point)
+
+        let origin: NSPoint
+        let initialFraction: CGFloat
+        switch pointerState {
+        case .idle:
+            return
+        case let .pressed(pressedOrigin, fraction):
+            let delta = logicalHorizontalDelta(from: pressedOrigin, to: point)
+            guard abs(delta) >= 3 else { return }
+            origin = pressedOrigin
+            initialFraction = fraction
+        case let .dragging(dragOrigin, fraction, _):
+            origin = dragOrigin
+            initialFraction = fraction
+        }
+
+        let travel = max(resolvedAppearance().trackSize.width / 2, 1)
+        let fraction = min(max(initialFraction + logicalHorizontalDelta(from: origin, to: point) / travel, 0), 1)
+        pointerState = .dragging(origin: origin, initialFraction: initialFraction, fraction: fraction)
+        refreshAppearance(animated: false)
+    }
+
+    public override func mouseUp(with event: NSEvent) {
+        guard isEnabled else { return }
+        let point = convert(event.locationInWindow, from: nil)
+        let inside = bounds.contains(point)
+        let targetValue: Bool
+
+        switch pointerState {
+        case .idle:
+            return
+        case .pressed:
+            targetValue = inside ? !isOn : isOn
+        case let .dragging(origin, initialFraction, fraction):
+            let appearance = resolvedAppearance()
+            let travel = max(appearance.trackSize.width / 2, 1)
+            let delta = logicalHorizontalDelta(from: origin, to: point)
+            if abs(delta) >= travel * 0.25 {
+                targetValue = delta > 0
+            } else if fraction == 0.5 {
+                targetValue = initialFraction >= 0.5
+            } else {
+                targetValue = fraction > 0.5
+            }
+        }
+
+        pointerState = .idle
+        isPointerOver = inside
+        if targetValue != isOn {
+            isOn = targetValue
+        } else {
+            refreshAppearance(animated: true)
         }
     }
 
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
-        if event.keyCode == 36 || event.keyCode == 49 {
-            isOn.toggle()
-        } else {
+        switch event.keyCode {
+        case 36, 49:
+            guard !event.isARepeat else { return }
+            commitKeyboardToggle()
+        case 53:
+            cancelInteraction(animated: true)
+        default:
             super.keyDown(with: event)
         }
     }
 
+    public override func cancelOperation(_ sender: Any?) {
+        cancelInteraction(animated: true)
+    }
+
     public override func accessibilityValue() -> Any? { isOn ? "On" : "Off" }
 
+    public override func accessibilityPerformPress() -> Bool {
+        guard isEnabled else { return false }
+        commitKeyboardToggle()
+        return true
+    }
+
     public override var isEnabled: Bool {
-        didSet { refreshAppearance(animated: false) }
+        didSet {
+            if !isEnabled { cancelInteraction(animated: false, refresh: false) }
+            setAccessibilityEnabled(isEnabled)
+            refreshAppearance(
+                animated: true,
+                motion: isEnabled ? FluentMotion.controlFaster : FluentMotion.controlNormal
+            )
+        }
+    }
+
+    public override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { updateFocusRing() }
+        return result
+    }
+
+    public override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { updateFocusRing() }
+        return result
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateFocusRing()
+    }
+
+    public override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        refreshAppearance(animated: false)
     }
 
     func applyDeclarativeConfiguration(from source: FluentToggle) {
-        titleText = source.titleText
-        fluentStyle = source.fluentStyle
-        fluentControlSize = source.fluentControlSize
-        if isOn != source.isOn { setStateFromDeclarative(source.isOn) }
+        if titleText != source.titleText { title = source.titleText }
+        if fluentStyle != nil || source.fluentStyle != nil { fluentStyle = source.fluentStyle }
+        if fluentControlSize != source.fluentControlSize { fluentControlSize = source.fluentControlSize }
+        if isOn != source.isOn { setStateFromBinding(source.isOn) }
         needsDisplay = true
         invalidateIntrinsicContentSize()
     }
 
-    private func refreshAppearance(animated: Bool) {
-        let motion = FluentMotion.controlFaster
+    func setStateFromBinding(_ value: Bool) {
+        cancelInteraction(animated: false, refresh: false)
+        let callback = onValueChanged
+        onValueChanged = nil
+        isOn = value
+        onValueChanged = callback
+    }
+
+    private func configureView() {
+        wantsLayer = true
+        focusRingType = .none
+        userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+        setAccessibilityRole(.checkBox)
+        setAccessibilityTitle(titleText)
+        setAccessibilityEnabled(isEnabled)
+
+        focusLayer.name = "FluentKit.Toggle.FocusRing"
+        trackLayer.name = "FluentKit.Toggle.Track"
+        knobLayer.name = "FluentKit.Toggle.Knob"
+        focusLayer.opacity = 0
+        layer?.addSublayer(focusLayer)
+        layer?.addSublayer(trackLayer)
+        layer?.addSublayer(knobLayer)
+        addTrackingArea(
+            NSTrackingArea(
+                rect: .zero,
+                options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+                owner: self,
+                userInfo: nil
+            )
+        )
+        refreshAppearance(animated: false)
+    }
+
+    private func commitKeyboardToggle() {
+        cancelInteraction(animated: false, refresh: false)
+        isOn.toggle()
+    }
+
+    private func cancelInteraction(animated: Bool, refresh: Bool = true) {
+        guard isPressed else { return }
+        pointerState = .idle
+        if refresh { refreshAppearance(animated: animated) }
+    }
+
+    private func refreshAppearance(
+        animated: Bool,
+        motion: FluentMotionToken = FluentMotion.controlFaster
+    ) {
         let appearance = resolvedAppearance()
-        CATransaction.begin()
-        CATransaction.setDisableActions(!animated)
-        CATransaction.setAnimationDuration(animated ? motion.duration : 0)
-        CATransaction.setAnimationTimingFunction(motion.curve.timingFunction)
-        trackLayer.backgroundColor = appearance.trackColor.cgColor
-        trackLayer.borderColor = appearance.trackBorderColor.cgColor
-        trackLayer.borderWidth = appearance.trackBorderWidth
-        knobLayer.backgroundColor = appearance.knobColor.cgColor
-        knobLayer.shadowColor = appearance.knobShadowColor.cgColor
-        knobLayer.shadowOpacity = appearance.knobShadowColor.alphaComponent > 0 ? 1 : 0
-        knobLayer.shadowRadius = 2
-        knobLayer.shadowOffset = CGSize(width: 0, height: -1)
-        applyGeometry(appearance)
-        CATransaction.commit()
+        applyVisualState(
+            appearance,
+            animated: animated && !reduceMotion,
+            motion: motion
+        )
         needsDisplay = true
-        needsLayout = true
     }
 
     private func resolvedAppearance() -> FluentToggleAppearance {
@@ -159,6 +356,7 @@ public final class FluentToggle: NSControl {
             isEnabled: isEnabled,
             isPointerOver: isPointerOver,
             isPressed: isPressed,
+            isDragging: isDragging,
             controlSize: fluentControlSize,
             theme: theme
         )
@@ -168,39 +366,183 @@ public final class FluentToggle: NSControl {
 
     private func trackRect(for appearance: FluentToggleAppearance) -> NSRect {
         NSRect(
-            x: bounds.maxX - appearance.trackSize.width,
+            x: isRTL ? 0 : bounds.maxX - appearance.trackSize.width,
             y: (bounds.height - appearance.trackSize.height) / 2,
             width: appearance.trackSize.width,
             height: appearance.trackSize.height
         )
     }
 
-    private func applyGeometry(_ appearance: FluentToggleAppearance) {
-        let trackRect = trackRect(for: appearance)
-        trackLayer.frame = trackRect
-        trackLayer.cornerRadius = trackRect.height / 2
+    private func knobRect(for appearance: FluentToggleAppearance, trackRect: NSRect) -> NSRect {
         let knobWidth = min(appearance.knobSize.width, max(trackRect.width - 4, 1))
         let knobHeight = min(appearance.knobSize.height, max(trackRect.height - 4, 1))
-        let knobX = isOn ? trackRect.maxX - knobWidth - 2 : trackRect.minX + 2
-        knobLayer.frame = NSRect(
+        let halfTrack = trackRect.width / 2
+        let physicalOffX: CGFloat
+        let physicalOnX: CGFloat
+
+        if isPressed {
+            let visibleScale = trackRect.height / 20
+            let inset = min(3 * visibleScale, max((trackRect.width - knobWidth) / 2, 0))
+            physicalOffX = trackRect.minX + inset
+            physicalOnX = trackRect.maxX - knobWidth - inset
+        } else {
+            let alignmentNudge = 0.5 * (trackRect.height / 20)
+            let centeredInset = max((halfTrack - knobWidth) / 2 - alignmentNudge, 0)
+            physicalOffX = trackRect.minX + centeredInset
+            physicalOnX = trackRect.minX + halfTrack + centeredInset
+        }
+
+        let offX = isRTL ? physicalOnX : physicalOffX
+        let onX = isRTL ? physicalOffX : physicalOnX
+        let fraction = dragFraction ?? (isOn ? 1 : 0)
+        let knobX = offX + (onX - offX) * fraction
+        return NSRect(
             x: knobX,
             y: trackRect.midY - knobHeight / 2,
             width: knobWidth,
             height: knobHeight
         )
-        knobLayer.cornerRadius = min(knobWidth, knobHeight) / 2
     }
 
-    private func setStateFromDeclarative(_ value: Bool) {
-        let callback = onValueChanged
-        onValueChanged = nil
-        isOn = value
-        onValueChanged = callback
+    private func applyVisualState(
+        _ appearance: FluentToggleAppearance,
+        animated: Bool,
+        motion: FluentMotionToken
+    ) {
+        let trackRect = trackRect(for: appearance)
+        let knobRect = knobRect(for: appearance, trackRect: trackRect)
+        let visibleScale = trackRect.height / 20
+        let focusRect = trackRect.insetBy(dx: -3 * visibleScale, dy: -3 * visibleScale)
+
+        let oldTrack = trackLayer.presentation() ?? trackLayer
+        let oldKnob = knobLayer.presentation() ?? knobLayer
+        let oldTrackBackground = oldTrack.backgroundColor
+        let oldTrackBorder = oldTrack.borderColor
+        let oldKnobPosition = oldKnob.position
+        let oldKnobBounds = oldKnob.bounds
+        let oldKnobCornerRadius = oldKnob.cornerRadius
+        let oldKnobBackground = oldKnob.backgroundColor
+        let oldKnobBorder = oldKnob.borderColor
+
+        removeVisualAnimations()
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        trackLayer.frame = trackRect
+        trackLayer.cornerRadius = trackRect.height / 2
+        trackLayer.backgroundColor = appearance.trackColor.cgColor
+        trackLayer.borderColor = appearance.trackBorderColor.cgColor
+        trackLayer.borderWidth = appearance.trackBorderWidth
+        knobLayer.frame = knobRect
+        knobLayer.cornerRadius = min(knobRect.width, knobRect.height) / 2
+        knobLayer.backgroundColor = appearance.knobColor.cgColor
+        knobLayer.borderColor = appearance.knobBorderColor.cgColor
+        knobLayer.borderWidth = appearance.knobBorderWidth
+        knobLayer.shadowColor = appearance.knobShadowColor.cgColor
+        knobLayer.shadowOpacity = appearance.knobShadowColor.alphaComponent > 0 ? 1 : 0
+        knobLayer.shadowRadius = 2 * visibleScale
+        knobLayer.shadowOffset = CGSize(width: 0, height: -visibleScale)
+        focusLayer.frame = focusRect
+        focusLayer.cornerRadius = focusRect.height / 2
+        focusLayer.borderColor = theme.accent.cgColor
+        focusLayer.borderWidth = theme.focusStrokeWidth
+        CATransaction.commit()
+
+        if animated, motion.duration > 0 {
+            addAnimation(
+                to: trackLayer,
+                key: "fluent.toggle.track.background",
+                keyPath: "backgroundColor",
+                from: oldTrackBackground,
+                to: appearance.trackColor.cgColor,
+                motion: motion
+            )
+            addAnimation(
+                to: trackLayer,
+                key: "fluent.toggle.track.border",
+                keyPath: "borderColor",
+                from: oldTrackBorder,
+                to: appearance.trackBorderColor.cgColor,
+                motion: motion
+            )
+            addAnimation(
+                to: knobLayer,
+                key: "fluent.toggle.knob.position",
+                keyPath: "position",
+                from: NSValue(point: oldKnobPosition),
+                to: NSValue(point: knobLayer.position),
+                motion: motion
+            )
+            addAnimation(
+                to: knobLayer,
+                key: "fluent.toggle.knob.bounds",
+                keyPath: "bounds",
+                from: NSValue(rect: oldKnobBounds),
+                to: NSValue(rect: knobLayer.bounds),
+                motion: motion
+            )
+            addAnimation(
+                to: knobLayer,
+                key: "fluent.toggle.knob.cornerRadius",
+                keyPath: "cornerRadius",
+                from: oldKnobCornerRadius,
+                to: knobLayer.cornerRadius,
+                motion: motion
+            )
+            addAnimation(
+                to: knobLayer,
+                key: "fluent.toggle.knob.background",
+                keyPath: "backgroundColor",
+                from: oldKnobBackground,
+                to: appearance.knobColor.cgColor,
+                motion: motion
+            )
+            addAnimation(
+                to: knobLayer,
+                key: "fluent.toggle.knob.border",
+                keyPath: "borderColor",
+                from: oldKnobBorder,
+                to: appearance.knobBorderColor.cgColor,
+                motion: motion
+            )
+        }
+        updateFocusRing()
     }
 
-    public override func viewDidChangeEffectiveAppearance() {
-        super.viewDidChangeEffectiveAppearance()
-        refreshAppearance(animated: false)
+    private func addAnimation(
+        to layer: CALayer,
+        key: String,
+        keyPath: String,
+        from: Any?,
+        to: Any,
+        motion: FluentMotionToken
+    ) {
+        let animation = CABasicAnimation(keyPath: keyPath)
+        animation.fromValue = from
+        animation.toValue = to
+        animation.duration = motion.duration
+        animation.timingFunction = motion.curve.timingFunction
+        if motion.delay > 0 {
+            animation.beginTime = CACurrentMediaTime() + motion.delay
+            animation.fillMode = .backwards
+        }
+        layer.add(animation, forKey: key)
+    }
+
+    private func removeVisualAnimations() {
+        trackLayer.removeAllAnimations()
+        knobLayer.removeAllAnimations()
+    }
+
+    private func updateFocusRing() {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        focusLayer.opacity = window?.firstResponder === self ? 1 : 0
+        CATransaction.commit()
+    }
+
+    private func logicalHorizontalDelta(from origin: NSPoint, to point: NSPoint) -> CGFloat {
+        let delta = point.x - origin.x
+        return isRTL ? -delta : delta
     }
 }
 

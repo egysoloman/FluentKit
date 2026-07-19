@@ -401,6 +401,11 @@ FluentStepper("Items", value: $quantity, in: 1...12)
     .stepperStyle(FluentInlineStepperStyle())
 ```
 
+The automatic ToggleSwitch style uses a 40 x 20 track with 12 x 12 normal, 14 x 14 hover, and
+17 x 14 pressed/dragging knob geometry. Pointer down changes only the visual state; the binding is
+committed once on release, while drag, cancellation, keyboard/accessibility activation, RTL, and
+Reduce Motion remain part of the same native control lifecycle.
+
 Combo-box fields keep their native `NSComboBox` identity and accessibility role, but their option
 popup is an application-owned `FluentMenuFlyout`. The popup uses the same Acrylic surface, checked
 state, keyboard navigation, type-ahead, Escape/outside-click dismissal, and RTL placement as other

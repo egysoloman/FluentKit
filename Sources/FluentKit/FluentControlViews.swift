@@ -56,15 +56,22 @@ public struct FluentToggleView: FluentUpdatablePrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let toggle = FluentBoundToggle(binding, title: title)
         toggle.toggle.theme = context.theme
+        toggle.toggle.reduceMotion = context.reduceMotion
+        toggle.toggle.fluentLayoutDirection = context.layoutDirection
         toggle.toggle.fluentStyle = style
         return toggle
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let toggle = view as? FluentBoundToggle else { return false }
-        toggle.update(binding: binding, theme: context.theme)
+        toggle.update(
+            binding: binding,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion,
+            layoutDirection: context.layoutDirection
+        )
         toggle.toggle.title = title
-        toggle.toggle.fluentStyle = style
+        if toggle.toggle.fluentStyle != nil || style != nil { toggle.toggle.fluentStyle = style }
         return true
     }
 

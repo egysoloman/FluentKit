@@ -201,14 +201,24 @@ public struct FluentToggleStyleConfiguration {
     public let isEnabled: Bool
     public let isPointerOver: Bool
     public let isPressed: Bool
+    public let isDragging: Bool
     public let controlSize: FluentControlSize
     public let theme: FluentTheme
 
-    public init(isOn: Bool, isEnabled: Bool, isPointerOver: Bool, isPressed: Bool = false, controlSize: FluentControlSize, theme: FluentTheme) {
+    public init(
+        isOn: Bool,
+        isEnabled: Bool,
+        isPointerOver: Bool,
+        isPressed: Bool = false,
+        isDragging: Bool = false,
+        controlSize: FluentControlSize,
+        theme: FluentTheme
+    ) {
         self.isOn = isOn
         self.isEnabled = isEnabled
         self.isPointerOver = isPointerOver
         self.isPressed = isPressed
+        self.isDragging = isDragging
         self.controlSize = controlSize
         self.theme = theme
     }
@@ -219,6 +229,8 @@ public struct FluentToggleAppearance {
     public let trackBorderColor: NSColor
     public let trackBorderWidth: CGFloat
     public let knobColor: NSColor
+    public let knobBorderColor: NSColor
+    public let knobBorderWidth: CGFloat
     public let labelColor: NSColor
     public let knobShadowColor: NSColor
     public let trackSize: CGSize
@@ -231,10 +243,12 @@ public struct FluentToggleAppearance {
         trackBorderColor: NSColor,
         trackBorderWidth: CGFloat = 1,
         knobColor: NSColor,
+        knobBorderColor: NSColor = .clear,
+        knobBorderWidth: CGFloat = 0,
         labelColor: NSColor,
         knobShadowColor: NSColor = NSColor.black.withAlphaComponent(0.32),
-        trackSize: CGSize = CGSize(width: 36, height: 20),
-        knobDiameter: CGFloat = 16,
+        trackSize: CGSize = CGSize(width: 40, height: 20),
+        knobDiameter: CGFloat = 12,
         knobSize: CGSize? = nil,
         labelSpacing: CGFloat = 12
     ) {
@@ -242,6 +256,8 @@ public struct FluentToggleAppearance {
         self.trackBorderColor = trackBorderColor
         self.trackBorderWidth = max(trackBorderWidth, 0)
         self.knobColor = knobColor
+        self.knobBorderColor = knobBorderColor
+        self.knobBorderWidth = max(knobBorderWidth, 0)
         self.labelColor = labelColor
         self.knobShadowColor = knobShadowColor
         self.trackSize = trackSize
@@ -262,10 +278,17 @@ public struct FluentAutomaticToggleStyle: FluentToggleStyle {
     public func appearance(for configuration: FluentToggleStyleConfiguration) -> FluentToggleAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let enabledAlpha: CGFloat = configuration.isEnabled ? 1 : 0.45
-        let offTrack = configuration.isPointerOver ? theme.controlFillSecondary : theme.controlFillTertiary
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isPressed || configuration.isDragging {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
         let thumbSize: CGSize
-        if configuration.isPressed {
+        if configuration.isPressed || configuration.isDragging {
             thumbSize = CGSize(width: 17 * scale, height: 14 * scale)
         } else if configuration.isPointerOver {
             thumbSize = CGSize(width: 14 * scale, height: 14 * scale)
@@ -273,10 +296,12 @@ public struct FluentAutomaticToggleStyle: FluentToggleStyle {
             thumbSize = CGSize(width: 12 * scale, height: 12 * scale)
         }
         return FluentToggleAppearance(
-            trackColor: (configuration.isOn ? theme.accent : offTrack).withAlphaComponent(enabledAlpha),
-            trackBorderColor: theme.controlStroke,
-            trackBorderWidth: theme.controlStrokeWidth,
-            knobColor: configuration.isOn ? theme.textOnAccent : theme.textPrimary,
+            trackColor: theme.toggleTrackFill(isOn: configuration.isOn, state: state),
+            trackBorderColor: theme.toggleTrackStroke(isOn: configuration.isOn, state: state),
+            trackBorderWidth: configuration.isOn && !theme.isHighContrast ? 0 : theme.controlStrokeWidth,
+            knobColor: theme.toggleKnobFill(isOn: configuration.isOn, state: state),
+            knobBorderColor: theme.toggleKnobStroke(isOn: configuration.isOn, state: state),
+            knobBorderWidth: configuration.isOn && configuration.isEnabled ? 1 : 0,
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             trackSize: CGSize(width: 40 * scale, height: 20 * scale),
             knobDiameter: thumbSize.height,
@@ -294,7 +319,7 @@ public struct FluentMonochromeToggleStyle: FluentToggleStyle {
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
         let track = configuration.isOn ? theme.controlStrokeStrong : theme.controlFillTertiary
         let thumbSize: CGSize
-        if configuration.isPressed {
+        if configuration.isPressed || configuration.isDragging {
             thumbSize = CGSize(width: 17 * scale, height: 14 * scale)
         } else if configuration.isPointerOver {
             thumbSize = CGSize(width: 14 * scale, height: 14 * scale)

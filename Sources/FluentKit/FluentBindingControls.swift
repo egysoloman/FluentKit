@@ -89,7 +89,7 @@ public final class FluentBoundToggle: NSView {
                 DispatchQueue.main.async { [weak self] in
                     guard let self, self.toggle.isOn != value else { return }
                     self.isApplyingBinding = true
-                    self.toggle.isOn = value
+                    self.toggle.setStateFromBinding(value)
                     self.isApplyingBinding = false
                 }
             }
@@ -98,17 +98,24 @@ public final class FluentBoundToggle: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func update(binding: FluentBinding<Bool>, theme: FluentTheme) {
+    func update(
+        binding: FluentBinding<Bool>,
+        theme: FluentTheme,
+        reduceMotion: Bool,
+        layoutDirection: FluentLayoutDirection
+    ) {
         if let observer { self.binding.removeObserver?(observer) }
         self.binding = binding
         toggle.theme = theme
+        toggle.reduceMotion = reduceMotion
+        toggle.fluentLayoutDirection = layoutDirection
         let value = binding.get()
-        if toggle.isOn != value { toggle.isOn = value }
+        if toggle.isOn != value { toggle.setStateFromBinding(value) }
         observer = binding.observe? { [weak self] value in
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.toggle.isOn != value else { return }
                 self.isApplyingBinding = true
-                self.toggle.isOn = value
+                self.toggle.setStateFromBinding(value)
                 self.isApplyingBinding = false
             }
         }

@@ -44,10 +44,24 @@ Completed in the NavigationView and TitleBar pass:
   the duplicate native-rendering label, and retains one shell-owned page title.
 - Fourteen Light/Dark/RTL/responsive bitmap baselines now include the integrated title bar.
 
+Completed in the ToggleSwitch pass:
+
+- `FluentToggle` now separates idle, pressed, and dragging interaction state from its committed
+  Boolean value. Clicks commit on release-inside, drag release resolves by midpoint/direction, and
+  cancellation or external binding updates cannot emit a stale commit.
+- The stable 40 x 20 track and knob layers use 12 x 12 Normal, 14 x 14 PointerOver, and 17 x 14
+  Pressed/Dragging geometry with 83ms `(0,0,0,1)` state motion. Same-bounds layout no longer
+  overwrites active presentation animations.
+- Toggle-specific Light/Dark/High Contrast fills and strokes now distinguish Off and borderless On
+  tracks. RTL mirrors text, track placement, drag direction, and logical endpoints.
+- Reduce Motion, keyboard focus, accessibility press, disabled behavior, external binding
+  cancellation, exact geometry, single-commit behavior, and animation survival have executable
+  coverage. Gallery exposes On, Off, and Disabled states together.
+
 Still open by design:
 
-- Exact control state machines and geometry remain open in the order documented in section 20:
-  ToggleSwitch, Slider, CheckBox/RadioButton, SegmentedControl, then ProgressBar.
+- Exact remaining control state machines and geometry are ordered in section 20: Slider,
+  CheckBox/RadioButton, SegmentedControl, then ProgressBar.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
   Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
   remains the implementation contract for the later menu pass.
@@ -331,7 +345,6 @@ High-priority controls:
 - ComboBox
 - TextField/SecureField
 - Slider
-- ToggleSwitch
 - CheckBox and RadioButton
 
 Required approach:
@@ -341,9 +354,12 @@ Required approach:
 - Draw the Fluent visual surface and states in the owning wrapper.
 - Preserve native first responder, text input, selection, keyboard, and accessibility behavior.
 
-### P1-8: Control state animations can be overwritten by layout
+### P1-8: Control state animations can be overwritten by layout - resolved for ToggleSwitch
 
-Toggle geometry is changed in an animated CATransaction, then the control requests layout. The layout path writes the same geometry with actions disabled. This can collapse a visible transition into an immediate final state.
+Original finding: Toggle geometry was changed in an animated transaction before a layout pass wrote
+the same geometry with actions disabled. The rewritten ToggleSwitch now skips same-bounds geometry
+work and only cancels/snap-resolves animation when bounds or layout direction actually changes.
+SegmentedControl and other audited controls retain their own layout/animation conflicts.
 
 Required correction:
 
@@ -542,9 +558,10 @@ The Gallery should be considered visually complete only when:
 
 FluentKit now has stable shell coordinates, transition hosting, reusable navigation choreography, and
 custom title-bar integration. The Gallery is a reliable proof of those structural paths, but it is
-not yet a complete proof of WinUI control fidelity. The immediate non-material blockers are the
-ToggleSwitch, Slider, CheckBox/RadioButton, SegmentedControl, and ProgressBar state/geometry defects
-in section 20. The obsolete Acrylic surface path remains an explicit later phase.
+not yet a complete proof of WinUI control fidelity. ToggleSwitch now passes its source-derived
+geometry, interaction, motion, RTL, accessibility, and Reduce Motion contract. The immediate
+non-material blockers are Slider, CheckBox/RadioButton, SegmentedControl, and ProgressBar in section
+20. The obsolete Acrylic surface path remains an explicit later phase.
 
 The target architecture should remain AppKit-native in behavior while becoming WinUI-source-driven in visible state and motion, with Liquid Glass as the macOS material adaptation for transient surfaces.
 
@@ -639,9 +656,9 @@ Gallery composition defects:
   edge-placement popup scenarios remain incomplete
 ```
 
-The next non-material remediation order is ToggleSwitch, Slider, CheckBox/RadioButton,
-SegmentedControl, and ProgressBar. Menu motion/placement follows the verified section 17 contract;
-Liquid Glass remains explicitly deferred until layout, state, and motion are stable.
+The next non-material remediation order is Slider, CheckBox/RadioButton, SegmentedControl, and
+ProgressBar. Menu motion/placement follows the verified section 17 contract; Liquid Glass remains
+explicitly deferred until layout, state, and motion are stable.
 
 ## 17. Menu Inventory and Gaps
 
@@ -812,7 +829,8 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 ### Phase 5: Migrate core controls
 
-25. Button and ToggleSwitch.
+25. **Complete:** Button and ToggleSwitch foundations; ToggleSwitch includes source-derived
+    interaction, geometry, RTL, accessibility, and Reduce Motion verification.
 26. CheckBox, RadioButton, Slider, ProgressBar, and SegmentedControl.
 27. TextBox, SearchBox, ComboBox, DatePicker, and NumberBox/Stepper.
 28. ListView, GridView/CollectionView, Table, and Outline.
@@ -878,7 +896,7 @@ Required correction:
 - Animate only the inner circle scale/color using the WinUI state values and motion tokens.
 - Keep drag position animation separate from thumb-state animation so pointer motion remains direct while the pressed visual remains interpolated.
 
-### ToggleSwitch pressed and dragging states
+### ToggleSwitch pressed and dragging states - resolved
 
 Owner: FluentKit component  
 Files: `Sources/FluentKit/FluentToggle.swift`, `Sources/FluentKit/FluentStyles.swift`
@@ -887,7 +905,7 @@ WinUI explicitly separates interaction state from logical value. Its template ha
 
 Source: `microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/ToggleSwitch_themeresources_perf2026.xaml`.
 
-The FluentKit style already contains the correct 12 x 12, 14 x 14, and 17 x 14 geometry, but the control state machine does not expose it correctly:
+Original FluentKit divergence:
 
 - `mouseDown` sets pressed and immediately toggles `isOn`; therefore there is no pressed-without-commit state.
 - Pressed is cleared by an 83 ms timer rather than by pointer release/cancel.
@@ -901,6 +919,13 @@ Required correction:
 - During drag, move the knob continuously within the track while retaining only two commit outcomes: On or Off.
 - On release/cancel, resolve by the midpoint/gesture direction and animate from the current presentation position to the selected endpoint.
 - Commit the binding exactly once after resolution, not on pointer down.
+
+Current status: complete. The implementation uses stable named track, knob, and focus layers; exact
+40 x 20 and 12/14/17 x 14 model geometry; explicit 83ms cubic-bezier animations; direct drag
+positioning; directional/midpoint release; release-outside and Escape cancellation; external binding
+arbitration; one callback per committed change; RTL endpoint mirroring; accessibility press; and
+Reduce Motion snapping. A same-bounds layout call is explicitly verified not to remove the active
+knob animation.
 
 ### CheckBox and RadioButton selection motion
 
@@ -926,6 +951,7 @@ The lower horizontal control is a determinate ProgressBar and should not receive
 
 25. SegmentedControl mixes native segmented chrome with custom overlay chrome and allows nonanimated layout/update passes to interrupt its selection animation.
 26. Slider lacks the WinUI outer/inner thumb structure and Normal/PointerOver/Pressed scale transitions.
-27. ToggleSwitch commits on pointer down, has no drag state, and allows layout to overwrite animated knob geometry.
+27. **Resolved:** ToggleSwitch commits on release, has a direct drag state, and protects active
+    animations from same-bounds layout.
 28. CheckBox and RadioButton lack independent pressed state and selected-glyph motion.
 29. ProgressBar marks immediate drawing dirty inside an animation context without an interpolated presentation property.

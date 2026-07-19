@@ -263,6 +263,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var page: GalleryPage = .overview
     @FluentState private var isNavigationPaneOpen = true
     @FluentState private var notifications = true
+    @FluentState private var syncEnabled = false
     @FluentState private var slider = 0.62
     @FluentState private var search = ""
     @FluentState private var password = ""
@@ -400,11 +401,17 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 }
                 FluentVStack(spacing: 12) {
                     FluentText("Selection and range", style: .headline)
-                    FluentHStack(spacing: 22) {
+                    FluentHStack(spacing: 18) {
                         FluentToggleView("Notifications", isOn: $notifications)
-                        FluentSliderView(value: $slider)
-                            .frame(width: 230)
+                        FluentToggleView("Sync", isOn: $syncEnabled)
+                        FluentToggleView(
+                            "Disabled",
+                            isOn: FluentBinding(get: { false }, set: { _ in })
+                        )
+                        .disabled()
                     }
+                    FluentSliderView(value: $slider)
+                        .frame(width: 360)
                     FluentHStack(spacing: 20) {
                         FluentCheckBoxView("Completed", isChecked: $checked)
                         FluentRadioButtonView("Primary", isSelected: $radio)

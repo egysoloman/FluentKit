@@ -303,6 +303,67 @@ public struct FluentTheme {
             : NSColor(calibratedWhite: 0.90, alpha: 0.94)
     }
 
+    /// WinUI-derived ToggleSwitch track fills kept separate from generic control surfaces.
+    public func toggleTrackFill(isOn: Bool, state: FluentControlState) -> NSColor {
+        if isOn {
+            let alpha: CGFloat = switch state {
+            case .pointerOver: 0.90
+            case .pressed: 0.80
+            case .disabled: 0.35
+            default: 1
+            }
+            return accent.withAlphaComponent(alpha)
+        }
+        if isHighContrast {
+            return state == .disabled
+                ? controlFill.withAlphaComponent(0.35)
+                : controlFill
+        }
+        if isDark {
+            return switch state {
+            case .pointerOver: NSColor(calibratedWhite: 1, alpha: 0.043)
+            case .pressed: NSColor(calibratedWhite: 1, alpha: 0.071)
+            case .disabled: .clear
+            default: NSColor(calibratedWhite: 0, alpha: 0.098)
+            }
+        }
+        return switch state {
+        case .pointerOver: NSColor(calibratedWhite: 0, alpha: 0.059)
+        case .pressed: NSColor(calibratedWhite: 0, alpha: 0.094)
+        case .disabled: .clear
+        default: NSColor(calibratedWhite: 0, alpha: 0.024)
+        }
+    }
+
+    public func toggleTrackStroke(isOn: Bool, state: FluentControlState) -> NSColor {
+        if isOn, !isHighContrast { return .clear }
+        if state == .disabled {
+            return isDark
+                ? NSColor(calibratedWhite: 1, alpha: 0.157)
+                : NSColor(calibratedWhite: 0, alpha: 0.216)
+        }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 0.545)
+            : NSColor(calibratedWhite: 0, alpha: 0.447)
+    }
+
+    public func toggleKnobFill(isOn: Bool, state: FluentControlState) -> NSColor {
+        guard state != .disabled else { return textDisabled }
+        if isOn {
+            return isHighContrast
+                ? textOnAccent
+                : NSColor(calibratedWhite: isDark ? 0 : 1, alpha: 0.92)
+        }
+        return textSecondary
+    }
+
+    public func toggleKnobStroke(isOn: Bool, state: FluentControlState) -> NSColor {
+        guard isOn, state != .disabled else { return .clear }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 0.08)
+            : NSColor(calibratedWhite: 0, alpha: 0.08)
+    }
+
     public var controlStroke: NSColor {
         isDark
             ? NSColor(calibratedWhite: 1, alpha: isHighContrast ? 0.42 : 0.20)
