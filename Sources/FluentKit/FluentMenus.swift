@@ -14,10 +14,16 @@ public enum FluentMenuItemState {
     }
 }
 
+public enum FluentMenuSelectionIndicator: Hashable, Sendable {
+    case checkmark
+    case pill
+}
+
 public struct FluentMenuItem {
     public let title: String
     public let isEnabled: Bool
     public let state: FluentMenuItemState
+    public let selectionIndicator: FluentMenuSelectionIndicator
     public let keyEquivalent: String
     public let keyModifiers: NSEvent.ModifierFlags
     public let submenu: [FluentMenuItem]
@@ -30,6 +36,7 @@ public struct FluentMenuItem {
         _ title: String,
         isEnabled: Bool = true,
         state: FluentMenuItemState = .off,
+        selectionIndicator: FluentMenuSelectionIndicator = .checkmark,
         keyEquivalent: String = "",
         keyModifiers: NSEvent.ModifierFlags = [.command],
         submenu: [FluentMenuItem] = [],
@@ -38,6 +45,7 @@ public struct FluentMenuItem {
         self.title = title
         self.isEnabled = isEnabled
         self.state = state
+        self.selectionIndicator = selectionIndicator
         self.keyEquivalent = keyEquivalent
         self.keyModifiers = keyModifiers
         self.submenu = submenu
@@ -49,6 +57,7 @@ public struct FluentMenuItem {
         title = ""
         isEnabled = false
         state = .off
+        selectionIndicator = .checkmark
         keyEquivalent = ""
         keyModifiers = []
         submenu = []
@@ -116,11 +125,17 @@ private final class FluentMenuAction: NSObject {
     }
 }
 
+private enum FluentMenuRevealEdge: Equatable {
+    case top
+    case bottom
+}
+
 /// A custom in-application menu presenter. The macOS main menu intentionally remains native.
 public final class FluentMenuFlyout {
     private let items: [FluentMenuItem]
     private let theme: FluentTheme
     private let minimumWidth: CGFloat
+    private let reduceMotion: Bool
     private weak var owner: FluentMenuFlyout?
     private var panel: FluentMenuPanel?
     private var presenter: FluentMenuPresenterView?
@@ -132,10 +147,16 @@ public final class FluentMenuFlyout {
     private weak var parentWindow: NSWindow?
     private var layoutDirection: NSUserInterfaceLayoutDirection = .leftToRight
 
-    public init(items: [FluentMenuItem], theme: FluentTheme = .current, minimumWidth: CGFloat = 180) {
+    public init(
+        items: [FluentMenuItem],
+        theme: FluentTheme = .current,
+        minimumWidth: CGFloat = 180,
+        reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+    ) {
         self.items = items
         self.theme = theme
         self.minimumWidth = max(0, minimumWidth)
+        self.reduceMotion = reduceMotion
         owner = nil
     }
 
@@ -143,6 +164,7 @@ public final class FluentMenuFlyout {
         self.items = items
         self.theme = theme
         minimumWidth = 180
+        reduceMotion = owner.reduceMotion
         self.owner = owner
     }
 
@@ -173,10 +195,12 @@ public final class FluentMenuFlyout {
             )
             if origin.y < visibleFrame.minY { origin.y = anchorRect.maxY }
         }
+        let finalOrigin = clamped(origin, size: size, visibleFrame: visibleFrame)
         presentPanel(
             in: anchorWindow,
-            origin: clamped(origin, size: size, visibleFrame: visibleFrame),
-            direction: layoutDirection
+            origin: finalOrigin,
+            direction: layoutDirection,
+            revealEdge: finalOrigin.y + size.height / 2 < anchorRect.midY ? .top : .bottom
         )
     }
 
@@ -207,17 +231,20 @@ public final class FluentMenuFlyout {
         if origin.x < minimumX || origin.x > maximumX {
             origin.x = rightToLeft ? anchorRect.maxX + 2 : anchorRect.minX - size.width - 2
         }
+        let finalOrigin = clamped(origin, size: size, visibleFrame: visibleFrame)
         presentPanel(
             in: anchorWindow,
-            origin: clamped(origin, size: size, visibleFrame: visibleFrame),
-            direction: layoutDirection
+            origin: finalOrigin,
+            direction: layoutDirection,
+            revealEdge: finalOrigin.y + size.height / 2 <= anchorRect.midY ? .top : .bottom
         )
     }
 
     private func presentPanel(
         in anchorWindow: NSWindow,
         origin: NSPoint,
-        direction: NSUserInterfaceLayoutDirection
+        direction: NSUserInterfaceLayoutDirection,
+        revealEdge: FluentMenuRevealEdge
     ) {
         let presenter = FluentMenuPresenterView(
             items: items,
@@ -263,24 +290,43 @@ public final class FluentMenuFlyout {
         panel.setFrameOrigin(origin)
         if owner == nil { installOutsideClickMonitors() }
 
-        let motion = FluentMotion.teachingTipOpen
-        panel.alphaValue = 0
-        material.layer?.setAffineTransform(
-            CGAffineTransform(translationX: 0, y: motion.distance)
-                .scaledBy(x: motion.scale, y: motion.scale)
+        panel.alphaValue = 1
+        prepareRevealMask(
+            on: material,
+            edge: revealEdge,
+            motion: owner == nil ? FluentMotion.menuOpen : FluentMotion.submenuOpen
         )
         panel.makeKeyAndOrderFront(nil)
         panel.makeFirstResponder(presenter)
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = motion.duration
-            context.timingFunction = motion.curve.timingFunction
-            panel.animator().alphaValue = 1
-        }
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(motion.duration)
-        CATransaction.setAnimationTimingFunction(motion.curve.timingFunction)
-        material.layer?.setAffineTransform(.identity)
-        CATransaction.commit()
+    }
+
+    private func prepareRevealMask(
+        on material: NSView,
+        edge: FluentMenuRevealEdge,
+        motion: FluentMotionToken
+    ) {
+        guard let layer = material.layer else { return }
+        layer.opacity = 1
+        layer.mask = nil
+        guard !reduceMotion, motion.duration > 0 else { return }
+
+        let mask = CALayer()
+        mask.name = "FluentKit.Menu.RevealMask"
+        mask.backgroundColor = NSColor.black.cgColor
+        mask.anchorPoint = NSPoint(x: 0.5, y: edge == .top ? 1 : 0)
+        mask.position = NSPoint(x: material.bounds.midX, y: edge == .top ? material.bounds.maxY : material.bounds.minY)
+        mask.bounds = material.bounds
+        layer.mask = mask
+
+        var closedBounds = mask.bounds
+        closedBounds.size.height *= motion.scale
+        let reveal = CABasicAnimation(keyPath: "bounds")
+        reveal.fromValue = NSValue(rect: closedBounds)
+        reveal.toValue = NSValue(rect: mask.bounds)
+        reveal.duration = motion.duration
+        reveal.timingFunction = motion.curve.timingFunction
+        reveal.isRemovedOnCompletion = true
+        mask.add(reveal, forKey: "fluent.menu.reveal")
     }
 
     private func scheduleSubmenu(index: Int, row: FluentMenuItemRow) {
@@ -341,29 +387,26 @@ public final class FluentMenuFlyout {
             self.panel = nil
             self.presenter = nil
         }
-        guard animated, panel.isVisible else {
+        guard animated, !reduceMotion, panel.isVisible else {
             finish()
             return
         }
-        let motion = FluentMotion.teachingTipClose
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = motion.duration
-            context.timingFunction = motion.curve.timingFunction
-            panel.animator().alphaValue = 0
-        } completionHandler: {
-            finish()
+        let motion = FluentMotion.menuClose
+        if let material = panel.contentView?.layer {
+            let currentOpacity = material.presentation()?.opacity ?? material.opacity
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            material.opacity = 0
+            CATransaction.commit()
+            let opacity = CABasicAnimation(keyPath: "opacity")
+            opacity.fromValue = currentOpacity
+            opacity.toValue = Float(0)
+            opacity.duration = motion.duration
+            opacity.timingFunction = motion.curve.timingFunction
+            opacity.isRemovedOnCompletion = true
+            material.add(opacity, forKey: "fluent.menu.close")
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + motion.duration + 0.02, execute: finish)
-        if let material = panel.contentView?.layer {
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(motion.duration)
-            CATransaction.setAnimationTimingFunction(motion.curve.timingFunction)
-            material.setAffineTransform(
-                CGAffineTransform(translationX: 0, y: motion.distance)
-                    .scaledBy(x: motion.scale, y: motion.scale)
-            )
-            CATransaction.commit()
-        }
     }
 
     private func installOutsideClickMonitors() {
@@ -586,8 +629,9 @@ private final class FluentMenuItemRow: NSControl {
     private let theme: FluentTheme
     private let accelerator: String
     private let layoutDirection: NSUserInterfaceLayoutDirection
+    private let selectionPillLayer = CALayer()
     private var isPointerOver = false
-    private var isPressed = false
+    private var isPressed = false { didSet { updateSelectionPill(animated: true) } }
 
     init(item: FluentMenuItem, theme: FluentTheme, accelerator: String, layoutDirection: NSUserInterfaceLayoutDirection) {
         self.item = item
@@ -595,6 +639,7 @@ private final class FluentMenuItemRow: NSControl {
         self.accelerator = accelerator
         self.layoutDirection = layoutDirection
         super.init(frame: .zero)
+        wantsLayer = true
         identifier = NSUserInterfaceItemIdentifier("FluentKit.Menu.Item")
         setAccessibilityElement(true)
         setAccessibilityRole(.menuItem)
@@ -602,6 +647,12 @@ private final class FluentMenuItemRow: NSControl {
         setAccessibilityEnabled(item.isEnabled)
         setAccessibilityValue(item.hasSubmenu ? "Submenu" : accessibilityState)
         setAccessibilityHelp(item.hasSubmenu ? "Opens a submenu" : nil)
+        if item.state == .on, item.selectionIndicator == .pill {
+            selectionPillLayer.name = "FluentKit.ComboBoxItem.SelectionPill"
+            selectionPillLayer.backgroundColor = theme.accent.cgColor
+            selectionPillLayer.cornerRadius = 1.5
+            layer?.addSublayer(selectionPillLayer)
+        }
         addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self, userInfo: nil))
     }
 
@@ -612,6 +663,11 @@ private final class FluentMenuItemRow: NSControl {
         if trackingAreas.isEmpty {
             addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeAlways], owner: self, userInfo: nil))
         }
+    }
+
+    override func layout() {
+        super.layout()
+        updateSelectionPill(animated: false)
     }
 
     override func mouseEntered(with event: NSEvent) {
@@ -655,15 +711,17 @@ private final class FluentMenuItemRow: NSControl {
         switch item.state {
         case .off: break
         case .on:
-            let mark = NSBezierPath()
-            let x = rightToLeft ? bounds.maxX - 23 : 12
-            mark.move(to: NSPoint(x: x, y: bounds.midY))
-            mark.line(to: NSPoint(x: x + (rightToLeft ? -4 : 4), y: bounds.midY - 4))
-            mark.line(to: NSPoint(x: x + (rightToLeft ? -11 : 11), y: bounds.midY + 4))
-            mark.lineWidth = 1.7
-            mark.lineCapStyle = .round
-            foreground.setStroke()
-            mark.stroke()
+            if item.selectionIndicator == .checkmark {
+                let mark = NSBezierPath()
+                let x = rightToLeft ? bounds.maxX - 23 : 12
+                mark.move(to: NSPoint(x: x, y: bounds.midY))
+                mark.line(to: NSPoint(x: x + (rightToLeft ? -4 : 4), y: bounds.midY - 4))
+                mark.line(to: NSPoint(x: x + (rightToLeft ? -11 : 11), y: bounds.midY + 4))
+                mark.lineWidth = 1.7
+                mark.lineCapStyle = .round
+                foreground.setStroke()
+                mark.stroke()
+            }
         case .mixed:
             foreground.setFill()
             NSBezierPath(roundedRect: NSRect(x: rightToLeft ? bounds.maxX - 23 : 12, y: bounds.midY - 1, width: 11, height: 2), xRadius: 1, yRadius: 1).fill()
@@ -701,6 +759,31 @@ private final class FluentMenuItemRow: NSControl {
         }
     }
 
+    private func updateSelectionPill(animated: Bool) {
+        guard item.state == .on, item.selectionIndicator == .pill else { return }
+        let targetHeight: CGFloat = isPressed ? 10 : 16
+        let targetFrame = NSRect(
+            x: layoutDirection == .rightToLeft ? bounds.maxX - 3 : bounds.minX,
+            y: bounds.midY - targetHeight / 2,
+            width: 3,
+            height: targetHeight
+        )
+        let presentationFrame = selectionPillLayer.presentation()?.frame ?? selectionPillLayer.frame
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        selectionPillLayer.frame = targetFrame
+        CATransaction.commit()
+        selectionPillLayer.removeAnimation(forKey: "fluent.combobox.pill.frame")
+        guard animated, abs(presentationFrame.height - targetFrame.height) > 0.001 else { return }
+        let motion = FluentMotion.controlFast
+        let animation = CABasicAnimation(keyPath: "frame")
+        animation.fromValue = presentationFrame
+        animation.toValue = targetFrame
+        animation.duration = motion.duration
+        animation.timingFunction = motion.curve.timingFunction
+        selectionPillLayer.add(animation, forKey: "fluent.combobox.pill.frame")
+    }
+
     private var accessibilityState: String {
         switch item.state {
         case .off: return "Not selected"
@@ -735,7 +818,12 @@ public struct FluentContextMenuView<Content: FluentView>: FluentUpdatablePrimiti
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let host = FluentContextMenuHost(content: content._mount(in: context), items: items, theme: context.theme)
+        let host = FluentContextMenuHost(
+            content: content._mount(in: context),
+            items: items,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion
+        )
         host.updateContent = { [content] nativeView, updateContext in
             content._update(nativeView, in: updateContext)
         }
@@ -746,6 +834,7 @@ public struct FluentContextMenuView<Content: FluentView>: FluentUpdatablePrimiti
         guard let host = view as? FluentContextMenuHost else { return false }
         host.items = items
         host.theme = context.theme
+        host.reduceMotion = context.reduceMotion
         return host.updateContent?(host.contentView, context) ?? false
     }
 }
@@ -756,10 +845,13 @@ private final class FluentContextMenuHost: NSView {
     var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var flyout: FluentMenuFlyout?
+    private var rightClickMonitor: Any?
+    var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
 
-    init(content: NSView, items: [FluentMenuItem], theme: FluentTheme) {
+    init(content: NSView, items: [FluentMenuItem], theme: FluentTheme, reduceMotion: Bool) {
         self.items = items
         self.theme = theme
+        self.reduceMotion = reduceMotion
         super.init(frame: .zero)
         addSubview(content)
         content.translatesAutoresizingMaskIntoConstraints = false
@@ -773,12 +865,48 @@ private final class FluentContextMenuHost: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    override func rightMouseDown(with event: NSEvent) {
-        guard !items.isEmpty else { return }
-        let flyout = FluentMenuFlyout(items: items, theme: theme)
-        self.flyout = flyout
-        flyout.present(relativeTo: self, at: convert(event.locationInWindow, from: nil))
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        removeRightClickMonitor()
+        guard window != nil else { return }
+        rightClickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { [weak self] event in
+            guard let self,
+                  event.window === self.window,
+                  self.bounds.contains(self.convert(event.locationInWindow, from: nil)) else {
+                return event
+            }
+            self.presentMenu(at: self.convert(event.locationInWindow, from: nil))
+            return nil
+        }
     }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        switch NSApp.currentEvent?.type {
+        case .rightMouseDown?, .rightMouseUp?, .rightMouseDragged?:
+            return bounds.contains(point) ? self : nil
+        default:
+            return super.hitTest(point)
+        }
+    }
+
+    override func rightMouseDown(with event: NSEvent) {
+        presentMenu(at: convert(event.locationInWindow, from: nil))
+    }
+
+    private func presentMenu(at point: NSPoint) {
+        guard !items.isEmpty else { return }
+        let flyout = FluentMenuFlyout(items: items, theme: theme, reduceMotion: reduceMotion)
+        self.flyout = flyout
+        flyout.present(relativeTo: self, at: point)
+    }
+
+    private func removeRightClickMonitor() {
+        if let rightClickMonitor { NSEvent.removeMonitor(rightClickMonitor) }
+        rightClickMonitor = nil
+    }
+
+    deinit { removeRightClickMonitor() }
+
 }
 
 public extension FluentView {

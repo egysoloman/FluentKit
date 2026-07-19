@@ -395,13 +395,21 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
             selection: selection,
             title: title,
             theme: context.theme,
-            style: style
+            style: style,
+            reduceMotion: context.reduceMotion
         )
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentComboBoxHost<Option> else { return false }
-        host.update(options: options, selection: selection, title: title, theme: context.theme, style: style)
+        host.update(
+            options: options,
+            selection: selection,
+            title: title,
+            theme: context.theme,
+            style: style,
+            reduceMotion: context.reduceMotion
+        )
         return true
     }
 
@@ -412,10 +420,24 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
 
 private final class FluentComboBoxNative: NSComboBox {
     var onRequestFlyout: (() -> Void)?
+    var onFocusChange: ((Bool) -> Void)?
+
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { onFocusChange?(true) }
+        return result
+    }
+
+    override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { onFocusChange?(false) }
+        return result
+    }
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         window?.makeFirstResponder(self)
+        onFocusChange?(true)
         onRequestFlyout?()
     }
 
@@ -428,8 +450,22 @@ private final class FluentComboBoxNative: NSComboBox {
 
     override func performClick(_ sender: Any?) {
         guard isEnabled else { return }
+        window?.makeFirstResponder(self)
+        onFocusChange?(true)
         onRequestFlyout?()
     }
+}
+
+private enum FluentComboBoxMetrics {
+    // Derived from ComboBox_themeresources_perf2026.xaml.
+    static let pillWidth: CGFloat = 3
+    static let pillHeight: CGFloat = 16
+    static let pillCornerRadius: CGFloat = 1.5
+    static let focusHighlightMargin: CGFloat = 4
+    static let focusHighlightBorderWidth: CGFloat = 2
+    static let focusHighlightCornerRadius: CGFloat = 7
+    static let contentLeadingPadding: CGFloat = 12
+    static let glyphColumnWidth: CGFloat = 38
 }
 
 private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDelegate, FluentControlSizeConfigurable {
@@ -445,28 +481,45 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private var observerID: UUID?
     private var isApplyingSelection = false
     private var menuFlyout: FluentMenuFlyout?
+    private var reduceMotion: Bool
+    private let focusHighlightLayer = CALayer()
+    private let focusPillLayer = CALayer()
 
     init(
         options: [Option],
         selection: FluentBinding<Option?>,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
-        style: any FluentTextFieldStyle
+        style: any FluentTextFieldStyle,
+        reduceMotion: Bool
     ) {
         self.options = options
         self.selection = selection
         self.title = title
+        self.reduceMotion = reduceMotion
         super.init(frame: .zero)
         self.theme = theme
         fluentStyle = style
+        wantsLayer = true
+        focusHighlightLayer.name = "FluentKit.ComboBox.FocusHighlight"
+        focusHighlightLayer.borderWidth = FluentComboBoxMetrics.focusHighlightBorderWidth
+        focusHighlightLayer.cornerRadius = FluentComboBoxMetrics.focusHighlightCornerRadius
+        layer?.addSublayer(focusHighlightLayer)
+        focusPillLayer.name = "FluentKit.ComboBox.FocusPill"
+        focusPillLayer.cornerRadius = FluentComboBoxMetrics.pillCornerRadius
+        layer?.addSublayer(focusPillLayer)
         comboBox.isEditable = false
         comboBox.completes = true
         comboBox.focusRingType = .none
         comboBox.isBordered = false
         comboBox.drawsBackground = false
+        comboBox.alphaValue = 0
         comboBox.delegate = self
         comboBox.setAccessibilityRole(.comboBox)
         comboBox.setAccessibilityHelp("Shows the available options")
+        comboBox.onFocusChange = { [weak self] focused in
+            self?.updateFocusPill(focused: focused, animated: false)
+        }
         comboBox.onRequestFlyout = { [weak self] in self?.showOptions() }
         comboBox.target = self
         comboBox.action = #selector(showOptions)
@@ -482,6 +535,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         installObserver()
         applyControlSize()
         applySelection()
+        updateFocusPill(focused: false, animated: false)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -490,12 +544,29 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         NSSize(width: 220 * theme.density.metricScale, height: theme.controlHeight(for: fluentControlSize))
     }
 
+    override func layout() {
+        super.layout()
+        let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
+        let height = min(FluentComboBoxMetrics.pillHeight, max(0, bounds.height - 4))
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        focusHighlightLayer.frame = bounds.insetBy(dx: -FluentComboBoxMetrics.focusHighlightMargin, dy: -FluentComboBoxMetrics.focusHighlightMargin)
+        focusPillLayer.frame = NSRect(
+            x: rightToLeft ? bounds.maxX - FluentComboBoxMetrics.pillWidth : bounds.minX,
+            y: bounds.midY - height / 2,
+            width: FluentComboBoxMetrics.pillWidth,
+            height: height
+        )
+        CATransaction.commit()
+    }
+
     func update(
         options: [Option],
         selection: FluentBinding<Option?>,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
-        style: any FluentTextFieldStyle
+        style: any FluentTextFieldStyle,
+        reduceMotion: Bool
     ) {
         removeObserver()
         let optionsChanged = self.options != options
@@ -506,11 +577,13 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         self.options = options
         self.selection = selection
         self.title = title
+        self.reduceMotion = reduceMotion
         self.theme = theme
         self.fluentStyle = style
         if optionsChanged { reloadOptions() } else { refreshTitles() }
         applyControlSize()
         applySelection()
+        updateFocusPill(focused: window?.firstResponder === comboBox, animated: false)
         installObserver()
     }
 
@@ -546,6 +619,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             }
         }
         super.draw(dirtyRect)
+        drawSelectedTitle()
+        drawChevron()
     }
 
     func comboBoxSelectionDidChange(_ notification: Notification) {
@@ -556,16 +631,26 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     @objc private func showOptions() {
         guard comboBox.isEnabled, !options.isEmpty else { return }
+        updateFocusPill(focused: true, animated: false)
         menuFlyout?.dismiss(animated: false)
         let selected = selection.get()
         let items = options.map { option in
-            FluentMenuItem(title(option), state: option == selected ? .on : .off) { [weak self] in
+            FluentMenuItem(
+                title(option),
+                state: option == selected ? .on : .off,
+                selectionIndicator: .pill
+            ) { [weak self] in
                 guard let self else { return }
                 self.selection.set(option)
                 self.applySelection()
             }
         }
-        let flyout = FluentMenuFlyout(items: items, theme: theme, minimumWidth: bounds.width)
+        let flyout = FluentMenuFlyout(
+            items: items,
+            theme: theme,
+            minimumWidth: bounds.width,
+            reduceMotion: reduceMotion
+        )
         menuFlyout = flyout
         flyout.present(relativeTo: self)
     }
@@ -596,6 +681,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             comboBox.stringValue = ""
             if selection.get() != nil { selection.set(nil) }
         }
+        needsDisplay = true
     }
 
     private func installObserver() {
@@ -629,7 +715,74 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     private func applyTheme() {
         applyControlSize()
+        focusPillLayer.backgroundColor = theme.accent.cgColor
         needsDisplay = true
+    }
+
+    private func updateFocusPill(focused: Bool, animated: Bool) {
+        focusPillLayer.backgroundColor = theme.accent.cgColor
+        focusHighlightLayer.borderColor = theme.accent.cgColor
+        focusHighlightLayer.backgroundColor = NSColor.clear.cgColor
+        let targetOpacity: Float = focused && comboBox.isEnabled ? 1 : 0
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        focusHighlightLayer.opacity = targetOpacity
+        focusPillLayer.opacity = targetOpacity
+        CATransaction.commit()
+        if animated {
+            let opacity = CABasicAnimation(keyPath: "opacity")
+            opacity.fromValue = focusPillLayer.presentation()?.opacity ?? focusPillLayer.opacity
+            opacity.toValue = targetOpacity
+            opacity.duration = 0
+            focusPillLayer.add(opacity, forKey: "fluent.combobox.focusPill.opacity")
+        }
+    }
+
+    private func drawChevron() {
+        let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
+        let centerX = rightToLeft
+            ? bounds.minX + FluentComboBoxMetrics.glyphColumnWidth / 2
+            : bounds.maxX - FluentComboBoxMetrics.glyphColumnWidth / 2
+        let path = NSBezierPath()
+        path.move(to: NSPoint(x: centerX - 3, y: bounds.midY + 2))
+        path.line(to: NSPoint(x: centerX, y: bounds.midY - 1.5))
+        path.line(to: NSPoint(x: centerX + 3, y: bounds.midY + 2))
+        path.lineWidth = 1.4
+        theme.textSecondary.setStroke()
+        path.stroke()
+    }
+
+    private func drawSelectedTitle() {
+        guard !comboBox.stringValue.isEmpty else { return }
+        let appearance = fluentStyle.appearance(
+            for: FluentTextFieldStyleConfiguration(
+                isEnabled: comboBox.isEnabled,
+                isFocused: focusPillLayer.opacity > 0,
+                controlSize: fluentControlSize,
+                theme: theme
+            )
+        )
+        let font = appearance.font
+            ?? theme.typography.font(for: .body).withSize(
+                theme.typography.font(for: .body).pointSize * fluentControlSize.metricScale
+            )
+        let size = (comboBox.stringValue as NSString).size(withAttributes: [.font: font])
+        let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = rightToLeft ? .right : .left
+        (comboBox.stringValue as NSString).draw(
+            in: NSRect(
+                x: rightToLeft ? FluentComboBoxMetrics.glyphColumnWidth : FluentComboBoxMetrics.contentLeadingPadding,
+                y: bounds.midY - size.height / 2,
+                width: max(0, bounds.width - FluentComboBoxMetrics.glyphColumnWidth - FluentComboBoxMetrics.contentLeadingPadding),
+                height: size.height
+            ),
+            withAttributes: [
+                .font: font,
+                .foregroundColor: appearance.textColor,
+                .paragraphStyle: paragraph
+            ]
+        )
     }
 
     deinit {
@@ -747,6 +900,7 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
         self.theme = theme
         self.style = style
         titleLabel.stringValue = title
+        titleLabel.isHidden = title.isEmpty
         titleLabel.textColor = theme.textPrimary
         valueField.theme = theme
         valueField.alignment = .right
@@ -795,6 +949,7 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
         self.theme = theme
         self.style = style
         titleLabel.stringValue = title
+        titleLabel.isHidden = title.isEmpty
         titleLabel.textColor = theme.textPrimary
         valueField.theme = theme
         configureNativeControls()

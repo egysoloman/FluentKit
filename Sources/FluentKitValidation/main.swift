@@ -501,7 +501,7 @@ func toggleMouseEvent(
         context: nil,
         eventNumber: eventNumber,
         clickCount: 1,
-        pressure: type == .leftMouseUp ? 0 : 1
+        pressure: [.leftMouseUp, .rightMouseUp, .otherMouseUp].contains(type) ? 0 : 1
     ) else {
         fatalError("could not create ToggleSwitch validation event")
     }
@@ -583,6 +583,13 @@ require(
     "same-bounds ToggleSwitch layout does not overwrite an active state animation"
 )
 interactiveToggle.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: togglePoint, in: interactiveToggle, eventNumber: 3))
+let toggleRepositionAnimation = interactiveKnob.animation(forKey: "fluent.toggle.knob.position") as? CABasicAnimation
+let toggleReleaseBoundsAnimation = interactiveKnob.animation(forKey: "fluent.toggle.knob.bounds") as? CABasicAnimation
+require(
+    abs((toggleRepositionAnimation?.duration ?? 0) - FluentMotion.controlFast.duration) < 0.0001
+        && abs((toggleReleaseBoundsAnimation?.duration ?? 0) - FluentMotion.controlFaster.duration) < 0.0001,
+    "ToggleSwitch uses 167ms reposition motion while its common-state geometry remains 83ms"
+)
 drainMainQueue()
 require(
     interactiveToggleState.wrappedValue && interactiveToggleCommits == [true],
@@ -593,6 +600,8 @@ require(
     "mounted ToggleSwitch On state removes the generic AppKit-style track border"
 )
 interactiveToggleWindow.makeFirstResponder(interactiveToggle)
+require(interactiveFocus.opacity == 0, "ToggleSwitch hides focus visuals after pointer focus")
+interactiveToggle.keyDown(with: sliderKeyEvent(53, in: interactiveToggle, eventNumber: 3))
 require(interactiveFocus.opacity == 1, "ToggleSwitch renders a custom keyboard focus ring")
 
 let dragStart = NSPoint(x: interactiveToggle.bounds.maxX - 10, y: interactiveToggle.bounds.midY)
@@ -789,10 +798,10 @@ require(
 )
 
 interactiveSliderWindow.makeFirstResponder(interactiveSlider)
-require(sliderFocus.opacity == 1, "Slider renders a custom keyboard focus ring")
+require(sliderFocus.opacity == 0, "Slider hides focus visuals after pointer focus")
 let keyboardStart = interactiveSlider.value
 interactiveSlider.keyDown(with: sliderKeyEvent(123, in: interactiveSlider, eventNumber: 25))
-require(interactiveSlider.value < keyboardStart, "Slider Left Arrow decrements in LTR")
+require(interactiveSlider.value < keyboardStart && sliderFocus.opacity == 1, "Slider Left Arrow decrements in LTR and reveals keyboard focus")
 interactiveSlider.keyDown(with: sliderKeyEvent(115, in: interactiveSlider, eventNumber: 26))
 require(interactiveSlider.value == 0, "Slider Home moves to its logical minimum")
 interactiveSlider.keyDown(with: sliderKeyEvent(119, in: interactiveSlider, eventNumber: 27))
@@ -1161,9 +1170,9 @@ require(
     "external CheckBox binding updates cancel Pressed without a stale toggle"
 )
 interactiveCheckBoxWindow.makeFirstResponder(interactiveCheckBox)
-require(checkBoxFocus.opacity == 1, "CheckBox renders a custom keyboard focus ring")
+require(checkBoxFocus.opacity == 0, "CheckBox hides focus visuals after pointer focus")
 interactiveCheckBox.keyDown(with: sliderKeyEvent(49, in: interactiveCheckBox, eventNumber: 49))
-require(!interactiveCheckBoxState.wrappedValue, "CheckBox Space commits through the keyboard path")
+require(!interactiveCheckBoxState.wrappedValue && checkBoxFocus.opacity == 1, "CheckBox Space commits through the keyboard path and reveals focus")
 require(
     interactiveCheckBox.accessibilityPerformPress() && interactiveCheckBoxState.wrappedValue,
     "CheckBox accessibility press commits through the same path"
@@ -1289,9 +1298,9 @@ require(
 interactiveRadioState.wrappedValue = false
 drainMainQueue()
 interactiveRadioWindow.makeFirstResponder(interactiveRadio)
-require(radioFocus.opacity == 1, "RadioButton renders a custom keyboard focus ring")
+require(radioFocus.opacity == 0, "RadioButton hides focus visuals after pointer focus")
 interactiveRadio.keyDown(with: sliderKeyEvent(49, in: interactiveRadio, eventNumber: 59))
-require(interactiveRadioState.wrappedValue, "RadioButton Space selects through the keyboard path")
+require(interactiveRadioState.wrappedValue && radioFocus.opacity == 1, "RadioButton Space selects through the keyboard path and reveals focus")
 interactiveRadio.isEnabled = false
 require(
     radioDot.bounds.size == CGSize(width: 14, height: 14)
@@ -1431,8 +1440,8 @@ require(
     "segmented selection uses the source-derived 167ms control-fast duration"
 )
 require(
-    segmentedSelectionAnimation?.animations?.compactMap { ($0 as? CAPropertyAnimation)?.keyPath } == ["position"],
-    "segmented selection moves geometry without unsourced scale or opacity choreography"
+    segmentedSelectionAnimation?.animations?.compactMap { ($0 as? CAPropertyAnimation)?.keyPath } == ["position", "bounds"],
+    "segmented selection keeps presentation position and bounds synchronized without scale or opacity choreography"
 )
 nativeStyledSegmented?.layout()
 require(
@@ -1778,12 +1787,49 @@ let comboFlyoutWindow = NSWindow(
 comboView.frame = NSRect(x: 20, y: 40, width: 220, height: 34)
 comboFlyoutWindow.contentView = comboView
 comboFlyoutWindow.center()
-comboFlyoutWindow.orderFront(nil)
-nativeComboBox?.performClick(nil)
+comboFlyoutWindow.makeKeyAndOrderFront(nil)
+comboView.layoutSubtreeIfNeeded()
+guard let comboFocusPill = firstLayer(named: "FluentKit.ComboBox.FocusPill", in: comboView) else {
+    fatalError("ComboBox focus Pill did not mount")
+}
+guard let comboFocusHighlight = firstLayer(named: "FluentKit.ComboBox.FocusHighlight", in: comboView) else {
+    fatalError("ComboBox focus Highlight did not mount")
+}
+guard let nativeComboBox else { fatalError("ComboBox native control did not mount") }
+nativeComboBox.performClick(nil)
+require(
+    comboFocusPill.opacity == 1
+        && comboFocusPill.frame.size == CGSize(width: 3, height: 16),
+    "focused ComboBox exposes the source-derived 3 x 16 leading Pill"
+)
+require(
+    comboFocusHighlight.opacity == 1
+        && comboFocusHighlight.frame == comboView.bounds.insetBy(dx: -4, dy: -4)
+        && comboFocusHighlight.borderWidth == 2
+        && comboFocusHighlight.cornerRadius == 7,
+    "focused ComboBox exposes the source-derived -4 margin, 2pt, 7pt focus highlight"
+)
 drainMainQueue()
 require(comboFlyoutWindow.childWindows?.count == 1, "combo box opens an application-owned flyout panel")
 if let comboPanelContent = comboFlyoutWindow.childWindows?.first?.contentView {
     require(firstView(withAccessibilityRole: .menu, in: comboPanelContent) != nil, "combo box popup uses the Fluent menu presenter")
+    guard let selectedRow = firstView(withAccessibilityTitle: "Third", in: comboPanelContent),
+          let selectionPill = firstLayer(named: "FluentKit.ComboBoxItem.SelectionPill", in: comboPanelContent) else {
+        fatalError("ComboBox selected-item Pill did not mount")
+    }
+    require(
+        selectionPill.frame.size == CGSize(width: 3, height: 16),
+        "selected ComboBoxItem exposes the source-derived 3 x 16 leading Pill"
+    )
+    selectedRow.mouseDown(
+        with: toggleMouseEvent(.leftMouseDown, at: NSPoint(x: 20, y: 16), in: selectedRow, eventNumber: 70)
+    )
+    let pillPressAnimation = selectionPill.animation(forKey: "fluent.combobox.pill.frame") as? CABasicAnimation
+    require(
+        selectionPill.frame.height == 10
+            && abs((pillPressAnimation?.duration ?? 0) - 0.167) < 0.0001,
+        "pressed ComboBoxItem compresses its Pill to 62.5% over 167ms"
+    )
 }
 if let escapeEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\u{1b}", charactersIgnoringModifiers: "\u{1b}", isARepeat: false, keyCode: 53) {
     if let panel = comboFlyoutWindow.childWindows?.first,
@@ -1803,7 +1849,7 @@ let reducedCombo = FluentComboBox(
 require(reducedCombo._update(comboView, in: FluentRenderContext()), "combo box updates options in place")
 drainMainQueue()
 require(comboSelection.wrappedValue == nil, "combo box clears selection when its stable option is removed")
-require(nativeComboBox?.indexOfSelectedItem == -1, "combo box clears native selection when its option is removed")
+require(nativeComboBox.indexOfSelectedItem == -1, "combo box clears native selection when its option is removed")
 
 let quantity = FluentState(wrappedValue: 2)
 let stepperView = FluentStepper("Quantity", value: quantity.projectedValue, in: 1...5, step: 1)
@@ -2563,11 +2609,38 @@ let duplicateB = NSView(frame: .zero)
 }
 require(FluentAccessibilityAudit.run(on: duplicateAccessibilityRoot).contains { $0.message.contains("duplicates") }, "accessibility audit reports duplicate identifiers")
 
-let menuWrapped = FluentText("Contextual").contextMenu {
+let menuWrapped = FluentButtonView("Contextual").contextMenu {
     FluentMenuItem("Open") {}
     FluentMenuItem.separator
 }
-require(menuWrapped._mount(in: FluentRenderContext()).subviews.count == 1, "context menu keeps content mounted")
+let contextMenuHost = menuWrapped._mount(in: FluentRenderContext())
+require(contextMenuHost.subviews.count == 1, "context menu keeps content mounted")
+let contextMenuWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 220, height: 80),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+contextMenuHost.frame = contextMenuWindow.contentView?.bounds ?? NSRect(x: 0, y: 0, width: 220, height: 80)
+contextMenuWindow.contentView = contextMenuHost
+contextMenuWindow.makeKeyAndOrderFront(nil)
+contextMenuHost.layoutSubtreeIfNeeded()
+let contextClickPoint = NSPoint(x: contextMenuHost.bounds.midX, y: contextMenuHost.bounds.midY)
+contextMenuHost.rightMouseDown(
+    with: toggleMouseEvent(.rightMouseDown, at: contextClickPoint, in: contextMenuHost, eventNumber: 80)
+)
+drainMainQueue()
+require(
+    contextMenuWindow.childWindows?.count == 1,
+    "context-menu host routes right-clicks into the custom application flyout"
+)
+if let contextPresenter = contextMenuWindow.childWindows?.first?.contentView.flatMap({
+    firstView(withAccessibilityRole: .menu, in: $0)
+}) {
+    contextPresenter.keyDown(with: sliderKeyEvent(53, in: contextPresenter, eventNumber: 81))
+}
+drainMainQueue()
+contextMenuWindow.orderOut(nil)
 
 let menuFlyoutWindow = NSWindow(
     contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
@@ -2592,11 +2665,21 @@ let menuFlyout = FluentMenuFlyout(items: [
     FluentMenuItem("Checked", state: .on) {},
     FluentMenuItem("Zebra") {},
     FluentMenuItem("Disabled", isEnabled: false) {}
-])
+], reduceMotion: false)
 menuFlyout.present(relativeTo: menuFlyoutAnchor)
 require(menuFlyout.isPresented, "application menu flyout presents its custom panel")
 require(menuFlyoutWindow.childWindows?.count == 1, "application menu flyout attaches its panel to the owning window")
 let rootMenuPanel = menuFlyoutWindow.childWindows?.first
+let rootMenuReveal = rootMenuPanel?.contentView?.layer?.mask?
+    .animation(forKey: "fluent.menu.reveal") as? CABasicAnimation
+let rootRevealStart = (rootMenuReveal?.fromValue as? NSValue)?.rectValue.height
+let rootRevealEnd = (rootMenuReveal?.toValue as? NSValue)?.rectValue.height
+require(
+    rootMenuReveal?.keyPath == "bounds"
+        && abs((rootMenuReveal?.duration ?? 0) - FluentMotion.menuOpen.duration) < 0.0001
+        && rootRevealStart.map { abs($0 - (rootRevealEnd ?? 0) * 0.5) < 0.001 } == true,
+    "root MenuFlyout reveals from 50% height over the source-derived 250ms motion"
+)
 let rootMenuPresenter = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
 require(rootMenuPresenter?.accessibilityChildren()?.count == 5, "menu accessibility tree excludes separators and includes every actionable row")
 let moreMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "More", in: $0) }
@@ -2620,11 +2703,28 @@ require(rootMenuPanel?.childWindows?.isEmpty != false, "submenu hover waits for 
 RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.12))
 require(rootMenuPanel?.childWindows?.count == 1, "submenu opens after the Fluent hover delay")
 let submenuPanel = rootMenuPanel?.childWindows?.first
+let submenuReveal = submenuPanel?.contentView?.layer?.mask?
+    .animation(forKey: "fluent.menu.reveal") as? CABasicAnimation
+let submenuRevealStart = (submenuReveal?.fromValue as? NSValue)?.rectValue.height
+let submenuRevealEnd = (submenuReveal?.toValue as? NSValue)?.rectValue.height
+require(
+    submenuReveal?.keyPath == "bounds"
+        && abs((submenuReveal?.duration ?? 0) - FluentMotion.submenuOpen.duration) < 0.0001
+        && submenuRevealStart.map { abs($0 - (submenuRevealEnd ?? 0) * 0.33) < 0.001 } == true,
+    "submenu reveals from 33% height over the source-derived 250ms motion"
+)
 let submenuPresenter = submenuPanel?.contentView.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
 require(submenuPresenter?.accessibilityChildren()?.count == 2, "submenu exposes its own menu accessibility tree")
 let renameMenuRow = submenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Rename", in: $0) }
 require(renameMenuRow?.accessibilityPerformPress() == true, "submenu item supports the accessibility press action")
 require(nestedMenuInvocations == 1, "submenu action invokes its declarative closure exactly once")
+let menuCloseAnimation = rootMenuPanel?.contentView?.layer?
+    .animation(forKey: "fluent.menu.close") as? CABasicAnimation
+require(
+    menuCloseAnimation?.keyPath == "opacity"
+        && abs((menuCloseAnimation?.duration ?? 0) - FluentMotion.menuClose.duration) < 0.0001,
+    "MenuFlyout closes with the source-derived 83ms linear opacity motion"
+)
 menuFlyout.dismiss(animated: false)
 require(menuFlyoutWindow.childWindows?.isEmpty != false, "dismissing a menu removes its complete submenu hierarchy")
 
@@ -2639,6 +2739,21 @@ rtlMenuFlyout.dismiss(animated: false)
 menuFlyoutAnchor.userInterfaceLayoutDirection = .leftToRight
 require(!menuFlyout.isPresented, "application menu flyout clears its presented state on dismissal")
 require(menuFlyoutWindow.childWindows?.isEmpty != false, "application menu flyout removes its child panel on dismissal")
+let reducedMenuFlyout = FluentMenuFlyout(
+    items: [FluentMenuItem("Reduced") {}],
+    reduceMotion: true
+)
+reducedMenuFlyout.present(relativeTo: menuFlyoutAnchor)
+let reducedMenuPanel = menuFlyoutWindow.childWindows?.first
+require(
+    reducedMenuPanel?.contentView?.layer?.mask == nil,
+    "MenuFlyout Reduce Motion reaches final reveal geometry without a mask animation"
+)
+reducedMenuFlyout.dismiss(animated: true)
+require(
+    menuFlyoutWindow.childWindows?.isEmpty != false,
+    "MenuFlyout Reduce Motion dismisses without allocating close motion"
+)
 menuFlyoutWindow.orderOut(nil)
 
 let teachingTipPresented = FluentState(wrappedValue: false)
@@ -2958,6 +3073,20 @@ require(
     footerIncoming != nil && footerOutgoing != nil,
     "NavigationView animates one shared indicator between primary and footer destinations"
 )
+if let reusablePane,
+   let settingsButton = firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost),
+   let reusableIndicator,
+   let footerIncoming {
+    let settingsFrame = settingsButton.convert(settingsButton.bounds, to: reusablePane)
+    let targetCenterY = settingsFrame.midY
+    let animatedCenterY = keyframeAnimation(for: "position", in: footerIncoming)?.values?.last
+        .flatMap { ($0 as? NSValue)?.pointValue.y }
+    require(
+        abs(reusableIndicator.frame.midY - targetCenterY) < 0.5
+            && animatedCenterY.map { abs($0 - targetCenterY) < 0.5 } == true,
+        "NavigationView indicator animation ends on the selected footer row center"
+    )
+}
 require(
     firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost)?.accessibilityValue() as? String == "Selected",
     "NavigationView synchronizes selected accessibility state"
@@ -2980,6 +3109,10 @@ require(
 require(
     reusablePane?.layer?.animation(forKey: "fluent.navigation.pane.frame") != nil,
     "NavigationView pane close uses explicit completion-trackable frame motion"
+)
+require(
+    reusablePane.flatMap { pane in labels(in: pane).first { $0.stringValue == "Explore" } }?.isHidden == true,
+    "NavigationView hides section text before compact-pane motion can clip or jump it"
 )
 reusableToggle?.performClick(nil)
 drainMainQueue()
@@ -3573,6 +3706,22 @@ require(directMidpoint > 0.5 && directMidpoint < 1, "custom cubic-bezier curves 
 require(abs(FluentMotion.controlFaster.duration - 0.083) < 0.0001, "control-faster motion preserves its exact duration")
 require(abs(FluentMotion.controlFast.duration - 0.167) < 0.0001, "control-fast motion preserves its exact duration")
 require(abs(FluentMotion.controlNormal.duration - 0.250) < 0.0001, "control-normal motion preserves its exact duration")
+require(
+    abs(FluentMotion.menuOpen.duration - 0.250) < 0.0001
+        && FluentMotion.menuOpen.curve == .controlFastOutSlowIn
+        && FluentMotion.menuOpen.scale == 0.5,
+    "root-menu motion preserves its 250ms curve and 50% closed geometry"
+)
+require(
+    abs(FluentMotion.submenuOpen.duration - 0.250) < 0.0001
+        && FluentMotion.submenuOpen.scale == 0.33,
+    "submenu motion preserves its 250ms and 33% closed geometry"
+)
+require(
+    abs(FluentMotion.menuClose.duration - 0.083) < 0.0001
+        && FluentMotion.menuClose.curve == .linear,
+    "menu-close motion preserves its 83ms linear fade"
+)
 require(abs(FluentMotion.connectedDefault.duration - 0.300) < 0.0001, "connected motion preserves its exact duration")
 require(abs(FluentMotion.navigationIndicator.duration - 0.600) < 0.0001, "navigation indicator preserves its exact duration")
 require(FluentMotion.connectedGravity.distance == 80 && abs(FluentMotion.connectedGravity.scale - 1.1) < 0.0001, "gravity connected motion preserves distance and peak scale")

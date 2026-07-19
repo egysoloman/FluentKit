@@ -50,8 +50,8 @@ Completed in the ToggleSwitch pass:
   Boolean value. Clicks commit on release-inside, drag release resolves by midpoint/direction, and
   cancellation or external binding updates cannot emit a stale commit.
 - The stable 40 x 20 track and knob layers use 12 x 12 Normal, 14 x 14 PointerOver, and 17 x 14
-  Pressed/Dragging geometry with 83ms `(0,0,0,1)` state motion. Same-bounds layout no longer
-  overwrites active presentation animations.
+  Pressed/Dragging geometry with 83ms `(0,0,0,1)` state motion. On/Off repositioning uses the
+  separate 167ms token. Same-bounds layout no longer overwrites active presentation animations.
 - Toggle-specific Light/Dark/High Contrast fills and strokes now distinguish Off and borderless On
   tracks. RTL mirrors text, track placement, drag direction, and logical endpoints.
 - Reduce Motion, keyboard focus, accessibility press, disabled behavior, external binding
@@ -94,8 +94,8 @@ Completed in the SegmentedControl pass:
 - Pointer state is independent from committed selection. Release inside commits once; release
   outside, Escape, disabled state, and external binding updates cancel stale pointer interaction.
 - Selection writes final model geometry first and begins from sampled presentation geometry. The
-  arbitrary scale/opacity keyframes are removed; position uses the SelectorBar-derived 167ms
-  `(0,0,0,1)` token.
+  arbitrary scale/opacity keyframes are removed; synchronized position and bounds use the
+  SelectorBar-derived 167ms `(0,0,0,1)` token.
 - Same-bounds layout does not touch an active animation. Actual resize/direction changes deliberately
   snap to model geometry. RTL mirrors labels, hit testing, selection movement, and arrow keys;
   Reduce Motion snaps without allocating an animation.
@@ -103,13 +103,30 @@ Completed in the SegmentedControl pass:
   and Reduce Motion. Gallery exposes interactive and Disabled states in desktop and Minimal
   Light/Dark captures.
 
+Completed in the focus, pane-collapse, and MenuFlyout pass:
+
+- Pointer focus no longer produces keyboard-only focus visuals on Button, ToggleSwitch, Slider,
+  CheckBox, RadioButton, SegmentedControl, or NavigationView controls.
+- NavigationView hides section text before its pane frame begins collapsing, so the compact rail
+  never displays a clipped label prefix during motion.
+- Gallery exposes two left-click MenuFlyout entries. Both are covered through actual synthesized
+  left-button down/up events rather than programmatic action dispatch.
+- Root menus reveal from 50% height and submenus from 33% height using the dedicated 250ms
+  `(0,0,0,1)` motion. The final placement selects the stable top or bottom reveal edge.
+- Menu close is a separate 83ms linear opacity transition. Reduce Motion skips the reveal mask and
+  removes the panel without allocating close animation.
+- Menu geometry animation is implemented with an explicit Core Animation mask; the previous
+  TeachingTip translation plus uniform X/Y scaling path has been removed.
+
 Still open by design:
 
-- Long-tail control acceptance remains open for TextBox, SearchBox, ComboBox, DatePicker, NumberBox,
-  collection controls, and transient presenters.
-- Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
-  Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
-  remains the implementation contract for the later menu pass.
+- Long-tail control acceptance remains open for TextBox, SearchBox, DatePicker, NumberBox, collection
+  controls, and transient presenters. ComboBox now has a source-derived filled surface, focus
+  HighlightBackground, leading 3 x 16 focus Pill, selected-item Pill, and 167ms pressed compression;
+  complete hover/pressed/flyout visual acceptance remains open with the menu presenter.
+- Transient material work is deferred. This pass does not change Acrylic, Mica, TeachingTip,
+  Popover, or overlay material behavior. MenuFlyout motion is now implemented independently of the
+  deferred material migration.
 - Full XCTest integration remains blocked until a complete Xcode toolchain provides `XCTest`.
 
 ## 1. Objective
@@ -344,16 +361,18 @@ Required correction:
 - Calculate the final screen frame before creating or animating the panel.
 - Record whether the surface was flipped above/below so motion direction matches placement.
 
-### P1-5: Menu motion is borrowed from TeachingTip
+### P1-5: Menu motion is borrowed from TeachingTip - resolved
 
-The menu currently uses TeachingTip open/close tokens: scale, vertical translation, opacity, `300ms` open, and `200ms` close.
+The menu previously used TeachingTip open/close tokens: scale, vertical translation, opacity,
+`300ms` open, and `200ms` close.
 
-Required correction:
+Implemented correction:
 
-- Define MenuFlyout-specific motion specifications from the relevant WinUI MenuFlyout resources and behavior.
-- Adapt only the final rendering to Liquid Glass/Core Animation.
-- Animate from the placement edge or transform origin.
-- Coordinate panel opacity, glass highlight, shadow, content reveal, and submenu opening.
+- Dedicated root-open, submenu-open, and close tokens now use 250ms/250ms/83ms timings.
+- Root and submenu reveal masks begin at 50% and 33% height and grow only along Y from the resolved
+  top or bottom placement edge.
+- Close uses a linear opacity animation and keeps an interrupted reveal mask intact.
+- Reduce Motion reaches final presentation state without reveal or close animations.
 
 ### P1-6: Menu outline appears doubled
 
@@ -400,6 +419,18 @@ Required approach:
 - Hide or neutralize incompatible native chrome.
 - Draw the Fluent visual surface and states in the owning wrapper.
 - Preserve native first responder, text input, selection, keyboard, and accessibility behavior.
+
+ComboBox progress in this pass:
+
+- `FluentComboBoxHost` keeps a transparent native `NSComboBox` for editing, keyboard, and
+  accessibility semantics while owning the visible surface.
+- Its geometry follows the WinUI 3 template: 32pt minimum height, filled background, 1pt base
+  border, a 38pt trailing glyph column, a `Margin=-4` focused highlight with 2pt border and 7pt
+  radius, and a leading 3 x 16 focus Pill.
+- Application-owned ComboBox options use a selected-item Pill rather than a menu checkmark; the
+  pressed state compresses that Pill to 62.5% over 167ms.
+- Validation checks the layer identity, exact geometry, focus highlight, popup ownership, and
+  source-derived motion. DatePicker and NumberBox chrome remain open follow-up work.
 
 ### P1-8: Control state animations can be overwritten by layout - resolved for rebuilt controls
 
@@ -769,25 +800,14 @@ Verified parameters and behavior:
 
 The intended visual result is therefore a fast anchored reveal: the attachment edge remains visually stable while the remaining menu height is uncovered. It should not look like a floating card zooming toward the viewer.
 
-Current FluentKit divergence:
+Current FluentKit status:
 
-- `FluentMenuFlyout` reuses `FluentMotion.teachingTipOpen` and `teachingTipClose`.
-- Opening currently combines panel opacity with vertical translation and uniform X/Y scaling.
-- Closing applies the same translated/scaled card treatment plus a fade.
-- The motion does not derive its origin or direction from final menu placement.
-- Root menus and submenus use the same geometry instead of the WinUI `0.5` versus `0.67` closed ratios.
-- Submenu hover delay is an interaction policy and must remain separate from the submenu reveal animation.
-
-Required correction:
-
-- Add dedicated `menuOpen`, `submenuOpen`, and `menuClose` motion specifications instead of reusing TeachingTip tokens.
-- Implement the reveal with a stable edge anchor, an animatable vertical mask/clip, content translation, and Y-only surface scaling.
-- Select the reveal direction only after placement and edge-flipping have resolved.
-- Open root menus from 50% height and submenus from 33% height over 250 ms with `(0,0,0,1)`.
-- Close with an 83 ms linear opacity transition and completion-driven panel removal; do not reverse-collapse the surface.
-- Preserve the current presentation clip when close interrupts open.
-- Disable geometry motion under Reduce Motion while retaining correct final placement and visibility.
-- Apply this motion to the required Liquid Glass menu surface. The WinUI Acrylic material is not part of the target; only its menu geometry and choreography are being replicated.
+- `FluentMotion.menuOpen`, `submenuOpen`, and `menuClose` provide the dedicated timing contract.
+- `FluentMenuFlyout` resolves final screen placement before selecting a top- or bottom-edge reveal.
+- Root and submenu mask animations use the required 0.5 and 0.33 initial visible heights.
+- Close preserves an interrupted opening mask and fades over 83ms before completion-driven removal.
+- Submenu hover delay remains a separate interaction policy.
+- The deferred Liquid Glass migration remains open; this pass changes motion only.
 
 ## 18. Consolidated Problem List
 
@@ -820,7 +840,7 @@ Required correction:
 15. Existing MenuFlyout uses Acrylic, contrary to the Liquid Glass direction.
 16. Menu transparency permits readable background content and creates the reported ghosting.
 17. Menu positioning does not have explicit placement modes or a stable anchor-rect contract.
-18. Menu animation is borrowed from TeachingTip and does not account for placement direction.
+18. **Resolved:** MenuFlyout uses placement-aware 250ms root/submenu reveal masks and an 83ms close.
 19. Menu item content slots are incomplete.
 20. There is no explicit public `FluentMenu`/`FluentMenuBar` layer.
 
@@ -1038,6 +1058,18 @@ The visual state transition is coordinated by `FluentVisualStateCoordinator`, wi
 Reduce Motion snapping, high-contrast geometry, and accessibility value/help coverage in the
 validation executable.
 
+### ComboBox template fidelity - partial
+
+Owner: FluentKit component and Gallery Inputs page
+Files: `Sources/FluentKit/FluentInputControls.swift`, `Sources/FluentKit/FluentMenus.swift`,
+`Sources/FluentGallery/main.swift`
+
+The original Gallery used an underline style for ComboBox, which contradicted the WinUI 3 default
+template. The Inputs page now uses a fixed top-aligned two-column layout with 280 x 32 control
+slots, and ComboBox uses the automatic filled field appearance. The host renders the source-derived
+focus highlight and focus/selected Pills while retaining native input semantics. Full transient
+flyout visual parity and DatePicker/NumberBox rendering remain separate acceptance items.
+
 ### Additional problem-list entries
 
 25. **Resolved:** SegmentedControl has one Fluent visual owner, stable labels/indicator, presentation-
@@ -1051,3 +1083,6 @@ validation executable.
 29. **Resolved:** ProgressBar uses a stable visual layer tree, presentation-sampled determinate
     width motion, a coordinated indeterminate loop, paused/error states, RTL, Reduce Motion, and
     accessibility coverage.
+30. **Partial:** ComboBox uses a Fluent-owned filled surface over native semantics, source-derived
+    focus/selection Pills and focus highlight geometry, and 167ms pressed compression; flyout and
+    remaining input-family visual acceptance remain open.

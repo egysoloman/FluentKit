@@ -28,6 +28,7 @@ public struct FluentButtonAppearance {
     public let backgroundColor: NSColor
     public let foregroundColor: NSColor
     public let borderColor: NSColor
+    public let borderGradientColors: [NSColor]?
     public let borderWidth: CGFloat
     public let cornerRadius: CGFloat
     public let contentInsets: NSEdgeInsets
@@ -38,6 +39,7 @@ public struct FluentButtonAppearance {
         backgroundColor: NSColor,
         foregroundColor: NSColor,
         borderColor: NSColor,
+        borderGradientColors: [NSColor]? = nil,
         borderWidth: CGFloat = 1,
         cornerRadius: CGFloat = 7,
         contentInsets: NSEdgeInsets = NSEdgeInsetsZero,
@@ -47,6 +49,7 @@ public struct FluentButtonAppearance {
         self.backgroundColor = backgroundColor
         self.foregroundColor = foregroundColor
         self.borderColor = borderColor
+        self.borderGradientColors = borderGradientColors
         self.borderWidth = max(borderWidth, 0)
         self.cornerRadius = max(cornerRadius, 0)
         self.contentInsets = contentInsets
@@ -69,10 +72,12 @@ public struct FluentAutomaticButtonStyle: FluentButtonStyle {
         let state = configuration.isEnabled ? configuration.controlState : .disabled
         switch configuration.role {
         case .standard:
+            let usesElevationBorder = state == .normal || state == .pointerOver || state == .focused
             return FluentButtonAppearance(
                 backgroundColor: theme.buttonBackground(for: state),
                 foregroundColor: theme.buttonForeground(for: state),
-                borderColor: theme.isHighContrast ? theme.controlStrokeStrong : theme.controlStroke,
+                borderColor: theme.isHighContrast ? theme.controlStrokeStrong : theme.controlStrokeDefault,
+                borderGradientColors: usesElevationBorder ? theme.controlElevationBorderColors : nil,
                 borderWidth: theme.controlStrokeWidth,
                 cornerRadius: theme.buttonCornerRadius,
                 contentInsets: theme.controlPadding,
@@ -81,10 +86,15 @@ public struct FluentAutomaticButtonStyle: FluentButtonStyle {
             )
         case .primary:
             let alpha: CGFloat = state == .pressed ? 0.72 : (state == .pointerOver ? 0.88 : 1)
+            let usesElevationBorder = state == .normal || state == .pointerOver || state == .focused
+            let elevationBorder = theme.accentElevationBorderColors
             return FluentButtonAppearance(
                 backgroundColor: theme.accent.withAlphaComponent(configuration.isEnabled ? alpha : 0.35),
-                foregroundColor: theme.textOnAccent,
-                borderColor: theme.accent,
+                foregroundColor: state == .pressed
+                    ? theme.textOnAccent.withAlphaComponent(0.70)
+                    : theme.textOnAccent,
+                borderColor: usesElevationBorder ? (elevationBorder.last ?? .clear) : .clear,
+                borderGradientColors: usesElevationBorder ? elevationBorder : nil,
                 borderWidth: theme.controlStrokeWidth,
                 cornerRadius: theme.buttonCornerRadius,
                 contentInsets: theme.controlPadding,
@@ -115,10 +125,15 @@ public struct FluentAccentButtonStyle: FluentButtonStyle {
         let theme = configuration.theme
         let state = configuration.isEnabled ? configuration.controlState : .disabled
         let alpha: CGFloat = state == .pressed ? 0.72 : (state == .pointerOver ? 0.88 : 1)
+        let usesElevationBorder = state == .normal || state == .pointerOver || state == .focused
+        let elevationBorder = theme.accentElevationBorderColors
         return FluentButtonAppearance(
             backgroundColor: theme.accent.withAlphaComponent(configuration.isEnabled ? alpha : 0.35),
-            foregroundColor: theme.textOnAccent,
-            borderColor: theme.accent,
+            foregroundColor: state == .pressed
+                ? theme.textOnAccent.withAlphaComponent(0.70)
+                : theme.textOnAccent,
+            borderColor: usesElevationBorder ? (elevationBorder.last ?? .clear) : .clear,
+            borderGradientColors: usesElevationBorder ? elevationBorder : nil,
             borderWidth: theme.controlStrokeWidth,
             cornerRadius: theme.buttonCornerRadius,
             contentInsets: theme.controlPadding,
@@ -646,12 +661,39 @@ public struct FluentInlineStepperStyle: FluentStepperStyle {
     }
 }
 
+/// A full-width NumberBox-like stepper surface with the label supplied by the surrounding layout.
+/// The native value editor and incrementor remain separate semantic controls, while the visible
+/// field uses the standard filled TextBox appearance.
+public struct FluentNumberBoxStepperStyle: FluentStepperStyle {
+    public let valueFieldWidth: CGFloat
+
+    public init(valueFieldWidth: CGFloat = 248) {
+        self.valueFieldWidth = max(valueFieldWidth, 120)
+    }
+
+    public func appearance(for configuration: FluentStepperStyleConfiguration) -> FluentStepperAppearance {
+        let theme = configuration.theme
+        let bodyFont = theme.typography.font(for: .body)
+        return FluentStepperAppearance(
+            labelColor: .clear,
+            labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
+            spacing: 0,
+            valueFieldWidth: valueFieldWidth * configuration.controlSize.metricScale,
+            textFieldStyle: FluentAutomaticTextFieldStyle()
+        )
+    }
+}
+
 public extension FluentStepperStyle where Self == FluentAutomaticStepperStyle {
     static var automatic: FluentAutomaticStepperStyle { FluentAutomaticStepperStyle() }
 }
 
 public extension FluentStepperStyle where Self == FluentInlineStepperStyle {
     static var inline: FluentInlineStepperStyle { FluentInlineStepperStyle() }
+}
+
+public extension FluentStepperStyle where Self == FluentNumberBoxStepperStyle {
+    static var numberBox: FluentNumberBoxStepperStyle { FluentNumberBoxStepperStyle() }
 }
 
 public extension FluentToggleStyle where Self == FluentAutomaticToggleStyle {

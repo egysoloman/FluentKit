@@ -76,8 +76,8 @@ AppKit and Swift permit it.
   stable label/indicator identity, release-inside selection, external-update cancellation, mirrored
   RTL layout/input, disabled and Reduce Motion states, and same-bounds animation protection.
 - Replaced the unsourced selection scale/opacity choreography with direct model geometry and a
-  presentation-sampled 167ms `(0,0,0,1)` position transition derived from the SelectorBar selection
-  resource; expanded Gallery states and executable motion/identity coverage.
+  presentation-sampled 167ms `(0,0,0,1)` position-and-bounds transition derived from the SelectorBar
+  selection resource; expanded Gallery states and executable motion/identity coverage.
 - Added the shared `FluentVisualState`, `FluentVisualStateTransition`, and
   `FluentVisualStateCoordinator` contract for named control states, motion tokens, and Reduce Motion.
 - Rebuilt ProgressBar from immediate drawing into a stable CALayer visual tree with 1pt/3pt
@@ -85,3 +85,18 @@ AppKit and Swift permit it.
   settle states, and a two-layer indeterminate loop. Gallery now exposes Normal, Paused, Error, and
   Indeterminate modes; validation covers layer identity, state transitions, accessibility, RTL, and
   Reduce Motion. Regenerated Controls Light/Dark baselines.
+- Rebuilt the Inputs Gallery layout around top-aligned columns and fixed 280 x 32 control slots;
+  removed the incorrect underline style from the default TextBox/ComboBox examples and regenerated
+  Inputs Light/Dark baselines.
+- Added source-derived ComboBox visual ownership over the native `NSComboBox` semantics: filled
+  surface, 38pt glyph column, `Margin=-4`/2pt/7pt focus highlight, 3 x 16 focus Pill, selected-item
+  Pill, and 167ms pressed compression. Validation now checks the exact focus geometry and motion.
+- Added input-modality-aware focus visibility so ordinary pointer focus no longer displays the
+  keyboard-only focus ring across core controls and NavigationView controls.
+- Corrected SegmentedControl rapid-selection motion by animating presentation position and bounds
+  together, and separated ToggleSwitch's 167ms On/Off repositioning from its 83ms state geometry.
+- Added two left-click menu examples to the Gallery and real left-button event snapshot scenarios.
+  Root menus now reveal from 50% height, submenus from 33%, over 250ms from the resolved placement
+  edge; close uses a separate 83ms linear fade and Reduce Motion skips both animations.
+- Prevented NavigationView section text from clipping or jumping through the compact rail during
+  pane collapse.

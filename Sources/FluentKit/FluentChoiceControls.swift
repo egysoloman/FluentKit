@@ -136,6 +136,7 @@ public final class FluentCheckBox: NSControl {
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
         isPressed = true
@@ -163,6 +164,8 @@ public final class FluentCheckBox: NSControl {
 
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        updateFocusRing()
         switch event.keyCode {
         case 36, 49:
             guard !event.isARepeat else { return }
@@ -361,7 +364,7 @@ public final class FluentCheckBox: NSControl {
     private func updateFocusRing() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        focusLayer.opacity = window?.firstResponder === self ? 1 : 0
+        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
         CATransaction.commit()
     }
 
@@ -511,6 +514,7 @@ public final class FluentRadioButton: NSControl {
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
         isPressed = true
@@ -538,6 +542,8 @@ public final class FluentRadioButton: NSControl {
 
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        updateFocusRing()
         switch event.keyCode {
         case 36, 49:
             guard !event.isARepeat else { return }
@@ -765,7 +771,7 @@ public final class FluentRadioButton: NSControl {
     private func updateFocusRing() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        focusLayer.opacity = window?.firstResponder === self ? 1 : 0
+        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
         CATransaction.commit()
     }
 

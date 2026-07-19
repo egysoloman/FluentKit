@@ -108,6 +108,7 @@ public final class FluentSlider: NSControl {
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         interactionStartValue = value
         isDragging = true
@@ -134,6 +135,8 @@ public final class FluentSlider: NSControl {
 
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        updateFocusRing()
         let step = (maximumValue - minimumValue) / 20
         switch event.keyCode {
         case 123: value += isRTL ? step : -step
@@ -400,7 +403,7 @@ public final class FluentSlider: NSControl {
     private func updateFocusRing() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        focusLayer.opacity = window?.firstResponder === self ? 1 : 0
+        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
         CATransaction.commit()
     }
 

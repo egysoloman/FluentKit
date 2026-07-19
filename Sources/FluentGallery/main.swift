@@ -221,7 +221,7 @@ private struct GalleryNavigationShell: FluentView {
                     title: "FluentKit Gallery",
                     systemImageName: "square.grid.2x2.fill",
                     heightMode: .expanded,
-                    isPaneToggleButtonVisible: paneDisplayMode != .top,
+                    isPaneToggleButtonVisible: false,
                     isPaneOpen: isPaneOpen
                 )
                 FluentNavigationView(
@@ -230,7 +230,7 @@ private struct GalleryNavigationShell: FluentView {
                     selection: navigationSelection,
                     isPaneOpen: isPaneOpen,
                     paneDisplayMode: paneDisplayMode,
-                    isPaneToggleButtonVisible: false,
+                    isPaneToggleButtonVisible: paneDisplayMode != .top,
                     openPaneLength: theme.designTokens.navigationPaneWidth,
                     compactPaneLength: 48,
                     rowHeight: 40,
@@ -407,6 +407,32 @@ private struct WinUIStyleGalleryScreen: FluentView {
                         FluentButtonView("Subtle").buttonStyle(FluentBorderlessButtonStyle())
                     }
                 }
+                FluentVStack(spacing: 12) {
+                    FluentText("Menus", style: .headline)
+                    FluentHStack(spacing: 10) {
+                        FluentMenuButton(title: "Menu flyout", items: [
+                            FluentMenuItem("New item") {},
+                            FluentMenuItem("Pin", state: checked ? .on : .off) { checked.toggle() },
+                            .separator,
+                            .submenu("More") {
+                                FluentMenuItem("Archive") {}
+                                FluentMenuItem("Share") {}
+                            }
+                        ])
+                        FluentMenuButton(title: "Context menu", items: [
+                            FluentMenuItem("Open") {},
+                            FluentMenuItem("Rename") {},
+                            .separator,
+                            FluentMenuItem("Remove") {}
+                        ])
+                            .contextMenu {
+                                FluentMenuItem("Open") {}
+                                FluentMenuItem("Rename") {}
+                                FluentMenuItem.separator
+                                FluentMenuItem("Remove") {}
+                            }
+                    }
+                }
                 FluentVStack(spacing: 10) {
                     FluentText("Progress", style: .headline)
                     FluentSegmentedControl(
@@ -484,20 +510,24 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func inputsPage(_ theme: FluentTheme) -> FluentAnyView {
-        FluentAnyView(
+        let inputWidth: CGFloat = 280
+        return FluentAnyView(
             FluentVStack(spacing: 20) {
                 pageIntroduction("Consistent fields for search, credentials, choices, and values.", theme: theme)
-                FluentHStack(spacing: 18) {
+                FluentHStack(spacing: 18, alignment: .top) {
                     FluentVStack(spacing: 16) {
                         FluentText("Text", style: .headline)
                         FluentBoundTextField($search, placeholder: "Search settings")
-                            .textFieldStyle(FluentUnderlineTextFieldStyle())
+                            .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
                         FluentSecureField($password, placeholder: "Password")
-                            .textFieldStyle(FluentUnderlineTextFieldStyle())
+                            .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
                         FluentSearchField($search, placeholder: "Filter")
                             .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
                     }
-                    .frame(width: 280)
+                    .frame(width: inputWidth)
                     FluentVStack(spacing: 16) {
                         FluentText("Structured values", style: .headline)
                         FluentMenuButton(title: selectedAccount ?? "Choose account", items: [
@@ -510,28 +540,34 @@ private struct WinUIStyleGalleryScreen: FluentView {
                                 FluentMenuItem("Manage access") {}
                             }
                         ])
+                        .frame(width: inputWidth, height: 32)
                         FluentComboBox(
                             options: ["System", "Light", "Dark"],
                             selection: $selectedTheme,
                             title: { $0 }
                         )
-                        .textFieldStyle(FluentUnderlineTextFieldStyle())
+                        .textFieldStyle(FluentAutomaticTextFieldStyle())
+                        .frame(width: inputWidth, height: 32)
                         FluentDatePicker(selection: $date)
-                            .textFieldStyle(FluentUnderlineTextFieldStyle())
-                        FluentStepper("Items", value: $quantity, in: 1...12)
-                            .stepperStyle(FluentInlineStepperStyle())
+                            .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
+                        FluentVStack(spacing: 4) {
+                            FluentText("Items", style: .caption)
+                            FluentStepper("", value: $quantity, in: 1...12)
+                                .stepperStyle(FluentNumberBoxStepperStyle(valueFieldWidth: inputWidth - 32))
+                                .frame(width: inputWidth, height: 32)
+                        }
                     }
-                    .frame(width: 280)
+                    .frame(width: inputWidth)
                 }
                 FluentVStack(spacing: 8) {
                     FluentText("Validation uses the same surface language.", style: .caption, color: theme.textSecondary)
                     FluentFormField("Workspace name", help: "Use a name teammates will recognize.", validation: .success("Ready to use"), required: true) {
                         FluentBoundTextField($search, placeholder: "Workspace")
-                            .textFieldStyle(FluentUnderlineTextFieldStyle())
+                            .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
                     }
                 }
-                .padding(18)
-                .cardStyle(FluentPlainCardStyle())
             }
         )
     }
@@ -1401,7 +1437,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func prepareSnapshotPresentationIfRequested(window: NSWindow) {
         let openMenu = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_MENU"] == "1"
         let openCombo = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_COMBO"] == "1"
-        guard (openMenu || openCombo), !snapshotPresentationPrepared else {
+        let openContextMenu = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_CONTEXT_MENU"] == "1"
+        let menuTitle = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_MENU_TITLE"]
+        guard (openMenu || openCombo || openContextMenu), !snapshotPresentationPrepared else {
             captureSnapshotIfRequested(window: window)
             return
         }
@@ -1411,10 +1449,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             captureSnapshotIfRequested(window: window)
             return
         }
-        if openMenu, let menuButton = firstMenuButton(in: root) {
-            menuButton.performClick(nil)
+        if openMenu, let menuButton = firstMenuButton(in: root, title: menuTitle) {
+            window.makeKeyAndOrderFront(nil)
+            postPrimaryClick(on: menuButton)
         } else if openCombo, let comboBox = firstComboBox(in: root) {
             comboBox.performClick(nil)
+        } else if openContextMenu,
+                  let contextTarget = firstView(withAccessibilityTitle: "Context menu", in: root) {
+            // Posted pointer events are only dispatched to an ordered window. This branch is
+            // limited to the explicit context-menu snapshot mode.
+            window.makeKeyAndOrderFront(nil)
+            postRightClick(on: contextTarget)
         } else {
             captureSnapshotIfRequested(window: window)
             return
@@ -1448,9 +1493,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func firstMenuButton(in view: NSView) -> FluentMenuButton? {
-        if let button = view as? FluentMenuButton { return button }
-        return view.subviews.lazy.compactMap(firstMenuButton).first
+    private func postPrimaryClick(on view: NSView) {
+        postMouseClick(on: view, downType: .leftMouseDown, upType: .leftMouseUp)
+    }
+
+    private func postRightClick(on view: NSView) {
+        postMouseClick(on: view, downType: .rightMouseDown, upType: .rightMouseUp)
+    }
+
+    private func postMouseClick(
+        on view: NSView,
+        downType: NSEvent.EventType,
+        upType: NSEvent.EventType
+    ) {
+        guard let window = view.window else { return }
+        let location = view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
+        let timestamp = ProcessInfo.processInfo.systemUptime
+        let eventNumber = 1
+        guard let down = NSEvent.mouseEvent(
+            with: downType,
+            location: location,
+            modifierFlags: [],
+            timestamp: timestamp,
+            windowNumber: window.windowNumber,
+            context: nil,
+            eventNumber: eventNumber,
+            clickCount: 1,
+            pressure: 1
+        ), let up = NSEvent.mouseEvent(
+            with: upType,
+            location: location,
+            modifierFlags: [],
+            timestamp: timestamp + 0.01,
+            windowNumber: window.windowNumber,
+            context: nil,
+            eventNumber: eventNumber + 1,
+            clickCount: 1,
+            pressure: 0
+        ) else { return }
+        NSApp.postEvent(down, atStart: false)
+        NSApp.postEvent(up, atStart: false)
+    }
+
+    private func firstMenuButton(in view: NSView, title: String? = nil) -> FluentMenuButton? {
+        if let button = view as? FluentMenuButton,
+           title == nil || button.title == title {
+            return button
+        }
+        return view.subviews.lazy.compactMap { self.firstMenuButton(in: $0, title: title) }.first
     }
 
     private func firstComboBox(in view: NSView) -> NSComboBox? {

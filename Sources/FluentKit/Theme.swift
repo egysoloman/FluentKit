@@ -376,6 +376,36 @@ public struct FluentTheme {
             : NSColor(calibratedWhite: 0, alpha: isHighContrast ? 0.78 : 0.48)
     }
 
+    /// The two stops used by WinUI's ControlElevationBorderBrush, ordered top to bottom.
+    public var controlElevationBorderColors: [NSColor] {
+        if isHighContrast { return [controlStrokeStrong, controlStrokeStrong] }
+        return isDark
+            ? [
+                NSColor(calibratedWhite: 1, alpha: 0.094),
+                NSColor(calibratedWhite: 1, alpha: 0.071)
+            ]
+            : [
+                NSColor(calibratedWhite: 0, alpha: 0.059),
+                NSColor(calibratedWhite: 0, alpha: 0.161)
+            ]
+    }
+
+    /// AccentControlElevationBorderBrush uses a pale upper edge and a darker lower edge.
+    public var accentElevationBorderColors: [NSColor] {
+        if isHighContrast { return [textOnAccent, textOnAccent] }
+        return [
+            NSColor(calibratedWhite: 1, alpha: 0.078),
+            NSColor(calibratedWhite: 0, alpha: isDark ? 0.137 : 0.40)
+        ]
+    }
+
+    public var controlStrokeDefault: NSColor {
+        if isHighContrast { return controlStrokeStrong }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 0.071)
+            : NSColor(calibratedWhite: 0, alpha: 0.059)
+    }
+
     public var cardFill: NSColor {
         isDark ? NSColor(calibratedWhite: 1, alpha: 0.10) : NSColor(calibratedWhite: 1, alpha: 0.84)
     }
@@ -394,7 +424,11 @@ public struct FluentTheme {
     }
 
     public func buttonForeground(for state: FluentControlState) -> NSColor {
-        state == .disabled ? textDisabled : textPrimary
+        switch state {
+        case .pressed: return textSecondary
+        case .disabled: return textDisabled
+        default: return textPrimary
+        }
     }
 
     public var buttonCornerRadius: CGFloat { designTokens.controlCornerRadius }

@@ -59,13 +59,13 @@ final class FluentSelectionIndicatorAnimator {
         if !animated,
            currentLayer.animation(forKey: currentAnimationKey) != nil,
            lastTarget == target {
-            setModelFrames(to: target)
+            setModelFrames(source: nil, target: target)
             return
         }
 
         let previous = lastTarget
         removeAnimations()
-        setModelFrames(to: target)
+        setModelFrames(source: previous, target: target)
 
         if animated, !reduceMotion, let previous, previous != target {
             animate(from: previous, to: target)
@@ -96,10 +96,10 @@ final class FluentSelectionIndicatorAnimator {
         currentLayer.removeAnimation(forKey: currentAnimationKey)
     }
 
-    private func setModelFrames(to target: NSRect) {
+    private func setModelFrames(source: NSRect?, target: NSRect) {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        previousLayer.frame = target
+        previousLayer.frame = source ?? target
         previousLayer.opacity = 0
         currentLayer.frame = target
         currentLayer.opacity = 1
@@ -109,10 +109,6 @@ final class FluentSelectionIndicatorAnimator {
     private func animate(from source: NSRect, to destination: NSRect) {
         let sourceCenter = NSPoint(x: source.midX, y: source.midY)
         let destinationCenter = NSPoint(x: destination.midX, y: destination.midY)
-        let connectedCenter = NSPoint(
-            x: (sourceCenter.x + destinationCenter.x) / 2,
-            y: (sourceCenter.y + destinationCenter.y) / 2
-        )
         let sourcePosition = axis == .vertical ? sourceCenter.y : sourceCenter.x
         let destinationPosition = axis == .vertical ? destinationCenter.y : destinationCenter.x
         let dimension = max(axis == .vertical ? destination.height : destination.width, 1)
@@ -125,7 +121,6 @@ final class FluentSelectionIndicatorAnimator {
 
         let outgoing = animationGroup(
             sourceCenter: sourceCenter,
-            connectedCenter: connectedCenter,
             destinationCenter: destinationCenter,
             connectedScale: connectedScale,
             fadesOut: true,
@@ -134,7 +129,6 @@ final class FluentSelectionIndicatorAnimator {
         )
         let incoming = animationGroup(
             sourceCenter: sourceCenter,
-            connectedCenter: connectedCenter,
             destinationCenter: destinationCenter,
             connectedScale: connectedScale,
             fadesOut: false,
@@ -147,7 +141,6 @@ final class FluentSelectionIndicatorAnimator {
 
     private func animationGroup(
         sourceCenter: NSPoint,
-        connectedCenter: NSPoint,
         destinationCenter: NSPoint,
         connectedScale: CGFloat,
         fadesOut: Bool,
@@ -157,11 +150,10 @@ final class FluentSelectionIndicatorAnimator {
         let position = CAKeyframeAnimation(keyPath: "position")
         position.values = [
             NSValue(point: sourceCenter),
-            NSValue(point: connectedCenter),
             NSValue(point: destinationCenter)
         ]
-        position.keyTimes = keyTimes
-        position.timingFunctions = timingFunctions
+        position.keyTimes = [keyTimes[0], keyTimes[1]]
+        position.timingFunctions = [timingFunctions[0]]
 
         let scale = CAKeyframeAnimation(
             keyPath: axis == .vertical ? "transform.scale.y" : "transform.scale.x"
@@ -170,9 +162,8 @@ final class FluentSelectionIndicatorAnimator {
         scale.keyTimes = keyTimes
         scale.timingFunctions = timingFunctions
 
-        // Core Animation has no Composition CenterPoint equivalent that can switch without also
-        // moving model geometry. Positioning the scaled layer on the connected rectangle produces
-        // the same visible source-edge, connected, and destination-edge phases.
+        // The first position keyframe reaches the destination at one third, matching the
+        // NavigationView composition path; the remaining two thirds are the scale settle.
         var animations: [CAAnimation] = [position, scale]
         if fadesOut {
             let opacity = CAKeyframeAnimation(keyPath: "opacity")

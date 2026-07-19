@@ -32,7 +32,11 @@ public final class FluentToggle: NSControl {
     public var isOn: Bool {
         didSet {
             guard oldValue != isOn else { return }
-            refreshAppearance(animated: true)
+            refreshAppearance(
+                animated: true,
+                motion: FluentMotion.controlFaster,
+                repositionMotion: FluentMotion.controlFast
+            )
             onValueChanged?(isOn)
         }
     }
@@ -159,6 +163,7 @@ public final class FluentToggle: NSControl {
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         let point = convert(event.locationInWindow, from: nil)
         isPointerOver = bounds.contains(point)
@@ -227,6 +232,8 @@ public final class FluentToggle: NSControl {
 
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        updateFocusRing()
         switch event.keyCode {
         case 36, 49:
             guard !event.isARepeat else { return }
@@ -339,13 +346,15 @@ public final class FluentToggle: NSControl {
 
     private func refreshAppearance(
         animated: Bool,
-        motion: FluentMotionToken = FluentMotion.controlFaster
+        motion: FluentMotionToken = FluentMotion.controlFaster,
+        repositionMotion: FluentMotionToken? = nil
     ) {
         let appearance = resolvedAppearance()
         applyVisualState(
             appearance,
             animated: animated && !reduceMotion,
-            motion: motion
+            motion: motion,
+            repositionMotion: repositionMotion ?? motion
         )
         needsDisplay = true
     }
@@ -407,7 +416,8 @@ public final class FluentToggle: NSControl {
     private func applyVisualState(
         _ appearance: FluentToggleAppearance,
         animated: Bool,
-        motion: FluentMotionToken
+        motion: FluentMotionToken,
+        repositionMotion: FluentMotionToken
     ) {
         let trackRect = trackRect(for: appearance)
         let knobRect = knobRect(for: appearance, trackRect: trackRect)
@@ -470,7 +480,7 @@ public final class FluentToggle: NSControl {
                 keyPath: "position",
                 from: NSValue(point: oldKnobPosition),
                 to: NSValue(point: knobLayer.position),
-                motion: motion
+                motion: repositionMotion
             )
             addAnimation(
                 to: knobLayer,
@@ -536,7 +546,7 @@ public final class FluentToggle: NSControl {
     private func updateFocusRing() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        focusLayer.opacity = window?.firstResponder === self ? 1 : 0
+        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
         CATransaction.commit()
     }
 

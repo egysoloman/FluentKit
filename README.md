@@ -208,8 +208,8 @@ The framework is built in layers. Milestones 1-13, 16, 18, 20, and 21 are comple
 continue to expand text and presentation depth. Milestones 17 and 19 remain in visual acceptance:
 their behavior foundations exist, while transient-surface fidelity and the long-tail control set are
 still being audited and implemented. The primary Button, ToggleSwitch, Slider, CheckBox, RadioButton,
-SegmentedControl, and ProgressBar state/motion foundations are now covered by the shared visual-state
-contract and executable validation.
+SegmentedControl, ProgressBar, and MenuFlyout state/motion foundations are now covered by shared
+visual-state or presentation contracts and executable validation.
 
 1. Declarative tree, AppKit host, reconciliation, state, bindings, and environment values.
 2. Fluent materials, theme tokens, layout containers, native controls, lists, menus, overlays, drag/drop, lifecycle, focus, and accessibility.
@@ -421,10 +421,12 @@ source AnimatedAccept 19-frame/four-frame curves. RadioButton uses a 20pt outer 
 12/14/10/14 dot states and a separate pressed-feedback dot for an unselected press. Both support
 RTL, keyboard focus, accessibility activation, external-binding cancellation, and Reduce Motion.
 
-Combo-box fields keep their native `NSComboBox` identity and accessibility role, but their option
-popup is an application-owned `FluentMenuFlyout`. The popup uses the same Acrylic surface, checked
-state, keyboard navigation, type-ahead, Escape/outside-click dismissal, and RTL placement as other
-in-app menus; AppKit's native combo-box popup is not used.
+Combo-box fields keep their native `NSComboBox` identity and accessibility role, while the visible
+host follows the WinUI 3 default filled template. The host owns the 32pt field geometry, trailing
+glyph column, focused outer highlight, leading focus Pill, and selected-item Pill; the option popup
+is an application-owned `FluentMenuFlyout` with keyboard navigation, type-ahead, Escape/outside-click
+dismissal, and RTL placement. The native AppKit combo-box popup is not used. Full flyout visual
+acceptance remains part of the long-tail input work.
 
 Progress bars use stable Fluent-owned track and indicator layers. Determinate values interpolate with
 the 250ms control-normal token; indeterminate mode uses a coordinated dual-layer loop, while paused

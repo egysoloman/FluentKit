@@ -29,6 +29,9 @@ public final class FluentButton: NSButton {
 
     public var onClick: (() -> Void)?
 
+    private let elevationBorderLayer = CAGradientLayer()
+    private let elevationBorderMask = CAShapeLayer()
+
     public init(title: String = "Button", role: FluentButtonRole = .standard) {
         self.role = role
         super.init(frame: .zero)
@@ -42,6 +45,7 @@ public final class FluentButton: NSButton {
         action = #selector(invoke)
         wantsLayer = true
         focusRingType = .none
+        configureElevationBorder()
         setAccessibilityRole(.button)
         setAccessibilityTitle(title)
         addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
@@ -52,6 +56,8 @@ public final class FluentButton: NSButton {
         role = .standard
         super.init(coder: coder)
         wantsLayer = true
+        focusRingType = .none
+        configureElevationBorder()
         refreshAppearance(animated: false)
     }
 
@@ -70,6 +76,11 @@ public final class FluentButton: NSButton {
         }
     }
 
+    public override func layout() {
+        super.layout()
+        updateElevationBorderGeometry(for: resolvedAppearance())
+    }
+
     public override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
         controlState = .pointerOver
@@ -82,6 +93,7 @@ public final class FluentButton: NSButton {
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         controlState = .pressed
         super.mouseDown(with: event)
         if isEnabled {
@@ -91,12 +103,22 @@ public final class FluentButton: NSButton {
 
     public override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
-        if result { controlState = .focused; needsDisplay = true }
+        if result {
+            if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
+                controlState = .focused
+            }
+            needsDisplay = true
+        }
         return result
     }
 
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        if window?.firstResponder === self {
+            controlState = .focused
+            needsDisplay = true
+        }
         if event.keyCode == 36 || event.keyCode == 49 {
             invoke()
         } else {
@@ -114,7 +136,8 @@ public final class FluentButton: NSButton {
         let appearance = resolvedAppearance()
         let rect = bounds.insetBy(dx: 0.5, dy: 0.5)
 
-        if controlState == .focused, let focusRingColor = appearance.focusRingColor {
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self),
+           let focusRingColor = appearance.focusRingColor {
             focusRingColor.setStroke()
             let focusPath = NSBezierPath(roundedRect: rect.insetBy(dx: 2, dy: 2), xRadius: max(appearance.cornerRadius - 2, 0), yRadius: max(appearance.cornerRadius - 2, 0))
             focusPath.lineWidth = appearance.focusRingWidth
@@ -175,11 +198,42 @@ public final class FluentButton: NSButton {
         CATransaction.setAnimationDuration(animated ? motion.duration : 0)
         CATransaction.setAnimationTimingFunction(motion.curve.timingFunction)
         layer.backgroundColor = appearance.backgroundColor.cgColor
-        layer.borderColor = appearance.borderColor.cgColor
-        layer.borderWidth = appearance.borderWidth
+        layer.borderWidth = 0
         layer.cornerRadius = appearance.cornerRadius
+        elevationBorderLayer.colors = (appearance.borderGradientColors
+            ?? [appearance.borderColor, appearance.borderColor]).map(\.cgColor)
+        elevationBorderLayer.locations = [0.33, 1]
         CATransaction.commit()
+        updateElevationBorderGeometry(for: appearance)
         needsDisplay = true
+    }
+
+    private func configureElevationBorder() {
+        elevationBorderLayer.name = "FluentKit.Button.ElevationBorder"
+        elevationBorderLayer.startPoint = CGPoint(x: 0.5, y: 0)
+        elevationBorderLayer.endPoint = CGPoint(x: 0.5, y: 1)
+        elevationBorderLayer.mask = elevationBorderMask
+        elevationBorderMask.fillColor = NSColor.clear.cgColor
+        elevationBorderMask.strokeColor = NSColor.black.cgColor
+        layer?.addSublayer(elevationBorderLayer)
+    }
+
+    private func updateElevationBorderGeometry(for appearance: FluentButtonAppearance) {
+        guard bounds.width > 0, bounds.height > 0 else { return }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        elevationBorderLayer.frame = bounds
+        elevationBorderMask.frame = bounds
+        elevationBorderMask.lineWidth = appearance.borderWidth
+        let inset = appearance.borderWidth / 2
+        elevationBorderMask.path = CGPath(
+            roundedRect: bounds.insetBy(dx: inset, dy: inset),
+            cornerWidth: max(appearance.cornerRadius - inset, 0),
+            cornerHeight: max(appearance.cornerRadius - inset, 0),
+            transform: nil
+        )
+        elevationBorderLayer.isHidden = appearance.borderWidth <= 0
+        CATransaction.commit()
     }
 }
 

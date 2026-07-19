@@ -1,5 +1,58 @@
 import AppKit
 
+/// Tracks whether the active focus was reached from the keyboard. AppKit exposes the first
+/// responder but not the input modality that produced it, while Fluent focus visuals are shown
+/// for keyboard navigation and remain hidden for ordinary pointer interaction.
+enum FluentFocusVisibility {
+    private static var isInstalled = false
+    private static var monitors: [Any] = []
+    private static let keyboardVisibilityByWindow = NSMapTable<NSWindow, NSNumber>(
+        keyOptions: .weakMemory,
+        valueOptions: .strongMemory
+    )
+
+    static func isKeyboardFocusVisible(for view: NSView) -> Bool {
+        installIfNeeded()
+        guard let window = view.window,
+              window.firstResponder === view,
+              keyboardVisibilityByWindow.object(forKey: window)?.boolValue == true else {
+            return false
+        }
+        return true
+    }
+
+    static func markKeyboardInteraction(in window: NSWindow?) {
+        installIfNeeded()
+        guard let window else { return }
+        keyboardVisibilityByWindow.setObject(NSNumber(value: true), forKey: window)
+    }
+
+    static func markPointerInteraction(in window: NSWindow?) {
+        installIfNeeded()
+        guard let window else { return }
+        keyboardVisibilityByWindow.setObject(NSNumber(value: false), forKey: window)
+    }
+
+    private static func installIfNeeded() {
+        guard !isInstalled else { return }
+        isInstalled = true
+
+        if let monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { event in
+            markKeyboardInteraction(in: event.window)
+            return event
+        }) {
+            monitors.append(monitor)
+        }
+        let pointerEvents: NSEvent.EventTypeMask = [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        if let monitor = NSEvent.addLocalMonitorForEvents(matching: pointerEvents, handler: { event in
+            markPointerInteraction(in: event.window)
+            return event
+        }) {
+            monitors.append(monitor)
+        }
+    }
+}
+
 /// Binds a Boolean to whether the wrapped native view should receive keyboard focus.
 public struct FluentFocusedView<Content: FluentView>: FluentUpdatablePrimitiveView {
     fileprivate let content: Content

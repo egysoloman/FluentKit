@@ -693,7 +693,9 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         let expanded = top || panePresentationExpanded || (mode == .expanded && internalPaneOpen)
         paneToggleButton.isHidden = top || !isPaneToggleButtonVisible
         sectionLabel.stringValue = paneSectionTitle ?? ""
-        sectionLabel.isHidden = top || !expanded || paneSectionTitle == nil
+        // Section text has no compact representation. Hide it as soon as the pane closes so a
+        // clipped prefix cannot flash inside the 48pt pane during the frame transition.
+        sectionLabel.isHidden = top || !internalPaneOpen || !expanded || paneSectionTitle == nil
         paneHeaderHost?.isHidden = !expanded
         updateButtonConfigurations()
 
@@ -801,6 +803,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             selectedID: selectedID,
             theme: context.theme,
             layoutDirection: context.layoutDirection.appKitValue,
+            reduceMotion: context.reduceMotion,
             onSelect: { [weak self] id in self?.select(id) },
             onMoveFocus: { [weak self] move in
                 guard let self else { return }
@@ -1023,7 +1026,10 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         contentHost.layer?.removeAnimation(forKey: "fluent.navigation.content.frame")
         dimmingView.layer?.removeAnimation(forKey: "fluent.navigation.dimming")
 
-        if open { panePresentationExpanded = true }
+        // The pane frame and its child layout must enter the same visual state before the
+        // frame animation starts. Keeping expanded labels inside a 48pt model bounds causes
+        // clipped section text and a visible jump on the first collapsed frame.
+        panePresentationExpanded = open || resolvedDisplayMode == .top
         retainsOverlayDuringAnimation = resolvedDisplayMode == .compact || resolvedDisplayMode == .minimal
         assignPaneOpen(open, notifyBinding: notifyBinding)
         layoutCurrentState()
@@ -1227,6 +1233,7 @@ private final class FluentNavigationPaneToggleButton: NSButton {
     override func mouseExited(with event: NSEvent) { pointerOver = false; pressed = false; needsDisplay = true }
 
     override func mouseDown(with event: NSEvent) {
+        FluentFocusVisibility.markPointerInteraction(in: window)
         pressed = true
         needsDisplay = true
         super.mouseDown(with: event)
@@ -1249,7 +1256,7 @@ private final class FluentNavigationPaneToggleButton: NSButton {
                 in: NSRect(x: bounds.midX - 9, y: bounds.midY - 9, width: 18, height: 18)
             )
         }
-        if window?.firstResponder === self {
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
             fluentTheme.accent.setStroke()
             let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 2, dy: 2), xRadius: 3, yRadius: 3)
             path.lineWidth = fluentTheme.focusStrokeWidth
@@ -1258,7 +1265,21 @@ private final class FluentNavigationPaneToggleButton: NSButton {
     }
 
     override func keyDown(with event: NSEvent) {
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        needsDisplay = true
         if event.keyCode == 36 || event.keyCode == 49 { performClick(nil) } else { super.keyDown(with: event) }
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { needsDisplay = true }
+        return result
+    }
+
+    override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { needsDisplay = true }
+        return result
     }
 
     @objc private func invoke() { onToggle?() }
@@ -1354,6 +1375,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         pressed = true
         needsDisplay = true
         super.mouseDown(with: event)
@@ -1375,6 +1397,8 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     }
 
     override func keyDown(with event: NSEvent) {
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        needsDisplay = true
         let backwardsKey = top ? (layoutDirection == .rightToLeft ? 124 : 123) : 126
         let forwardsKey = top ? (layoutDirection == .rightToLeft ? 123 : 124) : 125
         switch Int(event.keyCode) {
@@ -1448,7 +1472,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
             )
         }
 
-        if window?.firstResponder === self {
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
             fluentTheme.accent.setStroke()
             let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 2, dy: 2), xRadius: 3, yRadius: 3)
             path.lineWidth = fluentTheme.focusStrokeWidth
@@ -1464,6 +1488,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
     private var selectedID: ID?
     private var fluentTheme: FluentTheme = .current
     private var layoutDirection: NSUserInterfaceLayoutDirection = .leftToRight
+    private var reduceMotion = false
     private var onSelect: ((ID) -> Void)?
     private var onMoveFocus: ((FluentNavigationFocusMove) -> Void)?
     private var pointerOver = false
@@ -1497,6 +1522,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
         selectedID: ID?,
         theme: FluentTheme,
         layoutDirection: NSUserInterfaceLayoutDirection,
+        reduceMotion: Bool,
         onSelect: @escaping (ID) -> Void,
         onMoveFocus: @escaping (FluentNavigationFocusMove) -> Void
     ) {
@@ -1504,6 +1530,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
         self.selectedID = selectedID
         fluentTheme = theme
         self.layoutDirection = layoutDirection
+        self.reduceMotion = reduceMotion
         userInterfaceLayoutDirection = layoutDirection
         self.onSelect = onSelect
         self.onMoveFocus = onMoveFocus
@@ -1519,6 +1546,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
     override func mouseExited(with event: NSEvent) { pointerOver = false; pressed = false; needsDisplay = true }
 
     override func mouseDown(with event: NSEvent) {
+        FluentFocusVisibility.markPointerInteraction(in: window)
         pressed = true
         needsDisplay = true
         super.mouseDown(with: event)
@@ -1527,6 +1555,8 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
     }
 
     override func keyDown(with event: NSEvent) {
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        needsDisplay = true
         let backwardKey: UInt16 = layoutDirection == .rightToLeft ? 124 : 123
         let forwardKey: UInt16 = layoutDirection == .rightToLeft ? 123 : 124
         switch event.keyCode {
@@ -1575,7 +1605,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
             ),
             withAttributes: [.font: font, .foregroundColor: color, .paragraphStyle: paragraph]
         )
-        if window?.firstResponder === self {
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
             fluentTheme.accent.setStroke()
             let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 2, dy: 2), xRadius: 3, yRadius: 3)
             path.lineWidth = fluentTheme.focusStrokeWidth
@@ -1592,7 +1622,12 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
                 state: item.id == selectedID ? .on : .off
             ) { [weak self] in self?.onSelect?(item.id) }
         }
-        let flyout = FluentMenuFlyout(items: menuItems, theme: fluentTheme, minimumWidth: 180)
+        let flyout = FluentMenuFlyout(
+            items: menuItems,
+            theme: fluentTheme,
+            minimumWidth: 180,
+            reduceMotion: reduceMotion
+        )
         self.flyout = flyout
         flyout.present(relativeTo: self, at: NSPoint(x: bounds.minX, y: bounds.minY))
     }

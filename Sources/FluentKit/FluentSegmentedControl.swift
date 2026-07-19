@@ -193,7 +193,7 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         border.lineWidth = appearance.borderWidth
         border.stroke()
 
-        if window?.firstResponder === self {
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
             theme.accent.setStroke()
             let focus = NSBezierPath(
                 roundedRect: rect.insetBy(dx: 2, dy: 2),
@@ -225,6 +225,7 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
         let index = segmentIndex(at: convert(event.locationInWindow, from: nil))
         guard segmentTitles.indices.contains(index) else { return }
         window?.makeFirstResponder(self)
@@ -254,6 +255,8 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
 
     override func keyDown(with event: NSEvent) {
         guard isEnabled, !segmentTitles.isEmpty else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        needsDisplay = true
         let current = selectedSegment >= 0 ? selectedSegment : 0
         let next: Int?
         switch event.keyCode {
@@ -459,7 +462,9 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         }
 
         let indicatorLayer = selectionIndicatorView.layer
-        let previous = indicatorLayer?.presentation()?.frame ?? selectionIndicatorView.frame
+        let presentationLayer = indicatorLayer?.presentation()
+        let previousPosition = presentationLayer?.position ?? indicatorLayer?.position
+        let previousBounds = presentationLayer?.bounds ?? indicatorLayer?.bounds
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         selectionIndicatorView.frame = target
@@ -467,18 +472,26 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         CATransaction.commit()
 
         indicatorLayer?.removeAnimation(forKey: "fluent.segmented.selection")
-        if animated, !reduceMotion, lastRenderedSelection >= 0, previous.width > 0, previous != target,
-           let indicatorLayer {
-            // SelectorBar selection uses the 167ms control-fast token and exact Fluent spline.
+        if animated, !reduceMotion, lastRenderedSelection >= 0,
+           let indicatorLayer, let previousPosition, let previousBounds,
+           previousBounds.width > 0,
+           previousPosition != indicatorLayer.position || previousBounds != indicatorLayer.bounds {
+            // CALayer.frame is derived from position, bounds, anchorPoint, and transform; it is
+            // not itself an animatable property. Capture both presentation properties so rapid
+            // selection and relayout cannot leave the highlight detached from its segment.
             let motion = FluentMotion.controlFast
             let position = CABasicAnimation(keyPath: "position")
-            position.fromValue = NSValue(point: NSPoint(x: previous.midX, y: previous.midY))
-            position.toValue = NSValue(point: NSPoint(x: target.midX, y: target.midY))
-            position.timingFunction = motion.curve.timingFunction
+            position.fromValue = NSValue(point: previousPosition)
+            position.toValue = NSValue(point: indicatorLayer.position)
+
+            let bounds = CABasicAnimation(keyPath: "bounds")
+            bounds.fromValue = NSValue(rect: previousBounds)
+            bounds.toValue = NSValue(rect: indicatorLayer.bounds)
 
             let group = CAAnimationGroup()
-            group.animations = [position]
+            group.animations = [position, bounds]
             group.duration = motion.duration
+            group.timingFunction = motion.curve.timingFunction
             group.isRemovedOnCompletion = true
             indicatorLayer.add(group, forKey: "fluent.segmented.selection")
         }

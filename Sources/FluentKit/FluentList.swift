@@ -998,6 +998,7 @@ public final class FluentMenuButton: NSButton {
             invalidateIntrinsicContentSize()
         }
     }
+    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
     private var menuItems: [FluentMenuItem]
     private var menuFlyout: FluentMenuFlyout?
 
@@ -1035,6 +1036,13 @@ public final class FluentMenuButton: NSButton {
         let chevron = NSBezierPath(); chevron.move(to: NSPoint(x: bounds.maxX - 18, y: chevronEndY)); chevron.line(to: NSPoint(x: bounds.maxX - 14, y: chevronTipY)); chevron.line(to: NSPoint(x: bounds.maxX - 10, y: chevronEndY)); chevron.lineWidth = 1.2; theme.textSecondary.setStroke(); chevron.stroke()
     }
 
+    public override func mouseDown(with event: NSEvent) {
+        guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
+        window?.makeFirstResponder(self)
+        showMenu()
+    }
+
     public override func keyDown(with event: NSEvent) {
         if event.keyCode == 36 || event.keyCode == 49 { showMenu() } else { super.keyDown(with: event) }
     }
@@ -1049,7 +1057,7 @@ public final class FluentMenuButton: NSButton {
     }
 
     @objc private func showMenu() {
-        let flyout = FluentMenuFlyout(items: menuItems, theme: theme)
+        let flyout = FluentMenuFlyout(items: menuItems, theme: theme, reduceMotion: reduceMotion)
         menuFlyout = flyout
         flyout.present(relativeTo: self, at: NSPoint(x: bounds.minX, y: bounds.minY))
     }

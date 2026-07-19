@@ -102,6 +102,9 @@ public enum FluentMotion {
     public static let navigationIndicatorExit = FluentMotionToken(duration: 0.600, curve: .navigationExit)
     public static let navigationPaneOpen = FluentMotionToken(duration: 0.350, curve: .direct)
     public static let navigationPaneClose = FluentMotionToken(duration: 0.120, curve: .direct)
+    public static let menuOpen = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn, scale: 0.5)
+    public static let submenuOpen = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn, scale: 0.33)
+    public static let menuClose = FluentMotionToken(duration: 0.083, curve: .linear)
     public static let teachingTipOpen = FluentMotionToken(duration: 0.300, curve: .direct, distance: 8, scale: 0.97)
     public static let teachingTipClose = FluentMotionToken(duration: 0.200, curve: .contract, distance: 8, scale: 0.97)
 }

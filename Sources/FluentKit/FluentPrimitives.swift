@@ -177,6 +177,7 @@ extension FluentMenuButton: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         theme = context.theme
+        reduceMotion = context.reduceMotion
         return self
     }
 
@@ -184,6 +185,7 @@ extension FluentMenuButton: FluentUpdatablePrimitiveView {
         guard let button = view as? FluentMenuButton else { return false }
         button.theme = context.theme
         button.applyDeclarativeConfiguration(from: self)
+        button.reduceMotion = context.reduceMotion
         return true
     }
 }
