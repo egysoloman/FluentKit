@@ -1,0 +1,16 @@
+# SwiftPM build products and local package state
+.build/
+.swiftpm/
+
+# Xcode / macOS metadata
+DerivedData/
+*.xcuserstate
+.DS_Store
+
+# Local editor and tool caches
+.codex/
+.vscode/
+.idea/
+
+# Local upstream source used only as a visual/behavioral reference.
+/microsoft-ui-xaml-winui3-release-2.3.1/

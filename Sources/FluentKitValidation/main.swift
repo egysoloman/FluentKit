@@ -1,0 +1,3010 @@
+import AppKit
+import FluentKit
+import Darwin
+import UniformTypeIdentifiers
+
+@inline(__always)
+func require(_ condition: @autoclosure () -> Bool, _ message: String) {
+    guard condition() else {
+        fputs("FAIL: \(message)\n", stderr)
+        exit(1)
+    }
+}
+
+func drainMainQueue() {
+    RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+}
+
+func firstLabel(in view: NSView) -> NSTextField? {
+    if let label = view as? NSTextField, !label.isEditable { return label }
+    return view.subviews.lazy.compactMap(firstLabel).first
+}
+
+func firstButton(in view: NSView) -> FluentButton? {
+    if let button = view as? FluentButton { return button }
+    return view.subviews.lazy.compactMap(firstButton).first
+}
+
+func firstToggle(in view: NSView) -> FluentToggle? {
+    if let toggle = view as? FluentToggle { return toggle }
+    return view.subviews.lazy.compactMap(firstToggle).first
+}
+
+func firstCheckBox(in view: NSView) -> FluentCheckBox? {
+    if let checkBox = view as? FluentCheckBox { return checkBox }
+    return view.subviews.lazy.compactMap(firstCheckBox).first
+}
+
+func firstRadioButton(in view: NSView) -> FluentRadioButton? {
+    if let radio = view as? FluentRadioButton { return radio }
+    return view.subviews.lazy.compactMap(firstRadioButton).first
+}
+
+func firstSegmentedControl(in view: NSView) -> NSSegmentedControl? {
+    if let segmented = view as? NSSegmentedControl { return segmented }
+    return view.subviews.lazy.compactMap(firstSegmentedControl).first
+}
+
+func firstSlider(in view: NSView) -> FluentSlider? {
+    if let slider = view as? FluentSlider { return slider }
+    return view.subviews.lazy.compactMap(firstSlider).first
+}
+
+func firstProgressBar(in view: NSView) -> FluentProgressBar? {
+    if let progress = view as? FluentProgressBar { return progress }
+    return view.subviews.lazy.compactMap(firstProgressBar).first
+}
+
+func firstLayer(named name: String, in view: NSView) -> CALayer? {
+    func search(_ layer: CALayer) -> CALayer? {
+        if layer.name == name { return layer }
+        return layer.sublayers?.lazy.compactMap(search).first
+    }
+    if let layer = view.layer, let match = search(layer) { return match }
+    return view.subviews.lazy.compactMap { firstLayer(named: name, in: $0) }.first
+}
+
+func firstSecureTextField(in view: NSView) -> NSSecureTextField? {
+    if let field = view as? NSSecureTextField { return field }
+    return view.subviews.lazy.compactMap(firstSecureTextField).first
+}
+
+func firstSearchField(in view: NSView) -> NSSearchField? {
+    if let field = view as? NSSearchField { return field }
+    return view.subviews.lazy.compactMap(firstSearchField).first
+}
+
+func firstComboBox(in view: NSView) -> NSComboBox? {
+    if let comboBox = view as? NSComboBox { return comboBox }
+    return view.subviews.lazy.compactMap(firstComboBox).first
+}
+
+func firstView(withAccessibilityTitle title: String, in view: NSView) -> NSView? {
+    if view.accessibilityTitle() == title { return view }
+    return view.subviews.lazy.compactMap { firstView(withAccessibilityTitle: title, in: $0) }.first
+}
+
+func firstView(withAccessibilityRole role: NSAccessibility.Role, in view: NSView) -> NSView? {
+    if view.accessibilityRole() == role { return view }
+    return view.subviews.lazy.compactMap { firstView(withAccessibilityRole: role, in: $0) }.first
+}
+
+func firstStepper(in view: NSView) -> NSStepper? {
+    if let stepper = view as? NSStepper { return stepper }
+    return view.subviews.lazy.compactMap(firstStepper).first
+}
+
+func firstFluentTextField(in view: NSView) -> FluentTextField? {
+    if let field = view as? FluentTextField { return field }
+    return view.subviews.lazy.compactMap(firstFluentTextField).first
+}
+
+func labels(in view: NSView) -> [NSTextField] {
+    var result: [NSTextField] = []
+    if let label = view as? NSTextField, !label.isEditable { result.append(label) }
+    for child in view.subviews { result.append(contentsOf: labels(in: child)) }
+    return result
+}
+
+func firstSplitView(in view: NSView) -> NSSplitView? {
+    if let splitView = view as? NSSplitView { return splitView }
+    return view.subviews.lazy.compactMap(firstSplitView).first
+}
+
+func bitmapHasVisibleVariation(_ bitmap: NSBitmapImageRep) -> Bool {
+    var sampledColors = Set<Int>()
+    let horizontalStep = max(bitmap.pixelsWide / 24, 1)
+    let verticalStep = max(bitmap.pixelsHigh / 16, 1)
+    for y in stride(from: 0, to: bitmap.pixelsHigh, by: verticalStep) {
+        for x in stride(from: 0, to: bitmap.pixelsWide, by: horizontalStep) {
+            guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { continue }
+            let red = Int((color.redComponent * 255).rounded())
+            let green = Int((color.greenComponent * 255).rounded())
+            let blue = Int((color.blueComponent * 255).rounded())
+            let alpha = Int((color.alphaComponent * 255).rounded())
+            sampledColors.insert((red << 24) | (green << 16) | (blue << 8) | alpha)
+            if sampledColors.count >= 8 { return true }
+        }
+    }
+    return false
+}
+
+struct ValidationButtonStyle: FluentButtonStyle {
+    func appearance(for configuration: FluentButtonStyleConfiguration) -> FluentButtonAppearance {
+        FluentButtonAppearance(
+            backgroundColor: .systemPink,
+            foregroundColor: .white,
+            borderColor: .systemPink,
+            borderWidth: 2,
+            cornerRadius: 3,
+            contentInsets: NSEdgeInsets(top: 9, left: 30, bottom: 9, right: 30),
+            focusRingColor: .systemPink
+        )
+    }
+}
+
+struct ValidationToggleStyle: FluentToggleStyle {
+    func appearance(for configuration: FluentToggleStyleConfiguration) -> FluentToggleAppearance {
+        FluentToggleAppearance(
+            trackColor: .systemPurple,
+            trackBorderColor: .systemPurple,
+            knobColor: .white,
+            labelColor: configuration.theme.textPrimary,
+            knobShadowColor: .clear,
+            trackSize: CGSize(width: 48, height: 24),
+            knobDiameter: 20,
+            labelSpacing: 16
+        )
+    }
+}
+
+struct ValidationSliderStyle: FluentSliderStyle {
+    func appearance(for configuration: FluentSliderStyleConfiguration) -> FluentSliderAppearance {
+        FluentSliderAppearance(
+            trackColor: .darkGray,
+            fillColor: .systemPurple,
+            knobColor: .systemPurple,
+            haloColor: .systemPurple.withAlphaComponent(0.2),
+            trackHeight: 6,
+            knobDiameter: 20,
+            haloDiameter: 28
+        )
+    }
+}
+
+struct ValidationTextFieldStyle: FluentTextFieldStyle {
+    func appearance(for configuration: FluentTextFieldStyleConfiguration) -> FluentTextFieldAppearance {
+        FluentTextFieldAppearance(
+            backgroundColor: .clear,
+            textColor: configuration.theme.textPrimary,
+            borderColor: .systemPurple,
+            borderWidth: 2,
+            cornerRadius: 0,
+            borderShape: .underline,
+            font: .systemFont(ofSize: 17)
+        )
+    }
+}
+
+struct ValidationProgressStyle: FluentProgressStyle {
+    func appearance(for configuration: FluentProgressStyleConfiguration) -> FluentProgressAppearance {
+        FluentProgressAppearance(
+            trackColor: .darkGray,
+            progressColor: .systemPurple,
+            trackHeight: 8,
+            cornerRadius: 4
+        )
+    }
+}
+
+struct ValidationCheckBoxStyle: FluentCheckBoxStyle {
+    func appearance(for configuration: FluentCheckBoxStyleConfiguration) -> FluentCheckBoxAppearance {
+        FluentCheckBoxAppearance(
+            boxSize: 24,
+            cornerRadius: 5,
+            fillColor: .systemPurple,
+            borderColor: .systemPurple,
+            borderWidth: 2,
+            markColor: .white,
+            labelColor: configuration.theme.textPrimary,
+            labelFont: .systemFont(ofSize: 16),
+            labelSpacing: 10
+        )
+    }
+}
+
+struct ValidationRadioButtonStyle: FluentRadioButtonStyle {
+    func appearance(for configuration: FluentRadioButtonStyleConfiguration) -> FluentRadioButtonAppearance {
+        FluentRadioButtonAppearance(
+            diameter: 24,
+            fillColor: .systemPurple,
+            borderColor: .systemPurple,
+            borderWidth: 2,
+            dotColor: .white,
+            labelColor: configuration.theme.textPrimary,
+            labelFont: .systemFont(ofSize: 16),
+            labelSpacing: 10
+        )
+    }
+}
+
+struct ValidationSegmentedStyle: FluentSegmentedStyle {
+    func appearance(for configuration: FluentSegmentedStyleConfiguration) -> FluentSegmentedAppearance {
+        FluentSegmentedAppearance(
+            backgroundColor: .darkGray,
+            selectedSegmentColor: .systemPurple,
+            borderColor: .systemPurple,
+            borderWidth: 2,
+            cornerRadius: 5,
+            font: .systemFont(ofSize: 15),
+            segmentStyle: .rounded
+        )
+    }
+}
+
+struct ValidationStepperStyle: FluentStepperStyle {
+    func appearance(for configuration: FluentStepperStyleConfiguration) -> FluentStepperAppearance {
+        FluentStepperAppearance(
+            labelColor: configuration.theme.textPrimary,
+            labelFont: .systemFont(ofSize: 17),
+            spacing: 12,
+            valueFieldWidth: 110,
+            textFieldStyle: ValidationTextFieldStyle()
+        )
+    }
+}
+
+let observable = FluentObservable(10)
+var observed: [Int] = []
+let token = observable.observe({ observed.append($0) }, notifyImmediately: false)
+observable.value = 12
+require(observed == [12], "observable delivers updates")
+observable.removeObserver(token)
+observable.value = 14
+require(observed == [12], "observer removal works")
+
+let binding = FluentBinding(get: { observable.value }, set: { observable.value = $0 })
+let mapped = binding.map({ $0 > 10 }, { $0 ? 20 : 0 })
+require(mapped.get() == true, "mapped binding reads transformed value")
+mapped.set(false)
+require(observable.value == 0, "mapped binding writes through inverse transform")
+
+let theme = FluentTheme.custom(accent: .systemBlue, material: .acrylic)
+switch theme.material {
+case .acrylic: break
+default: require(false, "custom theme stores material")
+}
+require(theme.buttonCornerRadius > 0, "theme exposes control metrics")
+let regularDesignTokens = FluentDesignTokens()
+let compactDesignTokens = FluentDesignTokens(density: .compact)
+require(regularDesignTokens.controlHeight == 32, "design tokens expose the regular control height")
+require(regularDesignTokens.controlCornerRadius == 4, "design tokens expose the Fluent control radius")
+require(regularDesignTokens.cardCornerRadius == 8, "design tokens expose the overlay and card radius")
+require(regularDesignTokens.navigationPaneWidth == 240, "design tokens expose the navigation pane width")
+require(compactDesignTokens.controlHeight < regularDesignTokens.controlHeight, "design tokens scale with semantic density")
+let derivedTheme = theme.with(accent: .systemPink).with(material: .sidebar)
+require(derivedTheme.accent == .systemPink, "theme derives a new accent while preserving other values")
+require(derivedTheme.material == .sidebar, "theme derives a new material while preserving other values")
+require(derivedTheme.density == theme.density && derivedTheme.contrast == theme.contrast, "theme derivation preserves density and contrast")
+let horizontalDivider = FluentDivider()._mount(in: FluentRenderContext(theme: theme))
+let verticalDivider = FluentDivider(orientation: .vertical)._mount(in: FluentRenderContext(theme: theme))
+require(
+    horizontalDivider.constraints.contains { $0.firstAttribute == .height && $0.constant == 1 },
+    "horizontal divider fixes its thickness without constraining width"
+)
+require(
+    verticalDivider.constraints.contains { $0.firstAttribute == .width && $0.constant == 1 },
+    "vertical divider fixes its thickness without constraining height"
+)
+
+let compactHighContrastTheme = FluentTheme.custom(
+    accent: .systemOrange,
+    material: .acrylic,
+    density: .compact,
+    contrast: .high
+)
+require(compactHighContrastTheme.density == .compact, "theme stores semantic density")
+require(compactHighContrastTheme.contrast == .high, "theme stores explicit contrast mode")
+require(compactHighContrastTheme.isHighContrast, "high contrast theme resolves its semantic contrast")
+require(compactHighContrastTheme.controlHeight < theme.controlHeight, "compact density reduces control metrics")
+let standardSelectionTheme = FluentTheme.custom(contrast: .standard, typography: FluentTypography(scale: 1))
+let highContrastSelectionTheme = FluentTheme.custom(contrast: .high, typography: FluentTypography(scale: 1.4))
+let standardCheckBoxAppearance = FluentAutomaticCheckBoxStyle().appearance(
+    for: FluentCheckBoxStyleConfiguration(isChecked: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: standardSelectionTheme)
+)
+let highContrastCheckBoxAppearance = FluentAutomaticCheckBoxStyle().appearance(
+    for: FluentCheckBoxStyleConfiguration(isChecked: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: highContrastSelectionTheme)
+)
+require(highContrastCheckBoxAppearance.borderWidth > standardCheckBoxAppearance.borderWidth, "high contrast increases check box border emphasis")
+require(highContrastCheckBoxAppearance.labelFont.pointSize > standardCheckBoxAppearance.labelFont.pointSize, "theme typography scales check box labels")
+let highContrastSegmentedAppearance = FluentAutomaticSegmentedStyle().appearance(
+    for: FluentSegmentedStyleConfiguration(selectedIndex: 0, isEnabled: true, controlSize: .regular, theme: highContrastSelectionTheme)
+)
+require(highContrastSegmentedAppearance.borderWidth > standardCheckBoxAppearance.borderWidth, "high contrast increases segmented border emphasis")
+let standardButtonAppearance = FluentAutomaticButtonStyle().appearance(
+    for: FluentButtonStyleConfiguration(title: "Standard", theme: standardSelectionTheme)
+)
+let highContrastButtonAppearance = FluentAutomaticButtonStyle().appearance(
+    for: FluentButtonStyleConfiguration(title: "High contrast", theme: highContrastSelectionTheme)
+)
+require(highContrastButtonAppearance.borderWidth > standardButtonAppearance.borderWidth, "high contrast increases button border emphasis")
+require(highContrastButtonAppearance.focusRingWidth > standardButtonAppearance.focusRingWidth, "high contrast increases button focus emphasis")
+let standardToggleAppearance = FluentAutomaticToggleStyle().appearance(
+    for: FluentToggleStyleConfiguration(isOn: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: standardSelectionTheme)
+)
+let highContrastToggleAppearance = FluentAutomaticToggleStyle().appearance(
+    for: FluentToggleStyleConfiguration(isOn: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: highContrastSelectionTheme)
+)
+require(highContrastToggleAppearance.trackBorderWidth > standardToggleAppearance.trackBorderWidth, "high contrast increases toggle border emphasis")
+let standardSliderAppearance = FluentAutomaticSliderStyle().appearance(
+    for: FluentSliderStyleConfiguration(valueFraction: 0.5, isEnabled: true, isPointerOver: false, isDragging: false, controlSize: .regular, theme: standardSelectionTheme)
+)
+let highContrastSliderAppearance = FluentAutomaticSliderStyle().appearance(
+    for: FluentSliderStyleConfiguration(valueFraction: 0.5, isEnabled: true, isPointerOver: false, isDragging: false, controlSize: .regular, theme: highContrastSelectionTheme)
+)
+require(highContrastSliderAppearance.trackHeight > standardSliderAppearance.trackHeight, "high contrast increases slider track emphasis")
+require(highContrastSliderAppearance.knobDiameter > standardSliderAppearance.knobDiameter, "high contrast increases slider thumb emphasis")
+let standardFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(isEnabled: true, isFocused: false, controlSize: .regular, theme: standardSelectionTheme)
+)
+let highContrastFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(isEnabled: true, isFocused: false, controlSize: .regular, theme: highContrastSelectionTheme)
+)
+require(highContrastFieldAppearance.borderWidth > standardFieldAppearance.borderWidth, "high contrast increases text field border emphasis")
+let standardProgressAppearance = FluentAutomaticProgressStyle().appearance(
+    for: FluentProgressStyleConfiguration(valueFraction: 0.5, theme: standardSelectionTheme)
+)
+let highContrastProgressAppearance = FluentAutomaticProgressStyle().appearance(
+    for: FluentProgressStyleConfiguration(valueFraction: 0.5, theme: highContrastSelectionTheme)
+)
+require(highContrastProgressAppearance.trackHeight > standardProgressAppearance.trackHeight, "high contrast increases progress track emphasis")
+let standardCardAppearance = FluentAutomaticCardStyle().appearance(for: standardSelectionTheme)
+let highContrastCardAppearance = FluentAutomaticCardStyle().appearance(for: highContrastSelectionTheme)
+require(highContrastCardAppearance.strokeWidth > standardCardAppearance.strokeWidth, "high contrast increases card boundary emphasis")
+
+var capturedThemeDensity: FluentThemeDensity?
+var capturedThemeContrast: FluentThemeContrast?
+var capturedThemeColorScheme: FluentThemeColorScheme?
+struct ThemeVariantProbe: FluentPrimitiveView {
+    let capture: (FluentRenderContext) -> Void
+
+    var body: NeverFluentView { NeverFluentView() }
+
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        capture(context)
+        return NSView()
+    }
+}
+let themeVariantView = ThemeVariantProbe { context in
+    capturedThemeDensity = context.theme.density
+    capturedThemeContrast = context.theme.contrast
+    capturedThemeColorScheme = context.theme.colorScheme
+}
+.fluentDensity(.compact)
+.fluentContrast(.high)
+.fluentColorScheme(.dark)
+_ = themeVariantView._mount(in: FluentRenderContext(theme: theme))
+require(capturedThemeDensity == .compact, "density environment reaches nested content")
+require(capturedThemeContrast == .high, "contrast environment reaches nested content")
+require(capturedThemeColorScheme == .dark, "color scheme environment reaches nested content")
+
+let styledButton = FluentButtonView("Styled", style: ValidationButtonStyle())
+let styledButtonView = styledButton._mount(in: FluentRenderContext(theme: compactHighContrastTheme)) as? FluentButton
+require(styledButtonView?.fluentStyle != nil, "button style mounts on the native button")
+require((styledButtonView?.intrinsicContentSize.width ?? 0) > 80, "button style content insets affect intrinsic metrics")
+let compactButton = FluentButtonView("Density")._mount(
+    in: FluentRenderContext(theme: theme.with(density: .compact))
+) as? FluentButton
+let spaciousButton = FluentButtonView("Density")._mount(
+    in: FluentRenderContext(theme: theme.with(density: .spacious))
+) as? FluentButton
+require(
+    (compactButton?.intrinsicContentSize.height ?? 0) < (spaciousButton?.intrinsicContentSize.height ?? 0),
+    "theme density changes native button metrics"
+)
+
+let styledButtonTitle = FluentObservable("First")
+struct StyledButtonProbe: FluentView {
+    let title: FluentObservable<String>
+
+    var body: FluentButtonView {
+        FluentButtonView(title.value).buttonStyle(ValidationButtonStyle())
+    }
+}
+let styledButtonHost = FluentViewHost(StyledButtonProbe(title: styledButtonTitle))
+let nativeStyledButton = firstButton(in: styledButtonHost)
+styledButtonTitle.value = "Second"
+drainMainQueue()
+require(firstButton(in: styledButtonHost) === nativeStyledButton, "styled button updates preserve native identity")
+require(nativeStyledButton?.title == "Second", "styled button updates declarative title in place")
+
+let cardContent = NSView()
+let styledCard = FluentCard(contentView: cardContent, style: FluentElevatedCardStyle())
+styledCard.frame = NSRect(x: 0, y: 0, width: 240, height: 120)
+styledCard.layoutSubtreeIfNeeded()
+require(abs(cardContent.frame.minX - 20) < 0.001, "card style applies horizontal content inset")
+require(styledCard.intrinsicContentSize.height >= 36, "card forwards content and style insets as intrinsic height")
+styledCard.style = FluentPlainCardStyle()
+styledCard.layoutSubtreeIfNeeded()
+require(abs(cardContent.frame.minX) < 0.001, "card style updates content inset in place")
+
+let styledToggleState = FluentState(wrappedValue: true)
+let styledToggleHost = FluentViewHost(
+    FluentToggleView("Styled toggle", isOn: styledToggleState.projectedValue)
+        .toggleStyle(ValidationToggleStyle())
+)
+let nativeStyledToggle = firstToggle(in: styledToggleHost)
+require(nativeStyledToggle?.fluentStyle != nil, "toggle style mounts on the native toggle")
+require((nativeStyledToggle?.intrinsicContentSize.width ?? 0) > 48, "toggle style metrics affect intrinsic width")
+styledToggleState.wrappedValue = false
+drainMainQueue()
+require(firstToggle(in: styledToggleHost) === nativeStyledToggle, "styled toggle binding updates preserve native identity")
+require(nativeStyledToggle?.isOn == false, "styled toggle binding updates native state")
+
+let styledSliderState = FluentState(wrappedValue: 0.4)
+let styledSliderHost = FluentViewHost(
+    FluentSliderView(value: styledSliderState.projectedValue)
+        .sliderStyle(ValidationSliderStyle())
+)
+let nativeStyledSlider = firstSlider(in: styledSliderHost)
+require(nativeStyledSlider?.fluentStyle != nil, "slider style mounts on the native slider")
+styledSliderState.wrappedValue = 0.8
+drainMainQueue()
+require(firstSlider(in: styledSliderHost) === nativeStyledSlider, "styled slider binding updates preserve native identity")
+require(abs((nativeStyledSlider?.value ?? 0) - 0.8) < 0.0001, "styled slider binding updates native value")
+
+let styledTextState = FluentState(wrappedValue: "styled")
+let styledTextHost = FluentViewHost(
+    FluentTextFieldView(text: styledTextState.projectedValue, placeholder: "Styled input")
+        .textFieldStyle(ValidationTextFieldStyle())
+)
+let nativeStyledTextField = firstFluentTextField(in: styledTextHost)
+require(nativeStyledTextField?.fluentStyle != nil, "text field style mounts on the native field")
+styledTextState.wrappedValue = "updated"
+drainMainQueue()
+require(firstFluentTextField(in: styledTextHost) === nativeStyledTextField, "styled text field updates preserve native identity")
+require(nativeStyledTextField?.stringValue == "updated", "styled text field binding updates native text")
+
+let styledProgressValue = FluentObservable(0.35)
+struct StyledProgressProbe: FluentView {
+    let value: FluentObservable<Double>
+
+    var body: FluentProgressBar {
+        FluentProgressBar(value: value.value).progressStyle(ValidationProgressStyle())
+    }
+}
+let styledProgressHost = FluentViewHost(StyledProgressProbe(value: styledProgressValue))
+let nativeStyledProgress = firstProgressBar(in: styledProgressHost)
+require(nativeStyledProgress?.fluentStyle is ValidationProgressStyle, "progress style mounts on the native progress bar")
+require(nativeStyledProgress?.intrinsicContentSize.height == 8, "progress style controls intrinsic track height")
+styledProgressValue.value = 0.8
+drainMainQueue()
+require(firstProgressBar(in: styledProgressHost) === nativeStyledProgress, "styled progress updates preserve native identity")
+require(abs((nativeStyledProgress?.value ?? 0) - 0.8) < 0.0001, "styled progress updates declarative value in place")
+let progressAccessibilityValue = (nativeStyledProgress?.accessibilityValue() as? NSNumber)?.doubleValue ?? -1
+require(abs(progressAccessibilityValue - 0.8) < 0.0001, "progress updates expose the current accessibility value")
+
+let styledCheckBoxState = FluentState(wrappedValue: true)
+let styledCheckBoxHost = FluentViewHost(
+    FluentCheckBoxView("Styled check box", isChecked: styledCheckBoxState.projectedValue)
+        .checkBoxStyle(ValidationCheckBoxStyle())
+)
+let nativeStyledCheckBox = firstCheckBox(in: styledCheckBoxHost)
+require(nativeStyledCheckBox?.fluentStyle is ValidationCheckBoxStyle, "check box style mounts on the native control")
+require((nativeStyledCheckBox?.intrinsicContentSize.height ?? 0) >= 26, "check box style metrics affect intrinsic height")
+styledCheckBoxState.wrappedValue = false
+drainMainQueue()
+require(firstCheckBox(in: styledCheckBoxHost) === nativeStyledCheckBox, "styled check box updates preserve native identity")
+require(nativeStyledCheckBox?.isChecked == false, "check box binding updates native state")
+require(nativeStyledCheckBox?.accessibilityValue() as? String == "Off", "check box binding updates accessibility state")
+nativeStyledCheckBox?.isChecked = true
+require(styledCheckBoxState.wrappedValue, "check box interaction writes back to its binding")
+
+let styledRadioState = FluentState(wrappedValue: false)
+let styledRadioHost = FluentViewHost(
+    FluentRadioButtonView("Styled radio", isSelected: styledRadioState.projectedValue)
+        .radioButtonStyle(ValidationRadioButtonStyle())
+)
+let nativeStyledRadio = firstRadioButton(in: styledRadioHost)
+require(nativeStyledRadio?.fluentStyle is ValidationRadioButtonStyle, "radio style mounts on the native control")
+require((nativeStyledRadio?.intrinsicContentSize.height ?? 0) >= 26, "radio style metrics affect intrinsic height")
+styledRadioState.wrappedValue = true
+drainMainQueue()
+require(firstRadioButton(in: styledRadioHost) === nativeStyledRadio, "styled radio updates preserve native identity")
+require(nativeStyledRadio?.isSelected == true, "radio binding updates native state")
+require(nativeStyledRadio?.accessibilityValue() as? String == "On", "radio binding updates accessibility state")
+nativeStyledRadio?.isSelected = false
+require(!styledRadioState.wrappedValue, "radio interaction writes back to its binding")
+
+let styledSegmentState = FluentState(wrappedValue: 0)
+let styledSegmentHost = FluentViewHost(
+    FluentSegmentedControl(["First", "Second"], selection: styledSegmentState.projectedValue)
+        .segmentedStyle(ValidationSegmentedStyle())
+)
+let segmentedMotionWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 64),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+segmentedMotionWindow.contentView = styledSegmentHost
+segmentedMotionWindow.orderFront(nil)
+let nativeStyledSegmented = firstSegmentedControl(in: styledSegmentHost)
+require(nativeStyledSegmented?.font?.pointSize == 15, "segmented style applies semantic font metrics")
+nativeStyledSegmented?.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
+nativeStyledSegmented?.layoutSubtreeIfNeeded()
+let segmentedSelectionIndicators = nativeStyledSegmented?.subviews.filter {
+    $0.identifier?.rawValue == "FluentKit.Segmented.SelectionIndicator"
+} ?? []
+let segmentedSelectionIndicator = segmentedSelectionIndicators.first
+let expectedSegmentIndicatorWidth = (nativeStyledSegmented?.bounds.width ?? 0) / 2 - 4
+require(
+    segmentedSelectionIndicators.count == 1
+        && abs((segmentedSelectionIndicator?.frame.width ?? 0) - expectedSegmentIndicatorWidth) < 0.001,
+    "segmented control keeps one shared inset selection indicator"
+)
+styledSegmentState.wrappedValue = 1
+drainMainQueue()
+require(firstSegmentedControl(in: styledSegmentHost) === nativeStyledSegmented, "styled segmented updates preserve native identity")
+require(nativeStyledSegmented?.selectedSegment == 1, "segmented binding updates native selection")
+require(nativeStyledSegmented?.accessibilityValue() as? Int == 1, "segmented selection updates accessibility value")
+require(
+    segmentedSelectionIndicator?.layer?.animation(forKey: "fluent.segmented.selection") != nil,
+    "segmented binding updates animate position, scale, and opacity on the shared indicator"
+)
+nativeStyledSegmented?.selectedSegment = 0
+nativeStyledSegmented?.sendAction(nativeStyledSegmented?.action, to: nativeStyledSegmented?.target)
+require(styledSegmentState.wrappedValue == 0, "segmented interaction writes back to its binding")
+segmentedMotionWindow.orderOut(nil)
+
+let themeStore = FluentThemeStore(FluentTheme.custom(colorScheme: .light, typography: FluentTypography(scale: 1)))
+struct ThemeStoreProbe: FluentView {
+    let store: FluentThemeStore
+
+    var body: FluentThemeStoreView<FluentTextView> {
+        FluentText("Semantic title", style: .title).fluentTheme(store)
+    }
+}
+let themeStoreHost = FluentViewHost(ThemeStoreProbe(store: themeStore))
+let nativeThemeLabel = firstLabel(in: themeStoreHost)
+require(nativeThemeLabel?.font?.pointSize == 22, "semantic text style resolves through the theme typography")
+themeStore.theme = themeStore.theme
+    .with(colorScheme: .dark)
+    .with(typography: FluentTypography(scale: 1.5))
+drainMainQueue()
+require(firstLabel(in: themeStoreHost) === nativeThemeLabel, "theme store updates preserve native label identity")
+require((nativeThemeLabel?.font?.pointSize ?? 0) > 30, "theme store typography updates semantic text in place")
+let semanticTextRed = nativeThemeLabel?.textColor?.usingColorSpace(.deviceRGB)?.redComponent ?? 0
+require(semanticTextRed > 0.8, "theme store color scheme updates semantic text color")
+
+let text = FluentText("identity").fluentID("stable")
+_ = text
+require(true, "stable identity modifier is available")
+
+let modifier = FluentText("modifier").padding(8).opacity(0.75).disabled(false)
+let modifierView = modifier._mount(in: FluentRenderContext())
+require(modifierView.subviews.first?.alphaValue == 0.75, "opacity modifier applies alpha")
+
+let accessible = FluentText("Accessible").accessibilityLabel("Accessible label").accessibilityRole(.group)
+require(accessible._mount(in: FluentRenderContext()).accessibilityLabel() == "Accessible label", "accessibility label applies")
+
+let hiddenAccessible = FluentText("Decorative")
+    .accessibilityHidden()
+    .accessibilityLabel("Decorative label")
+let hiddenAccessibleView = hiddenAccessible._mount(in: FluentRenderContext())
+require(hiddenAccessibleView.isAccessibilityElement() == false, "accessibility modifiers preserve hidden state when composed")
+
+let accessibilityValueView = FluentNativeView(NSView())
+    .accessibilityRole(.group)
+    .accessibilityValue("Decorative value")
+    ._mount(in: FluentRenderContext())
+require(accessibilityValueView.accessibilityValue() as? String == "Decorative value", "accessibility value applies to semantic containers")
+
+let rows = FluentForEach([1, 2, 3], id: { $0 }) { value in
+    FluentText("row \(value)")
+}
+let forEachHost = rows._mount(in: FluentRenderContext())
+require(forEachHost.subviews.count == 1, "for-each mounts a reusable host")
+let forEachStack = forEachHost.subviews.first as? NSStackView
+require(forEachStack?.arrangedSubviews.count == 3, "for-each mounts one native row per element")
+require(forEachHost.accessibilityChildren()?.count == 3, "for-each exposes rows as accessibility children")
+let originalRowViews = forEachStack?.arrangedSubviews ?? []
+let reorderedForEach = FluentForEach([3, 1, 4], id: { $0 }) { value in
+    FluentText("row \(value)")
+}
+require(reorderedForEach._update(forEachHost, in: FluentRenderContext()), "for-each updates a compatible collection in place")
+let reorderedStack = forEachHost.subviews.first as? NSStackView
+require(reorderedStack?.arrangedSubviews.count == 3, "for-each preserves row count after mutation")
+require(reorderedStack?.arrangedSubviews[0] === originalRowViews[2], "for-each reuses the row that moved to the first position")
+require(reorderedStack?.arrangedSubviews[1] === originalRowViews[0], "for-each preserves identity for a moved row")
+require(reorderedStack?.arrangedSubviews[2] !== originalRowViews[1], "for-each removes deleted identity and mounts inserted identity")
+require(forEachHost.accessibilityChildren()?.count == 3, "for-each refreshes accessibility children after mutation")
+let preDuplicateViews = reorderedStack?.arrangedSubviews ?? []
+let duplicateForEach = FluentForEach([3, 3, 4], id: { $0 }) { value in
+    FluentText("duplicate \(value)")
+}
+require(duplicateForEach._update(forEachHost, in: FluentRenderContext()), "for-each accepts duplicate IDs with a deterministic rebuild fallback")
+let duplicateStack = forEachHost.subviews.first as? NSStackView
+require(duplicateStack?.arrangedSubviews.count == 3, "for-each rebuild fallback preserves duplicate row count")
+require(duplicateStack?.arrangedSubviews[0] !== preDuplicateViews[0], "duplicate IDs do not reuse an ambiguous native row")
+
+let largeSiblingGroup = FluentVStack(spacing: 1) {
+    FluentText("1"); FluentText("2"); FluentText("3"); FluentText("4")
+    FluentText("5"); FluentText("6"); FluentText("7"); FluentText("8")
+    FluentText("9"); FluentText("10"); FluentText("11"); FluentText("12")
+    FluentText("13"); FluentText("14")
+}
+let largeSiblingView = largeSiblingGroup._mount(in: FluentRenderContext())
+require((largeSiblingView as? NSStackView)?.arrangedSubviews.count == 14, "view builder supports more than twelve sibling views")
+
+let scrollView = FluentScrollView(.vertical) {
+    FluentVStack(spacing: 4) {
+        FluentText("Scrollable heading")
+        FluentText("Initial value")
+    }
+}
+let mountedScrollView = scrollView._mount(in: FluentRenderContext())
+guard let nativeScrollView = mountedScrollView as? NSScrollView,
+      let originalScrollDocument = nativeScrollView.documentView else {
+    require(false, "scroll view mounts an NSScrollView with a document view")
+    fatalError()
+}
+require(nativeScrollView.hasVerticalScroller, "vertical scroll view enables its vertical scroller")
+require(!nativeScrollView.hasHorizontalScroller, "vertical scroll view disables its horizontal scroller")
+let updatedScrollView = FluentScrollView(.vertical) {
+    FluentVStack(spacing: 4) {
+        FluentText("Scrollable heading")
+        FluentText("Updated value")
+    }
+}
+require(updatedScrollView._update(nativeScrollView, in: FluentRenderContext()), "scroll view updates compatible document content in place")
+require(nativeScrollView.documentView === originalScrollDocument, "scroll view preserves native document identity during compatible updates")
+require(firstLabel(in: originalScrollDocument)?.stringValue == "Scrollable heading", "scroll document remains mounted after its content updates")
+
+let reactiveValue = FluentObservable(1)
+struct ReactiveLabel: FluentView {
+    let value: FluentObservable<Int>
+    var body: FluentTextView { FluentText("Value: \(value.value)") }
+}
+let reactiveHost = FluentViewHost(ReactiveLabel(value: reactiveValue))
+require(firstLabel(in: reactiveHost)?.stringValue == "Value: 1", "host mounts observable content")
+reactiveValue.value = 2
+reactiveValue.value = 3
+drainMainQueue()
+require(firstLabel(in: reactiveHost)?.stringValue == "Value: 3", "host automatically refreshes observed dependencies")
+
+struct ErasedRoot: FluentView {
+    var body: FluentAnyView { FluentAnyView(FluentText("Erased root")) }
+}
+let erasedRootHost = FluentViewHost(ErasedRoot())
+require(firstLabel(in: erasedRootHost)?.stringValue == "Erased root", "type-erased root view mounts without recursion")
+
+let editorText = FluentState(wrappedValue: "Initial notes")
+let textEditor = FluentTextEditor(editorText.projectedValue, placeholder: "Notes", minimumHeight: 96)
+let textEditorView = textEditor._mount(in: FluentRenderContext())
+require(textEditorView === textEditor, "text editor mounts as its native AppKit host")
+require(textEditor.textView.string == "Initial notes", "text editor reads its initial binding value")
+require(textEditor.textView.accessibilityRole() == NSAccessibility.Role.textArea, "text editor exposes native multiline accessibility semantics")
+require(textEditor.intrinsicContentSize.height == 96, "text editor honors its declarative minimum height")
+textEditor.textView.string = "Edited notes"
+textEditor.commitText()
+require(editorText.wrappedValue == "Edited notes", "text editor writes native edits through its binding")
+editorText.wrappedValue = "External notes"
+drainMainQueue()
+require(textEditor.textView.string == "External notes", "text editor reflects external binding updates")
+
+let richText = FluentState(wrappedValue: NSAttributedString(string: "Hello Fluent Hello"))
+let richSelection = FluentState(wrappedValue: FluentTextSelection(location: 0, length: 5))
+let richEditor = FluentRichTextEditor(
+    richText.projectedValue,
+    selection: richSelection.projectedValue,
+    placeholder: "Compose",
+    minimumHeight: 110
+)
+let richView = richEditor._mount(in: FluentRenderContext())
+require(richView === richEditor, "rich editor mounts as its native AppKit host")
+require(richEditor.textView.string == "Hello Fluent Hello", "rich editor reads attributed text binding")
+require(richEditor.textView.accessibilityRole() == NSAccessibility.Role.textArea, "rich editor exposes multiline accessibility semantics")
+require(richEditor.intrinsicContentSize.height == 110, "rich editor honors minimum height")
+require(richEditor.find("hello").map { $0.location } == [0, 13], "rich editor finds case-insensitive matches")
+richEditor.textView.setSelectedRange(NSRange(location: 0, length: 5))
+richEditor.toggleBold()
+let boldFont = richEditor.textView.textStorage?.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
+require(boldFont.map { NSFontManager.shared.traits(of: $0).contains(.boldFontMask) } == true, "rich editor applies bold to the selected range")
+richEditor.setFontSize(18)
+let resizedFont = richEditor.textView.textStorage?.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
+require(resizedFont?.pointSize == 18, "rich editor applies a font size to the selection")
+richEditor.textView.setSelectedRange(NSRange(location: 0, length: 5))
+richEditor.replaceSelection(with: NSAttributedString(string: "Hi"))
+require(richText.wrappedValue.string == "Hi Fluent Hello", "rich editor writes replacement text through its binding")
+require(richSelection.wrappedValue == FluentTextSelection(location: 2, length: 0), "rich editor keeps selection binding synchronized")
+require(richEditor.replaceAll("hello", with: "World") == 1, "rich editor replaces all remaining matches")
+require(richText.wrappedValue.string == "Hi Fluent World", "rich editor commits replace-all output")
+richText.wrappedValue = NSAttributedString(string: "External rich text")
+drainMainQueue()
+require(richEditor.textView.string == "External rich text", "rich editor reflects external attributed binding updates")
+richSelection.wrappedValue = FluentTextSelection(location: 9, length: 4)
+drainMainQueue()
+require(richEditor.textView.selectedRange() == NSRange(location: 9, length: 4), "rich editor reflects external selection binding updates")
+richEditor.textView.setSelectedRange(NSRange(location: 0, length: 8))
+richEditor.perform(.toggleBold)
+require(richEditor.formattingState.bold == .on, "rich text formatting state reports an enabled trait")
+richEditor.perform(.toggleBold)
+require(richEditor.formattingState.bold == .off, "rich text formatting command toggles an enabled trait off")
+richEditor.textView.setSelectedRange(NSRange(location: 0, length: 4))
+richEditor.perform(.toggleItalic)
+richEditor.textView.setSelectedRange(NSRange(location: 0, length: 8))
+require(richEditor.formattingState.italic == .mixed, "rich text formatting state reports mixed selections")
+richEditor.perform(.alignment(.center))
+require(richEditor.formattingState.alignment == .center, "rich text formatting command applies paragraph alignment")
+richEditor.perform(.clearFormatting)
+require(richEditor.formattingState.italic == .off, "clear-formatting command removes font traits")
+let attachment = FluentTextAttachment(
+    id: "validation-attachment",
+    data: Data([0x46, 0x4b]),
+    typeIdentifier: "public.data",
+    filename: "sample.bin",
+    accessibilityLabel: "Validation attachment"
+)
+richEditor.textView.setSelectedRange(NSRange(location: richEditor.textView.string.utf16.count, length: 0))
+richEditor.insertAttachment(attachment)
+let attachmentOccurrences = richEditor.attachments()
+require(attachmentOccurrences.count == 1, "rich editor enumerates inserted text attachments")
+require(attachmentOccurrences.first?.attachment.id == attachment.id, "text attachment preserves its stable ID")
+require(attachmentOccurrences.first?.attachment.data == attachment.data, "text attachment preserves its payload")
+require(attachmentOccurrences.first?.attachment.accessibilityLabel == "Validation attachment", "text attachment preserves its accessibility label")
+require(richText.wrappedValue.attribute(.attachment, at: richText.wrappedValue.length - 1, effectiveRange: nil) is NSTextAttachment, "attachment insertion commits attributed content to the binding")
+require(richEditor.removeAttachment(id: attachment.id), "rich editor removes a text attachment by stable ID")
+require(richEditor.attachments().isEmpty, "text attachment removal updates native storage")
+require(!richEditor.removeAttachment(id: attachment.id), "removing an absent text attachment reports no mutation")
+
+let secureText = FluentState(wrappedValue: "initial-secret")
+let secureView = FluentSecureField(secureText.projectedValue, placeholder: "Password")
+    .textFieldStyle(ValidationTextFieldStyle())
+    ._mount(in: FluentRenderContext())
+let secureField = firstSecureTextField(in: secureView)
+require(secureField?.stringValue == "initial-secret", "secure field reads its initial binding value")
+require((secureField as? FluentSecureTextField)?.fluentStyle is ValidationTextFieldStyle, "secure field receives the shared text field style")
+secureText.wrappedValue = "external-secret"
+drainMainQueue()
+require(secureField?.stringValue == "external-secret", "secure field reflects external binding updates")
+secureField?.stringValue = "edited-secret"
+if let secureField, let delegate = secureField.delegate {
+    delegate.controlTextDidChange?(Notification(name: NSControl.textDidChangeNotification, object: secureField))
+}
+require(secureText.wrappedValue == "edited-secret", "secure field writes native edits through its binding")
+
+let searchText = FluentState(wrappedValue: "")
+var searchSubmits = 0
+let searchView = FluentSearchField(
+    searchText.projectedValue,
+    placeholder: "Filter",
+    style: ValidationTextFieldStyle(),
+    onSubmit: { searchSubmits += 1 }
+)._mount(in: FluentRenderContext())
+let searchField = firstSearchField(in: searchView)
+require(searchField?.placeholderString == "Filter", "search field preserves its placeholder")
+require((searchField as? FluentSearchTextField)?.fluentStyle is ValidationTextFieldStyle, "search field receives the shared text field style")
+searchField?.stringValue = "fluent"
+if let searchField, let delegate = searchField.delegate {
+    delegate.controlTextDidChange?(Notification(name: NSControl.textDidChangeNotification, object: searchField))
+}
+require(searchText.wrappedValue == "fluent", "search field writes native edits through its binding")
+searchText.wrappedValue = "external-filter"
+drainMainQueue()
+require(searchField?.stringValue == "external-filter", "search field reflects external binding updates")
+if let searchField, let action = searchField.action {
+    require(NSApp.sendAction(action, to: searchField.target, from: searchField), "search field sends its submit action")
+}
+require(searchSubmits == 1, "search field invokes submit callback")
+
+enum ValidationOption: String, Hashable { case first, second, third }
+let comboSelection = FluentState<ValidationOption?>(wrappedValue: .second)
+let comboView = FluentComboBox(
+    options: [.first, .second, .third],
+    selection: comboSelection.projectedValue,
+    style: ValidationTextFieldStyle(),
+    title: { $0.rawValue.capitalized }
+)._mount(in: FluentRenderContext())
+let nativeComboBox = firstComboBox(in: comboView)
+require(nativeComboBox?.indexOfSelectedItem == 1, "combo box resolves stable selection to its native index")
+require(nativeComboBox?.font?.pointSize == 17, "combo box receives the shared semantic field font")
+nativeComboBox?.selectItem(at: 2)
+if let combo = nativeComboBox {
+    let comboDelegate: NSComboBoxDelegate? = combo.delegate
+    if let comboDelegate {
+        comboDelegate.comboBoxSelectionDidChange?(Notification(name: NSComboBox.selectionDidChangeNotification, object: combo))
+    }
+}
+require(comboSelection.wrappedValue == .third, "combo box writes selected stable value")
+let comboFlyoutWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+comboView.frame = NSRect(x: 20, y: 40, width: 220, height: 34)
+comboFlyoutWindow.contentView = comboView
+comboFlyoutWindow.center()
+comboFlyoutWindow.orderFront(nil)
+nativeComboBox?.performClick(nil)
+drainMainQueue()
+require(comboFlyoutWindow.childWindows?.count == 1, "combo box opens an application-owned flyout panel")
+if let comboPanelContent = comboFlyoutWindow.childWindows?.first?.contentView {
+    require(firstView(withAccessibilityRole: .menu, in: comboPanelContent) != nil, "combo box popup uses the Fluent menu presenter")
+}
+if let escapeEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\u{1b}", charactersIgnoringModifiers: "\u{1b}", isARepeat: false, keyCode: 53) {
+    if let panel = comboFlyoutWindow.childWindows?.first,
+       let presenter = panel.contentView.flatMap({ firstView(withAccessibilityRole: .menu, in: $0) }) {
+        presenter.keyDown(with: escapeEvent)
+    }
+}
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.24))
+require(comboFlyoutWindow.childWindows?.isEmpty != false, "combo box flyout dismisses through the shared Escape path")
+comboFlyoutWindow.orderOut(nil)
+let reducedCombo = FluentComboBox(
+    options: [.first, .second],
+    selection: comboSelection.projectedValue,
+    style: ValidationTextFieldStyle(),
+    title: { $0.rawValue.capitalized }
+)
+require(reducedCombo._update(comboView, in: FluentRenderContext()), "combo box updates options in place")
+drainMainQueue()
+require(comboSelection.wrappedValue == nil, "combo box clears selection when its stable option is removed")
+require(nativeComboBox?.indexOfSelectedItem == -1, "combo box clears native selection when its option is removed")
+
+let quantity = FluentState(wrappedValue: 2)
+let stepperView = FluentStepper("Quantity", value: quantity.projectedValue, in: 1...5, step: 1)
+    .stepperStyle(ValidationStepperStyle())
+    ._mount(in: FluentRenderContext())
+let nativeStepper = firstStepper(in: stepperView)
+let stepperField = firstFluentTextField(in: stepperView)
+let stepperLabel = firstLabel(in: stepperView)
+require(nativeStepper?.doubleValue == 2, "stepper reads its initial integer binding")
+require(stepperField?.fluentStyle is ValidationTextFieldStyle, "stepper applies its nested field style")
+require(stepperLabel?.font?.pointSize == 17, "stepper style applies semantic label metrics")
+quantity.wrappedValue = 99
+drainMainQueue()
+require(quantity.wrappedValue == 5, "stepper clamps external integer binding to its range")
+require(nativeStepper?.doubleValue == 5, "stepper synchronizes its native value after clamping")
+stepperField?.stringValue = "not-a-number"
+if let stepperField, let delegate = stepperField.delegate {
+    delegate.controlTextDidEndEditing?(Notification(name: NSControl.textDidEndEditingNotification, object: stepperField))
+}
+require(quantity.wrappedValue == 5, "stepper rejects invalid text and restores the current value")
+nativeStepper?.doubleValue = 4
+if let nativeStepper, let action = nativeStepper.action {
+    require(NSApp.sendAction(action, to: nativeStepper.target, from: nativeStepper), "stepper sends its native increment action")
+}
+require(quantity.wrappedValue == 4, "stepper writes native changes through an integer binding")
+
+let smallButton = FluentButtonView("Small", role: .primary).controlSize(.small)._mount(in: FluentRenderContext())
+let largeButton = FluentButtonView("Large", role: .destructive).controlSize(.large)._mount(in: FluentRenderContext())
+let smallNativeButton = firstButton(in: smallButton)
+let largeNativeButton = firstButton(in: largeButton)
+require(smallNativeButton?.role == .primary, "button view preserves its primary role")
+require(largeNativeButton?.role == .destructive, "button view preserves its destructive role")
+require(smallNativeButton?.fluentControlSize == .small, "controlSize modifier applies small metrics to native controls")
+require(largeNativeButton?.fluentControlSize == .large, "controlSize modifier applies large metrics to native controls")
+
+let formValue = FluentState(wrappedValue: "")
+let formField = FluentFormField(
+    "Display name",
+    help: "Shown to collaborators",
+    validation: .error("A name is required"),
+    required: true
+) {
+    FluentTextFieldView(text: formValue.projectedValue, placeholder: "Name")
+}
+let formFieldView = formField._mount(in: FluentRenderContext())
+let formLabels = labels(in: formFieldView).map(\.stringValue)
+require(formLabels.contains("Display name *"), "form field renders its required title")
+require(formLabels.contains("A name is required"), "form field renders validation feedback")
+require(formFieldView.accessibilityRole() == NSAccessibility.Role.group, "form field exposes group accessibility semantics")
+require(formFieldView.accessibilityValue() as? String == "Invalid", "form field exposes validation state to accessibility")
+let validFormField = FluentFormField(
+    "Display name",
+    validation: .success("Looks good"),
+    required: true
+) { FluentTextFieldView(text: formValue.projectedValue, placeholder: "Name") }
+require(validFormField._update(formFieldView, in: FluentRenderContext()), "form field updates validation state in place")
+require(formFieldView.accessibilityValue() as? String == "Valid", "form field refreshes accessibility validation state")
+
+var defaultActionCount = 0
+var cancelActionCount = 0
+var defaultEnabled = true
+let keyboardView = FluentText("Keyboard actions")
+    .fluentDefaultAction(isEnabled: { defaultEnabled }) { defaultActionCount += 1 }
+    .fluentCancelAction { cancelActionCount += 1 }
+    ._mount(in: FluentRenderContext())
+if let returnEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\r", charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36) {
+    require(keyboardView.performKeyEquivalent(with: returnEvent), "default keyboard action consumes Return")
+}
+if let escapeEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\u{1b}", charactersIgnoringModifiers: "\u{1b}", isARepeat: false, keyCode: 53) {
+    require(keyboardView.performKeyEquivalent(with: escapeEvent), "cancel keyboard action consumes Escape")
+}
+require(defaultActionCount == 1 && cancelActionCount == 1, "keyboard actions invoke their callbacks")
+defaultEnabled = false
+if let returnEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\r", charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36) {
+    require(!keyboardView.performKeyEquivalent(with: returnEvent), "disabled default keyboard action passes through")
+}
+
+let selectedID = FluentState<String?>(wrappedValue: "General")
+let listRows = [FluentText("General"), FluentText("Privacy"), FluentText("About")]
+let listHost = FluentViewHost(FluentList(rows: listRows, id: { $0.value }, selectionID: selectedID.projectedValue))
+let listMotionWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 180),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+listMotionWindow.contentView = listHost
+listMotionWindow.orderFront(nil)
+listHost.layoutSubtreeIfNeeded()
+let listSelectionIndicator = firstLayer(named: "FluentKit.List.SelectionIndicator", in: listHost)
+require(listSelectionIndicator?.opacity == 1, "single-selection list exposes one shared selection indicator")
+let listCollection = listSelectionIndicator?.superlayer?.delegate as? NSCollectionView
+let initiallySelectedListRow = listCollection?.item(at: IndexPath(item: 0, section: 0))?.view
+require(
+    listSelectionIndicator.map { indicator in
+        initiallySelectedListRow.map { abs(indicator.frame.midY - $0.frame.midY) < 0.5 } == true
+    } == true,
+    "single-selection list indicator aligns with the selected row geometry"
+)
+let rtlListHost = FluentViewHost(
+    FluentList(rows: listRows, id: { $0.value }, selectionID: selectedID.projectedValue),
+    context: FluentRenderContext(layoutDirection: .rightToLeft)
+)
+let rtlListWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 180),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+rtlListWindow.contentView = rtlListHost
+rtlListWindow.orderFront(nil)
+rtlListHost.layoutSubtreeIfNeeded()
+let rtlListSelectionIndicator = firstLayer(named: "FluentKit.List.SelectionIndicator", in: rtlListHost)
+let rtlListCollection = rtlListSelectionIndicator?.superlayer?.delegate as? NSCollectionView
+require(
+    rtlListSelectionIndicator.map { $0.frame.minX > (rtlListCollection?.bounds.midX ?? 0) } == true,
+    "right-to-left list places the shared selection indicator on the leading edge"
+)
+selectedID.wrappedValue = "Privacy"
+drainMainQueue()
+require(
+    listSelectionIndicator?.animation(forKey: "fluent.navigation.selection") != nil,
+    "stable-ID list selection starts the cross-row navigation indicator motion"
+)
+selectedID.wrappedValue = "General"
+drainMainQueue()
+let insertedRows = [FluentText("General"), FluentText("Privacy"), FluentText("About"), FluentText("Updates")]
+listHost.update(FluentList(rows: insertedRows, id: { $0.value }, selectionID: selectedID.projectedValue))
+drainMainQueue()
+require(selectedID.wrappedValue == "General", "stable-ID list selection survives insertion")
+let removedUnselectedRows = [FluentText("General"), FluentText("About"), FluentText("Updates")]
+listHost.update(FluentList(rows: removedUnselectedRows, id: { $0.value }, selectionID: selectedID.projectedValue))
+drainMainQueue()
+require(selectedID.wrappedValue == "General", "stable-ID list selection survives removing another row")
+let reorderedRows = [FluentText("About"), FluentText("General"), FluentText("Privacy")]
+listHost.update(FluentList(rows: reorderedRows, id: { $0.value }, selectionID: selectedID.projectedValue))
+drainMainQueue()
+require(selectedID.wrappedValue == "General", "stable-ID list selection survives reordering")
+let deletedSelectedRows = [FluentText("About"), FluentText("Privacy")]
+listHost.update(FluentList(rows: deletedSelectedRows, id: { $0.value }, selectionID: selectedID.projectedValue))
+drainMainQueue()
+require(selectedID.wrappedValue == nil, "stable-ID list clears selection when selected row is removed")
+let duplicateIDRows = [FluentText("Duplicate"), FluentText("Duplicate")]
+listHost.update(FluentList(rows: duplicateIDRows, id: { $0.value }, selectionID: selectedID.projectedValue))
+drainMainQueue()
+require(selectedID.wrappedValue == nil, "duplicate row IDs fall back without inventing a selection")
+listMotionWindow.orderOut(nil)
+rtlListWindow.orderOut(nil)
+
+let multipleSelection = FluentState(wrappedValue: Set(["General", "Privacy"]))
+let multipleRows = [FluentText("General"), FluentText("Privacy"), FluentText("About")]
+let multipleList = FluentList(
+    rows: multipleRows,
+    id: { $0.value },
+    selectionIDs: multipleSelection.projectedValue
+)
+let multipleListView = multipleList._mount(in: FluentRenderContext())
+multipleListView.frame = NSRect(x: 0, y: 0, width: 320, height: 180)
+multipleListView.layoutSubtreeIfNeeded()
+drainMainQueue()
+func firstCollectionView(in view: NSView) -> NSCollectionView? {
+    if let collection = view as? NSCollectionView { return collection }
+    return view.subviews.lazy.compactMap(firstCollectionView).first
+}
+require(firstCollectionView(in: multipleListView)?.selectionIndexPaths.count == 2, "multi-select list applies all selected IDs to its native collection")
+let reorderedMultipleRows = [FluentText("About"), FluentText("Privacy"), FluentText("General")]
+let reorderedMultipleList = FluentList(
+    rows: reorderedMultipleRows,
+    id: { $0.value },
+    selectionIDs: multipleSelection.projectedValue
+)
+require(reorderedMultipleList._update(multipleListView, in: FluentRenderContext()), "multi-select list updates compatible data in place")
+drainMainQueue()
+require(multipleSelection.wrappedValue == Set(["General", "Privacy"]), "multi-select list preserves selection IDs through reordering")
+let reducedMultipleRows = [FluentText("About"), FluentText("General")]
+let reducedMultipleList = FluentList(
+    rows: reducedMultipleRows,
+    id: { $0.value },
+    selectionIDs: multipleSelection.projectedValue
+)
+require(reducedMultipleList._update(multipleListView, in: FluentRenderContext()), "multi-select list accepts row deletion in place")
+drainMainQueue()
+require(multipleSelection.wrappedValue == Set(["General"]), "multi-select list removes selection IDs deleted from the data")
+
+let moveToEnd = FluentListMoveIntent(sourceIndexes: IndexSet([1, 2]), destination: 5)
+require(
+    moveToEnd.applying(to: ["A", "B", "C", "D", "E"]) == ["A", "D", "E", "B", "C"],
+    "list move intent keeps source order when moving multiple rows to the end"
+)
+let moveTowardStart = FluentListMoveIntent(sourceIndexes: IndexSet(integer: 3), destination: 1)
+require(
+    moveTowardStart.applying(to: ["A", "B", "C", "D", "E"]) == ["A", "D", "B", "C", "E"],
+    "list move intent uses pre-removal insertion offsets when moving toward the start"
+)
+
+var collectionSnapshot = FluentCollectionSnapshot<String, Int>()
+collectionSnapshot.appendSections(["primary", "archive"])
+collectionSnapshot.appendItems([1, 2, 3], toSection: "primary")
+collectionSnapshot.appendItems([4], toSection: "archive")
+require(collectionSnapshot.sectionIdentifiers == ["primary", "archive"], "collection snapshot preserves section ordering")
+require(collectionSnapshot.itemIdentifiers == [1, 2, 3, 4], "collection snapshot flattens item ordering deterministically")
+collectionSnapshot.moveItem(2, after: 4)
+require(collectionSnapshot.itemIdentifiers(inSection: "primary") == [1, 3], "collection snapshot removes a cross-section moved item")
+require(collectionSnapshot.itemIdentifiers(inSection: "archive") == [4, 2], "collection snapshot inserts a cross-section moved item")
+collectionSnapshot.insertItems([5], before: 4)
+collectionSnapshot.deleteItems([1])
+require(collectionSnapshot.itemIdentifiers == [3, 5, 4, 2], "collection snapshot supports stable insertion and deletion")
+var updatedCollectionSnapshot = collectionSnapshot
+updatedCollectionSnapshot.moveSection("archive", before: "primary")
+updatedCollectionSnapshot.moveItem(2, before: 5)
+let sectionDifference = updatedCollectionSnapshot.sectionDifference(from: collectionSnapshot)
+let itemDifference = updatedCollectionSnapshot.itemDifference(from: collectionSnapshot, inSection: "archive")
+require(!sectionDifference.isEmpty, "collection snapshot reports section moves")
+require(!itemDifference.isEmpty, "collection snapshot reports item moves")
+
+struct ValidationTableRow: Equatable {
+    let id: Int
+    let name: String
+    let status: String
+}
+let tableSelection = FluentState<Int?>(wrappedValue: 2)
+let tableRows = [
+    ValidationTableRow(id: 1, name: "Alpha", status: "Ready"),
+    ValidationTableRow(id: 2, name: "Beta", status: "Running"),
+    ValidationTableRow(id: 3, name: "Gamma", status: "Paused")
+]
+let validationTable = FluentTable(
+    rows: tableRows,
+    id: { $0.id },
+    selectionID: tableSelection.projectedValue
+) {
+    FluentTableColumn("name", title: "Name", width: 160) { row in
+        FluentText(row.name)
+    }
+    FluentTableColumn("status", title: "Status", width: 120) { row in
+        FluentText(row.status)
+    }
+}
+let validationTableView = validationTable._mount(in: FluentRenderContext())
+validationTableView.frame = NSRect(x: 0, y: 0, width: 420, height: 180)
+validationTableView.layoutSubtreeIfNeeded()
+func firstTableView(in view: NSView) -> NSTableView? {
+    if let table = view as? NSTableView { return table }
+    return view.subviews.lazy.compactMap(firstTableView).first
+}
+let nativeTable = firstTableView(in: validationTableView)
+require(nativeTable?.numberOfColumns == 2, "table mounts every declarative column")
+require(nativeTable?.numberOfRows == 3, "table diffable data source exposes every row")
+require(nativeTable?.selectedRow == 1, "table resolves stable single selection to the native row index")
+let reorderedTableRows = [tableRows[2], tableRows[0], tableRows[1]]
+let reorderedTable = FluentTable(
+    rows: reorderedTableRows,
+    id: { $0.id },
+    selectionID: tableSelection.projectedValue
+) {
+    FluentTableColumn("name", title: "Name", width: 160) { row in FluentText(row.name) }
+    FluentTableColumn("status", title: "State", width: 120) { row in FluentText(row.status) }
+}
+require(reorderedTable._update(validationTableView, in: FluentRenderContext()), "table updates compatible row data in place")
+drainMainQueue()
+require(tableSelection.wrappedValue == 2, "table preserves stable selection through row reordering")
+require(nativeTable?.selectedRow == 2, "table remaps native selection after row reordering")
+
+let tableSelections = FluentState(wrappedValue: Set([1, 3]))
+let multiTable = FluentTable(
+    rows: tableRows,
+    id: { $0.id },
+    selectionIDs: tableSelections.projectedValue
+) {
+    FluentTableColumn("name", title: "Name") { row in FluentText(row.name) }
+}
+let multiTableView = multiTable._mount(in: FluentRenderContext())
+multiTableView.frame = NSRect(x: 0, y: 0, width: 320, height: 160)
+multiTableView.layoutSubtreeIfNeeded()
+require(firstTableView(in: multiTableView)?.selectedRowIndexes.count == 2, "table applies stable multi-selection to NSTableView")
+let reducedTableRows = [tableRows[0], tableRows[1]]
+let reducedTable = FluentTable(
+    rows: reducedTableRows,
+    id: { $0.id },
+    selectionIDs: tableSelections.projectedValue
+) {
+    FluentTableColumn("name", title: "Name") { row in FluentText(row.name) }
+}
+require(reducedTable._update(multiTableView, in: FluentRenderContext()), "table accepts stable row deletion in place")
+drainMainQueue()
+require(tableSelections.wrappedValue == Set([1]), "table removes deleted IDs from multi-selection")
+
+let outlineSelection = FluentState<String?>(wrappedValue: "alpha")
+let outlineNodes = [
+    FluentOutlineNode(id: "projects", children: [
+        FluentOutlineNode(id: "alpha") { FluentText("Alpha") },
+        FluentOutlineNode(id: "beta") { FluentText("Beta") }
+    ]) { FluentText("Projects") },
+    FluentOutlineNode(id: "archive", children: [
+        FluentOutlineNode(id: "history") { FluentText("History") }
+    ]) { FluentText("Archive") }
+]
+let validationOutline = FluentOutline(nodes: outlineNodes, selectionID: outlineSelection.projectedValue)
+let validationOutlineView = validationOutline._mount(in: FluentRenderContext())
+validationOutlineView.frame = NSRect(x: 0, y: 0, width: 320, height: 200)
+validationOutlineView.layoutSubtreeIfNeeded()
+func firstOutlineView(in view: NSView) -> NSOutlineView? {
+    if let outline = view as? NSOutlineView { return outline }
+    return view.subviews.lazy.compactMap(firstOutlineView).first
+}
+let nativeOutline = firstOutlineView(in: validationOutlineView)
+require(nativeOutline?.numberOfRows == 4, "outline exposes roots and automatically expands ancestors of the selected child")
+require(nativeOutline?.selectedRow == 1, "outline maps a stable child ID to its native row")
+if let archiveItem = nativeOutline?.item(atRow: 3) {
+    nativeOutline?.expandItem(archiveItem)
+}
+require(nativeOutline?.numberOfRows == 5, "outline expands native hierarchy rows")
+let reorderedOutlineNodes = [
+    FluentOutlineNode(id: "projects", children: [
+        FluentOutlineNode(id: "beta") { FluentText("Beta updated") },
+        FluentOutlineNode(id: "alpha") { FluentText("Alpha updated") }
+    ]) { FluentText("Projects") },
+    FluentOutlineNode(id: "archive", children: [
+        FluentOutlineNode(id: "history") { FluentText("History updated") }
+    ]) { FluentText("Archive") }
+]
+let reorderedOutline = FluentOutline(nodes: reorderedOutlineNodes, selectionID: outlineSelection.projectedValue)
+require(reorderedOutline._update(validationOutlineView, in: FluentRenderContext()), "outline updates a compatible hierarchy in place")
+require(nativeOutline?.numberOfRows == 5, "outline preserves expanded node IDs across hierarchy updates")
+require(nativeOutline?.selectedRow == 2, "outline remaps stable selection after sibling reordering")
+let reducedOutlineNodes = [
+    FluentOutlineNode(id: "projects", children: [
+        FluentOutlineNode(id: "beta") { FluentText("Beta") }
+    ]) { FluentText("Projects") },
+    FluentOutlineNode(id: "archive") { FluentText("Archive") }
+]
+let reducedOutline = FluentOutline(nodes: reducedOutlineNodes, selectionID: outlineSelection.projectedValue)
+require(reducedOutline._update(validationOutlineView, in: FluentRenderContext()), "outline accepts stable node deletion in place")
+require(outlineSelection.wrappedValue == nil, "outline clears selection when the selected node is deleted")
+
+var sectionedSnapshot = FluentCollectionSnapshot<String, Int>()
+sectionedSnapshot.appendSections(["active", "recent"])
+sectionedSnapshot.appendItems([1, 2, 3], toSection: "active")
+sectionedSnapshot.appendItems([4, 5], toSection: "recent")
+let collectionSelections = FluentState(wrappedValue: Set([2, 5]))
+let sectionedCollection = FluentCollection(
+    snapshot: sectionedSnapshot,
+    layout: .adaptiveGrid(minimumItemWidth: 120, itemHeight: 72, spacing: 8),
+    selectionIDs: collectionSelections.projectedValue
+) { item in
+    FluentText("Item \(item)")
+} header: { section in
+    FluentText(section.capitalized, weight: .semibold)
+}
+let sectionedCollectionView = sectionedCollection._mount(in: FluentRenderContext())
+sectionedCollectionView.frame = NSRect(x: 0, y: 0, width: 420, height: 260)
+sectionedCollectionView.layoutSubtreeIfNeeded()
+drainMainQueue()
+let nativeSectionedCollection = firstCollectionView(in: sectionedCollectionView)
+require(nativeSectionedCollection?.numberOfSections == 2, "sectioned collection mounts every snapshot section")
+require(nativeSectionedCollection?.numberOfItems(inSection: 0) == 3, "sectioned collection mounts items in their declared section")
+require(nativeSectionedCollection?.selectionIndexPaths.count == 2, "sectioned collection applies stable multi-selection")
+let sectionedFlowLayout = nativeSectionedCollection?.collectionViewLayout as? NSCollectionViewFlowLayout
+require(sectionedFlowLayout?.headerReferenceSize.height == 34, "sectioned collection reserves native supplementary header space")
+require((sectionedFlowLayout?.itemSize.width ?? 0) >= 120, "adaptive grid resolves a usable native item width")
+
+var reducedSectionedSnapshot = sectionedSnapshot
+reducedSectionedSnapshot.moveSection("recent", before: "active")
+reducedSectionedSnapshot.deleteItems([2])
+let updatedSectionedCollection = FluentCollection(
+    snapshot: reducedSectionedSnapshot,
+    layout: .adaptiveGrid(minimumItemWidth: 120, itemHeight: 72, spacing: 8),
+    selectionIDs: collectionSelections.projectedValue
+) { item in
+    FluentText("Updated \(item)")
+} header: { section in
+    FluentText(section.uppercased(), weight: .semibold)
+}
+require(
+    updatedSectionedCollection._update(sectionedCollectionView, in: FluentRenderContext()),
+    "sectioned collection applies compatible diffable updates in place"
+)
+drainMainQueue()
+require(collectionSelections.wrappedValue == Set([5]), "sectioned collection trims deleted IDs from multi-selection")
+require(nativeSectionedCollection?.numberOfItems(inSection: 0) == 2, "section moves preserve each section's item membership")
+
+var largeSnapshot = FluentCollectionSnapshot<String, Int>()
+largeSnapshot.appendSections(["large"])
+largeSnapshot.appendItems(Array(0..<5_000), toSection: "large")
+let benchmarkStart = Date.timeIntervalSinceReferenceDate
+let largeCollectionView = FluentCollection(snapshot: largeSnapshot) { item in
+    FluentText("Row \(item)")
+}._mount(in: FluentRenderContext())
+largeCollectionView.frame = NSRect(x: 0, y: 0, width: 320, height: 240)
+largeCollectionView.layoutSubtreeIfNeeded()
+let benchmarkDuration = Date.timeIntervalSinceReferenceDate - benchmarkStart
+let nativeLargeCollection = firstCollectionView(in: largeCollectionView)
+require(nativeLargeCollection?.numberOfItems(inSection: 0) == 5_000, "large collection exposes its complete diffable snapshot")
+require((nativeLargeCollection?.visibleItems().count ?? 5_000) < 5_000, "large collection virtualizes native item hosts")
+require(benchmarkDuration < 10, "5,000-item collection benchmark completes within the smoke-test budget")
+
+let focused = FluentState(wrappedValue: true)
+let focusWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 240, height: 80),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let focusButton = FluentButton(title: "Focusable")
+let focusHost = FluentViewHost(focusButton.focused(focused.projectedValue))
+focusWindow.contentView = focusHost
+drainMainQueue()
+require(focusWindow.firstResponder === focusButton, "focus binding requests focus for nested responder")
+focusWindow.makeFirstResponder(nil)
+drainMainQueue()
+require(focused.wrappedValue == false, "focus binding reflects responder loss")
+
+let initialFocusRoot = FluentVStack(spacing: 4) {
+    FluentButton(title: "Initial focus")
+    FluentButton(title: "Second focus")
+}.fluentInitialFocus()
+let initialFocusWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 120),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let initialFocusHost = FluentViewHost(initialFocusRoot)
+initialFocusWindow.contentView = initialFocusHost
+initialFocusWindow.makeKeyAndOrderFront(nil)
+drainMainQueue()
+let initialFocusButton = firstButton(in: initialFocusHost)
+require(initialFocusWindow.firstResponder === initialFocusButton, "initial focus requests the first focusable native descendant")
+let existingResponder = FluentButton(title: "Existing responder")
+let existingRoot = NSView(frame: NSRect(x: 0, y: 0, width: 320, height: 120))
+existingRoot.addSubview(existingResponder)
+existingResponder.frame = NSRect(x: 12, y: 12, width: 180, height: 32)
+let existingResponderWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 120),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+existingResponderWindow.contentView = existingRoot
+existingResponderWindow.makeKeyAndOrderFront(nil)
+_ = existingResponderWindow.makeFirstResponder(existingResponder)
+let conservativeInitialFocus = FluentViewHost(FluentButton(title: "Do not steal").fluentInitialFocus())
+existingRoot.addSubview(conservativeInitialFocus)
+conservativeInitialFocus.frame = existingResponderWindow.contentView?.bounds ?? .zero
+drainMainQueue()
+require(existingResponderWindow.firstResponder === existingResponder, "initial focus does not displace an existing responder")
+
+let focusScopeRoot = FluentHStack(spacing: 8) {
+    FluentButton(title: "Scope one")
+    FluentButton(title: "Scope two")
+}.fluentFocusScope()
+let focusScopeHost = focusScopeRoot._mount(in: FluentRenderContext())
+let scopeButtons = focusScopeHost.subviews
+    .flatMap { subview in
+        var buttons: [FluentButton] = []
+        func collect(_ view: NSView) {
+            if let button = view as? FluentButton { buttons.append(button) }
+            view.subviews.forEach(collect)
+        }
+        collect(subview)
+        return buttons
+    }
+require(scopeButtons.count == 2, "focus scope exposes all focusable native descendants")
+require(scopeButtons[0].nextKeyView === scopeButtons[1], "focus scope links the first key view to the second")
+require(scopeButtons[1].nextKeyView === scopeButtons[0], "focus scope closes the key-view loop")
+
+let restorationDefaults = UserDefaults(suiteName: "FluentKitValidation.\(UUID().uuidString)")!
+let restorationStore = FluentRestorationStore(defaults: restorationDefaults, namespace: "validation")
+require(restorationStore.value(forKey: "missing", as: Int.self) == nil, "restoration store treats missing values as absent")
+require(restorationStore.set(42, forKey: "answer"), "restoration store encodes Codable values")
+require(restorationStore.value(forKey: "answer", as: Int.self) == 42, "restoration store decodes Codable values")
+let restoredCounter = FluentRestoredState<Int>(wrappedValue: 3, "counter", store: restorationStore)
+require(restoredCounter.wrappedValue == 3, "restored state uses its declared initial value")
+restoredCounter.wrappedValue = 9
+require(restorationStore.value(forKey: "counter", as: Int.self) == 9, "restored state persists mutations")
+let reloadedCounter = FluentRestoredState<Int>(wrappedValue: 0, "counter", store: restorationStore)
+require(reloadedCounter.wrappedValue == 9, "restored state reloads a persisted value")
+var restoredObserved = 0
+let restoredObserver = reloadedCounter.projectedValue.observe { restoredObserved = $0 }
+reloadedCounter.projectedValue.wrappedValue = 11
+require(reloadedCounter.wrappedValue == 11 && restoredObserved == 11, "restored state projected binding writes and observes")
+if let restoredObserver { reloadedCounter.projectedValue.removeObserver(restoredObserver) }
+require(restoredCounter.wrappedValue == 11, "restored state synchronizes matching keys within one store")
+reloadedCounter.reset()
+require(reloadedCounter.wrappedValue == 0, "restored state reset restores its declared default")
+require(restoredCounter.wrappedValue == 3, "restored state reset synchronizes other wrappers to their own defaults")
+restorationDefaults.set(Data("invalid".utf8), forKey: "validation.corrupt")
+require(restorationStore.value(forKey: "corrupt", as: Int.self) == nil, "restoration store ignores invalid encoded data")
+restorationStore.removeValue(forKey: "answer")
+require(restorationStore.value(forKey: "answer", as: Int.self) == nil, "restoration store removes one value")
+restorationStore.removeAll()
+require(restorationStore.value(forKey: "counter", as: Int.self) == nil, "restoration store removes its namespace")
+
+struct RestoredStateSyntaxFixture {
+    @FluentRestoredState("syntax", store: restorationStore) var value = 4
+}
+var restoredSyntaxFixture = RestoredStateSyntaxFixture()
+require(restoredSyntaxFixture.value == 4, "restored state supports property-wrapper declaration syntax")
+restoredSyntaxFixture.value = 6
+require(restorationStore.value(forKey: "syntax", as: Int.self) == 6, "property-wrapper assignment persists restored state")
+
+struct RestoredStateLabel: FluentView {
+    let state: FluentRestoredState<Int>
+    var body: FluentTextView { FluentText("Restored: \(state.wrappedValue)") }
+}
+let reactiveRestoredState = FluentRestoredState<Int>(wrappedValue: 2, "reactive", store: restorationStore)
+let reactiveRestoredHost = FluentViewHost(RestoredStateLabel(state: reactiveRestoredState))
+require(firstLabel(in: reactiveRestoredHost)?.stringValue == "Restored: 2", "restored state participates in dependency tracking")
+reactiveRestoredState.wrappedValue = 7
+drainMainQueue()
+require(firstLabel(in: reactiveRestoredHost)?.stringValue == "Restored: 7", "restored state refreshes dependent views")
+
+let migrationDefaults = UserDefaults(suiteName: "FluentKitMigrationValidation.\(UUID().uuidString)")!
+let migrationStore = FluentRestorationStore(defaults: migrationDefaults, namespace: "migration")
+require(migrationStore.set("Ada", forKey: "displayName"), "migration fixture stores its legacy value")
+let migratedProfileName = FluentRestoredState(wrappedValue: "Unknown", "profileName", store: migrationStore)
+let migrator = FluentStateMigrator(
+    targetVersion: 2,
+    steps: [
+        FluentStateMigrationStep(from: 0, to: 1) { context in
+            require(context.renameValue(fromKey: "displayName", toKey: "profileName"), "migration context renames encoded values")
+        },
+        FluentStateMigrationStep(from: 1, to: 2) { context in
+            let profile = context.value(forKey: "profileName", as: String.self) ?? "Unknown"
+            try context.set(profile.uppercased(), forKey: "profileName")
+            try context.set([String](), forKey: "recentFiles")
+        }
+    ]
+)
+let migrationResult = try migrator.migrate(migrationStore)
+require(migrationResult == FluentStateMigrationResult(fromVersion: 0, toVersion: 2, didMigrate: true), "state migrator reports the applied version range")
+require(migrationStore.value(forKey: "displayName", as: String.self) == nil, "state migration removes renamed legacy keys")
+require(migrationStore.value(forKey: "profileName", as: String.self) == "ADA", "state migration transforms staged values")
+require(migrationStore.value(forKey: "recentFiles", as: [String].self) == [], "state migration adds values for the new schema")
+require(migrationStore.value(forKey: "__schemaVersion", as: Int.self) == 2, "state migration commits its schema version")
+require(migratedProfileName.wrappedValue == "ADA", "migration commit refreshes existing restored-state observers")
+let repeatedMigrationResult = try migrator.migrate(migrationStore)
+require(!repeatedMigrationResult.didMigrate, "state migrations are idempotent at the target version")
+
+enum ValidationMigrationFailure: Error { case stop }
+let rollbackDefaults = UserDefaults(suiteName: "FluentKitMigrationRollback.\(UUID().uuidString)")!
+let rollbackStore = FluentRestorationStore(defaults: rollbackDefaults, namespace: "rollback")
+require(rollbackStore.set("Original", forKey: "value"), "migration rollback fixture stores its value")
+let failingMigrator = FluentStateMigrator(
+    targetVersion: 1,
+    steps: [FluentStateMigrationStep(from: 0, to: 1) { context in
+        try context.set("Partial", forKey: "value")
+        throw ValidationMigrationFailure.stop
+    }]
+)
+do {
+    _ = try failingMigrator.migrate(rollbackStore)
+    require(false, "failing migrations must throw")
+} catch ValidationMigrationFailure.stop {}
+require(rollbackStore.value(forKey: "value", as: String.self) == "Original", "failed migrations leave stored values unchanged")
+require(rollbackStore.value(forKey: "__schemaVersion", as: Int.self) == nil, "failed migrations do not advance the schema version")
+
+let accessibilityGroup = FluentText("Semantic value").accessibilityGroup(label: "Settings group")
+let accessibilityGroupHost = accessibilityGroup._mount(in: FluentRenderContext())
+require(accessibilityGroupHost.isAccessibilityElement(), "accessibility group exposes a semantic host")
+require(accessibilityGroupHost.accessibilityChildren()?.count == 1, "accessibility group exposes its visual content as a child")
+let updatedAccessibilityGroup = FluentText("Updated semantic value").accessibilityGroup(label: "Updated group")
+require(updatedAccessibilityGroup._update(accessibilityGroupHost, in: FluentRenderContext()), "accessibility group updates compatibly")
+require(accessibilityGroupHost.accessibilityLabel() == "Updated group", "accessibility group refreshes semantic metadata")
+require(accessibilityGroupHost.accessibilityChildren()?.count == 1, "accessibility group preserves its child tree after update")
+
+let semanticCombined = FluentHStack(spacing: 4) {
+    FluentText("First", style: .body).accessibilityLabel("First value")
+    FluentText("Second", style: .body).accessibilityLabel("Second value")
+}.accessibilityElement(children: .combine, label: "Combined values")
+let semanticCombinedView = semanticCombined._mount(in: FluentRenderContext())
+require(semanticCombinedView.accessibilityRole() == .group, "semantic combine exposes a stable group element")
+require(semanticCombinedView.accessibilityLabel() == "Combined values", "semantic combine preserves its explicit label")
+require(semanticCombinedView.accessibilityChildren()?.isEmpty == true, "semantic combine hides descendants from the accessibility tree")
+
+var customActionInvocations = 0
+let customActionView = FluentButtonView("Archive")
+    .accessibilityActions([
+        FluentAccessibilityAction("Archive item") { customActionInvocations += 1 }
+    ])
+    ._mount(in: FluentRenderContext())
+require(customActionView.accessibilityCustomActions()?.count == 1, "custom accessibility actions attach to the native element")
+require(customActionView.accessibilityCustomActions()?.first?.handler?() == true, "custom accessibility action returns its execution status")
+require(customActionInvocations == 1, "custom accessibility action invokes its Swift closure")
+
+let dynamicAccessibilityLabel = FluentState(wrappedValue: "Initial label")
+let dynamicAccessibilityView = FluentText("Visual value")
+    .accessibilityLabel(dynamicAccessibilityLabel.projectedValue)
+    ._mount(in: FluentRenderContext())
+require(firstLabel(in: dynamicAccessibilityView)?.accessibilityLabel() == "Initial label", "dynamic accessibility label reads its initial binding")
+dynamicAccessibilityLabel.wrappedValue = "Updated label"
+drainMainQueue()
+require(firstLabel(in: dynamicAccessibilityView)?.accessibilityLabel() == "Updated label", "dynamic accessibility label updates without remounting")
+
+let rotorContent = FluentVStack(spacing: 4) {
+    FluentText("Heading one", style: .headline).accessibilityIdentifier("rotor.one")
+    FluentText("Heading two", style: .headline).accessibilityIdentifier("rotor.two")
+}.accessibilityRotor(FluentAccessibilityRotor("Headings", entries: [
+    FluentAccessibilityRotorEntry(identifier: "rotor.one", label: "Heading one"),
+    FluentAccessibilityRotorEntry(identifier: "rotor.two", label: "Heading two")
+]))
+let rotorView = rotorContent._mount(in: FluentRenderContext())
+require(rotorView.accessibilityCustomRotors().count == 1, "custom rotor attaches to the semantic root")
+if let rotor = rotorView.accessibilityCustomRotors().first,
+   let delegate = rotor.itemSearchDelegate {
+    let parameters = NSAccessibilityCustomRotor.SearchParameters()
+    parameters.searchDirection = .next
+    parameters.filterString = "heading"
+    require(delegate.rotor(rotor, resultFor: parameters)?.customLabel == "Heading one", "custom rotor resolves the first filtered entry")
+}
+
+let focusAnnouncementContent = FluentButtonView("Focus target")
+    .accessibilityAnnounceOnFocus("Focus target is ready")
+let focusAnnouncementView = focusAnnouncementContent._mount(in: FluentRenderContext())
+let focusAnnouncementWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 220, height: 80),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+focusAnnouncementWindow.contentView = focusAnnouncementView
+focusAnnouncementWindow.orderFront(nil)
+focusAnnouncementWindow.layoutIfNeeded()
+let focusTarget = firstView(withAccessibilityTitle: "Focus target", in: focusAnnouncementView)
+require(focusTarget != nil, "focus announcement preserves the wrapped native control")
+if let focusTarget { _ = focusAnnouncementWindow.makeFirstResponder(focusTarget) }
+drainMainQueue()
+focusAnnouncementWindow.orderOut(nil)
+
+let localizedView = FluentLocalizedText("validation.greeting", defaultValue: "Hello from FluentKit", style: .body)
+    ._mount(in: FluentRenderContext(locale: Locale(identifier: "en_US")))
+require(firstLabel(in: localizedView)?.stringValue == "Hello from FluentKit", "localized text uses its default value when no table entry exists")
+
+let rtlHost = FluentViewHost(
+    FluentText("RTL"),
+    context: FluentRenderContext(layoutDirection: .rightToLeft)
+)
+require(rtlHost.userInterfaceLayoutDirection == .rightToLeft, "render context propagates right-to-left direction to the host")
+
+let invalidAccessibilityButton = NSButton(frame: .zero)
+invalidAccessibilityButton.setAccessibilityElement(true)
+invalidAccessibilityButton.setAccessibilityRole(.button)
+invalidAccessibilityButton.setAccessibilityLabel("")
+let auditIssues = FluentAccessibilityAudit.run(on: invalidAccessibilityButton)
+require(auditIssues.contains { $0.severity == .error }, "accessibility audit reports unlabeled interactive elements")
+let duplicateAccessibilityRoot = NSView(frame: .zero)
+let duplicateA = NSView(frame: .zero)
+let duplicateB = NSView(frame: .zero)
+[duplicateA, duplicateB].forEach {
+    $0.setAccessibilityElement(true)
+    $0.setAccessibilityIdentifier("duplicate")
+    duplicateAccessibilityRoot.addSubview($0)
+}
+require(FluentAccessibilityAudit.run(on: duplicateAccessibilityRoot).contains { $0.message.contains("duplicates") }, "accessibility audit reports duplicate identifiers")
+
+let menuWrapped = FluentText("Contextual").contextMenu {
+    FluentMenuItem("Open") {}
+    FluentMenuItem.separator
+}
+require(menuWrapped._mount(in: FluentRenderContext()).subviews.count == 1, "context menu keeps content mounted")
+
+let menuFlyoutWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let menuFlyoutAnchor = NSButton(frame: NSRect(x: 20, y: 20, width: 120, height: 32))
+menuFlyoutWindow.contentView = menuFlyoutAnchor
+menuFlyoutWindow.center()
+menuFlyoutWindow.orderFront(nil)
+var nestedMenuInvocations = 0
+let nestedMenuItem = FluentMenuItem.submenu("More") {
+    FluentMenuItem("Rename") { nestedMenuInvocations += 1 }
+    FluentMenuItem("Manage access") {}
+}
+require(nestedMenuItem.hasSubmenu && nestedMenuItem.submenu.count == 2, "menu model preserves nested declarative items")
+let menuFlyout = FluentMenuFlyout(items: [
+    FluentMenuItem("Open") {},
+    nestedMenuItem,
+    .separator,
+    FluentMenuItem("Checked", state: .on) {},
+    FluentMenuItem("Zebra") {},
+    FluentMenuItem("Disabled", isEnabled: false) {}
+])
+menuFlyout.present(relativeTo: menuFlyoutAnchor)
+require(menuFlyout.isPresented, "application menu flyout presents its custom panel")
+require(menuFlyoutWindow.childWindows?.count == 1, "application menu flyout attaches its panel to the owning window")
+let rootMenuPanel = menuFlyoutWindow.childWindows?.first
+let rootMenuPresenter = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
+require(rootMenuPresenter?.accessibilityChildren()?.count == 5, "menu accessibility tree excludes separators and includes every actionable row")
+let moreMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "More", in: $0) }
+let checkedMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Checked", in: $0) }
+let disabledMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Disabled", in: $0) }
+require(moreMenuRow?.accessibilityRole() == .menuItem, "submenu row exposes the native menu-item role")
+require(moreMenuRow?.accessibilityValue() as? String == "Submenu", "submenu row announces its expandable state")
+require(moreMenuRow?.accessibilityHelp() == "Opens a submenu", "submenu row exposes an accessibility hint")
+require(checkedMenuRow?.accessibilityValue() as? String == "Selected", "checked menu row exposes its selected state")
+require(disabledMenuRow?.isAccessibilityEnabled() == false, "disabled menu row exposes disabled semantics")
+if let typeaheadEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "z", charactersIgnoringModifiers: "z", isARepeat: false, keyCode: 6) {
+    rootMenuPresenter?.keyDown(with: typeaheadEvent)
+}
+let zebraMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Zebra", in: $0) }
+require(zebraMenuRow?.isAccessibilitySelected() == true, "menu type-ahead selects the first enabled title prefix")
+if let hoverEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "", charactersIgnoringModifiers: "", isARepeat: false, keyCode: 0), let moreMenuRow {
+    moreMenuRow.mouseEntered(with: hoverEvent)
+}
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.10))
+require(rootMenuPanel?.childWindows?.isEmpty != false, "submenu hover waits for the presentation delay")
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.12))
+require(rootMenuPanel?.childWindows?.count == 1, "submenu opens after the Fluent hover delay")
+let submenuPanel = rootMenuPanel?.childWindows?.first
+let submenuPresenter = submenuPanel?.contentView.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
+require(submenuPresenter?.accessibilityChildren()?.count == 2, "submenu exposes its own menu accessibility tree")
+let renameMenuRow = submenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Rename", in: $0) }
+require(renameMenuRow?.accessibilityPerformPress() == true, "submenu item supports the accessibility press action")
+require(nestedMenuInvocations == 1, "submenu action invokes its declarative closure exactly once")
+menuFlyout.dismiss(animated: false)
+require(menuFlyoutWindow.childWindows?.isEmpty != false, "dismissing a menu removes its complete submenu hierarchy")
+
+menuFlyoutAnchor.userInterfaceLayoutDirection = .rightToLeft
+let rtlMenuFlyout = FluentMenuFlyout(items: [nestedMenuItem])
+rtlMenuFlyout.present(relativeTo: menuFlyoutAnchor)
+let rtlAnchorRect = menuFlyoutWindow.convertToScreen(menuFlyoutAnchor.convert(menuFlyoutAnchor.bounds, to: nil))
+if let rtlPanel = menuFlyoutWindow.childWindows?.first {
+    require(abs(rtlPanel.frame.maxX - rtlAnchorRect.maxX) < 2, "RTL root menu aligns its trailing edge to the anchor")
+}
+rtlMenuFlyout.dismiss(animated: false)
+menuFlyoutAnchor.userInterfaceLayoutDirection = .leftToRight
+require(!menuFlyout.isPresented, "application menu flyout clears its presented state on dismissal")
+require(menuFlyoutWindow.childWindows?.isEmpty != false, "application menu flyout removes its child panel on dismissal")
+menuFlyoutWindow.orderOut(nil)
+
+let teachingTipPresented = FluentState(wrappedValue: false)
+var teachingTipDismissals = 0
+let teachingTipAnchor = FluentButtonView("Teaching tip anchor")
+    .teachingTip(
+        isPresented: teachingTipPresented.projectedValue,
+        placement: .top,
+        size: NSSize(width: 280, height: 120),
+        onDismiss: { teachingTipDismissals += 1 }
+    ) {
+        FluentText("Initial teaching tip")
+    }
+let teachingTipHost = FluentViewHost(
+    teachingTipAnchor,
+    context: FluentRenderContext(reduceMotion: true)
+)
+let teachingTipAnchorIdentity = firstButton(in: teachingTipHost)
+let teachingTipWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 360, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+teachingTipWindow.contentView = teachingTipHost
+teachingTipWindow.orderFront(nil)
+teachingTipPresented.wrappedValue = true
+drainMainQueue()
+require(teachingTipHost.subviews.count == 1, "teaching tip keeps its anchor content mounted")
+require(firstButton(in: teachingTipHost) === teachingTipAnchorIdentity, "teaching tip presentation preserves anchor native identity")
+require(teachingTipWindow.childWindows?.count == 1, "teaching tip presents an application-owned child panel")
+require(
+    teachingTipWindow.childWindows?.first?.contentView?.accessibilityLabel() == "Teaching tip",
+    "teaching tip exposes a semantic presentation group"
+)
+let updatedTeachingTip = FluentButtonView("Teaching tip anchor")
+    .teachingTip(
+        isPresented: teachingTipPresented.projectedValue,
+        placement: .bottom,
+        size: NSSize(width: 300, height: 128),
+        onDismiss: { teachingTipDismissals += 1 }
+    ) {
+        FluentText("Updated teaching tip")
+    }
+require(
+    updatedTeachingTip._update(teachingTipHost.subviews[0], in: FluentRenderContext(reduceMotion: true)),
+    "teaching tip updates compatible anchor and presented content in place"
+)
+drainMainQueue()
+require(
+    firstLabel(in: teachingTipWindow.childWindows?.first?.contentView ?? NSView())?.stringValue == "Updated teaching tip",
+    "teaching tip refreshes presented declarative content"
+)
+teachingTipPresented.wrappedValue = false
+drainMainQueue()
+require(teachingTipWindow.childWindows?.isEmpty != false, "teaching tip removes its child panel when binding becomes false")
+require(teachingTipDismissals == 1, "teaching tip reports completed dismissal once")
+teachingTipWindow.orderOut(nil)
+
+let dialogPresented = FluentState(wrappedValue: false)
+let dialog = FluentText("Dialog host").confirmationDialog("Confirm", isPresented: dialogPresented.projectedValue) {
+    FluentDialogAction("OK")
+}
+require(dialog._mount(in: FluentRenderContext()).subviews.count == 1, "confirmation dialog keeps content mounted")
+
+let sheetPresented = FluentState(wrappedValue: false)
+let sheet = FluentText("Sheet host")
+    .sheet(isPresented: sheetPresented.projectedValue, title: "Editor", size: NSSize(width: 420, height: 280)) {
+        FluentText("Sheet content")
+    }
+let sheetView = sheet._mount(in: FluentRenderContext())
+require(sheetView.subviews.count == 1, "sheet keeps its presenting content mounted")
+let sheetContentIdentity = sheetView.subviews.first
+let updatedSheet = FluentText("Updated sheet host")
+    .sheet(isPresented: sheetPresented.projectedValue, title: "Updated editor", size: NSSize(width: 460, height: 300)) {
+        FluentText("Updated sheet content")
+    }
+require(updatedSheet._update(sheetView, in: FluentRenderContext()), "sheet updates compatible presenting content in place")
+require(sheetView.subviews.first === sheetContentIdentity, "sheet preserves the presenting native host during updates")
+require(sheetPresented.wrappedValue == false, "sheet does not present until its binding is enabled")
+
+let expanded = FluentState(wrappedValue: true)
+let disclosure = FluentDisclosureGroup("Advanced", isExpanded: expanded.projectedValue) {
+    FluentText("Advanced content")
+}
+let disclosureView = disclosure._mount(in: FluentRenderContext())
+require(disclosureView.subviews.count == 1, "disclosure group mounts a native host")
+require(expanded.wrappedValue, "disclosure binding starts expanded")
+
+let mode = FluentState(wrappedValue: 1)
+let segmented = FluentSegmentedControl(["One", "Two", "Three"], selection: mode.projectedValue)
+let segmentedView = segmented._mount(in: FluentRenderContext())
+require(segmentedView is NSSegmentedControl, "segmented control mounts native AppKit control")
+require((segmentedView as? NSSegmentedControl)?.selectedSegment == 1, "segmented control reads selection binding")
+
+var commandInvocations = 0
+let commandWrapped = FluentText("Commands").fluentCommandGroups {
+    FluentCommandGroup("Editing") {
+        FluentCommand("Focus", keyEquivalent: "f") { commandInvocations += 1 }
+    }
+}
+let commandView = commandWrapped._mount(in: FluentRenderContext())
+require(commandView.subviews.count == 1, "commands keep content mounted")
+if let commandEvent = NSEvent.keyEvent(
+    with: .keyDown,
+    location: .zero,
+    modifierFlags: [.command],
+    timestamp: 0,
+    windowNumber: 0,
+    context: nil,
+    characters: "f",
+    charactersIgnoringModifiers: "f",
+    isARepeat: false,
+    keyCode: 3
+) {
+    require(commandView.performKeyEquivalent(with: commandEvent), "command consumes matching key equivalent")
+}
+require(commandInvocations == 1, "command group invokes matching action")
+
+var appCommandInvocations = 0
+var appCommandEnabled = true
+let applicationCommands = [
+    FluentCommandGroup("File") {
+        FluentCommand("Export", keyEquivalent: "e", modifiers: [.command, .shift], isEnabled: { appCommandEnabled }) {
+            appCommandInvocations += 1
+        }
+    },
+    FluentCommandGroup("View") {
+        FluentCommand("Refresh", keyEquivalent: "r") {}
+    }
+]
+let mainMenuCoordinator = FluentMainMenuCoordinator(applicationName: "Validation App", groups: applicationCommands)
+require(mainMenuCoordinator.menu.title == "Validation App", "main menu preserves application title")
+require(mainMenuCoordinator.menu.items.count == 3, "main menu contains app item and declarative command groups")
+let fileMenu = mainMenuCoordinator.menu.items[1].submenu
+require(fileMenu?.title == "File", "main menu preserves command group title")
+require(fileMenu?.items.count == 1, "main menu renders one item per command")
+let exportItem = fileMenu?.items.first
+require(exportItem?.keyEquivalent == "e", "main menu preserves command key equivalent")
+require(exportItem?.keyEquivalentModifierMask == [.command, .shift], "main menu preserves command modifiers")
+require(exportItem.map(mainMenuCoordinator.perform) == true, "main menu performs an enabled command")
+require(appCommandInvocations == 1, "main menu invokes the declarative action")
+appCommandEnabled = false
+mainMenuCoordinator.menuNeedsUpdate(mainMenuCoordinator.menu)
+require(exportItem?.isEnabled == false, "main menu refreshes dynamic enabled state")
+require(exportItem.map(mainMenuCoordinator.perform) == false, "main menu refuses to perform a disabled command")
+mainMenuCoordinator.update(groups: [])
+require(mainMenuCoordinator.menu.items.count == 1, "main menu update removes stale declarative groups")
+
+let pickedDate = FluentState(wrappedValue: Date(timeIntervalSince1970: 1_700_000_000))
+let datePicker = FluentDatePicker(selection: pickedDate.projectedValue)
+let styledDatePicker = datePicker.textFieldStyle(ValidationTextFieldStyle())
+let dateView = styledDatePicker._mount(in: FluentRenderContext())
+require(dateView is NSDatePicker, "date picker mounts native AppKit control")
+require((dateView as? NSDatePicker)?.dateValue == pickedDate.wrappedValue, "date picker reads selection binding")
+require((dateView as? NSDatePicker)?.font?.pointSize == 17, "date picker receives the shared semantic field font")
+
+let pickedColor = FluentState(wrappedValue: NSColor.systemBlue)
+let colorPicker = FluentColorPicker(selection: pickedColor.projectedValue, label: "Accent color")
+let colorView = colorPicker._mount(in: FluentRenderContext())
+require(colorView is NSColorWell, "color picker mounts native AppKit control")
+require((colorView as? NSColorWell)?.color == pickedColor.wrappedValue, "color picker reads selection binding")
+
+let groupedAccessibility = FluentVStack(spacing: 4) {
+    FluentText("Group label")
+    FluentButton(title: "Group action")
+}.accessibilityGroup(label: "Settings group", identifier: "settings-group")
+let groupedView = groupedAccessibility._mount(in: FluentRenderContext())
+require(groupedView.isAccessibilityElement(), "accessibility group is an element")
+require(groupedView.accessibilityChildren()?.count == 1, "accessibility group exposes composed child hierarchy")
+
+var toolbarInvocations = 0
+let toolbarRoot = FluentText("Toolbar host").toolbar {
+    FluentToolbarItem("save", label: "Save", toolTip: "Save changes") {
+        FluentButtonView("Save") { toolbarInvocations += 1 }
+    }
+    FluentToolbarItem.space
+}
+let toolbarWindow = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 360, height: 160), styleMask: [.titled], backing: .buffered, defer: false)
+let toolbarHost = FluentViewHost(toolbarRoot)
+toolbarWindow.contentView = toolbarHost
+toolbarWindow.makeKeyAndOrderFront(nil)
+drainMainQueue()
+require(toolbarWindow.toolbar != nil, "toolbar modifier attaches an NSToolbar to the containing window")
+require(toolbarWindow.toolbar?.items.count == 2, "toolbar creates declarative items")
+if let button = toolbarWindow.toolbar?.items.first?.view?.subviews.first as? FluentButton {
+    button.performClick(nil)
+}
+require(toolbarInvocations == 1, "toolbar item preserves declarative action")
+
+let navigationPath = FluentState<[AnyHashable]>(wrappedValue: [])
+struct ValidationNavigationItem {
+    let id: String
+    let title: String
+}
+let navigationItems = [
+    ValidationNavigationItem(id: "home", title: "Home"),
+    ValidationNavigationItem(id: "library", title: "Library"),
+    ValidationNavigationItem(id: "settings", title: "Settings")
+]
+let navigationSelection = FluentState<String?>(wrappedValue: "library")
+let navigationSidebarVisible = FluentState(wrappedValue: true)
+let navigationSplit = FluentNavigationSplitView(
+    navigationItems,
+    id: \.id,
+    selection: navigationSelection.projectedValue,
+    isSidebarVisible: navigationSidebarVisible.projectedValue,
+    sidebarWidth: 180...320,
+    idealSidebarWidth: 220
+) { item in
+    FluentText(item.title)
+} detail: { item in
+    FluentText("Detail: \(item.title)")
+} placeholder: {
+    FluentText("No destination")
+}
+let navigationSplitView = navigationSplit._mount(in: FluentRenderContext())
+navigationSplitView.frame = NSRect(x: 0, y: 0, width: 680, height: 300)
+navigationSplitView.layoutSubtreeIfNeeded()
+drainMainQueue()
+navigationSplitView.layoutSubtreeIfNeeded()
+let nativeNavigationSplit = firstSplitView(in: navigationSplitView)
+require(nativeNavigationSplit?.subviews.count == 2, "navigation split view mounts sidebar and detail columns")
+require(nativeNavigationSplit?.subviews.count == 2, "navigation split view initially exposes both columns")
+require(labels(in: navigationSplitView).contains { $0.stringValue == "Detail: Library" }, "navigation split view resolves its initial stable selection")
+navigationSelection.wrappedValue = "settings"
+drainMainQueue()
+require(labels(in: navigationSplitView).contains { $0.stringValue == "Detail: Settings" }, "external navigation selection updates the detail column")
+navigationSidebarVisible.wrappedValue = false
+drainMainQueue()
+require(navigationSidebarVisible.wrappedValue == false, "sidebar visibility binding accepts collapse state")
+navigationSidebarVisible.wrappedValue = true
+drainMainQueue()
+navigationSplitView.layoutSubtreeIfNeeded()
+require(navigationSidebarVisible.wrappedValue == true, "sidebar visibility binding accepts restore state")
+let reducedNavigationSplit = FluentNavigationSplitView(
+    Array(navigationItems.prefix(2)),
+    id: \.id,
+    selection: navigationSelection.projectedValue,
+    isSidebarVisible: navigationSidebarVisible.projectedValue,
+    sidebarWidth: 180...320,
+    idealSidebarWidth: 220
+) { item in
+    FluentText(item.title)
+} detail: { item in
+    FluentText("Detail: \(item.title)")
+} placeholder: {
+    FluentText("No destination")
+}
+require(reducedNavigationSplit._update(navigationSplitView, in: FluentRenderContext()), "navigation split view updates compatible content in place")
+drainMainQueue()
+require(firstSplitView(in: navigationSplitView) === nativeNavigationSplit, "navigation split view preserves its native split host during updates")
+require(navigationSelection.wrappedValue == nil, "navigation split view clears selection when its destination is removed")
+require(labels(in: navigationSplitView).contains { $0.stringValue == "No destination" }, "navigation split view shows placeholder content after selection is cleared")
+
+let navigation = FluentNavigationStack(
+    path: navigationPath.projectedValue,
+    root: { FluentText("Root screen") },
+    title: { String(describing: $0) },
+    destination: { route in FluentAnyView(FluentText("Route: \(route)")) }
+)
+let navigationView = navigation._mount(in: FluentRenderContext())
+require(navigationView.subviews.count == 1, "navigation stack mounts a native host")
+navigationPath.wrappedValue = [AnyHashable("detail")]
+drainMainQueue()
+require(navigationPath.wrappedValue == [AnyHashable("detail")], "navigation path binding accepts pushed routes")
+
+let linkPath = FluentState<[AnyHashable]>(wrappedValue: [])
+let link = FluentNavigationLink("settings", path: linkPath.projectedValue) {
+    FluentText("Open settings")
+}
+let linkView = link._mount(in: FluentRenderContext())
+require(linkView.accessibilityRole() == NSAccessibility.Role.button, "navigation link mounts an activatable semantic host")
+if let linkEvent = NSEvent.keyEvent(
+    with: .keyDown,
+    location: .zero,
+    modifierFlags: [],
+    timestamp: 0,
+    windowNumber: 0,
+    context: nil,
+    characters: "\\r",
+    charactersIgnoringModifiers: "\\r",
+    isARepeat: false,
+    keyCode: 36
+) {
+    linkView.keyDown(with: linkEvent)
+}
+require(linkPath.wrappedValue == [AnyHashable("settings")], "navigation link appends its route")
+
+let descriptorPath = FluentState<[AnyHashable]>(wrappedValue: [])
+let descriptorNavigation = FluentNavigationStack(
+    path: descriptorPath.projectedValue,
+    root: { FluentText("Descriptor root") },
+    transition: .crossFade,
+    destination: { route in
+        FluentNavigationDestination(title: "Screen \(route)") {
+            FluentText("Descriptor route \(route)")
+        }
+    }
+)
+let descriptorView = descriptorNavigation._mount(in: FluentRenderContext())
+require(descriptorView.subviews.count == 1, "navigation destination descriptor mounts")
+descriptorPath.wrappedValue = [AnyHashable("settings")]
+drainMainQueue()
+require(descriptorPath.wrappedValue == [AnyHashable("settings")], "descriptor navigation accepts route changes")
+
+struct ArticleRoute: Hashable, Codable {
+    let id: Int
+}
+struct ProfileRoute: Hashable, Codable {
+    let name: String
+}
+let destinationRegistry = FluentNavigationDestinationRegistry()
+destinationRegistry.register(ArticleRoute.self) { route in
+    FluentNavigationDestination(title: "Article \(route.id)") { FluentText("Article body \(route.id)") }
+}
+destinationRegistry.register(ProfileRoute.self) { route in
+    FluentNavigationDestination(title: "Profile \(route.name)") { FluentText("Profile body \(route.name)") }
+}
+require(destinationRegistry.contains(ArticleRoute.self), "navigation registry records a concrete route type")
+require(destinationRegistry.contains(ProfileRoute.self), "navigation registry records multiple route types")
+let articleDestination = destinationRegistry.resolve(AnyHashable(ArticleRoute(id: 7)))
+require(articleDestination?.title == "Article 7", "navigation registry resolves the matching route handler")
+require(destinationRegistry.resolve(AnyHashable(ProfileRoute(name: "Ada")))?.title == "Profile Ada", "navigation registry keeps route handlers type isolated")
+destinationRegistry.register(ArticleRoute.self) { route in
+    FluentNavigationDestination(title: "Updated article \(route.id)") { FluentText("Updated article \(route.id)") }
+}
+require(destinationRegistry.resolve(AnyHashable(ArticleRoute(id: 7)))?.title == "Updated article 7", "navigation registry replacement has deterministic override semantics")
+let unknownRoute = AnyHashable("legacy-route")
+require(destinationRegistry.resolve(unknownRoute) == nil, "navigation registry returns nil for an unregistered route")
+require(FluentNavigationDestinationRegistry.unavailableDestination(for: unknownRoute).title == "Unavailable", "navigation registry provides an explicit safe fallback destination")
+require(destinationRegistry.count == 2, "navigation registry exposes its concrete handler count")
+require(destinationRegistry.unregister(ProfileRoute.self), "navigation registry removes one concrete handler")
+require(!destinationRegistry.contains(ProfileRoute.self), "navigation registry reports an unregistered type after removal")
+destinationRegistry.register(ProfileRoute.self) { route in
+    FluentNavigationDestination(title: "Profile \(route.name)") { FluentText("Profile body \(route.name)") }
+}
+
+var typedNavigationPath = FluentNavigationPath<ArticleRoute>()
+typedNavigationPath.append(ArticleRoute(id: 1))
+typedNavigationPath.append(ArticleRoute(id: 2))
+require(typedNavigationPath.last?.id == 2 && typedNavigationPath.count == 2, "typed navigation path supports push and count")
+require(typedNavigationPath.popLast()?.id == 2 && typedNavigationPath.count == 1, "typed navigation path supports pop")
+typedNavigationPath.append(ArticleRoute(id: 2))
+let encodedNavigationPath = try! JSONEncoder().encode(typedNavigationPath)
+let decodedNavigationPath = try! JSONDecoder().decode(FluentNavigationPath<ArticleRoute>.self, from: encodedNavigationPath)
+require(decodedNavigationPath == typedNavigationPath, "typed navigation path round-trips through Codable")
+require(restorationStore.set(typedNavigationPath, forKey: "navigation.path"), "typed navigation path persists in restoration store")
+require(restorationStore.value(forKey: "navigation.path", as: FluentNavigationPath<ArticleRoute>.self) == typedNavigationPath, "typed navigation path restores in original order")
+let restoredNavigationState = FluentRestoredState<FluentNavigationPath<ArticleRoute>>(
+    wrappedValue: FluentNavigationPath<ArticleRoute>(),
+    "navigation.restored",
+    store: restorationStore
+)
+restoredNavigationState.wrappedValue = typedNavigationPath
+let reloadedNavigationState = FluentRestoredState<FluentNavigationPath<ArticleRoute>>(
+    wrappedValue: FluentNavigationPath<ArticleRoute>(),
+    "navigation.restored",
+    store: restorationStore
+)
+require(reloadedNavigationState.wrappedValue == typedNavigationPath, "restored state reconstructs the complete typed navigation order")
+
+let typedPathState = FluentState(wrappedValue: FluentNavigationPath<ArticleRoute>([ArticleRoute(id: 10)]))
+let typedNavigation = FluentNavigationStack(
+    path: typedPathState.projectedValue,
+    root: { FluentText("Typed root") },
+    registry: destinationRegistry,
+    transition: .none
+)
+let typedNavigationView = typedNavigation._mount(in: FluentRenderContext())
+let typedNavigationHost = typedNavigationView.subviews.first
+typedPathState.wrappedValue.append(ArticleRoute(id: 11))
+drainMainQueue()
+require(typedPathState.wrappedValue.elements.map(\.id) == [10, 11], "typed navigation stack accepts route pushes through its binding")
+require(typedNavigation._update(typedNavigationView, in: FluentRenderContext()), "typed navigation stack updates in place")
+require(typedNavigationView.subviews.first === typedNavigationHost, "typed navigation stack preserves its native host identity")
+let typedLinkPath = FluentState(wrappedValue: FluentNavigationPath<ArticleRoute>())
+let typedLink = FluentNavigationLink(ArticleRoute(id: 22), path: typedLinkPath.projectedValue) { FluentText("Open article") }
+let typedLinkView = typedLink._mount(in: FluentRenderContext())
+if let typedLinkEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\r", charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36) {
+    typedLinkView.keyDown(with: typedLinkEvent)
+}
+require(typedLinkPath.wrappedValue.elements == [ArticleRoute(id: 22)], "typed navigation link appends to a Codable path")
+let unknownPathState = FluentState(wrappedValue: FluentNavigationPath<ArticleRoute>([ArticleRoute(id: 99)]))
+let unknownNavigation = FluentNavigationStack(
+    path: unknownPathState.projectedValue,
+    root: { FluentText("Fallback root") },
+    registry: FluentNavigationDestinationRegistry(),
+    transition: .none
+)
+_ = unknownNavigation._mount(in: FluentRenderContext())
+require(unknownPathState.wrappedValue.last?.id == 99, "unregistered typed routes remain stable in navigation state")
+
+let inspectorVisible = FluentState(wrappedValue: true)
+let inspector = FluentInspector(
+    isPresented: inspectorVisible.projectedValue,
+    width: 180...300,
+    idealWidth: 220,
+    content: {
+        FluentText("Editor content")
+    },
+    inspector: {
+        FluentVStack(spacing: 6) {
+            FluentText("Inspector", weight: .semibold)
+            FluentText("Properties", color: FluentTheme.current.textSecondary)
+        }
+    }
+)
+let inspectorView = inspector._mount(in: FluentRenderContext())
+inspectorView.frame = NSRect(x: 0, y: 0, width: 720, height: 320)
+inspectorView.layoutSubtreeIfNeeded()
+drainMainQueue()
+inspectorView.layoutSubtreeIfNeeded()
+let nativeInspectorSplit = firstSplitView(in: inspectorView)
+require(nativeInspectorSplit?.subviews.count == 2, "inspector mounts content and trailing pane in one native split view")
+require(labels(in: inspectorView).contains { $0.stringValue == "Inspector" }, "inspector renders declarative trailing content")
+let inspectorSplitIdentity = nativeInspectorSplit
+inspectorVisible.wrappedValue = false
+drainMainQueue()
+require(inspectorVisible.wrappedValue == false, "inspector visibility binding accepts collapse state")
+inspectorVisible.wrappedValue = true
+drainMainQueue()
+inspectorView.layoutSubtreeIfNeeded()
+require(inspectorVisible.wrappedValue == true, "inspector visibility binding restores the pane")
+require(firstSplitView(in: inspectorView) === inspectorSplitIdentity, "inspector preserves its native split host across visibility changes")
+let updatedInspector = FluentInspector(
+    isPresented: inspectorVisible.projectedValue,
+    width: 200...340,
+    idealWidth: 260,
+    content: { FluentText("Updated content") },
+    inspector: { FluentText("Updated inspector") }
+)
+require(updatedInspector._update(inspectorView, in: FluentRenderContext()), "inspector updates compatible content in place")
+require(firstSplitView(in: inspectorView) === inspectorSplitIdentity, "inspector preserves native split identity during declarative updates")
+
+var capturedReduceMotion = false
+struct ReduceMotionProbe: FluentPrimitiveView {
+    let capture: (FluentRenderContext) -> Void
+
+    var body: NeverFluentView { NeverFluentView() }
+
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        capture(context)
+        return NSView()
+    }
+}
+let reducedMotionView = ReduceMotionProbe { capturedReduceMotion = $0.reduceMotion }
+    .fluentReduceMotion(true)
+let reducedMotionHost = reducedMotionView._mount(in: FluentRenderContext())
+_ = reducedMotionHost
+require(capturedReduceMotion, "reduce-motion environment reaches nested content")
+var reducedAnimationDuration = -1.0
+struct ReducedAnimationProbe: FluentPrimitiveView {
+    let capture: (FluentRenderContext) -> Void
+
+    var body: NeverFluentView { NeverFluentView() }
+
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        capture(context)
+        return NSView()
+    }
+}
+let reducedAnimation = ReducedAnimationProbe { reducedAnimationDuration = $0.animationDuration }
+    .fluentReduceMotion(true)
+    .fluentAnimationDuration(0.42)
+_ = reducedAnimation._mount(in: FluentRenderContext())
+require(abs(reducedAnimationDuration - 0.42) < 0.0001, "reduce-motion preserves configured duration for descendants")
+let linearCurve = FluentAnimationTransaction(duration: 0.18, curve: .linear)
+require(abs(linearCurve.duration - 0.18) < 0.0001, "animation curve initializer preserves duration")
+let easedMidpoint = FluentAnimationCurve.easeIn.progress(at: 0.5)
+require(easedMidpoint > 0 && easedMidpoint < 0.5, "animation curve exposes deterministic eased progress sampling")
+require(abs(linearCurve.progress(at: 0.5) - 0.5) < 0.001, "animation transaction samples its cubic timing function")
+let directMotion = FluentAnimationCurve.cubicBezier(.direct)
+let directMidpoint = directMotion.progress(at: 0.5)
+require(directMidpoint > 0.5 && directMidpoint < 1, "custom cubic-bezier curves expose deterministic progress sampling")
+require(abs(FluentMotion.controlFaster.duration - 0.083) < 0.0001, "control-faster motion preserves its exact duration")
+require(abs(FluentMotion.controlFast.duration - 0.167) < 0.0001, "control-fast motion preserves its exact duration")
+require(abs(FluentMotion.controlNormal.duration - 0.250) < 0.0001, "control-normal motion preserves its exact duration")
+require(abs(FluentMotion.connectedDefault.duration - 0.300) < 0.0001, "connected motion preserves its exact duration")
+require(abs(FluentMotion.navigationIndicator.duration - 0.600) < 0.0001, "navigation indicator preserves its exact duration")
+require(FluentMotion.connectedGravity.distance == 80 && abs(FluentMotion.connectedGravity.scale - 1.1) < 0.0001, "gravity connected motion preserves distance and peak scale")
+require(FluentMotion.teachingTipOpen.curve == .direct, "teaching-tip open motion uses the direct curve")
+require(FluentMotion.teachingTipClose.curve == .contract, "teaching-tip close motion uses the contract curve")
+require(FluentMotion.teachingTipOpen.distance == 8 && FluentMotion.teachingTipOpen.scale == 0.97, "teaching-tip open motion carries presentation geometry")
+require(FluentMotion.teachingTipClose.distance == 8 && FluentMotion.teachingTipClose.scale == 0.97, "teaching-tip close motion mirrors presentation geometry")
+require(FluentMatchedGeometryConfiguration.automatic.motion.duration == FluentMotion.connectedDefault.duration, "automatic matched geometry uses default connected motion")
+require(FluentMatchedGeometryConfiguration.direct.motion.duration == FluentMotion.connectedDirect.duration, "direct matched geometry uses direct connected motion")
+require(
+    FluentMatchedGeometryConfiguration.gravity.motion.distance == FluentMotion.connectedGravity.distance
+        && FluentMatchedGeometryConfiguration.gravity.motion.scale == FluentMotion.connectedGravity.scale,
+    "gravity matched geometry exposes gravity distance and scale"
+)
+require(abs(CGFloat.interpolate(from: 2, to: 6, fraction: 0.25) - 3) < 0.0001, "interpolatable scalar samples between values")
+require(abs(CGFloat.interpolate(from: 2, to: 6, fraction: 1.1) - 6.4) < 0.0001, "numeric interpolation extrapolates spring overshoot")
+let midpointColor = NSColor.interpolate(
+    from: NSColor(srgbRed: 1, green: 0, blue: 0, alpha: 1),
+    to: NSColor(srgbRed: 0, green: 0, blue: 1, alpha: 0.5),
+    fraction: 0.5
+).usingColorSpace(.extendedSRGB)
+require(abs((midpointColor?.redComponent ?? 0) - 0.5) < 0.001, "color interpolation samples red in extended sRGB")
+require(abs((midpointColor?.blueComponent ?? 0) - 0.5) < 0.001, "color interpolation samples blue in extended sRGB")
+require(abs((midpointColor?.alphaComponent ?? 0) - 0.75) < 0.001, "color interpolation includes alpha")
+let midpointTransform = CGAffineTransform.interpolate(
+    from: .identity,
+    to: CGAffineTransform(translationX: 20, y: -10),
+    fraction: 0.5
+)
+require(abs(midpointTransform.tx - 10) < 0.0001 && abs(midpointTransform.ty + 5) < 0.0001, "transform interpolation samples every matrix component")
+let keyframeTimeline = FluentKeyframeAnimation<CGFloat>(
+    keyframes: [
+        FluentKeyframe(offset: 0, value: 0),
+        FluentKeyframe(offset: 0.5, value: 1),
+        FluentKeyframe(offset: 1, value: 0.25)
+    ],
+    duration: 0.06,
+    curve: .linear
+)
+require(abs(keyframeTimeline.value(at: 0.25, from: 0) - 0.5) < 0.0001, "keyframe timeline interpolates its first segment")
+require(abs(keyframeTimeline.value(at: 0.75, from: 0) - 0.625) < 0.0001, "keyframe timeline interpolates its final segment")
+let duplicateKeyframeTimeline = FluentKeyframeAnimation<CGFloat>(
+    keyframes: [
+        FluentKeyframe(offset: 0, value: 0),
+        FluentKeyframe(offset: 0.5, value: 0.25),
+        FluentKeyframe(offset: 0.5, value: 0.8),
+        FluentKeyframe(offset: 1, value: 1)
+    ],
+    curve: .linear
+)
+require(duplicateKeyframeTimeline.keyframes.count == 3, "duplicate keyframe offsets normalize to one definition")
+require(abs(duplicateKeyframeTimeline.value(at: 0.5, from: 0) - 0.8) < 0.0001, "later duplicate keyframes override earlier definitions")
+
+let animatedScalar = FluentAnimatedValue<CGFloat>(0)
+var animatedSamples: [CGFloat] = []
+let animatedObserver = animatedScalar.observable.observe({ animatedSamples.append($0) }, notifyImmediately: false)
+var scalarAnimationCompleted = false
+animatedScalar.set(1, animation: FluentAnimationTransaction(duration: 0.06, curve: .linear), reduceMotion: false) {
+    scalarAnimationCompleted = true
+}
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.035))
+require(animatedScalar.isAnimating, "animated value reports an active display-driven animation")
+require(animatedScalar.value > 0 && animatedScalar.value < 1, "animated value publishes intermediate samples")
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.06))
+require(abs(animatedScalar.value - 1) < 0.0001, "animated value lands exactly on its target")
+require(!animatedScalar.isAnimating && scalarAnimationCompleted, "animated value completes and releases its timer")
+require(animatedSamples.count >= 2, "animated value observers receive multiple sampled values")
+animatedScalar.observable.removeObserver(animatedObserver)
+
+struct AnimatedScalarLabel: FluentView {
+    let value: FluentAnimatedValue<CGFloat>
+    var body: FluentTextView { FluentText("Animated: \(Int(value.value * 100))") }
+}
+let trackedAnimatedValue = FluentAnimatedValue<CGFloat>(0)
+let trackedAnimatedHost = FluentViewHost(AnimatedScalarLabel(value: trackedAnimatedValue))
+trackedAnimatedValue.set(1, animation: FluentAnimationTransaction(duration: 0.04, curve: .linear), reduceMotion: false)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.07))
+require(firstLabel(in: trackedAnimatedHost)?.stringValue == "Animated: 100", "animated values participate in declarative dependency tracking")
+
+struct TransformDependencyProbe: FluentView {
+    let progress: FluentObservable<CGFloat>
+
+    var body: FluentTransformView<FluentTextView> {
+        FluentText("Transform child").offset(x: progress.value * 20)
+    }
+}
+let transformProgress = FluentObservable<CGFloat>(0)
+let transformHost = FluentViewHost(TransformDependencyProbe(progress: transformProgress))
+let nativeTransformHost = transformHost.subviews.first
+let nativeTransformChild = nativeTransformHost?.subviews.first
+transformProgress.value = 0.5
+drainMainQueue()
+require(transformHost.subviews.first === nativeTransformHost, "transform updates preserve their native container identity")
+require(transformHost.subviews.first?.subviews.first === nativeTransformChild, "transform updates preserve native child identity")
+require(abs((transformHost.subviews.first?.layer?.affineTransform().tx ?? 0) - 10) < 0.0001, "transform updates apply dependency-driven matrix changes in place")
+
+let springValue = FluentAnimatedValue<CGFloat>(0)
+var springCompleted = false
+let spring = FluentSpringAnimation(stiffness: 220, damping: 22)
+require(spring.settlingDuration >= 0.12 && spring.settlingDuration <= 3, "spring exposes a bounded settling duration")
+springValue.set(1, spring: spring, reduceMotion: false) { springCompleted = true }
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.035))
+require(springValue.isAnimating && springValue.value != 0, "spring animation publishes a moving value")
+springValue.finish()
+require(abs(springValue.value - 1) < 0.0001 && springCompleted, "finishing a spring writes its exact target and completion")
+let overshootingSpringValue = FluentAnimatedValue<CGFloat>(0)
+var overshootingSpringSamples: [CGFloat] = []
+let overshootingSpringObserver = overshootingSpringValue.observable.observe(
+    { overshootingSpringSamples.append($0) },
+    notifyImmediately: false
+)
+overshootingSpringValue.set(1, spring: FluentSpringAnimation(stiffness: 240, damping: 4), reduceMotion: false)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.35))
+overshootingSpringValue.stop()
+overshootingSpringValue.observable.removeObserver(overshootingSpringObserver)
+require(overshootingSpringSamples.contains { $0 > 1.01 }, "underdamped springs publish overshooting value samples")
+
+let reducedKeyframeValue = FluentAnimatedValue<CGFloat>(0)
+var reducedKeyframesCompleted = false
+reducedKeyframeValue.animate(using: keyframeTimeline, reduceMotion: true) { reducedKeyframesCompleted = true }
+require(abs(reducedKeyframeValue.value - 0.25) < 0.0001, "reduced motion resolves keyframes to their final value immediately")
+require(!reducedKeyframeValue.isAnimating && reducedKeyframesCompleted, "reduced keyframes complete without allocating a timer")
+
+let transitionFlag = FluentObservable(true)
+struct TransitionProbe: FluentView {
+    let flag: FluentObservable<Bool>
+
+    var body: FluentTransitionView<FluentAnyView> {
+        let branch = flag.value
+            ? FluentAnyView(FluentText("Visible").offset(x: 7))
+            : FluentAnyView(FluentButton(title: "Replacement").offset(x: 7))
+        return branch
+            .transition(
+                .asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .crossFade),
+                    removal: .scale.combined(with: .crossFade)
+                ),
+                animation: FluentAnimationTransaction(duration: 0.06, curve: .easeOut)
+            )
+    }
+}
+let transitionHost = FluentViewHost(TransitionProbe(flag: transitionFlag))
+let nativeTransitionContainer = transitionHost.subviews.first
+transitionFlag.value = false
+drainMainQueue()
+require(transitionHost.subviews.count == 1, "transition wrapper keeps a stable host during branch replacement")
+require(transitionHost.subviews.first === nativeTransitionContainer, "composed transitions preserve their native host identity")
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))
+require(nativeTransitionContainer?.subviews.count == 1, "transition completion removes the outgoing native entry")
+let contentTransformPreserved = abs(
+    (nativeTransitionContainer?.subviews.first?.subviews.first?.layer?.affineTransform().tx ?? 0) - 7
+) < 0.0001
+require(contentTransformPreserved, "transition entry animation does not overwrite a content transform")
+
+let rapidTransitionPage = FluentObservable(0)
+struct RapidTransitionProbe: FluentView {
+    let page: FluentObservable<Int>
+
+    var body: FluentTransitionView<FluentIDView<FluentTextView>> {
+        FluentText("Page \(page.value)")
+            .fluentID(page.value)
+            .transition(
+                .move(edge: .trailing).combined(with: .crossFade),
+                animation: FluentAnimationTransaction(duration: 0.04, curve: .cubicBezier(.direct))
+            )
+    }
+}
+let rapidTransitionHost = FluentViewHost(RapidTransitionProbe(page: rapidTransitionPage))
+let nativeRapidTransitionContainer = rapidTransitionHost.subviews.first
+rapidTransitionPage.value = 1
+drainMainQueue()
+rapidTransitionPage.value = 2
+drainMainQueue()
+rapidTransitionPage.value = 3
+drainMainQueue()
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.2))
+require(
+    rapidTransitionHost.subviews.first === nativeRapidTransitionContainer,
+    "rapid transition updates preserve their stable native host"
+)
+require(
+    nativeRapidTransitionContainer?.subviews.count == 1,
+    "rapid transition updates remove all superseded outgoing entries"
+)
+require(
+    firstLabel(in: rapidTransitionHost)?.stringValue == "Page 3",
+    "rapid transition updates resolve to the latest requested page"
+)
+
+let compatibleTransitionText = FluentObservable("First")
+struct CompatibleTransitionProbe: FluentView {
+    let text: FluentObservable<String>
+
+    var body: FluentTransitionView<FluentTextView> {
+        FluentText(text.value)
+            .transition(.scale.combined(with: .crossFade))
+    }
+}
+let compatibleTransitionHost = FluentViewHost(CompatibleTransitionProbe(text: compatibleTransitionText))
+let compatibleTransitionContainer = compatibleTransitionHost.subviews.first
+let compatibleTransitionEntry = compatibleTransitionContainer?.subviews.first
+let compatibleTransitionLabel = firstLabel(in: compatibleTransitionHost)
+compatibleTransitionText.value = "Second"
+drainMainQueue()
+require(compatibleTransitionHost.subviews.first === compatibleTransitionContainer, "compatible transition updates preserve the host")
+require(compatibleTransitionContainer?.subviews.first === compatibleTransitionEntry, "compatible transition updates preserve the entry")
+require(firstLabel(in: compatibleTransitionHost) === compatibleTransitionLabel, "compatible transition updates preserve native content identity")
+require(compatibleTransitionLabel?.stringValue == "Second", "compatible transition updates content in place")
+
+let reducedTransitionFlag = FluentObservable(true)
+struct ReducedTransitionProbe: FluentView {
+    let flag: FluentObservable<Bool>
+
+    var body: some FluentView {
+        let branch = flag.value
+            ? FluentAnyView(FluentText("Reduced visible"))
+            : FluentAnyView(FluentButton(title: "Reduced replacement"))
+        return branch
+            .transition(
+                .move(edge: .bottom).combined(with: .crossFade),
+                animation: FluentAnimationTransaction(duration: 1, curve: .easeInOut)
+            )
+            .fluentReduceMotion(true)
+    }
+}
+let reducedTransitionHost = FluentViewHost(ReducedTransitionProbe(flag: reducedTransitionFlag))
+let reducedTransitionContainer = reducedTransitionHost.subviews.first
+reducedTransitionFlag.value = false
+drainMainQueue()
+require(reducedTransitionHost.subviews.first === reducedTransitionContainer, "reduced motion preserves the transition host")
+require(reducedTransitionContainer?.subviews.count == 1, "reduced motion replaces a branch without retaining an outgoing entry")
+require(firstButton(in: reducedTransitionHost)?.title == "Reduced replacement", "reduced motion resolves immediately to replacement content")
+
+let matchedGeometryFlag = FluentObservable(true)
+let matchedGeometryNamespace = FluentMatchedGeometryNamespace()
+struct MatchedGeometryProbe: FluentView {
+    let flag: FluentObservable<Bool>
+    let namespace: FluentMatchedGeometryNamespace
+
+    var body: FluentTransitionView<FluentAnyView> {
+        let branch = flag.value
+            ? FluentAnyView(
+                FluentZStack {
+                    FluentAnyView(FluentText("Origin"))
+                }
+                .frame(width: 96, height: 42)
+                .matchedGeometryEffect(id: "card", in: namespace, configuration: .direct)
+            )
+            : FluentAnyView(
+                FluentVStack(spacing: 4) {
+                    FluentText("Destination", weight: .semibold)
+                    FluentText("Details", size: 11, color: FluentTheme.current.textSecondary)
+                }
+                .padding(8)
+                .frame(width: 196, height: 64)
+                .matchedGeometryEffect(id: "card", in: namespace, configuration: .direct)
+            )
+        return branch.transition(.crossFade, animation: FluentAnimationTransaction(duration: 0.08, curve: .easeInOut))
+    }
+}
+let matchedGeometryHost = FluentViewHost(
+    MatchedGeometryProbe(flag: matchedGeometryFlag, namespace: matchedGeometryNamespace)
+)
+matchedGeometryHost.frame = NSRect(x: 0, y: 0, width: 260, height: 90)
+matchedGeometryHost.layoutSubtreeIfNeeded()
+let nativeMatchedTransitionHost = matchedGeometryHost.subviews.first
+matchedGeometryFlag.value = false
+drainMainQueue()
+require(matchedGeometryHost.subviews.first === nativeMatchedTransitionHost, "matched geometry preserves the transition host")
+require(nativeMatchedTransitionHost?.subviews.count == 2, "matched geometry retains both entries during interpolation")
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.26))
+require(nativeMatchedTransitionHost?.subviews.count == 1, "matched geometry removes the outgoing entry after interpolation")
+let matchedGeometryMarker = nativeMatchedTransitionHost?.subviews.first?.subviews.first
+require(matchedGeometryMarker != nil, "matched geometry keeps its native marker host mounted")
+
+var capturedAnimationDuration: TimeInterval = 0
+var capturedAnimationTimingFunction: CAMediaTimingFunction?
+struct AnimationContextProbe: FluentPrimitiveView {
+    let capture: (FluentRenderContext) -> Void
+
+    var body: NeverFluentView { NeverFluentView() }
+
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        capture(context)
+        return NSView()
+    }
+}
+let linearTiming = CAMediaTimingFunction(name: .linear)
+let animationContextView = AnimationContextProbe { context in
+    capturedAnimationDuration = context.animationDuration
+    capturedAnimationTimingFunction = context.animationTimingFunction
+}.fluentAnimationDuration(0.42).fluentAnimationTimingFunction(linearTiming)
+_ = animationContextView._mount(in: FluentRenderContext())
+require(abs(capturedAnimationDuration - 0.42) < 0.0001, "animation duration environment reaches nested content")
+require(capturedAnimationTimingFunction != nil, "animation timing function environment reaches nested content")
+
+let undoValue = FluentState(wrappedValue: 1)
+let undoCoordinator = FluentUndoCoordinator()
+let undoBinding = undoValue.projectedValue.undoable(using: undoCoordinator, actionName: "Change value")
+undoBinding.wrappedValue = 2
+require(undoValue.wrappedValue == 2, "undoable binding applies a mutation")
+require(undoCoordinator.canUndo, "undoable binding registers a native undo operation")
+require(undoCoordinator.state.value.undoActionName == "Change value", "undo coordinator publishes its action name")
+undoCoordinator.undo()
+require(undoValue.wrappedValue == 1, "undo coordinator restores the previous binding value")
+require(undoCoordinator.canRedo, "undo registers the inverse redo operation")
+undoCoordinator.redo()
+require(undoValue.wrappedValue == 2, "redo reapplies the binding mutation")
+undoCoordinator.withGroup(actionName: "Double change") {
+    undoBinding.wrappedValue = 3
+    undoBinding.wrappedValue = 4
+}
+undoCoordinator.undo()
+require(undoValue.wrappedValue == 2, "explicit undo groups restore multiple mutations atomically")
+
+var capturedUndoCoordinator: FluentUndoCoordinator?
+struct UndoContextProbe: FluentPrimitiveView {
+    let capture: (FluentUndoCoordinator?) -> Void
+    var body: NeverFluentView { NeverFluentView() }
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        capture(context.undoCoordinator)
+        return NSView()
+    }
+}
+_ = UndoContextProbe { capturedUndoCoordinator = $0 }
+    .fluentUndoScope(undoCoordinator)
+    ._mount(in: FluentRenderContext())
+require(capturedUndoCoordinator === undoCoordinator, "undo scope propagates its coordinator through the render environment")
+
+struct ValidationDocument: Codable, Equatable {
+    var title: String
+    var body: String
+}
+let validationDocumentDirectory = FileManager.default.temporaryDirectory
+    .appendingPathComponent("FluentKitValidation-\(UUID().uuidString)", isDirectory: true)
+try FileManager.default.createDirectory(at: validationDocumentDirectory, withIntermediateDirectories: true)
+let validationDocumentURL = validationDocumentDirectory.appendingPathComponent("document.json")
+let validationExportURL = validationDocumentDirectory.appendingPathComponent("export.json")
+let validationImportURL = validationDocumentDirectory.appendingPathComponent("import.json")
+let validationDocumentDefaults = UserDefaults(suiteName: "FluentKitDocumentValidation.\(UUID().uuidString)")!
+let documentSession = FluentDocumentSession(
+    id: "validation-document",
+    document: ValidationDocument(title: "Draft", body: "Initial"),
+    fileURL: validationDocumentURL,
+    autosave: .disabled,
+    defaults: validationDocumentDefaults
+)
+documentSession.mutate(actionName: "Edit body") { $0.body = "Changed" }
+require(documentSession.document.value.body == "Changed", "document session applies undoable mutations")
+require(documentSession.isDirty.value, "document session becomes dirty after editing")
+documentSession.undoCoordinator.undo()
+require(documentSession.document.value.body == "Initial", "document session undo restores content")
+require(!documentSession.isDirty.value, "undoing to the saved revision clears document dirty state")
+documentSession.undoCoordinator.redo()
+try documentSession.save()
+require(!documentSession.isDirty.value, "saving establishes a clean document revision")
+let savedDocumentData = try Data(contentsOf: validationDocumentURL)
+let savedDocument = try JSONDecoder().decode(ValidationDocument.self, from: savedDocumentData)
+require(savedDocument.body == "Changed", "document session writes its encoded revision atomically")
+documentSession.mutate(actionName: "Edit title") { $0.title = "Unsaved" }
+try documentSession.revert()
+require(documentSession.document.value.title == "Draft", "document session revert reloads the saved file")
+require(!documentSession.isDirty.value, "document session revert clears dirty state")
+let documentZoom = FluentRestoredState<Double>(
+    wrappedValue: 1,
+    "zoom",
+    store: documentSession.restorationStore
+)
+documentZoom.wrappedValue = 1.25
+require(documentSession.restorationStore.value(forKey: "zoom", as: Double.self) == 1.25, "document session exposes a scoped restoration store")
+documentSession.autosavePolicy = .delayed(0)
+documentSession.mutate(actionName: "Autosave") { $0.body = "Autosaved" }
+drainMainQueue()
+require(!documentSession.isDirty.value, "document session delayed autosave saves the dirty revision")
+let autosavedData = try Data(contentsOf: validationDocumentURL)
+let autosavedDocument = try JSONDecoder().decode(ValidationDocument.self, from: autosavedData)
+require(autosavedDocument.body == "Autosaved", "document autosave updates the file")
+documentSession.mutate(actionName: "Export copy") { $0.body = "Exported copy" }
+try documentSession.exportDocument(to: validationExportURL)
+let exportedDocument = try JSONDecoder().decode(
+    ValidationDocument.self,
+    from: Data(contentsOf: validationExportURL)
+)
+require(exportedDocument.body == "Exported copy", "document export writes the current revision")
+require(documentSession.fileURL.value == validationDocumentURL, "document export preserves the active file URL")
+require(documentSession.isDirty.value, "document export does not mark unsaved edits as saved")
+let importedDocument = ValidationDocument(title: "Imported", body: "External")
+try JSONEncoder().encode(importedDocument).write(to: validationImportURL, options: .atomic)
+try documentSession.importDocument(from: validationImportURL)
+require(documentSession.document.value == importedDocument, "document import decodes a new session revision")
+require(documentSession.fileURL.value == nil, "document import requires Save As instead of overwriting its source")
+require(!documentSession.isDirty.value, "document import starts from a clean imported revision")
+
+let coordinatedSession = FluentDocumentSession(
+    id: "coordinated-document",
+    document: ValidationDocument(title: "Coordinated", body: "Initial"),
+    fileURL: validationDocumentURL,
+    defaults: UserDefaults(suiteName: "FluentKitCoordinatedDocumentValidation.\(UUID().uuidString)")!
+)
+let documentCoordinator = FluentDocumentCoordinator(sessions: [documentSession, coordinatedSession])
+require(documentCoordinator.documentIDs == ["validation-document", "coordinated-document"], "document coordinator preserves registration order")
+require(documentCoordinator.activeDocumentID.value == "validation-document", "document coordinator selects its first document by default")
+require(documentCoordinator.activate(id: "coordinated-document"), "document coordinator activates a registered document")
+try documentCoordinator.open(id: "coordinated-document", from: validationImportURL)
+require(documentCoordinator.activeSession === coordinatedSession, "document coordinator routes open into the active session")
+require(documentCoordinator.session(forFileURL: validationImportURL) === coordinatedSession, "document coordinator resolves sessions by file URL")
+documentCoordinator.activate(id: "validation-document")
+coordinatedSession.mutate { $0.body = "Unsaved" }
+require(!documentCoordinator.close(id: "coordinated-document"), "document coordinator protects dirty documents from implicit close")
+require(documentCoordinator.close(id: "coordinated-document", discardChanges: true), "document coordinator allows explicit dirty close")
+require(documentCoordinator.activeDocumentID.value == "validation-document", "document coordinator selects a remaining document after close")
+let saveCoordinatorSession = FluentDocumentSession(
+    id: "save-all-document",
+    document: ValidationDocument(title: "Batch", body: "Initial"),
+    fileURL: validationDocumentURL,
+    defaults: UserDefaults(suiteName: "FluentKitSaveAllValidation.\(UUID().uuidString)")!
+)
+let saveCoordinator = FluentDocumentCoordinator(sessions: [saveCoordinatorSession])
+saveCoordinatorSession.mutate { $0.body = "Batch saved" }
+try saveCoordinator.saveAll()
+require(!saveCoordinatorSession.isDirty.value, "document coordinator saves every registered document")
+require(saveCoordinator.closeAll(), "document coordinator closes a clean document set")
+
+let importConfiguration = FluentFileImportConfiguration(
+    allowedContentTypes: [.json],
+    allowsMultipleSelection: true,
+    canChooseDirectories: true,
+    prompt: "Import",
+    message: "Choose workspace files"
+)
+let exportConfiguration = FluentFileExportConfiguration(
+    contentType: .json,
+    defaultFilename: "workspace.json",
+    canCreateDirectories: false,
+    prompt: "Export",
+    message: "Save a portable copy"
+)
+
+final class ValidationFileDialogSession: FluentFileDialogSession {
+    private var cancellation: (() -> Void)?
+
+    init(cancellation: @escaping () -> Void) {
+        self.cancellation = cancellation
+    }
+
+    func cancel() {
+        let action = cancellation
+        cancellation = nil
+        action?()
+    }
+}
+
+final class ValidationFileDialogPresenter: FluentFileDialogPresenting {
+    var importConfiguration: FluentFileImportConfiguration?
+    var exportConfiguration: FluentFileExportConfiguration?
+    var importPresentations = 0
+    var exportPresentations = 0
+    var importCancellations = 0
+    var exportCancellations = 0
+    private var importCompletion: ((Result<[URL], Error>) -> Void)?
+    private var exportCompletion: ((Result<URL, Error>) -> Void)?
+
+    func presentImport(
+        configuration: FluentFileImportConfiguration,
+        for window: NSWindow,
+        completion: @escaping (Result<[URL], Error>) -> Void
+    ) -> any FluentFileDialogSession {
+        importConfiguration = configuration
+        importPresentations += 1
+        importCompletion = completion
+        return ValidationFileDialogSession { [weak self] in
+            guard let self else { return }
+            self.importCancellations += 1
+            self.completeImport(.failure(FluentFileDialogError.cancelled))
+        }
+    }
+
+    func presentExport(
+        configuration: FluentFileExportConfiguration,
+        for window: NSWindow,
+        completion: @escaping (Result<URL, Error>) -> Void
+    ) -> any FluentFileDialogSession {
+        exportConfiguration = configuration
+        exportPresentations += 1
+        exportCompletion = completion
+        return ValidationFileDialogSession { [weak self] in
+            guard let self else { return }
+            self.exportCancellations += 1
+            self.completeExport(.failure(FluentFileDialogError.cancelled))
+        }
+    }
+
+    func completeImport(_ result: Result<[URL], Error>) {
+        let completion = importCompletion
+        importCompletion = nil
+        completion?(result)
+    }
+
+    func completeExport(_ result: Result<URL, Error>) {
+        let completion = exportCompletion
+        exportCompletion = nil
+        completion?(result)
+    }
+}
+
+let fileDialogPresenter = ValidationFileDialogPresenter()
+
+let importerPresented = FluentState(wrappedValue: false)
+var importerCompletions = 0
+var importedURLs: [URL] = []
+let importerHost = FluentButtonView("Import document")
+    .fileImporter(
+        isPresented: importerPresented.projectedValue,
+        configuration: importConfiguration,
+        presenter: fileDialogPresenter
+    ) { result in
+        importerCompletions += 1
+        if case let .success(urls) = result { importedURLs = urls }
+    }
+    ._mount(in: FluentRenderContext())
+let importerWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 100),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+importerWindow.contentView = importerHost
+importerWindow.orderFront(nil)
+importerPresented.wrappedValue = true
+drainMainQueue()
+require(fileDialogPresenter.importPresentations == 1, "file importer presents through its configured presenter")
+require(fileDialogPresenter.importConfiguration?.allowedContentTypes == [.json], "file importer forwards allowed content types")
+require(fileDialogPresenter.importConfiguration?.allowsMultipleSelection == true, "file importer forwards multi-selection")
+require(fileDialogPresenter.importConfiguration?.canChooseDirectories == true, "file importer forwards directory selection")
+require(fileDialogPresenter.importConfiguration?.prompt == "Import", "file importer forwards its native prompt")
+fileDialogPresenter.completeImport(.success([validationImportURL]))
+drainMainQueue()
+require(!importerPresented.wrappedValue, "file importer clears presentation after user selection")
+require(importedURLs == [validationImportURL] && importerCompletions == 1, "file importer reports selected URLs")
+importerPresented.wrappedValue = true
+drainMainQueue()
+importerPresented.wrappedValue = false
+drainMainQueue()
+require(fileDialogPresenter.importCancellations == 1, "file importer cancels its active presentation from the binding")
+require(importerCompletions == 1, "programmatic importer dismissal does not report user cancellation")
+importerWindow.orderOut(nil)
+
+let exporterPresented = FluentState(wrappedValue: false)
+var exporterCompletions = 0
+var exportedURL: URL?
+let exporterHost = FluentButtonView("Export document")
+    .fileExporter(
+        isPresented: exporterPresented.projectedValue,
+        configuration: exportConfiguration,
+        presenter: fileDialogPresenter
+    ) { result in
+        exporterCompletions += 1
+        if case let .success(url) = result { exportedURL = url }
+    }
+    ._mount(in: FluentRenderContext())
+let exporterWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 100),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+exporterWindow.contentView = exporterHost
+exporterWindow.orderFront(nil)
+exporterPresented.wrappedValue = true
+drainMainQueue()
+require(fileDialogPresenter.exportPresentations == 1, "file exporter presents through its configured presenter")
+require(fileDialogPresenter.exportConfiguration?.contentType == .json, "file exporter forwards its content type")
+require(fileDialogPresenter.exportConfiguration?.defaultFilename == "workspace.json", "file exporter forwards its default filename")
+require(fileDialogPresenter.exportConfiguration?.canCreateDirectories == false, "file exporter forwards directory creation policy")
+require(fileDialogPresenter.exportConfiguration?.prompt == "Export", "file exporter forwards its native prompt")
+fileDialogPresenter.completeExport(.success(validationExportURL))
+drainMainQueue()
+require(!exporterPresented.wrappedValue, "file exporter clears presentation after user selection")
+require(exportedURL == validationExportURL && exporterCompletions == 1, "file exporter reports its selected destination")
+exporterPresented.wrappedValue = true
+drainMainQueue()
+exporterPresented.wrappedValue = false
+drainMainQueue()
+require(fileDialogPresenter.exportCancellations == 1, "file exporter cancels its active presentation from the binding")
+require(exporterCompletions == 1, "programmatic exporter dismissal does not report user cancellation")
+exporterWindow.orderOut(nil)
+
+final class ValidationPrintSession: FluentPrintSession {
+    private var cancellation: (() -> Void)?
+
+    init(cancellation: @escaping () -> Void) { self.cancellation = cancellation }
+
+    func cancel() {
+        let action = cancellation
+        cancellation = nil
+        action?()
+    }
+}
+
+final class ValidationPrintPresenter: FluentPrintPresenting {
+    var view: NSView?
+    var window: NSWindow?
+    var configuration: FluentPrintConfiguration?
+    var presentations = 0
+    var cancellations = 0
+    private var completion: ((Result<Void, Error>) -> Void)?
+
+    func presentPrint(
+        view: NSView,
+        in window: NSWindow?,
+        configuration: FluentPrintConfiguration,
+        completion: @escaping (Result<Void, Error>) -> Void
+    ) -> any FluentPrintSession {
+        self.view = view
+        self.window = window
+        self.configuration = configuration
+        presentations += 1
+        self.completion = completion
+        return ValidationPrintSession { [weak self] in
+            guard let self else { return }
+            cancellations += 1
+            let callback = self.completion
+            self.completion = nil
+            callback?(.failure(FluentPrintError.cancelled))
+        }
+    }
+
+    func complete(_ result: Result<Void, Error>) {
+        let callback = completion
+        completion = nil
+        callback?(result)
+    }
+}
+
+final class ValidationSharingSession: FluentSharingSession {
+    private var cancellation: (() -> Void)?
+
+    init(cancellation: @escaping () -> Void) { self.cancellation = cancellation }
+
+    func dismiss() {
+        let action = cancellation
+        cancellation = nil
+        action?()
+    }
+}
+
+final class ValidationSharingPresenter: FluentSharingPresenting {
+    var items: [Any] = []
+    var view: NSView?
+    var configuration: FluentSharingConfiguration?
+    var presentations = 0
+    var dismissals = 0
+
+    func presentSharing(
+        items: [Any],
+        from view: NSView,
+        configuration: FluentSharingConfiguration
+    ) -> any FluentSharingSession {
+        self.items = items
+        self.view = view
+        self.configuration = configuration
+        presentations += 1
+        return ValidationSharingSession { [weak self] in self?.dismissals += 1 }
+    }
+}
+
+let printPresenter = ValidationPrintPresenter()
+let printView = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 120))
+let printWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 220),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+let printConfiguration = FluentPrintConfiguration(
+    jobTitle: "Validation print",
+    showsPrintPanel: false,
+    showsProgressPanel: false
+)
+let printSession = printPresenter.presentPrint(
+    view: printView,
+    in: printWindow,
+    configuration: printConfiguration
+) { result in
+    if case .success = result {
+        return
+    }
+    require(false, "print presenter reports a successful native print")
+}
+require(printPresenter.presentations == 1, "printing routes through the injected presenter")
+require(printPresenter.view === printView && printPresenter.window === printWindow, "printing forwards its source view and window")
+require(printPresenter.configuration?.jobTitle == "Validation print", "printing forwards job metadata")
+printPresenter.complete(.success(()))
+printSession.cancel()
+require(printPresenter.cancellations == 1, "print sessions expose cancellation")
+
+let sharingPresenter = ValidationSharingPresenter()
+let shareView = NSView(frame: NSRect(x: 0, y: 0, width: 180, height: 80))
+let sharingSession = sharingPresenter.presentSharing(
+    items: ["Share this text", validationExportURL],
+    from: shareView,
+    configuration: FluentSharingConfiguration(
+        relativeRect: NSRect(x: 4, y: 5, width: 40, height: 20),
+        preferredEdge: .maxX
+    )
+)
+require(sharingPresenter.presentations == 1, "sharing routes through the injected presenter")
+require(sharingPresenter.items.count == 2 && sharingPresenter.view === shareView, "sharing forwards its items and anchor view")
+require(sharingPresenter.configuration?.relativeRect == NSRect(x: 4, y: 5, width: 40, height: 20), "sharing forwards its anchor geometry")
+sharingSession.dismiss()
+require(sharingPresenter.dismissals == 1, "sharing sessions expose dismissal")
+
+struct ValidationApp: FluentApp {
+    var body: FluentWindowScene<FluentTextView> {
+        FluentWindowScene(title: "Validation", size: NSSize(width: 420, height: 280), material: nil) {
+            FluentText("Application scene")
+        }
+    }
+}
+let appDescription = ValidationApp().body._makeWindowDescription()
+require(appDescription.id == "main", "fluent app scene supplies a stable default window ID")
+require(appDescription.placement == .automatic, "fluent app scene supplies automatic placement by default")
+require(appDescription.restoration == .automatic, "fluent app scene enables frame restoration by default")
+require(appDescription.title == "Validation", "fluent app scene preserves window title")
+require(appDescription.size == NSSize(width: 420, height: 280), "fluent app scene preserves window size")
+require(appDescription.material == nil, "fluent app scene supports plain AppKit windows")
+require(appDescription.content._mount(in: appDescription.context) is NSTextField, "fluent app scene mounts declarative content")
+
+struct MultiSceneApp: FluentApp {
+    var body: FluentSceneGroup {
+        FluentSceneGroup {
+            FluentWindowScene(id: "main-window", title: "Main", material: nil, placement: .centered) {
+                FluentText("Main")
+            }
+            FluentWindowScene(id: "inspector-window", title: "Inspector", size: NSSize(width: 260, height: 220), material: nil, initiallyVisible: false) {
+                FluentText("Inspector")
+            }
+        }
+    }
+}
+let multiDescriptions = MultiSceneApp().body._makeWindowDescriptions()
+require(multiDescriptions.count == 2, "scene group composes multiple native windows")
+require(multiDescriptions.map(\.title) == ["Main", "Inspector"], "scene group preserves window ordering")
+require(multiDescriptions.map(\.id) == ["main-window", "inspector-window"], "scene group preserves stable window IDs")
+require(multiDescriptions.first?.placement == .centered, "scene group preserves window placement policy")
+require(multiDescriptions.last?.initiallyVisible == false, "scene group preserves deferred window visibility")
+let transientScene = FluentWindowScene(id: "transient", title: "Transient", material: nil, restoration: .disabled) { FluentText("Transient") }
+require(transientScene._makeWindowDescription().restoration == .disabled, "scene can disable frame restoration")
+require(FluentWindowCommand.toggle("inspector-window") == FluentWindowCommand.toggle("inspector-window"), "window commands are value comparable")
+
+let settingsScene = FluentSettingsScene(material: nil) {
+    FluentText("Application settings")
+}
+let settingsDescription = settingsScene._makeWindowDescription()
+require(settingsDescription.id == "settings", "settings scene supplies a stable default ID")
+require(settingsDescription.role == .settings, "settings scene carries its semantic window role")
+require(settingsDescription.restoration == .disabled, "settings scene avoids restoring stale frames")
+require(settingsDescription.tabbing == .disallowed, "settings scene opts out of document tabs")
+require(!settingsDescription.initiallyVisible, "settings scene opens on demand")
+
+let preferredTabScene = FluentWindowScene(
+    id: "tabbed-document",
+    title: "Tabbed",
+    material: nil,
+    tabbing: .preferred(identifier: "validation.workspace")
+) {
+    FluentText("Tabbed document")
+}
+require(
+    preferredTabScene._makeWindowDescription().tabbing == .preferred(identifier: "validation.workspace"),
+    "window scenes preserve preferred native tab groups"
+)
+
+var settingsActionInvocations = 0
+let settingsMenuCoordinator = FluentMainMenuCoordinator(
+    applicationName: "Validation",
+    settingsAction: { settingsActionInvocations += 1 }
+)
+let settingsMenuItem = settingsMenuCoordinator.menu.items.first?.submenu?.items.first {
+    $0.title == "Settings..."
+}
+require(settingsMenuItem?.keyEquivalent == ",", "settings scene menu uses the standard Command-comma shortcut")
+if let settingsMenuItem, let action = settingsMenuItem.action {
+    _ = NSApp.sendAction(action, to: settingsMenuItem.target, from: settingsMenuItem)
+}
+require(settingsActionInvocations == 1, "settings menu routes to its declarative scene action")
+
+final class ValidationApplicationServices: FluentApplicationServices {
+    var openedFiles: [URL] = []
+    var openedURLs: [URL] = []
+    var reopenRequests: [Bool] = []
+    var handlesReopen = false
+    var dockInvocations = 0
+    var serviceInvocations = 0
+
+    func applicationOpenFiles(_ urls: [URL], with coordinator: FluentWindowCoordinator) {
+        openedFiles = urls
+    }
+
+    func applicationOpenURLs(_ urls: [URL], with coordinator: FluentWindowCoordinator) {
+        openedURLs = urls
+    }
+
+    func applicationShouldHandleReopen(
+        hasVisibleWindows: Bool,
+        with coordinator: FluentWindowCoordinator
+    ) -> Bool {
+        reopenRequests.append(hasVisibleWindows)
+        return handlesReopen
+    }
+
+    var applicationDockMenuItems: [FluentMenuItem] {
+        [FluentMenuItem("New workspace") { self.dockInvocations += 1 }]
+    }
+
+    var applicationServicesMenuTypes: FluentServicesMenuTypes {
+        FluentServicesMenuTypes(
+            sendTypes: [.string],
+            returnTypes: [.string]
+        )
+    }
+
+    var applicationProvidedServices: [FluentProvidedService] {
+        [FluentProvidedService(
+            identifier: "validation.uppercase",
+            acceptedTypes: [.string],
+            returnedTypes: [.string]
+        ) { pasteboard, _ in
+            self.serviceInvocations += 1
+            guard let value = pasteboard.string(forType: .string) else { return }
+            pasteboard.clearContents()
+            pasteboard.setString(value.uppercased(), forType: .string)
+        }]
+    }
+}
+
+let serviceDescription = FluentWindowDescription(
+    id: "z-service-main",
+    title: "Service Main",
+    material: nil,
+    initiallyVisible: false,
+    content: FluentAnyView(FluentText("Service window"))
+)
+let serviceUtilityDescription = FluentWindowDescription(
+    id: "a-service-utility",
+    title: "Service Utility",
+    material: nil,
+    initiallyVisible: false,
+    content: FluentAnyView(FluentText("Service utility"))
+)
+let serviceWindows = FluentWindowCoordinator(
+    descriptions: [serviceDescription, serviceUtilityDescription],
+    makeWindow: { description in
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: description.size),
+            styleMask: description.styleMask,
+            backing: .buffered,
+            defer: false
+        )
+        window.title = description.title
+        window.isReleasedWhenClosed = false
+        return window
+    },
+    positionWindow: { _, _, _ in },
+    defaults: UserDefaults(suiteName: "FluentKitServicesValidation.\(UUID().uuidString)")!
+)
+let serviceProvider = ValidationApplicationServices()
+let applicationServices = FluentApplicationServicesCoordinator(
+    provider: serviceProvider,
+    windows: serviceWindows
+)
+let openedFileURLs = [URL(fileURLWithPath: "/tmp/one.fluent"), URL(fileURLWithPath: "/tmp/two.fluent")]
+let openedWebURLs = [URL(string: "fluentkit://workspace/42")!]
+applicationServices.openFiles(openedFileURLs)
+applicationServices.openURLs(openedWebURLs)
+require(serviceProvider.openedFiles == openedFileURLs, "application services route native file-open events")
+require(serviceProvider.openedURLs == openedWebURLs, "application services route native URL-open events")
+require(applicationServices.handleReopen(hasVisibleWindows: false), "application services accept reopen requests")
+require(serviceProvider.reopenRequests == [false], "application service provider receives window visibility on reopen")
+require(serviceWindows.openWindowIDs == ["z-service-main"], "default reopen behavior restores the first declared scene")
+let dockMenu = applicationServices.makeDockMenu()
+require(dockMenu?.items.map(\.title) == ["New workspace"], "application services build a native Dock menu from declarative items")
+dockMenu?.performActionForItem(at: 0)
+require(serviceProvider.dockInvocations == 1, "Dock menu items retain their Swift actions")
+let servicePasteboard = NSPasteboard(name: NSPasteboard.Name("FluentKitServicesValidation.\(UUID().uuidString)"))
+servicePasteboard.clearContents()
+servicePasteboard.setString("Fluent service", forType: NSPasteboard.PasteboardType.string)
+try? applicationServices.performProvidedService(
+    identifier: "validation.uppercase",
+    pasteboard: servicePasteboard
+)
+require(serviceProvider.serviceInvocations == 1, "provided services route through their declarative action")
+require(servicePasteboard.string(forType: NSPasteboard.PasteboardType.string) == "FLUENT SERVICE", "provided services can transform the native pasteboard")
+servicePasteboard.clearContents()
+servicePasteboard.setString("Fluent service", forType: NSPasteboard.PasteboardType.string)
+let invalidServicePasteboard = NSPasteboard(name: NSPasteboard.Name("FluentKitServicesValidation.invalid.\(UUID().uuidString)"))
+invalidServicePasteboard.clearContents()
+do {
+    try applicationServices.performProvidedService(
+        identifier: "validation.uppercase",
+        pasteboard: invalidServicePasteboard
+    )
+    require(false, "provided services reject unsupported pasteboard contents")
+} catch let error as FluentProvidedServiceError {
+    require(error == .unsupportedPasteboardContents("validation.uppercase"), "provided service reports unsupported pasteboard contents")
+}
+applicationServices.installServices(on: NSApp)
+require(NSApp.servicesProvider as AnyObject? === applicationServices, "application services install the native Services provider")
+require(
+    settingsMenuCoordinator.servicesMenu.title == "Services",
+    "main menu coordinator owns a native Services submenu"
+)
+serviceWindows.window(for: "z-service-main")?.orderOut(nil)
+
+let packageRoot = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
+let snapshotBaselines = [
+    "accessibility-light.png",
+    "accessibility-dark.png",
+    "accessibility-rtl.png",
+    "application-light.png",
+    "application-dark.png",
+    "controls-light.png",
+    "controls-dark.png",
+    "inputs-light.png",
+    "inputs-dark.png"
+]
+for filename in snapshotBaselines {
+    let url = packageRoot.appendingPathComponent(".snapshots").appendingPathComponent(filename)
+    guard let data = try? Data(contentsOf: url),
+          let bitmap = NSBitmapImageRep(data: data) else {
+        require(false, "snapshot baseline \(filename) exists and is a readable bitmap")
+        continue
+    }
+    require(
+        bitmap.pixelsWide == 980 && bitmap.pixelsHigh == 680,
+        "snapshot baseline \(filename) preserves the 980 x 680 viewport"
+    )
+    require(
+        bitmapHasVisibleVariation(bitmap),
+        "snapshot baseline \(filename) contains rendered pixel variation"
+    )
+}
+
+print("FluentKitValidation: PASS")
