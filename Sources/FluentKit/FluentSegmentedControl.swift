@@ -19,6 +19,8 @@ public struct FluentSegmentedControlView: FluentUpdatablePrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let control = FluentSegmentedControlNative(labels: labels, selectedIndex: selection?.get() ?? selectedIndex)
         control.theme = context.theme
+        control.reduceMotion = context.reduceMotion
+        control.fluentLayoutDirection = context.layoutDirection
         control.fluentStyle = style ?? FluentAutomaticSegmentedStyle()
         control.binding = selection
         control.syncSelection()
@@ -28,6 +30,8 @@ public struct FluentSegmentedControlView: FluentUpdatablePrimitiveView {
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let control = view as? FluentSegmentedControlNative else { return false }
         control.theme = context.theme
+        control.reduceMotion = context.reduceMotion
+        control.fluentLayoutDirection = context.layoutDirection
         control.fluentStyle = style ?? FluentAutomaticSegmentedStyle()
         control.update(labels: labels, binding: selection, selectedIndex: selectedIndex)
         return true
@@ -46,7 +50,28 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
     public var theme: FluentTheme = .current { didSet { applyTheme() } }
     public var fluentStyle: any FluentSegmentedStyle = FluentAutomaticSegmentedStyle() { didSet { applyTheme() } }
     public var fluentControlSize: FluentControlSize = .regular { didSet { applyTheme() } }
-    public override var isEnabled: Bool { didSet { applyTheme() } }
+    var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+        didSet {
+            guard oldValue != reduceMotion else { return }
+            if reduceMotion { snapSelectionIndicatorToModelGeometry() }
+        }
+    }
+    var fluentLayoutDirection: FluentLayoutDirection = .system {
+        didSet {
+            guard oldValue != fluentLayoutDirection else { return }
+            cancelInteraction()
+            userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+            lastLayoutDirection = nil
+            needsLayout = true
+        }
+    }
+    public override var isEnabled: Bool {
+        didSet {
+            if !isEnabled { cancelInteraction() }
+            setAccessibilityEnabled(isEnabled)
+            applyTheme()
+        }
+    }
     var binding: FluentBinding<Int>? {
         didSet { installObserver() }
     }
@@ -58,6 +83,11 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
     private let selectionIndicatorView = NSView()
     private var lastRenderedSelection = -1
     private var hoveredSegment = -1
+    private var pressedSegment = -1
+    private var lastLayoutSize = NSSize(width: -1, height: -1)
+    private var lastLayoutDirection: NSUserInterfaceLayoutDirection?
+
+    private var isRTL: Bool { userInterfaceLayoutDirection == .rightToLeft }
 
     init(labels: [String], selectedIndex: Int) {
         segmentTitles = labels
@@ -76,9 +106,10 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         wantsLayer = true
         selectionIndicatorView.identifier = NSUserInterfaceItemIdentifier("FluentKit.Segmented.SelectionIndicator")
         selectionIndicatorView.wantsLayer = true
+        selectionIndicatorView.layer?.name = "FluentKit.Segmented.SelectionIndicator"
         selectionIndicatorView.layer?.opacity = 0
         addSubview(selectionIndicatorView)
-        rebuildLabels()
+        synchronizeLabelViews()
         addTrackingArea(
             NSTrackingArea(
                 rect: .zero,
@@ -113,20 +144,26 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
 
     override func layout() {
         super.layout()
-        guard !segmentLabels.isEmpty else { return }
-        let width = bounds.width / CGFloat(segmentLabels.count)
+        let direction = userInterfaceLayoutDirection
+        guard bounds.size != lastLayoutSize || direction != lastLayoutDirection else { return }
+        lastLayoutSize = bounds.size
+        lastLayoutDirection = direction
+
+        let width = segmentLabels.isEmpty ? 0 : bounds.width / CGFloat(segmentLabels.count)
         for (index, label) in segmentLabels.enumerated() {
+            let slot = visualSlot(for: index)
             label.frame = NSRect(
-                x: CGFloat(index) * width,
+                x: CGFloat(slot) * width,
                 y: 0,
                 width: width,
                 height: bounds.height
             )
         }
-        updateSelectionIndicator(animated: false)
+        snapSelectionIndicatorToModelGeometry()
     }
 
     override func draw(_ dirtyRect: NSRect) {
+        // NSSegmentedControl remains the input and accessibility surface; FluentKit owns all pixels.
         let appearance = resolvedAppearance()
         let rect = bounds.insetBy(dx: appearance.borderWidth / 2, dy: appearance.borderWidth / 2)
         appearance.backgroundColor.setFill()
@@ -136,9 +173,10 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
             yRadius: appearance.cornerRadius
         ).fill()
 
-        if hoveredSegment >= 0, hoveredSegment != selectedSegment,
-           let hoverRect = rectForSegment(hoveredSegment, inset: 2) {
-            appearance.hoverColor.setFill()
+        let interactiveSegment = activePressedSegment >= 0 ? activePressedSegment : hoveredSegment
+        if interactiveSegment >= 0, interactiveSegment != selectedSegment,
+           let hoverRect = rectForSegment(interactiveSegment, inset: 2) {
+            (activePressedSegment >= 0 ? appearance.pressedColor : appearance.hoverColor).setFill()
             NSBezierPath(
                 roundedRect: hoverRect,
                 xRadius: max(appearance.cornerRadius - 2, 0),
@@ -171,21 +209,47 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         let next = segmentIndex(at: convert(event.locationInWindow, from: nil))
         if next != hoveredSegment {
             hoveredSegment = next
-            needsDisplay = true
+            refreshInteractionAppearance()
         }
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        hoveredSegment = segmentIndex(at: convert(event.locationInWindow, from: nil))
+        refreshInteractionAppearance()
     }
 
     override func mouseExited(with event: NSEvent) {
         hoveredSegment = -1
-        needsDisplay = true
+        refreshInteractionAppearance()
     }
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         let index = segmentIndex(at: convert(event.locationInWindow, from: nil))
         guard segmentTitles.indices.contains(index) else { return }
-        setSelection(index, animated: true, writeBinding: true)
         window?.makeFirstResponder(self)
+        hoveredSegment = index
+        pressedSegment = index
+        refreshInteractionAppearance()
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard pressedSegment >= 0 else { return }
+        hoveredSegment = segmentIndex(at: convert(event.locationInWindow, from: nil))
+        refreshInteractionAppearance()
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard pressedSegment >= 0 else { return }
+        let releasedSegment = segmentIndex(at: convert(event.locationInWindow, from: nil))
+        let committedSegment = releasedSegment == pressedSegment ? pressedSegment : -1
+        pressedSegment = -1
+        hoveredSegment = releasedSegment
+        if committedSegment >= 0 {
+            setSelection(committedSegment, animated: true, writeBinding: true)
+        } else {
+            refreshInteractionAppearance()
+        }
     }
 
     override func keyDown(with event: NSEvent) {
@@ -193,11 +257,20 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         let current = selectedSegment >= 0 ? selectedSegment : 0
         let next: Int?
         switch event.keyCode {
-        case 123: next = max(current - 1, 0)
-        case 124: next = min(current + 1, segmentTitles.count - 1)
+        case 123:
+            next = isRTL
+                ? min(current + 1, segmentTitles.count - 1)
+                : max(current - 1, 0)
+        case 124:
+            next = isRTL
+                ? max(current - 1, 0)
+                : min(current + 1, segmentTitles.count - 1)
         case 115: next = 0
         case 119: next = segmentTitles.count - 1
         case 36, 49: next = current
+        case 53:
+            cancelInteraction()
+            return
         default: next = nil
         }
         guard let next else {
@@ -206,6 +279,8 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         }
         setSelection(next, animated: true, writeBinding: true)
     }
+
+    override func cancelOperation(_ sender: Any?) { cancelInteraction() }
 
     override func becomeFirstResponder() -> Bool {
         let accepted = super.becomeFirstResponder()
@@ -220,23 +295,33 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
     }
 
     func update(labels: [String], binding: FluentBinding<Int>?, selectedIndex: Int) {
-        let oldSelection = selectedSegment
+        let countChanged = segmentTitles.count != labels.count
         segmentTitles = labels
-        if segmentCount != labels.count {
+        if countChanged {
             segmentCount = labels.count
         }
         for (index, label) in labels.enumerated() { setLabel(label, forSegment: index) }
-        rebuildLabels()
+        synchronizeLabelViews()
         self.binding = binding
         let requested = binding?.get() ?? selectedIndex
-        selectedSegment = labels.isEmpty ? -1 : min(max(requested, 0), labels.count - 1)
-        syncSelection(animated: oldSelection != selectedSegment)
+        let nextSelection = labels.isEmpty ? -1 : min(max(requested, 0), labels.count - 1)
+        if selectedSegment != nextSelection {
+            cancelInteraction(refresh: false)
+            selectedSegment = nextSelection
+            syncSelection(animated: !countChanged)
+        } else {
+            refreshInteractionAppearance()
+        }
     }
 
     func syncSelection(animated: Bool = false) {
         if selectedSegment >= 0 { setAccessibilityValue(selectedSegment) }
         updateLabels()
-        updateSelectionIndicator(animated: animated)
+        if bounds.size == lastLayoutSize, lastLayoutDirection == userInterfaceLayoutDirection {
+            updateSelectionIndicator(animated: animated)
+        } else {
+            needsLayout = true
+        }
         needsDisplay = true
     }
 
@@ -248,6 +333,7 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
                 guard let self, !self.isApplyingBinding else { return }
                 let index = self.segmentCount == 0 ? -1 : min(max(value, 0), self.segmentCount - 1)
                 guard self.selectedSegment != index else { return }
+                self.cancelInteraction(refresh: false)
                 self.selectedSegment = index
                 self.syncSelection(animated: true)
             }
@@ -274,20 +360,29 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         isApplyingBinding = false
     }
 
-    private func rebuildLabels() {
-        segmentLabels.forEach { $0.removeFromSuperview() }
-        segmentLabels = segmentTitles.map { title in
-            let label = FluentSegmentedLabel(labelWithString: title)
-            label.alignment = .center
-            label.lineBreakMode = .byTruncatingTail
-            label.maximumNumberOfLines = 1
-            label.drawsBackground = false
-            label.isBordered = false
-            addSubview(label)
-            return label
+    private func synchronizeLabelViews() {
+        if segmentLabels.count != segmentTitles.count {
+            segmentLabels.forEach { $0.removeFromSuperview() }
+            segmentLabels = segmentTitles.enumerated().map { index, title in
+                let label = FluentSegmentedLabel(labelWithString: title)
+                label.identifier = NSUserInterfaceItemIdentifier("FluentKit.Segmented.Label.\(index)")
+                label.alignment = .center
+                label.lineBreakMode = .byTruncatingTail
+                label.maximumNumberOfLines = 1
+                label.drawsBackground = false
+                label.isBordered = false
+                label.setAccessibilityElement(false)
+                addSubview(label, positioned: .above, relativeTo: selectionIndicatorView)
+                return label
+            }
+            lastLayoutSize = NSSize(width: -1, height: -1)
+            needsLayout = true
+        } else {
+            for (index, title) in segmentTitles.enumerated() {
+                segmentLabels[index].stringValue = title
+            }
         }
         updateLabels()
-        needsLayout = true
         invalidateIntrinsicContentSize()
     }
 
@@ -295,9 +390,19 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         let appearance = resolvedAppearance()
         for (index, label) in segmentLabels.enumerated() {
             label.font = appearance.font
-            label.textColor = index == selectedSegment
-                ? appearance.selectedForegroundColor
-                : appearance.foregroundColor
+            if index == selectedSegment {
+                label.textColor = activePressedSegment == index
+                    ? appearance.selectedPressedForegroundColor
+                    : (hoveredSegment == index
+                        ? appearance.selectedHoverForegroundColor
+                        : appearance.selectedForegroundColor)
+            } else if activePressedSegment == index {
+                label.textColor = appearance.pressedForegroundColor
+            } else if hoveredSegment == index {
+                label.textColor = appearance.hoverForegroundColor
+            } else {
+                label.textColor = appearance.foregroundColor
+            }
         }
     }
 
@@ -315,8 +420,9 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
     private func rectForSegment(_ index: Int, inset: CGFloat) -> NSRect? {
         guard segmentTitles.indices.contains(index), !segmentTitles.isEmpty else { return nil }
         let segmentWidth = bounds.width / CGFloat(segmentTitles.count)
+        let slot = visualSlot(for: index)
         return NSRect(
-            x: CGFloat(index) * segmentWidth + inset,
+            x: CGFloat(slot) * segmentWidth + inset,
             y: inset,
             width: max(segmentWidth - inset * 2, 0),
             height: max(bounds.height - inset * 2, 0)
@@ -325,16 +431,20 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
 
     private func segmentIndex(at point: NSPoint) -> Int {
         guard bounds.contains(point), !segmentTitles.isEmpty, bounds.width > 0 else { return -1 }
-        let index = Int(point.x / (bounds.width / CGFloat(segmentTitles.count)))
-        return min(max(index, 0), segmentTitles.count - 1)
+        let slot = min(
+            max(Int(point.x / (bounds.width / CGFloat(segmentTitles.count))), 0),
+            segmentTitles.count - 1
+        )
+        return isRTL ? segmentTitles.count - 1 - slot : slot
     }
 
     private func updateSelectionIndicator(animated: Bool) {
         let appearance = resolvedAppearance()
-        selectionIndicatorView.layer?.backgroundColor = appearance.selectedSegmentColor.cgColor
+        updateSelectionIndicatorAppearance(appearance)
         selectionIndicatorView.layer?.cornerRadius = max(appearance.cornerRadius - 2, 0)
 
         guard let target = rectForSegment(selectedSegment, inset: 2) else {
+            selectionIndicatorView.layer?.removeAnimation(forKey: "fluent.segmented.selection")
             selectionIndicatorView.layer?.opacity = 0
             lastRenderedSelection = -1
             updateLabels()
@@ -348,39 +458,26 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
             return
         }
 
-        let previous = selectionIndicatorView.frame
+        let indicatorLayer = selectionIndicatorView.layer
+        let previous = indicatorLayer?.presentation()?.frame ?? selectionIndicatorView.frame
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         selectionIndicatorView.frame = target
         selectionIndicatorView.layer?.opacity = 1
-        selectionIndicatorView.layer?.setAffineTransform(.identity)
         CATransaction.commit()
 
-        if animated, lastRenderedSelection >= 0, previous.width > 0, previous != target,
-           let indicatorLayer = selectionIndicatorView.layer {
-            let motion = FluentMotion.controlNormal
+        indicatorLayer?.removeAnimation(forKey: "fluent.segmented.selection")
+        if animated, !reduceMotion, lastRenderedSelection >= 0, previous.width > 0, previous != target,
+           let indicatorLayer {
+            // SelectorBar selection uses the 167ms control-fast token and exact Fluent spline.
+            let motion = FluentMotion.controlFast
             let position = CABasicAnimation(keyPath: "position")
             position.fromValue = NSValue(point: NSPoint(x: previous.midX, y: previous.midY))
             position.toValue = NSValue(point: NSPoint(x: target.midX, y: target.midY))
             position.timingFunction = motion.curve.timingFunction
 
-            let bounds = CABasicAnimation(keyPath: "bounds.size")
-            bounds.fromValue = NSValue(size: previous.size)
-            bounds.toValue = NSValue(size: target.size)
-            bounds.timingFunction = motion.curve.timingFunction
-
-            let scale = CAKeyframeAnimation(keyPath: "transform.scale")
-            scale.values = [1, 0.94, 1]
-            scale.keyTimes = [NSNumber(value: 0), NSNumber(value: 0.45), NSNumber(value: 1)]
-            scale.timingFunctions = [motion.curve.timingFunction, motion.curve.timingFunction]
-
-            let opacity = CAKeyframeAnimation(keyPath: "opacity")
-            opacity.values = [1, 0.78, 1]
-            opacity.keyTimes = scale.keyTimes
-            opacity.timingFunctions = scale.timingFunctions
-
             let group = CAAnimationGroup()
-            group.animations = [position, bounds, scale, opacity]
+            group.animations = [position]
             group.duration = motion.duration
             group.isRemovedOnCompletion = true
             indicatorLayer.add(group, forKey: "fluent.segmented.selection")
@@ -390,15 +487,55 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         updateLabels()
     }
 
+    private var activePressedSegment: Int {
+        hoveredSegment == pressedSegment ? pressedSegment : -1
+    }
+
+    private func visualSlot(for index: Int) -> Int {
+        isRTL ? segmentTitles.count - 1 - index : index
+    }
+
+    private func updateSelectionIndicatorAppearance(_ appearance: FluentSegmentedAppearance? = nil) {
+        let appearance = appearance ?? resolvedAppearance()
+        let color: NSColor
+        if activePressedSegment == selectedSegment {
+            color = appearance.selectedPressedSegmentColor
+        } else if hoveredSegment == selectedSegment {
+            color = appearance.selectedHoverSegmentColor
+        } else {
+            color = appearance.selectedSegmentColor
+        }
+        selectionIndicatorView.layer?.backgroundColor = color.cgColor
+    }
+
+    private func refreshInteractionAppearance() {
+        updateSelectionIndicatorAppearance()
+        updateLabels()
+        needsDisplay = true
+    }
+
+    private func cancelInteraction(refresh: Bool = true) {
+        guard pressedSegment >= 0 || hoveredSegment >= 0 else { return }
+        pressedSegment = -1
+        hoveredSegment = -1
+        if refresh { refreshInteractionAppearance() }
+    }
+
+    private func snapSelectionIndicatorToModelGeometry() {
+        selectionIndicatorView.layer?.removeAnimation(forKey: "fluent.segmented.selection")
+        updateSelectionIndicator(animated: false)
+    }
+
     private func applyTheme() {
         let appearance = resolvedAppearance()
         layer?.backgroundColor = NSColor.clear.cgColor
         controlSize = fluentControlSize.appKitSize
         font = appearance.font
-        segmentStyle = appearance.segmentStyle
+        if segmentStyle != appearance.segmentStyle { segmentStyle = appearance.segmentStyle }
         setAccessibilityLabel("Segmented control")
         updateLabels()
-        updateSelectionIndicator(animated: false)
+        updateSelectionIndicatorAppearance(appearance)
+        selectionIndicatorView.layer?.cornerRadius = max(appearance.cornerRadius - 2, 0)
         invalidateIntrinsicContentSize()
         needsDisplay = true
     }

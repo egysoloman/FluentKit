@@ -86,10 +86,26 @@ Completed in the CheckBox and RadioButton pass:
   accessibility press, disabled input, Reduce Motion, exact geometry/timing, and single-commit paths
   have executable coverage. Gallery exposes checked, unchecked, selected, and disabled states.
 
+Completed in the SegmentedControl pass:
+
+- `NSSegmentedControl` remains the input and accessibility surface, while the overridden Fluent
+  renderer is the only visual owner. Stable custom labels and one selection-indicator layer survive
+  compatible declarative updates.
+- Pointer state is independent from committed selection. Release inside commits once; release
+  outside, Escape, disabled state, and external binding updates cancel stale pointer interaction.
+- Selection writes final model geometry first and begins from sampled presentation geometry. The
+  arbitrary scale/opacity keyframes are removed; position uses the SelectorBar-derived 167ms
+  `(0,0,0,1)` token.
+- Same-bounds layout does not touch an active animation. Actual resize/direction changes deliberately
+  snap to model geometry. RTL mirrors labels, hit testing, selection movement, and arrow keys;
+  Reduce Motion snaps without allocating an animation.
+- Validation covers visual ownership, stable identity, exact motion properties, cancellation, RTL,
+  and Reduce Motion. Gallery exposes interactive and Disabled states in desktop and Minimal
+  Light/Dark captures.
+
 Still open by design:
 
-- Exact remaining control state machines and geometry are ordered in section 20: SegmentedControl,
-  then ProgressBar.
+- The remaining core-control state and geometry item in section 20 is ProgressBar.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
   Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
   remains the implementation contract for the later menu pass.
@@ -591,7 +607,7 @@ FluentKit now has stable shell coordinates, transition hosting, reusable navigat
 custom title-bar integration. The Gallery is a reliable proof of those structural paths, but it is
 not yet a complete proof of WinUI control fidelity. ToggleSwitch, Slider, CheckBox, and RadioButton
 now pass their source-derived geometry, interaction, motion, RTL, accessibility, and Reduce Motion
-contracts. The immediate non-material blockers are SegmentedControl and ProgressBar in section 20.
+contracts. The immediate non-material blocker is ProgressBar in section 20.
 The obsolete Acrylic surface path remains an explicit later phase.
 
 The target architecture should remain AppKit-native in behavior while becoming WinUI-source-driven in visible state and motion, with Liquid Glass as the macOS material adaptation for transient surfaces.
@@ -687,7 +703,7 @@ Gallery composition defects:
   edge-placement popup scenarios remain incomplete
 ```
 
-The next non-material remediation order is SegmentedControl, then ProgressBar. Menu
+The next non-material remediation item is ProgressBar. Menu
 motion/placement follows the verified section 17 contract; Liquid Glass remains explicitly deferred
 until layout, state, and motion are stable.
 
@@ -862,7 +878,7 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 25. **Complete:** Button and ToggleSwitch foundations; ToggleSwitch includes source-derived
     interaction, geometry, RTL, accessibility, and Reduce Motion verification.
-26. **Slider, CheckBox, and RadioButton complete; remaining:** SegmentedControl and ProgressBar.
+26. **Complete:** Slider, CheckBox, RadioButton, and SegmentedControl; remaining: ProgressBar.
 27. TextBox, SearchBox, ComboBox, DatePicker, and NumberBox/Stepper.
 28. ListView, GridView/CollectionView, Table, and Outline.
 29. Dialogs, TeachingTip, Popover, Disclosure, and remaining long-tail controls.
@@ -886,12 +902,13 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 The Controls screenshot exposes component-level state and motion gaps. The Gallery uses the public bindings directly and does not apply custom offsets or animation to these controls, so these findings belong to FluentKit rather than Gallery composition.
 
-### Segmented selection
+### Segmented selection - resolved
 
 Owner: FluentKit component  
 Files: `Sources/FluentKit/FluentSegmentedControl.swift`, `Sources/FluentKit/FluentStyles.swift`
 
-The component contains a 250 ms selection-indicator animation, but its presentation is not reliable:
+Original finding: the component contained a 250 ms selection-indicator animation, but its
+presentation was not reliable:
 
 - `FluentSegmentedControlNative` remains an `NSSegmentedControl` with native labels and selection state while also overlaying custom labels and a custom `selectionIndicatorView`.
 - Every declarative update assigns theme/style again, rebuilds all overlay labels, and performs another indicator synchronization.
@@ -904,6 +921,19 @@ Required correction:
 - Keep stable label and indicator objects across declarative updates.
 - Separate model geometry from presentation geometry and do not write nonanimated frames while a transition is active.
 - Derive the selected/pressed transition from the matching WinUI control template instead of treating the current approximation as verified WinUI motion.
+
+Current status: complete. FluentKit deliberately keeps `NSSegmentedControl` as the semantic/input
+surface, but its overridden renderer does not call the native cell drawing path; FluentKit owns the
+visible background, border, labels, focus, interaction fills, and selection surface. Compatible
+updates mutate stable label objects in place. Selection stores final model geometry and animates
+position from the current presentation frame using the SelectorBar selection resource's 167ms
+`(0,0,0,1)` motion; the previous unsourced scale and opacity keyframes are removed. Same-bounds
+layout preserves active motion, while resize and direction changes explicitly snap. Pointer commit,
+release-outside/Escape/external cancellation, disabled state, RTL layout/hit testing/arrow keys,
+accessibility value, Reduce Motion, Gallery states, and desktop/Minimal Light/Dark captures have
+executable coverage. WinUI does not expose a literal SegmentedControl counterpart in the bundled
+source; this remains a FluentKit compact-selection API whose state and timing derive from the nearest
+WinUI selection control rather than a compatibility claim.
 
 ### Slider thumb - resolved
 
@@ -1002,7 +1032,8 @@ The lower horizontal control is a determinate ProgressBar and should not receive
 
 ### Additional problem-list entries
 
-25. SegmentedControl mixes native segmented chrome with custom overlay chrome and allows nonanimated layout/update passes to interrupt its selection animation.
+25. **Resolved:** SegmentedControl has one Fluent visual owner, stable labels/indicator, presentation-
+    sampled 167ms selection motion, and same-bounds animation protection.
 26. **Resolved:** Slider has stable outer/inner thumb layers, direct value positioning, and
     source-derived Normal/PointerOver/Pressed/Disabled geometry and motion.
 27. **Resolved:** ToggleSwitch commits on release, has a direct drag state, and protects active

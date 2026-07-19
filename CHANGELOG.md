@@ -47,8 +47,8 @@ AppKit and Swift permit it.
   binding, removed the duplicate native-rendering label, and regenerated all 14 responsive
   Light/Dark/RTL snapshot baselines.
 - Reconciled the visual audit against completed divider, indicator, page-transition, NavigationView,
-  and TitleBar work. Exact SegmentedControl, ProgressBar, MenuFlyout motion, and deferred Liquid
-  Glass work remain open visual-acceptance items.
+  and TitleBar work. ProgressBar, MenuFlyout motion, and deferred Liquid Glass work remain open
+  visual-acceptance items.
 - Rebuilt `FluentToggle` around independent idle, pressed, and dragging interaction state. Binding
   commits now occur once on release, drag positioning is direct, cancellation/external updates are
   deterministic, and keyboard/accessibility activation shares the same commit path.
@@ -72,3 +72,9 @@ AppKit and Swift permit it.
 - Expanded Gallery choice-control states, regenerated desktop/Minimal Light/Dark baselines, and added
   exact geometry, timing, same-bounds reconciliation, single-commit, cancellation, and environment
   validation.
+- Rebuilt SegmentedControl with one Fluent-owned visual surface over `NSSegmentedControl` semantics,
+  stable label/indicator identity, release-inside selection, external-update cancellation, mirrored
+  RTL layout/input, disabled and Reduce Motion states, and same-bounds animation protection.
+- Replaced the unsourced selection scale/opacity choreography with direct model geometry and a
+  presentation-sampled 167ms `(0,0,0,1)` position transition derived from the SelectorBar selection
+  resource; expanded Gallery states and executable motion/identity coverage.

@@ -1300,25 +1300,120 @@ let segmentedSelectionIndicators = nativeStyledSegmented?.subviews.filter {
     $0.identifier?.rawValue == "FluentKit.Segmented.SelectionIndicator"
 } ?? []
 let segmentedSelectionIndicator = segmentedSelectionIndicators.first
+let segmentedLabels = nativeStyledSegmented?.subviews.compactMap { view -> NSTextField? in
+    guard view.identifier?.rawValue.hasPrefix("FluentKit.Segmented.Label.") == true else { return nil }
+    return view as? NSTextField
+}.sorted { ($0.identifier?.rawValue ?? "") < ($1.identifier?.rawValue ?? "") } ?? []
 let expectedSegmentIndicatorWidth = (nativeStyledSegmented?.bounds.width ?? 0) / 2 - 4
 require(
     segmentedSelectionIndicators.count == 1
         && abs((segmentedSelectionIndicator?.frame.width ?? 0) - expectedSegmentIndicatorWidth) < 0.001,
     "segmented control keeps one shared inset selection indicator"
 )
+require(
+    segmentedLabels.count == 2
+        && segmentedLabels[0].stringValue == "First"
+        && segmentedLabels[1].stringValue == "Second",
+    "segmented control has one Fluent-owned text presenter per native segment"
+)
+let originalSegmentedLabelIdentities = segmentedLabels.map(ObjectIdentifier.init)
 styledSegmentState.wrappedValue = 1
 drainMainQueue()
 require(firstSegmentedControl(in: styledSegmentHost) === nativeStyledSegmented, "styled segmented updates preserve native identity")
 require(nativeStyledSegmented?.selectedSegment == 1, "segmented binding updates native selection")
 require(nativeStyledSegmented?.accessibilityValue() as? Int == 1, "segmented selection updates accessibility value")
+let updatedSegmentedLabelIdentities = nativeStyledSegmented?.subviews.compactMap { view -> NSTextField? in
+    guard view.identifier?.rawValue.hasPrefix("FluentKit.Segmented.Label.") == true else { return nil }
+    return view as? NSTextField
+}.sorted { ($0.identifier?.rawValue ?? "") < ($1.identifier?.rawValue ?? "") }.map(ObjectIdentifier.init) ?? []
+require(
+    updatedSegmentedLabelIdentities == originalSegmentedLabelIdentities,
+    "segmented reconciliation preserves compatible Fluent label identities"
+)
+let segmentedSelectionAnimation = segmentedSelectionIndicator?.layer?
+    .animation(forKey: "fluent.segmented.selection") as? CAAnimationGroup
+require(
+    abs((segmentedSelectionAnimation?.duration ?? 0) - FluentMotion.controlFast.duration) < 0.000_001,
+    "segmented selection uses the source-derived 167ms control-fast duration"
+)
+require(
+    segmentedSelectionAnimation?.animations?.compactMap { ($0 as? CAPropertyAnimation)?.keyPath } == ["position"],
+    "segmented selection moves geometry without unsourced scale or opacity choreography"
+)
+nativeStyledSegmented?.layout()
 require(
     segmentedSelectionIndicator?.layer?.animation(forKey: "fluent.segmented.selection") != nil,
-    "segmented binding updates animate position, scale, and opacity on the shared indicator"
+    "same-bounds segmented layout preserves the active presentation animation"
 )
-nativeStyledSegmented?.selectedSegment = 0
-nativeStyledSegmented?.sendAction(nativeStyledSegmented?.action, to: nativeStyledSegmented?.target)
+if let nativeStyledSegmented {
+    nativeStyledSegmented.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: NSPoint(x: 20, y: 16), in: nativeStyledSegmented, eventNumber: 70))
+    nativeStyledSegmented.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: NSPoint(x: 20, y: 16), in: nativeStyledSegmented, eventNumber: 71))
+}
 require(styledSegmentState.wrappedValue == 0, "segmented interaction writes back to its binding")
+
+styledSegmentState.wrappedValue = 1
+drainMainQueue()
+if let nativeStyledSegmented {
+    nativeStyledSegmented.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: NSPoint(x: 20, y: 16), in: nativeStyledSegmented, eventNumber: 72))
+    nativeStyledSegmented.mouseDragged(with: toggleMouseEvent(.leftMouseDragged, at: NSPoint(x: -20, y: 16), in: nativeStyledSegmented, eventNumber: 73))
+    nativeStyledSegmented.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: NSPoint(x: -20, y: 16), in: nativeStyledSegmented, eventNumber: 74))
+}
+require(styledSegmentState.wrappedValue == 1, "segmented release outside cancels the pending selection")
 segmentedMotionWindow.orderOut(nil)
+
+let rtlSegmentState = FluentState(wrappedValue: 1)
+let rtlSegmentHost = FluentViewHost(
+    FluentSegmentedControl(["First", "Second", "Third"], selection: rtlSegmentState.projectedValue),
+    context: FluentRenderContext(layoutDirection: .rightToLeft)
+)
+let rtlSegmentWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 300, height: 64),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+rtlSegmentWindow.contentView = rtlSegmentHost
+rtlSegmentWindow.orderFront(nil)
+guard let rtlSegmented = firstSegmentedControl(in: rtlSegmentHost) else {
+    fatalError("RTL segmented validation hierarchy did not mount")
+}
+rtlSegmented.frame = NSRect(x: 0, y: 0, width: 270, height: 32)
+rtlSegmented.layoutSubtreeIfNeeded()
+let rtlFirstLabel = rtlSegmented.subviews.first {
+    $0.identifier?.rawValue == "FluentKit.Segmented.Label.0"
+}
+let rtlThirdLabel = rtlSegmented.subviews.first {
+    $0.identifier?.rawValue == "FluentKit.Segmented.Label.2"
+}
+require(
+    (rtlFirstLabel?.frame.minX ?? 0) > (rtlThirdLabel?.frame.minX ?? 0),
+    "segmented RTL layout mirrors logical label order"
+)
+rtlSegmented.mouseDown(with: toggleMouseEvent(.leftMouseDown, at: NSPoint(x: 250, y: 16), in: rtlSegmented, eventNumber: 75))
+rtlSegmented.mouseUp(with: toggleMouseEvent(.leftMouseUp, at: NSPoint(x: 250, y: 16), in: rtlSegmented, eventNumber: 76))
+require(rtlSegmentState.wrappedValue == 0, "segmented RTL hit testing maps the right edge to the first logical item")
+rtlSegmented.keyDown(with: sliderKeyEvent(123, in: rtlSegmented, eventNumber: 77))
+require(rtlSegmentState.wrappedValue == 1, "segmented RTL left arrow advances in visual order")
+rtlSegmentWindow.orderOut(nil)
+
+let reducedSegmentState = FluentState(wrappedValue: 0)
+let reducedSegmentHost = FluentViewHost(
+    FluentSegmentedControl(["First", "Second"], selection: reducedSegmentState.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedSegmentHost.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
+reducedSegmentHost.layoutSubtreeIfNeeded()
+let reducedSegmentIndicator = reducedSegmentHost.subviews.lazy.compactMap { control -> NSView? in
+    (control as? NSSegmentedControl)?.subviews.first {
+        $0.identifier?.rawValue == "FluentKit.Segmented.SelectionIndicator"
+    }
+}.first
+reducedSegmentState.wrappedValue = 1
+drainMainQueue()
+require(
+    reducedSegmentIndicator?.layer?.animation(forKey: "fluent.segmented.selection") == nil,
+    "segmented Reduce Motion reaches selected geometry without allocating animations"
+)
 
 let themeStore = FluentThemeStore(FluentTheme.custom(colorScheme: .light, typography: FluentTypography(scale: 1)))
 struct ThemeStoreProbe: FluentView {

@@ -439,7 +439,20 @@ private struct WinUIStyleGalleryScreen: FluentView {
                         )
                         .disabled()
                     }
-                    FluentSegmentedControl(["One", "Two", "Three"], selection: $selectedSegment)
+                    FluentHStack(spacing: 18) {
+                        FluentVStack(spacing: 6) {
+                            FluentText("Interactive", style: .caption, color: theme.textSecondary)
+                            FluentSegmentedControl(["One", "Two", "Three"], selection: $selectedSegment)
+                        }
+                        FluentVStack(spacing: 6) {
+                            FluentText("Disabled", style: .caption, color: theme.textSecondary)
+                            FluentSegmentedControl(
+                                ["One", "Two"],
+                                selection: FluentBinding(get: { 1 }, set: { _ in })
+                            )
+                            .disabled()
+                        }
+                    }
                 }
                 FluentVStack(spacing: 10) {
                     FluentText("Progress", style: .headline)

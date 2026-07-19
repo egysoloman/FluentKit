@@ -1081,9 +1081,16 @@ public struct FluentSegmentedStyleConfiguration {
 public struct FluentSegmentedAppearance {
     public let backgroundColor: NSColor
     public let selectedSegmentColor: NSColor
+    public let selectedHoverSegmentColor: NSColor
+    public let selectedPressedSegmentColor: NSColor
     public let hoverColor: NSColor
+    public let pressedColor: NSColor
     public let foregroundColor: NSColor
+    public let hoverForegroundColor: NSColor
+    public let pressedForegroundColor: NSColor
     public let selectedForegroundColor: NSColor
+    public let selectedHoverForegroundColor: NSColor
+    public let selectedPressedForegroundColor: NSColor
     public let borderColor: NSColor
     public let borderWidth: CGFloat
     public let cornerRadius: CGFloat
@@ -1093,9 +1100,16 @@ public struct FluentSegmentedAppearance {
     public init(
         backgroundColor: NSColor,
         selectedSegmentColor: NSColor,
+        selectedHoverSegmentColor: NSColor? = nil,
+        selectedPressedSegmentColor: NSColor? = nil,
         hoverColor: NSColor = .clear,
+        pressedColor: NSColor? = nil,
         foregroundColor: NSColor = .labelColor,
+        hoverForegroundColor: NSColor? = nil,
+        pressedForegroundColor: NSColor? = nil,
         selectedForegroundColor: NSColor = .white,
+        selectedHoverForegroundColor: NSColor? = nil,
+        selectedPressedForegroundColor: NSColor? = nil,
         borderColor: NSColor,
         borderWidth: CGFloat = 1,
         cornerRadius: CGFloat = 7,
@@ -1104,9 +1118,16 @@ public struct FluentSegmentedAppearance {
     ) {
         self.backgroundColor = backgroundColor
         self.selectedSegmentColor = selectedSegmentColor
+        self.selectedHoverSegmentColor = selectedHoverSegmentColor ?? selectedSegmentColor
+        self.selectedPressedSegmentColor = selectedPressedSegmentColor ?? selectedSegmentColor
         self.hoverColor = hoverColor
+        self.pressedColor = pressedColor ?? hoverColor
         self.foregroundColor = foregroundColor
+        self.hoverForegroundColor = hoverForegroundColor ?? foregroundColor
+        self.pressedForegroundColor = pressedForegroundColor ?? foregroundColor
         self.selectedForegroundColor = selectedForegroundColor
+        self.selectedHoverForegroundColor = selectedHoverForegroundColor ?? selectedForegroundColor
+        self.selectedPressedForegroundColor = selectedPressedForegroundColor ?? selectedForegroundColor
         self.borderColor = borderColor
         self.borderWidth = max(borderWidth, 0)
         self.cornerRadius = max(cornerRadius, 0)
@@ -1125,12 +1146,20 @@ public struct FluentAutomaticSegmentedStyle: FluentSegmentedStyle {
     public func appearance(for configuration: FluentSegmentedStyleConfiguration) -> FluentSegmentedAppearance {
         let theme = configuration.theme
         let font = theme.typography.font(for: .callout).withSize(theme.typography.font(for: .callout).pointSize * configuration.controlSize.metricScale)
+        let selectedAlpha: CGFloat = configuration.isEnabled ? 1 : 0.35
         return FluentSegmentedAppearance(
             backgroundColor: theme.controlFill,
-            selectedSegmentColor: theme.accent,
+            selectedSegmentColor: theme.accent.withAlphaComponent(selectedAlpha),
+            selectedHoverSegmentColor: theme.accent.withAlphaComponent(configuration.isEnabled ? 0.88 : 0.35),
+            selectedPressedSegmentColor: theme.accent.withAlphaComponent(configuration.isEnabled ? 0.72 : 0.35),
             hoverColor: theme.controlFillSecondary,
+            pressedColor: theme.controlFillTertiary,
             foregroundColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
-            selectedForegroundColor: theme.textOnAccent,
+            hoverForegroundColor: configuration.isEnabled ? theme.textSecondary : theme.textDisabled,
+            pressedForegroundColor: configuration.isEnabled ? theme.textSecondary.withAlphaComponent(0.72) : theme.textDisabled,
+            selectedForegroundColor: configuration.isEnabled ? theme.textOnAccent : theme.textDisabled,
+            selectedHoverForegroundColor: configuration.isEnabled ? theme.textOnAccent.withAlphaComponent(0.88) : theme.textDisabled,
+            selectedPressedForegroundColor: configuration.isEnabled ? theme.textOnAccent.withAlphaComponent(0.72) : theme.textDisabled,
             borderColor: theme.isHighContrast ? theme.controlStrokeStrong : theme.controlStroke,
             borderWidth: theme.controlStrokeWidth,
             cornerRadius: theme.buttonCornerRadius,
@@ -1145,12 +1174,20 @@ public struct FluentNeutralSegmentedStyle: FluentSegmentedStyle {
     public func appearance(for configuration: FluentSegmentedStyleConfiguration) -> FluentSegmentedAppearance {
         let theme = configuration.theme
         let font = theme.typography.font(for: .callout).withSize(theme.typography.font(for: .callout).pointSize * configuration.controlSize.metricScale)
+        let selectedAlpha: CGFloat = configuration.isEnabled ? 1 : 0.35
         return FluentSegmentedAppearance(
             backgroundColor: theme.controlFill,
-            selectedSegmentColor: theme.controlStrokeStrong,
+            selectedSegmentColor: theme.controlStrokeStrong.withAlphaComponent(selectedAlpha),
+            selectedHoverSegmentColor: theme.controlStrokeStrong.withAlphaComponent(configuration.isEnabled ? 0.88 : 0.35),
+            selectedPressedSegmentColor: theme.controlStrokeStrong.withAlphaComponent(configuration.isEnabled ? 0.72 : 0.35),
             hoverColor: theme.controlFillSecondary,
+            pressedColor: theme.controlFillTertiary,
             foregroundColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
-            selectedForegroundColor: theme.windowBackground,
+            hoverForegroundColor: configuration.isEnabled ? theme.textSecondary : theme.textDisabled,
+            pressedForegroundColor: configuration.isEnabled ? theme.textSecondary.withAlphaComponent(0.72) : theme.textDisabled,
+            selectedForegroundColor: configuration.isEnabled ? theme.windowBackground : theme.textDisabled,
+            selectedHoverForegroundColor: configuration.isEnabled ? theme.windowBackground.withAlphaComponent(0.88) : theme.textDisabled,
+            selectedPressedForegroundColor: configuration.isEnabled ? theme.windowBackground.withAlphaComponent(0.72) : theme.textDisabled,
             borderColor: theme.controlStrokeStrong,
             borderWidth: theme.controlStrokeWidth,
             cornerRadius: theme.buttonCornerRadius,

@@ -425,9 +425,11 @@ state, keyboard navigation, type-ahead, Escape/outside-click dismissal, and RTL 
 in-app menus; AppKit's native combo-box popup is not used.
 
 Segmented controls use a custom Fluent renderer while preserving `NSSegmentedControl` identity.
-One shared selection surface moves between segments with tokenized position, scale, and opacity
-motion; labels, hover states, focus outlines, mouse selection, and keyboard navigation are rendered
-and synchronized by FluentKit rather than by the native segmented cell.
+One shared selection surface moves between segments with the source-derived 167ms control-fast
+curve; labels, hover/pressed states, focus outlines, release-inside selection, and keyboard
+navigation are rendered and synchronized by FluentKit rather than by the native segmented cell.
+Compatible declarative updates preserve label and indicator identity, same-bounds layout preserves
+active presentation motion, and RTL plus Reduce Motion are inherited from the render environment.
 
 Applications can implement `FluentButtonStyle`, `FluentToggleStyle`, `FluentSliderStyle`,
 `FluentProgressStyle`, `FluentCheckBoxStyle`, `FluentRadioButtonStyle`, or
