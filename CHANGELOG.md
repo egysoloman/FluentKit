@@ -29,3 +29,13 @@ AppKit and Swift permit it.
   clipping.
 - Added executable existence, dimension, and pixel-variation checks for documented Gallery bitmap
   baselines and regenerated Controls/Inputs Light and Dark captures.
+- Added a public stable-ID `FluentNavigationView` with automatic, Left, Compact, Minimal overlay, and
+  Top layouts; configurable WinUI-derived thresholds and pane widths; primary/footer destinations;
+  separate pane/content headers; bound pane state; stale-selection cleanup; keyboard, accessibility,
+  RTL, and Reduce Motion behavior; and completion-driven 350ms/120ms pane motion.
+- Migrated the Gallery shell from its private list wrapper to `FluentNavigationView`. Top mode now
+  keeps a stable visible prefix, presents hidden destinations through `FluentMenuFlyout`, and routes
+  hidden selection plus the horizontal shared indicator through `More`.
+- Added responsive Minimal Light/Dark and Top Light/Dark/RTL Gallery bitmap baselines and executable
+  coverage for adaptive thresholds, overlay geometry, Top overflow actions, disabled items, and
+  primary-to-footer selection motion.

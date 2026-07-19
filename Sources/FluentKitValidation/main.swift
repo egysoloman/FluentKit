@@ -96,6 +96,17 @@ func firstView(withAccessibilityRole role: NSAccessibility.Role, in view: NSView
     return view.subviews.lazy.compactMap { firstView(withAccessibilityRole: role, in: $0) }.first
 }
 
+func firstView(identifier: String, in view: NSView) -> NSView? {
+    if view.identifier?.rawValue == identifier { return view }
+    return view.subviews.lazy.compactMap { firstView(identifier: identifier, in: $0) }.first
+}
+
+func views(identifier: String, in view: NSView) -> [NSView] {
+    var matches = view.identifier?.rawValue == identifier ? [view] : []
+    for child in view.subviews { matches.append(contentsOf: views(identifier: identifier, in: child)) }
+    return matches
+}
+
 func firstStepper(in view: NSView) -> NSStepper? {
     if let stepper = view as? NSStepper { return stepper }
     return view.subviews.lazy.compactMap(firstStepper).first
@@ -1949,6 +1960,330 @@ require(firstSplitView(in: navigationSplitView) === nativeNavigationSplit, "navi
 require(navigationSelection.wrappedValue == nil, "navigation split view clears selection when its destination is removed")
 require(labels(in: navigationSplitView).contains { $0.stringValue == "No destination" }, "navigation split view shows placeholder content after selection is cleared")
 
+let navigationViewItems = [
+    FluentNavigationItem(id: "home", title: "Home", systemImageName: "house"),
+    FluentNavigationItem(id: "library", title: "Library", systemImageName: "books.vertical"),
+    FluentNavigationItem(id: "disabled", title: "Disabled", systemImageName: "nosign", isEnabled: false)
+]
+let navigationViewFooterItems = [
+    FluentNavigationItem(id: "settings", title: "Settings", systemImageName: "gearshape")
+]
+let navigationViewSelection = FluentState<String?>(wrappedValue: "home")
+let navigationViewPaneOpen = FluentState(wrappedValue: true)
+let reusableNavigation = FluentNavigationView(
+    navigationViewItems,
+    footerItems: navigationViewFooterItems,
+    selection: navigationViewSelection.projectedValue,
+    isPaneOpen: navigationViewPaneOpen.projectedValue,
+    paneDisplayMode: .left,
+    openPaneLength: 280,
+    paneSectionTitle: "Explore"
+) {
+    FluentText("FluentKit")
+        .padding(NSEdgeInsets(top: 8, left: 20, bottom: 8, right: 12))
+} content: {
+    FluentText("Navigation content")
+}
+let reusableNavigationHost = FluentViewHost(reusableNavigation)
+let reusableNavigationWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 900, height: 520),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+reusableNavigationWindow.contentView = reusableNavigationHost
+reusableNavigationHost.frame = NSRect(x: 0, y: 0, width: 900, height: 520)
+reusableNavigationWindow.orderFront(nil)
+reusableNavigationHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+reusableNavigationHost.layoutSubtreeIfNeeded()
+let reusablePane = firstView(identifier: "FluentKit.NavigationView.Pane", in: reusableNavigationHost)
+let reusableContent = firstView(identifier: "FluentKit.NavigationView.Content", in: reusableNavigationHost)
+let reusableToggle = firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: reusableNavigationHost) as? NSButton
+let reusableIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: reusableNavigationHost)
+let reusablePreviousIndicator = firstLayer(named: "FluentKit.NavigationView.PreviousSelectionIndicator", in: reusableNavigationHost)
+require(
+    abs((reusablePane?.frame.width ?? 0) - 280) < 0.5
+        && abs((reusableContent?.frame.minX ?? 0) - 280) < 0.5,
+    "NavigationView left mode reserves the configured open pane length"
+)
+require(
+    reusableIndicator?.frame.size == NSSize(width: 3, height: 16)
+        && reusablePreviousIndicator?.opacity == 0,
+    "NavigationView exposes the shared vertical two-indicator geometry"
+)
+require(
+    views(identifier: "FluentKit.NavigationView.Item", in: reusableNavigationHost).count == 4,
+    "NavigationView mounts primary and footer items through one presenter"
+)
+navigationViewSelection.wrappedValue = "settings"
+drainMainQueue()
+let footerIncoming = reusableIndicator?.animation(forKey: "fluent.navigation.selection") as? CAAnimationGroup
+let footerOutgoing = reusablePreviousIndicator?.animation(forKey: "fluent.navigation.selection.outgoing") as? CAAnimationGroup
+require(
+    footerIncoming != nil && footerOutgoing != nil,
+    "NavigationView animates one shared indicator between primary and footer destinations"
+)
+require(
+    firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost)?.accessibilityValue() as? String == "Selected",
+    "NavigationView synchronizes selected accessibility state"
+)
+let selectionBeforeDisabledActivation = navigationViewSelection.wrappedValue
+(firstView(withAccessibilityTitle: "Disabled", in: reusableNavigationHost) as? NSButton)?.performClick(nil)
+drainMainQueue()
+require(
+    navigationViewSelection.wrappedValue == selectionBeforeDisabledActivation,
+    "NavigationView disabled destinations cannot change selection"
+)
+reusableToggle?.performClick(nil)
+drainMainQueue()
+require(
+    navigationViewPaneOpen.wrappedValue == false
+        && abs((reusablePane?.frame.width ?? 0) - 48) < 0.5
+        && abs((reusableContent?.frame.minX ?? 0) - 48) < 0.5,
+    "NavigationView left mode closes to the 48pt compact rail"
+)
+require(
+    reusablePane?.layer?.animation(forKey: "fluent.navigation.pane.frame") != nil,
+    "NavigationView pane close uses explicit completion-trackable frame motion"
+)
+reusableToggle?.performClick(nil)
+drainMainQueue()
+require(
+    navigationViewPaneOpen.wrappedValue == true && abs((reusablePane?.frame.width ?? 0) - 280) < 0.5,
+    "rapid NavigationView pane reversal settles on the latest requested state"
+)
+
+let automaticSelection = FluentState<String?>(wrappedValue: "home")
+let automaticPaneOpen = FluentState(wrappedValue: true)
+var automaticDisplayModes: [FluentNavigationViewDisplayMode] = []
+let automaticNavigation = FluentNavigationView(
+    navigationViewItems,
+    selection: automaticSelection.projectedValue,
+    isPaneOpen: automaticPaneOpen.projectedValue,
+    paneDisplayMode: .automatic,
+    onDisplayModeChange: { automaticDisplayModes.append($0) }
+) {
+    FluentText("Adaptive content")
+}
+let automaticHost = FluentViewHost(automaticNavigation)
+let automaticWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 800, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+automaticWindow.contentView = automaticHost
+automaticHost.frame = NSRect(x: 0, y: 0, width: 800, height: 420)
+automaticWindow.orderFront(nil)
+automaticHost.layoutSubtreeIfNeeded()
+let automaticPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: automaticHost)
+let automaticContent = firstView(identifier: "FluentKit.NavigationView.Content", in: automaticHost)
+require(
+    automaticDisplayModes.last == .compact
+        && automaticPaneOpen.wrappedValue == false
+        && abs((automaticPane?.frame.width ?? 0) - 48) < 0.5,
+    "NavigationView Auto resolves 800pt to closed Compact mode"
+)
+automaticHost.frame = NSRect(x: 0, y: 0, width: 1_200, height: 420)
+automaticHost.layoutSubtreeIfNeeded()
+require(
+    automaticDisplayModes.last == .expanded
+        && automaticPaneOpen.wrappedValue == true
+        && abs((automaticPane?.frame.width ?? 0) - 320) < 0.5,
+    "NavigationView Auto resolves the 1008pt threshold to Expanded mode"
+)
+automaticHost.frame = NSRect(x: 0, y: 0, width: 500, height: 420)
+automaticHost.layoutSubtreeIfNeeded()
+let minimalToggle = firstView(identifier: "FluentKit.NavigationView.MinimalPaneToggle", in: automaticHost)
+require(
+    automaticDisplayModes.last == .minimal
+        && automaticPaneOpen.wrappedValue == false
+        && abs((automaticPane?.frame.width ?? -1)) < 0.5
+        && abs((automaticContent?.frame.minX ?? -1)) < 0.5
+        && minimalToggle?.isHidden == false,
+    "NavigationView Auto resolves below 641pt to Minimal mode with an external toggle"
+)
+(minimalToggle as? NSButton)?.performClick(nil)
+drainMainQueue()
+let automaticDismissLayer = firstView(identifier: "FluentKit.NavigationView.DismissLayer", in: automaticHost)
+require(
+    automaticPaneOpen.wrappedValue == true
+        && abs((automaticPane?.frame.width ?? 0) - 320) < 0.5
+        && automaticDismissLayer?.isHidden == false,
+    "Minimal NavigationView opens an overlay pane without moving content"
+)
+let automaticPaneToggle = firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: automaticHost) as? NSButton
+automaticPaneToggle?.performClick(nil)
+drainMainQueue()
+let dismissAnimation = automaticDismissLayer?.layer?.animation(forKey: "fluent.navigation.dimming") as? CABasicAnimation
+require(
+    automaticPaneOpen.wrappedValue == false
+        && (dismissAnimation?.toValue as? NSNumber)?.doubleValue == 0,
+    "Minimal NavigationView fades its dismiss layer through the pane close motion"
+)
+
+let topSelection = FluentState<String?>(wrappedValue: "home")
+let topNavigation = FluentNavigationView(
+    Array(navigationViewItems.prefix(2)),
+    footerItems: navigationViewFooterItems,
+    selection: topSelection.projectedValue,
+    paneDisplayMode: .top
+) {
+    FluentText("Top content")
+}
+let topHost = FluentViewHost(topNavigation)
+let topWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+topWindow.contentView = topHost
+topHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
+topWindow.orderFront(nil)
+topHost.layoutSubtreeIfNeeded()
+let topPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: topHost)
+let topContent = firstView(identifier: "FluentKit.NavigationView.Content", in: topHost)
+let topIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: topHost)
+require(
+    abs((topPane?.frame.height ?? 0) - 48) < 0.5
+        && abs((topContent?.frame.height ?? 0) - 372) < 0.5
+        && topIndicator?.frame.size == NSSize(width: 16, height: 3),
+    "NavigationView Top mode reserves a 48pt bar and uses a horizontal indicator"
+)
+topSelection.wrappedValue = "library"
+drainMainQueue()
+let topIndicatorGroup = topIndicator?.animation(forKey: "fluent.navigation.selection") as? CAAnimationGroup
+require(
+    keyframeAnimation(for: "transform.scale.x", in: topIndicatorGroup) != nil,
+    "Top NavigationView uses horizontal two-indicator scaling"
+)
+
+let overflowItems = [
+    FluentNavigationItem(id: "overview", title: "Overview", systemImageName: "square.grid.2x2"),
+    FluentNavigationItem(id: "controls", title: "Controls", systemImageName: "slider.horizontal.3"),
+    FluentNavigationItem(id: "inputs", title: "Inputs and forms", systemImageName: "keyboard"),
+    FluentNavigationItem(id: "collections", title: "Collections", systemImageName: "square.grid.3x3")
+]
+let overflowSelection = FluentState<String?>(wrappedValue: "collections")
+let overflowNavigation = FluentNavigationView(
+    overflowItems,
+    selection: overflowSelection.projectedValue,
+    paneDisplayMode: .top
+) {
+    FluentText("Overflow content")
+}
+let overflowHost = FluentViewHost(overflowNavigation)
+let overflowWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 360, height: 320),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+overflowWindow.contentView = overflowHost
+overflowHost.frame = NSRect(x: 0, y: 0, width: 360, height: 320)
+overflowWindow.orderFront(nil)
+overflowHost.layoutSubtreeIfNeeded()
+let overflowButton = firstView(identifier: "FluentKit.NavigationView.Overflow", in: overflowHost) as? NSButton
+let overflowIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: overflowHost)
+require(
+    overflowButton?.isHidden == false
+        && overflowButton?.accessibilityValue() as? String == "Contains selected item"
+        && abs((overflowIndicator?.frame.midX ?? 0) - (overflowButton?.frame.midX ?? -1)) < 0.5,
+    "Top NavigationView routes hidden selection and its indicator through More"
+)
+overflowButton?.performClick(nil)
+drainMainQueue()
+let overflowMenuItem = overflowWindow.childWindows?
+    .compactMap(\.contentView)
+    .compactMap { firstView(withAccessibilityTitle: "Inputs and forms", in: $0) }
+    .first
+require(
+    overflowMenuItem?.accessibilityPerformPress() == true,
+    "Top NavigationView overflow presents hidden destinations through FluentMenuFlyout"
+)
+drainMainQueue()
+require(
+    overflowSelection.wrappedValue == "inputs",
+    "Top NavigationView overflow actions update the shared selection binding"
+)
+
+let rtlOverflowSelection = FluentState<String?>(wrappedValue: "collections")
+let rtlOverflowNavigation = FluentNavigationView(
+    overflowItems,
+    selection: rtlOverflowSelection.projectedValue,
+    paneDisplayMode: .top
+) {
+    FluentText("RTL overflow content")
+}
+let rtlOverflowHost = FluentViewHost(
+    rtlOverflowNavigation,
+    context: FluentRenderContext(layoutDirection: .rightToLeft)
+)
+let rtlOverflowWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 360, height: 320),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+rtlOverflowWindow.contentView = rtlOverflowHost
+rtlOverflowHost.frame = NSRect(x: 0, y: 0, width: 360, height: 320)
+rtlOverflowWindow.orderFront(nil)
+rtlOverflowHost.layoutSubtreeIfNeeded()
+let rtlOverflowButton = firstView(identifier: "FluentKit.NavigationView.Overflow", in: rtlOverflowHost)
+let rtlVisibleItem = views(identifier: "FluentKit.NavigationView.Item", in: rtlOverflowHost).first { !$0.isHidden }
+require(
+    (rtlOverflowButton?.frame.maxX ?? 0) <= (rtlVisibleItem?.frame.minX ?? -1),
+    "Top NavigationView mirrors the More and visible-item ordering in RTL"
+)
+
+let reducedPaneOpen = FluentState(wrappedValue: false)
+let reducedNavigationView = FluentNavigationView(
+    navigationViewItems,
+    selection: FluentState<String?>(wrappedValue: "home").projectedValue,
+    isPaneOpen: reducedPaneOpen.projectedValue,
+    paneDisplayMode: .leftCompact
+) {
+    FluentText("Reduced motion content")
+}
+let reducedNavigationViewHost = FluentViewHost(
+    reducedNavigationView,
+    context: FluentRenderContext(reduceMotion: true)
+)
+let reducedNavigationWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+reducedNavigationWindow.contentView = reducedNavigationViewHost
+reducedNavigationViewHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
+reducedNavigationWindow.orderFront(nil)
+reducedNavigationViewHost.layoutSubtreeIfNeeded()
+let reducedPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: reducedNavigationViewHost)
+(firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: reducedNavigationViewHost) as? NSButton)?.performClick(nil)
+drainMainQueue()
+require(
+    reducedPaneOpen.wrappedValue == true
+        && reducedPane?.layer?.animation(forKey: "fluent.navigation.pane.frame") == nil,
+    "NavigationView Reduce Motion snaps pane geometry without allocating frame animation"
+)
+
+let invalidNavigation = FluentNavigationView(
+    Array(navigationViewItems.prefix(1)),
+    selection: navigationViewSelection.projectedValue,
+    paneDisplayMode: .left
+) {
+    FluentText("Updated navigation content")
+}
+reusableNavigationHost.update(invalidNavigation)
+drainMainQueue()
+require(
+    navigationViewSelection.wrappedValue == nil,
+    "NavigationView clears selection when its stable destination is removed"
+)
+
 let navigation = FluentNavigationStack(
     path: navigationPath.projectedValue,
     root: { FluentText("Root screen") },
@@ -3090,18 +3425,24 @@ let packageRoot = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent()
     .deletingLastPathComponent()
     .deletingLastPathComponent()
-let snapshotBaselines = [
-    "accessibility-light.png",
-    "accessibility-dark.png",
-    "accessibility-rtl.png",
-    "application-light.png",
-    "application-dark.png",
-    "controls-light.png",
-    "controls-dark.png",
-    "inputs-light.png",
-    "inputs-dark.png"
+let snapshotBaselines: [(filename: String, width: Int, height: Int)] = [
+    ("accessibility-light.png", 980, 680),
+    ("accessibility-dark.png", 980, 680),
+    ("accessibility-rtl.png", 980, 680),
+    ("application-light.png", 980, 680),
+    ("application-dark.png", 980, 680),
+    ("controls-light.png", 980, 680),
+    ("controls-dark.png", 980, 680),
+    ("inputs-light.png", 980, 680),
+    ("inputs-dark.png", 980, 680),
+    ("navigation-minimal-light.png", 560, 680),
+    ("navigation-minimal-dark.png", 560, 680),
+    ("navigation-top-light.png", 980, 680),
+    ("navigation-top-dark.png", 980, 680),
+    ("navigation-top-rtl.png", 980, 680)
 ]
-for filename in snapshotBaselines {
+for baseline in snapshotBaselines {
+    let filename = baseline.filename
     let url = packageRoot.appendingPathComponent(".snapshots").appendingPathComponent(filename)
     guard let data = try? Data(contentsOf: url),
           let bitmap = NSBitmapImageRep(data: data) else {
@@ -3109,8 +3450,8 @@ for filename in snapshotBaselines {
         continue
     }
     require(
-        bitmap.pixelsWide == 980 && bitmap.pixelsHigh == 680,
-        "snapshot baseline \(filename) preserves the 980 x 680 viewport"
+        bitmap.pixelsWide == baseline.width && bitmap.pixelsHigh == baseline.height,
+        "snapshot baseline \(filename) preserves the \(baseline.width) x \(baseline.height) viewport"
     )
     require(
         bitmapHasVisibleVariation(bitmap),

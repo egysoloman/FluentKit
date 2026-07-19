@@ -14,6 +14,11 @@ as ordinary files so a package consumer can inspect them without a special snaps
 | Controls | Dark | `.snapshots/controls-dark.png` | 980 x 680 |
 | Inputs and forms | Light | `.snapshots/inputs-light.png` | 980 x 680 |
 | Inputs and forms | Dark | `.snapshots/inputs-dark.png` | 980 x 680 |
+| Minimal navigation | Light | `.snapshots/navigation-minimal-light.png` | 560 x 680 |
+| Minimal navigation | Dark | `.snapshots/navigation-minimal-dark.png` | 560 x 680 |
+| Top navigation overflow | Light | `.snapshots/navigation-top-light.png` | 980 x 680 |
+| Top navigation overflow | Dark | `.snapshots/navigation-top-dark.png` | 980 x 680 |
+| Top navigation overflow | RTL | `.snapshots/navigation-top-rtl.png` | 980 x 680 |
 
 Regenerate a baseline with:
 
@@ -21,6 +26,10 @@ Regenerate a baseline with:
 FLUENTKIT_SNAPSHOT_PATH="$PWD/.snapshots/controls-light.png" \
 FLUENTKIT_GALLERY_PAGE=controls FLUENTKIT_GALLERY_SCHEME=light swift run FluentGallery
 ```
+
+Responsive shell captures additionally set `FLUENTKIT_GALLERY_NAV_MODE` and, for Minimal mode,
+`FLUENTKIT_SNAPSHOT_WIDTH=560`. Top captures select the Accessibility destination so the checked-in
+image exercises a selection that lives inside the overflow flyout.
 
 The validation executable checks every listed file for its expected dimensions and non-empty pixel
 variation. Visual review remains required for intentional design changes; the check is a regression

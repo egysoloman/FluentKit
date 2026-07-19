@@ -483,6 +483,42 @@ FluentNavigationSplitView(
 }
 ```
 
+`FluentNavigationView` provides a reusable application shell with stable primary/footer destinations,
+an optional pane header and content header, and adaptive Left, Compact, Minimal, and Top layouts. Its
+default thresholds are 641pt for Minimal/Compact and 1008pt for Compact/Expanded. Top navigation
+keeps a stable leading prefix and moves the remaining destinations into an application-owned
+`FluentMenuFlyout`; a hidden selection is represented by the `More` button and shared indicator.
+
+```swift
+let destinations = [
+    FluentNavigationItem(id: Page.home, title: "Home", systemImageName: "house"),
+    FluentNavigationItem(id: Page.library, title: "Library", systemImageName: "books.vertical")
+]
+
+FluentNavigationView(
+    destinations,
+    footerItems: [FluentNavigationItem(
+        id: Page.settings,
+        title: "Settings",
+        systemImageName: "gearshape"
+    )],
+    selection: $selection,
+    isPaneOpen: $isPaneOpen,
+    paneDisplayMode: .automatic
+) {
+    FluentText("FluentKit")
+} header: {
+    PageHeader(selection)
+} content: {
+    PageContent(selection)
+}
+```
+
+Pane opening uses separate 350ms/120ms open and close curves. Destination changes use the shared
+two-indicator 600ms choreography in either vertical or horizontal orientation, with rapid-target and
+Reduce Motion handling. Arrow keys, Home/End, disabled destinations, accessibility selection, RTL
+ordering, overlay dismissal, and Top overflow all use the same stable selection model.
+
 For route-specific metadata, return a `FluentNavigationDestination` so the title and content are resolved together. Route changes can use `.none`, `.crossFade`, or `.slide` transitions:
 
 ```swift

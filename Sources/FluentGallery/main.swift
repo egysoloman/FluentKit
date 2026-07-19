@@ -135,6 +135,7 @@ private enum GalleryPage: String, CaseIterable, Hashable {
     case motion
     case application
     case accessibility
+    case settings
 
     var title: String {
         switch self {
@@ -146,6 +147,7 @@ private enum GalleryPage: String, CaseIterable, Hashable {
         case .motion: return "Motion & theme"
         case .application: return "Application"
         case .accessibility: return "Accessibility"
+        case .settings: return "Settings"
         }
     }
 
@@ -159,207 +161,8 @@ private enum GalleryPage: String, CaseIterable, Hashable {
         case .motion: return "sparkles"
         case .application: return "macwindow.on.rectangle"
         case .accessibility: return "accessibility"
+        case .settings: return "gearshape"
         }
-    }
-}
-
-private struct GalleryNavigationRowView: FluentUpdatablePrimitiveView {
-    let page: GalleryPage
-    let title: String
-    let symbolName: String
-    let isSelected: Bool
-
-    var body: NeverFluentView { NeverFluentView() }
-
-    func _makeView(in context: FluentRenderContext) -> NSView {
-        GalleryNavigationRowNative(
-            title: title,
-            symbolName: symbolName,
-            isSelected: isSelected,
-            theme: context.theme,
-            layoutDirection: context.layoutDirection
-        )
-    }
-
-    func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
-        guard let item = view as? GalleryNavigationRowNative else { return false }
-        item.update(
-            title: title,
-            symbolName: symbolName,
-            isSelected: isSelected,
-            theme: context.theme,
-            layoutDirection: context.layoutDirection
-        )
-        return true
-    }
-}
-
-private final class GalleryNavigationRowNative: NSView {
-    private var titleText: String
-    private var symbolName: String
-    private var selected: Bool
-    private var fluentTheme: FluentTheme
-    private var layoutDirection: FluentLayoutDirection
-
-    init(
-        title: String,
-        symbolName: String,
-        isSelected: Bool,
-        theme: FluentTheme,
-        layoutDirection: FluentLayoutDirection
-    ) {
-        titleText = title
-        self.symbolName = symbolName
-        selected = isSelected
-        fluentTheme = theme
-        self.layoutDirection = layoutDirection
-        super.init(frame: .zero)
-        setAccessibilityElement(true)
-        setAccessibilityRole(.staticText)
-        setAccessibilityTitle(title)
-        setAccessibilityValue(isSelected ? "Selected" : "Not selected")
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    override var intrinsicContentSize: NSSize {
-        NSSize(width: 180, height: 24)
-    }
-
-    override func draw(_ dirtyRect: NSRect) {
-        let font = fluentTheme.typography.font(for: .body)
-        let color = selected ? fluentTheme.textPrimary : fluentTheme.textSecondary
-        let isRTL = layoutDirection == .rightToLeft
-        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: titleText) {
-            let pointConfiguration = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-            let colorConfiguration = NSImage.SymbolConfiguration(hierarchicalColor: color)
-            image.withSymbolConfiguration(pointConfiguration.applying(colorConfiguration))?
-                .draw(in: NSRect(x: isRTL ? bounds.width - 28 : 10, y: bounds.midY - 9, width: 18, height: 18))
-        }
-        let textSize = (titleText as NSString).size(withAttributes: [.font: font])
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = isRTL ? .right : .left
-        (titleText as NSString).draw(
-            in: NSRect(
-                x: isRTL ? 10 : 40,
-                y: bounds.midY - textSize.height / 2,
-                width: max(0, bounds.width - 44),
-                height: textSize.height
-            ),
-            withAttributes: [.font: font, .foregroundColor: color, .paragraphStyle: paragraph]
-        )
-    }
-
-    func update(
-        title: String,
-        symbolName: String,
-        isSelected: Bool,
-        theme: FluentTheme,
-        layoutDirection: FluentLayoutDirection
-    ) {
-        titleText = title
-        self.symbolName = symbolName
-        selected = isSelected
-        fluentTheme = theme
-        self.layoutDirection = layoutDirection
-        setAccessibilityTitle(title)
-        setAccessibilityValue(isSelected ? "Selected" : "Not selected")
-        invalidateIntrinsicContentSize()
-        needsDisplay = true
-    }
-}
-
-private struct GalleryNavigationFooterView: FluentUpdatablePrimitiveView {
-    let title: String
-    let symbolName: String
-    let action: () -> Void
-
-    var body: NeverFluentView { NeverFluentView() }
-
-    func _makeView(in context: FluentRenderContext) -> NSView {
-        GalleryNavigationFooterButton(
-            title: title,
-            symbolName: symbolName,
-            theme: context.theme,
-            action: action
-        )
-    }
-
-    func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
-        guard let button = view as? GalleryNavigationFooterButton else { return false }
-        button.update(title: title, symbolName: symbolName, theme: context.theme, action: action)
-        return true
-    }
-}
-
-private final class GalleryNavigationFooterButton: NSButton {
-    private var symbolName: String
-    private var fluentTheme: FluentTheme
-    private var isPointerOver = false
-    private var actionHandler: () -> Void
-
-    init(title: String, symbolName: String, theme: FluentTheme, action: @escaping () -> Void) {
-        self.symbolName = symbolName
-        fluentTheme = theme
-        actionHandler = action
-        super.init(frame: .zero)
-        self.title = title
-        isBordered = false
-        focusRingType = .none
-        target = self
-        self.action = #selector(invoke)
-        setAccessibilityRole(.button)
-        setAccessibilityTitle(title)
-        addTrackingArea(
-            NSTrackingArea(
-                rect: .zero,
-                options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
-                owner: self,
-                userInfo: nil
-            )
-        )
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    override var intrinsicContentSize: NSSize {
-        NSSize(width: fluentTheme.designTokens.navigationPaneWidth, height: 40)
-    }
-
-    override func mouseEntered(with event: NSEvent) { isPointerOver = true; needsDisplay = true }
-    override func mouseExited(with event: NSEvent) { isPointerOver = false; needsDisplay = true }
-
-    override func draw(_ dirtyRect: NSRect) {
-        let inset = NSRect(x: 8, y: 2, width: max(0, bounds.width - 16), height: max(0, bounds.height - 4))
-        if isPointerOver {
-            fluentTheme.controlFill.setFill()
-            NSBezierPath(roundedRect: inset, xRadius: 4, yRadius: 4).fill()
-        }
-        let font = fluentTheme.typography.font(for: .body)
-        let color = fluentTheme.textSecondary
-        if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: title) {
-            let pointConfiguration = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-            let colorConfiguration = NSImage.SymbolConfiguration(hierarchicalColor: color)
-            image.withSymbolConfiguration(pointConfiguration.applying(colorConfiguration))?
-                .draw(in: NSRect(x: 25, y: bounds.midY - 9, width: 18, height: 18))
-        }
-        let textSize = (title as NSString).size(withAttributes: [.font: font])
-        (title as NSString).draw(
-            in: NSRect(x: 54, y: bounds.midY - textSize.height / 2, width: max(0, bounds.width - 64), height: textSize.height),
-            withAttributes: [.font: font, .foregroundColor: color]
-        )
-    }
-
-    @objc private func invoke() { actionHandler() }
-
-    func update(title: String, symbolName: String, theme: FluentTheme, action: @escaping () -> Void) {
-        self.title = title
-        self.symbolName = symbolName
-        fluentTheme = theme
-        actionHandler = action
-        setAccessibilityTitle(title)
-        invalidateIntrinsicContentSize()
-        needsDisplay = true
     }
 }
 
@@ -376,13 +179,26 @@ private struct GalleryNavigationShell: FluentView {
             { Optional($0) },
             { $0 ?? selection.wrappedValue }
         )
-        let navigationRows = GalleryPage.allCases.map { item in
-            GalleryNavigationRowView(
-                page: item,
+        let navigationItems = GalleryPage.allCases.filter { $0 != .settings }.map { item in
+            FluentNavigationItem(
+                id: item,
                 title: item.title,
-                symbolName: item.symbolName,
-                isSelected: item == page
+                systemImageName: item.symbolName
             )
+        }
+        let footerItems = [
+            FluentNavigationItem(
+                id: GalleryPage.settings,
+                title: GalleryPage.settings.title,
+                systemImageName: GalleryPage.settings.symbolName
+            )
+        ]
+        let paneDisplayMode: FluentNavigationPaneDisplayMode = switch ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_NAV_MODE"] {
+        case "auto": .automatic
+        case "compact": .leftCompact
+        case "minimal": .leftMinimal
+        case "top": .top
+        default: .left
         }
         let insertionEdge: FluentTransitionEdge = isRTL ? .leading : .trailing
         let removalEdge: FluentTransitionEdge = isRTL ? .trailing : .leading
@@ -399,37 +215,23 @@ private struct GalleryNavigationShell: FluentView {
                 .fluentReduceMotion(reduceMotion)
         )
         return FluentAnyView(
-            FluentHStack(spacing: 0) {
-                FluentVStack(spacing: 0) {
-                    FluentVStack(spacing: 2) {
-                        FluentText("FluentKit", style: .title2)
-                        FluentText("Gallery", style: .caption)
-                    }
-                    .padding(NSEdgeInsets(top: 26, left: 24, bottom: 22, right: 18))
-                    FluentDivider()
-                    FluentVStack(spacing: 2) {
-                        FluentText("Explore", style: .caption)
-                            .padding(NSEdgeInsets(top: 18, left: 24, bottom: 5, right: 18))
-                        FluentList(
-                            rows: navigationRows,
-                            id: { $0.page },
-                            spacing: 2,
-                            rowHeight: 40,
-                            selectionID: navigationSelection
-                        )
-                        .frame(width: theme.designTokens.navigationPaneWidth, height: 342)
-                    }
-                    FluentSpacer()
-                    GalleryNavigationFooterView(
-                        title: "Settings",
-                        symbolName: "gearshape",
-                        action: { selection.wrappedValue = .motion }
-                    )
-                    .padding(NSEdgeInsets(top: 8, left: 0, bottom: 18, right: 0))
+            FluentNavigationView(
+                navigationItems,
+                footerItems: footerItems,
+                selection: navigationSelection,
+                paneDisplayMode: paneDisplayMode,
+                isPaneToggleButtonVisible: true,
+                openPaneLength: theme.designTokens.navigationPaneWidth,
+                compactPaneLength: 48,
+                rowHeight: 40,
+                paneSectionTitle: "Explore"
+            ) {
+                FluentVStack(spacing: 2) {
+                    FluentText("FluentKit", style: .title2)
+                    FluentText("Gallery", style: .caption)
                 }
-                .frame(width: theme.designTokens.navigationPaneWidth)
-                .background(theme.cardFill, cornerRadius: 0)
-                FluentDivider(orientation: .vertical)
+                .padding(NSEdgeInsets(top: 8, left: 24, bottom: 14, right: 18))
+            } header: {
                 FluentVStack(spacing: 0) {
                     FluentHStack(spacing: 12) {
                         FluentText(page.title, style: .title)
@@ -439,9 +241,10 @@ private struct GalleryNavigationShell: FluentView {
                     .padding(NSEdgeInsets(top: 24, left: 32, bottom: 22, right: 32))
                     .background(theme.cardFill, cornerRadius: 0)
                     FluentDivider()
-                    FluentScrollView(.vertical) {
-                        animatedContent.padding(NSEdgeInsets(top: 28, left: 32, bottom: 36, right: 32))
-                    }
+                }
+            } content: {
+                FluentScrollView(.vertical) {
+                    animatedContent.padding(NSEdgeInsets(top: 28, left: 32, bottom: 36, right: 32))
                 }
             }
             .background(theme.windowBackground.withAlphaComponent(theme.isDark ? 0.92 : 0.94), cornerRadius: 0)
@@ -523,6 +326,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
         case .motion: return motionPage(theme)
         case .application: return applicationPage(theme)
         case .accessibility: return accessibilityPage(theme)
+        case .settings: return motionPage(theme)
         }
     }
 
@@ -1421,7 +1225,15 @@ private final class GalleryBackdropView: NSView {
 
 final class GalleryWindowController: NSWindowController {
     static let rootHostIdentifier = NSUserInterfaceItemIdentifier("FluentGallery.RootHost")
-    static let contentSize = NSSize(width: 980, height: 680)
+    static var contentSize: NSSize {
+        guard ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_PATH"] != nil else {
+            return NSSize(width: 980, height: 680)
+        }
+        let environment = ProcessInfo.processInfo.environment
+        let width = CGFloat(Double(environment["FLUENTKIT_SNAPSHOT_WIDTH"] ?? "") ?? 980)
+        let height = CGFloat(Double(environment["FLUENTKIT_SNAPSHOT_HEIGHT"] ?? "") ?? 680)
+        return NSSize(width: max(width, 420), height: max(height, 420))
+    }
 
     convenience init() {
         let theme = Self.requestedTheme()
@@ -1442,7 +1254,9 @@ final class GalleryWindowController: NSWindowController {
         contentView.autoresizingMask = [.width, .height]
         window.contentView = contentView
         window.setContentSize(Self.contentSize)
-        window.contentMinSize = NSSize(width: 780, height: 540)
+        window.contentMinSize = ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_PATH"] == nil
+            ? NSSize(width: 780, height: 540)
+            : NSSize(width: 420, height: 420)
         window.center()
     }
 

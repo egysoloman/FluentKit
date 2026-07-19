@@ -254,9 +254,11 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
     private var needsInitialReload = false
     private var needsDataSourceSetup = true
     private let flowLayout = FluentListFlowLayout()
-    private let previousSelectionIndicatorLayer = CALayer()
-    private let selectionIndicatorLayer = CALayer()
-    private var lastIndicatorFrame: NSRect?
+    private let selectionIndicatorAnimator = FluentSelectionIndicatorAnimator(
+        currentLayerName: "FluentKit.List.SelectionIndicator",
+        previousLayerName: "FluentKit.List.PreviousSelectionIndicator",
+        axis: .vertical
+    )
     private var lastIndicatorIndex: Int?
     private var selectionGeometryObservers: [NSObjectProtocol] = []
     private var selectionGeometryUpdateScheduled = false
@@ -286,16 +288,9 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
         collectionView.allowsMultipleSelection = false
         collectionView.backgroundColors = [.clear]
         collectionView.wantsLayer = true
-        previousSelectionIndicatorLayer.name = "FluentKit.List.PreviousSelectionIndicator"
-        previousSelectionIndicatorLayer.cornerRadius = 2
-        previousSelectionIndicatorLayer.zPosition = 999
-        previousSelectionIndicatorLayer.opacity = 0
-        selectionIndicatorLayer.name = "FluentKit.List.SelectionIndicator"
-        selectionIndicatorLayer.cornerRadius = 2
-        selectionIndicatorLayer.zPosition = 1_000
-        selectionIndicatorLayer.opacity = 0
-        collectionView.layer?.addSublayer(previousSelectionIndicatorLayer)
-        collectionView.layer?.addSublayer(selectionIndicatorLayer)
+        if let collectionLayer = collectionView.layer {
+            selectionIndicatorAnimator.attach(to: collectionLayer)
+        }
         collectionView.register(FluentCollectionItem.self, forItemWithIdentifier: fluentListItemIdentifier)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         documentView = collectionView
@@ -680,19 +675,15 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
     }
 
     private func updateSelectionIndicator(animated: Bool) {
-        previousSelectionIndicatorLayer.backgroundColor = theme.accent.cgColor
-        selectionIndicatorLayer.backgroundColor = theme.accent.cgColor
         guard identitySelections == nil,
               let currentSelection,
               rows.indices.contains(currentSelection) else {
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-            previousSelectionIndicatorLayer.removeAnimation(forKey: "fluent.navigation.selection.outgoing")
-            selectionIndicatorLayer.removeAnimation(forKey: "fluent.navigation.selection")
-            previousSelectionIndicatorLayer.opacity = 0
-            selectionIndicatorLayer.opacity = 0
-            CATransaction.commit()
-            lastIndicatorFrame = nil
+            selectionIndicatorAnimator.update(
+                target: nil,
+                color: theme.accent,
+                animated: false,
+                reduceMotion: context.reduceMotion
+            )
             lastIndicatorIndex = nil
             return
         }
@@ -711,36 +702,12 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
             ? itemFrame.maxX - 5
             : itemFrame.minX + 2
         let target = NSRect(x: railX, y: itemFrame.midY - 8, width: 3, height: 16)
-        let previous = lastIndicatorFrame
-
-        if !animated,
-           selectionIndicatorLayer.animation(forKey: "fluent.navigation.selection") != nil,
-           lastIndicatorIndex == currentSelection {
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-            previousSelectionIndicatorLayer.frame = target
-            previousSelectionIndicatorLayer.opacity = 0
-            selectionIndicatorLayer.frame = target
-            selectionIndicatorLayer.opacity = 1
-            CATransaction.commit()
-            lastIndicatorFrame = target
-            return
-        }
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        previousSelectionIndicatorLayer.removeAnimation(forKey: "fluent.navigation.selection.outgoing")
-        selectionIndicatorLayer.removeAnimation(forKey: "fluent.navigation.selection")
-        previousSelectionIndicatorLayer.opacity = 0
-        selectionIndicatorLayer.frame = target
-        selectionIndicatorLayer.opacity = 1
-        CATransaction.commit()
-
-        if animated, !context.reduceMotion, let previous, previous != target {
-            animateSelectionIndicator(from: previous, to: target)
-        }
-
-        lastIndicatorFrame = target
+        selectionIndicatorAnimator.update(
+            target: target,
+            color: theme.accent,
+            animated: animated,
+            reduceMotion: context.reduceMotion
+        )
         lastIndicatorIndex = currentSelection
     }
 
@@ -755,97 +722,6 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
               layoutFrame.width > 0,
               layoutFrame.height > 0 else { return nil }
         return layoutFrame
-    }
-
-    private func animateSelectionIndicator(from source: NSRect, to destination: NSRect) {
-        let distance = abs(destination.midY - source.midY)
-        let connectedSize = NSSize(
-            width: destination.width,
-            height: destination.height + distance
-        )
-        let connectedCenter = NSPoint(
-            x: (source.midX + destination.midX) / 2,
-            y: (source.midY + destination.midY) / 2
-        )
-        let keyTimes = [NSNumber(value: 0), NSNumber(value: 1.0 / 3.0), NSNumber(value: 1)]
-        let timingFunctions = [
-            FluentMotion.navigationIndicatorExit.curve.timingFunction,
-            FluentMotion.navigationIndicator.curve.timingFunction
-        ]
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        previousSelectionIndicatorLayer.frame = destination
-        previousSelectionIndicatorLayer.opacity = 0
-        selectionIndicatorLayer.frame = destination
-        selectionIndicatorLayer.opacity = 1
-        CATransaction.commit()
-
-        let outgoing = selectionIndicatorAnimation(
-            source: source,
-            connectedCenter: connectedCenter,
-            connectedSize: connectedSize,
-            destination: destination,
-            fadesOut: true,
-            keyTimes: keyTimes,
-            timingFunctions: timingFunctions
-        )
-        let incoming = selectionIndicatorAnimation(
-            source: source,
-            connectedCenter: connectedCenter,
-            connectedSize: connectedSize,
-            destination: destination,
-            fadesOut: false,
-            keyTimes: keyTimes,
-            timingFunctions: timingFunctions
-        )
-        previousSelectionIndicatorLayer.add(outgoing, forKey: "fluent.navigation.selection.outgoing")
-        selectionIndicatorLayer.add(incoming, forKey: "fluent.navigation.selection")
-    }
-
-    private func selectionIndicatorAnimation(
-        source: NSRect,
-        connectedCenter: NSPoint,
-        connectedSize: NSSize,
-        destination: NSRect,
-        fadesOut: Bool,
-        keyTimes: [NSNumber],
-        timingFunctions: [CAMediaTimingFunction]
-    ) -> CAAnimationGroup {
-        let position = CAKeyframeAnimation(keyPath: "position")
-        position.values = [
-            NSValue(point: NSPoint(x: source.midX, y: source.midY)),
-            NSValue(point: connectedCenter),
-            NSValue(point: NSPoint(x: destination.midX, y: destination.midY))
-        ]
-        position.keyTimes = keyTimes
-        position.timingFunctions = timingFunctions
-
-        let scale = CAKeyframeAnimation(keyPath: "transform.scale.y")
-        scale.values = [1, connectedSize.height / destination.height, 1]
-        scale.keyTimes = keyTimes
-        scale.timingFunctions = timingFunctions
-
-        // Core Animation has no Composition CenterPoint equivalent that can switch without also
-        // moving the layer's model geometry. The position keyframes encode the same visible edge
-        // anchoring: source center -> connected-rect center -> destination center.
-        var animations: [CAAnimation] = [position, scale]
-        if fadesOut {
-            let opacity = CAKeyframeAnimation(keyPath: "opacity")
-            opacity.values = [1, 1, 0]
-            opacity.keyTimes = keyTimes
-            opacity.timingFunctions = [
-                CAMediaTimingFunction(name: .linear),
-                FluentMotion.navigationIndicator.curve.timingFunction
-            ]
-            animations.append(opacity)
-        }
-
-        let group = CAAnimationGroup()
-        group.animations = animations
-        group.duration = FluentMotion.navigationIndicator.duration
-        group.isRemovedOnCompletion = true
-        return group
     }
 
     /// Converts flow-layout document coordinates into the collection view's view-owned layer
