@@ -131,8 +131,8 @@ func firstSplitView(in view: NSView) -> NSSplitView? {
 
 func bitmapHasVisibleVariation(_ bitmap: NSBitmapImageRep) -> Bool {
     var sampledColors = Set<Int>()
-    let horizontalStep = max(bitmap.pixelsWide / 24, 1)
-    let verticalStep = max(bitmap.pixelsHigh / 16, 1)
+    let horizontalStep = max(bitmap.pixelsWide / 48, 1)
+    let verticalStep = max(bitmap.pixelsHigh / 36, 1)
     for y in stride(from: 0, to: bitmap.pixelsHigh, by: verticalStep) {
         for x in stride(from: 0, to: bitmap.pixelsWide, by: horizontalStep) {
             guard let color = bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB) else { continue }
@@ -2283,6 +2283,138 @@ require(
     navigationViewSelection.wrappedValue == nil,
     "NavigationView clears selection when its stable destination is removed"
 )
+
+let titleBarPaneOpen = FluentState(wrappedValue: true)
+var titleBarBackInvocations = 0
+var titleBarPaneInvocations = 0
+let compactTitleBar = FluentTitleBar(
+    title: "Workspace",
+    subtitle: "Compact",
+    heightMode: .compact,
+    isBackButtonVisible: true,
+    isBackButtonEnabled: true,
+    isPaneToggleButtonVisible: true,
+    isPaneOpen: titleBarPaneOpen.projectedValue,
+    onBack: { titleBarBackInvocations += 1 },
+    onPaneToggle: { titleBarPaneInvocations += 1 }
+)
+let compactTitleBarView = compactTitleBar._mount(in: FluentRenderContext())
+require(
+    abs(compactTitleBarView.intrinsicContentSize.height - 32) < 0.5,
+    "TitleBar compact mode exposes the 32pt chrome height"
+)
+let titleBarWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 680, height: 420),
+    styleMask: [.titled, .closable, .miniaturizable, .resizable],
+    backing: .buffered,
+    defer: false
+)
+titleBarWindow.title = "Original title"
+titleBarWindow.titlebarAppearsTransparent = false
+titleBarWindow.titleVisibility = .visible
+titleBarWindow.contentView = compactTitleBarView
+titleBarWindow.orderFront(nil)
+compactTitleBarView.layoutSubtreeIfNeeded()
+drainMainQueue()
+let titleBarBackButton = firstView(identifier: "FluentKit.TitleBar.Back", in: compactTitleBarView) as? NSButton
+let titleBarPaneButton = firstView(identifier: "FluentKit.TitleBar.PaneToggle", in: compactTitleBarView) as? NSButton
+let titleBarTitleLabel = firstView(identifier: "FluentKit.TitleBar.Title", in: compactTitleBarView) as? NSTextField
+require(
+    titleBarWindow.styleMask.contains(.fullSizeContentView)
+        && titleBarWindow.titleVisibility == .hidden
+        && titleBarWindow.titlebarAppearsTransparent
+        && titleBarWindow.standardWindowButton(.closeButton) != nil
+        && titleBarWindow.standardWindowButton(.miniaturizeButton) != nil
+        && titleBarWindow.standardWindowButton(.zoomButton) != nil,
+    "TitleBar paints custom full-size chrome while preserving native macOS window controls"
+)
+require(titleBarWindow.title == "Workspace", "TitleBar synchronizes the native window title")
+NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: titleBarWindow)
+require(
+    titleBarTitleLabel?.textColor?.isEqual(FluentTheme.current.textPrimary) == true,
+    "TitleBar uses active-window foreground semantics"
+)
+NotificationCenter.default.post(name: NSWindow.didResignKeyNotification, object: titleBarWindow)
+require(
+    titleBarTitleLabel?.textColor?.isEqual(FluentTheme.current.textSecondary) == true,
+    "TitleBar uses inactive-window foreground semantics"
+)
+titleBarBackButton?.performClick(nil)
+titleBarPaneButton?.performClick(nil)
+drainMainQueue()
+require(titleBarBackInvocations == 1, "TitleBar back button routes its declarative action")
+require(
+    !titleBarPaneOpen.wrappedValue
+        && titleBarPaneInvocations == 1
+        && titleBarPaneButton?.accessibilityValue() as? String == "Collapsed",
+    "TitleBar pane button updates its binding, callback, and accessibility value"
+)
+if let closeButton = titleBarWindow.standardWindowButton(.closeButton) {
+    let closeFrame = closeButton.convert(closeButton.bounds, to: compactTitleBarView)
+    require(
+        (titleBarBackButton?.frame.minX ?? 0) > closeFrame.maxX,
+        "left-to-right TitleBar content excludes the native traffic-light region"
+    )
+}
+let updatedCompactTitleBar = FluentTitleBar(
+    title: "Updated workspace",
+    heightMode: .compact,
+    isBackButtonVisible: true,
+    isPaneToggleButtonVisible: true,
+    isPaneOpen: titleBarPaneOpen.projectedValue,
+    onBack: { titleBarBackInvocations += 1 },
+    onPaneToggle: { titleBarPaneInvocations += 1 }
+)
+require(
+    updatedCompactTitleBar._update(compactTitleBarView, in: FluentRenderContext()),
+    "TitleBar reconciles compatible declarative updates in place"
+)
+require(
+    titleBarWindow.title == "Updated workspace",
+    "TitleBar keeps the native window title synchronized after declarative updates"
+)
+
+let expandedTitleBar = FluentTitleBar(
+    title: "FluentKit",
+    subtitle: "Gallery",
+    heightMode: .automatic,
+    isBackButtonVisible: true,
+    leftHeader: { FluentText("Left slot") },
+    content: { FluentText("Center slot") },
+    rightHeader: { FluentButtonView("Action") }
+)
+let expandedTitleBarView = expandedTitleBar._mount(
+    in: FluentRenderContext(layoutDirection: .rightToLeft)
+)
+expandedTitleBarView.frame = NSRect(x: 0, y: 0, width: 720, height: 48)
+expandedTitleBarView.layoutSubtreeIfNeeded()
+let expandedBackButton = firstView(identifier: "FluentKit.TitleBar.Back", in: expandedTitleBarView)
+let expandedRightHeader = firstView(identifier: "FluentKit.TitleBar.RightHeader", in: expandedTitleBarView)
+require(
+    abs(expandedTitleBarView.intrinsicContentSize.height - 48) < 0.5,
+    "TitleBar automatic mode expands to 48pt when declarative slots are present"
+)
+require(
+    firstView(identifier: "FluentKit.TitleBar.LeftHeader", in: expandedTitleBarView) != nil
+        && firstView(identifier: "FluentKit.TitleBar.Content", in: expandedTitleBarView) != nil
+        && expandedRightHeader != nil,
+    "TitleBar mounts left, centered, and right declarative content slots"
+)
+require(
+    (expandedBackButton?.frame.minX ?? 0) > (expandedRightHeader?.frame.maxX ?? 0),
+    "TitleBar mirrors leading controls and trailing content in right-to-left layout"
+)
+
+titleBarWindow.contentView = NSView(frame: titleBarWindow.contentLayoutRect)
+drainMainQueue()
+require(
+    !titleBarWindow.styleMask.contains(.fullSizeContentView)
+        && !titleBarWindow.titlebarAppearsTransparent
+        && titleBarWindow.titleVisibility == .visible
+        && titleBarWindow.title == "Original title",
+    "TitleBar restores the prior native window configuration when detached"
+)
+titleBarWindow.orderOut(nil)
 
 let navigation = FluentNavigationStack(
     path: navigationPath.projectedValue,

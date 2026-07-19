@@ -39,3 +39,13 @@ AppKit and Swift permit it.
 - Added responsive Minimal Light/Dark and Top Light/Dark/RTL Gallery bitmap baselines and executable
   coverage for adaptive thresholds, overlay geometry, Top overflow actions, disabled items, and
   primary-to-footer selection motion.
+- Added public `FluentTitleBar` with 32pt compact and 48pt expanded/automatic layouts, pane/back
+  controls, icon/title/subtitle, left/center/right slots, RTL and inactive-window states, native
+  dragging and double-click behavior, traffic-light exclusion, title synchronization, and reversible
+  AppKit chrome configuration.
+- Integrated `FluentTitleBar` above the Gallery `FluentNavigationView` through one shared pane
+  binding, removed the duplicate native-rendering label, and regenerated all 14 responsive
+  Light/Dark/RTL snapshot baselines.
+- Reconciled the visual audit against completed divider, indicator, page-transition, NavigationView,
+  and TitleBar work. Exact ToggleSwitch, Slider, CheckBox/RadioButton, SegmentedControl, ProgressBar,
+  MenuFlyout motion, and deferred Liquid Glass work remain open visual-acceptance items.

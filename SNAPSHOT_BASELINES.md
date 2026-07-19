@@ -31,6 +31,9 @@ Responsive shell captures additionally set `FLUENTKIT_GALLERY_NAV_MODE` and, for
 `FLUENTKIT_SNAPSHOT_WIDTH=560`. Top captures select the Accessibility destination so the checked-in
 image exercises a selection that lives inside the overflow flyout.
 
+Every shell baseline includes the custom `FluentTitleBar`. Minimal captures verify its shared pane
+toggle; Top captures verify the title bar suppresses that control when no pane action is applicable.
+
 The validation executable checks every listed file for its expected dimensions and non-empty pixel
 variation. Visual review remains required for intentional design changes; the check is a regression
 gate against missing, blank, or incorrectly sized captures rather than a substitute for design review.

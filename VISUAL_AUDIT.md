@@ -27,14 +27,30 @@ Completed in the first layout and motion hardening pass:
 - `FluentKitValidation` now verifies every documented bitmap baseline for existence, dimensions,
   and visible pixel variation.
 
+Completed in the NavigationView and TitleBar pass:
+
+- Public `FluentNavigationView` now supplies Auto, Left, LeftCompact, LeftMinimal overlay, and Top
+  modes, primary/footer destinations, bound pane state, explicit 350ms open and 120ms close motion,
+  keyboard/accessibility behavior, RTL, Reduce Motion, and custom Top overflow.
+- The reusable navigation indicator now uses the two-indicator choreography in both vertical and
+  horizontal orientations. Primary-to-footer changes exercise the cross-section path; Top overflow
+  selection routes the horizontal indicator through `More`.
+- Navigation item rendering owns normal, pointer-over, pressed, selected combinations, disabled,
+  and keyboard-focus states instead of relying on Gallery-specific rows.
+- Public `FluentTitleBar` now supplies 32pt compact and 48pt expanded/automatic layouts, pane and
+  back actions, icon/title/subtitle, left/center/right slots, RTL, inactive-window state, native
+  dragging and double-click behavior, and native traffic-light exclusion/restoration.
+- Gallery uses one shared pane binding between `FluentTitleBar` and `FluentNavigationView`, removes
+  the duplicate native-rendering label, and retains one shell-owned page title.
+- Fourteen Light/Dark/RTL/responsive bitmap baselines now include the integrated title bar.
+
 Still open by design:
 
-- The current implementation covers the vertical same-level list path. The final reusable
-  NavigationView still needs the source algorithm's cross-level and top-navigation paths, a real
-  CenterPoint/anchor abstraction, and coordinated selected/hover/pressed row states; P1-2 is
-  complete only for the shared-list path.
+- Exact control state machines and geometry remain open in the order documented in section 20:
+  ToggleSwitch, Slider, CheckBox/RadioButton, SegmentedControl, then ProgressBar.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
-  Popover, or overlay material behavior.
+  Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
+  remains the implementation contract for the later menu pass.
 - Full XCTest integration remains blocked until a complete Xcode toolchain provides `XCTest`.
 
 ## 1. Objective
@@ -56,11 +72,11 @@ The most visible failures have different owners:
 
 | Symptom | Owner | Primary cause |
 |---|---|---|
-| Gallery page changes have no visible transition | Gallery integration | Main page content is replaced without a stable transition host |
-| Navigation indicator appears near the top | FluentKit component | `NSCollectionView` layout coordinates are used directly by a CALayer without an explicit coordinate conversion |
+| Gallery page changes have no visible transition | Resolved | Stable keyed transition host, RTL direction, Reduce Motion, and rapid-update coalescing |
+| Navigation indicator appears near the top | Resolved | Explicit document-to-layer conversion plus layout/scroll/resize synchronization |
 | Menu content looks doubled or ghosted | FluentKit surface | Acrylic transparency allows underlying text to remain legible; panel shadow and inner border create a second outline |
 | Menu motion does not feel specific to a menu | FluentKit motion | Menu reuses TeachingTip motion tokens |
-| Navigation selection does not resemble WinUI | Gallery plus FluentList | The Gallery row lacks selected/hover/pressed surfaces and the component indicator is only an approximation |
+| Navigation selection does not resemble WinUI | Visual acceptance | Reusable row states and two-indicator motion exist; exact token/pixel comparison remains |
 | Controls have inconsistent motion | FluentKit motion architecture | WinUI tokens coexist with generic Core Animation defaults and component-local timing choices |
 
 The correct order is to stabilize coordinates and host lifecycles first, then replace the material layer, then reproduce component visuals and choreography. Adjusting colors before those structural issues are fixed will not produce reliable results.
@@ -110,11 +126,12 @@ Windows Composition and XAML runtime objects cannot be reused directly. Algorith
 - Several visual components mix AppKit view coordinates with CALayer coordinates.
 - Some components update animated geometry and then overwrite it in a nonanimated layout pass.
 - Material behavior is encoded inside individual presenters instead of a single surface system.
-- The Gallery contains one-off navigation drawing rather than demonstrating a reusable NavigationView component.
+- NavigationView and TitleBar structure is now reusable; remaining weaknesses are component-level
+  visual token fidelity rather than Gallery-owned shell drawing.
 
 ## 5. Critical Findings
 
-### P0-1: Navigation indicator coordinate failure
+### P0-1: Navigation indicator coordinate failure - resolved
 
 Owner: FluentKit `FluentList`  
 File: `Sources/FluentKit/FluentList.swift`, `updateSelectionIndicator`
@@ -140,7 +157,11 @@ Acceptance criteria:
 - Indicator center aligns with the selected row before, during, and after animation.
 - Alignment remains correct after scrolling, resizing, theme changes, and rapid selection changes.
 
-### P0-2: Gallery main navigation has no page transition
+Current status: complete with executable selected-row, scrolling, resize, stable-ID update, RTL, and
+Reduce Motion coverage. `FluentList` converts layout document frames into its layer coordinate space
+before calculating the rail frame.
+
+### P0-2: Gallery main navigation has no page transition - resolved
 
 Owner: FluentGallery  
 File: `Sources/FluentGallery/main.swift`, `GalleryNavigationShell`
@@ -166,6 +187,10 @@ Acceptance criteria:
 - Every primary navigation change has a visible, interruptible transition when motion is enabled.
 - No stale page remains mounted after completion.
 - Rapid navigation settles on the last requested page without flashing.
+
+Current status: complete. Gallery keys page content by `GalleryPage` inside a persistent transition
+host and uses a Fluent 250ms cubic-bezier token with RTL direction, Reduce Motion, generation-safe
+completion cleanup, and latest-update coalescing.
 
 ### P0-3: Transient surface system uses the rejected material
 
@@ -196,9 +221,12 @@ Acceptance criteria:
 
 ## 6. Navigation Audit
 
-### P1-1: Gallery navigation rows lack WinUI visual states
+### P1-1: Navigation row state ownership - implemented, visual acceptance open
 
-The Gallery-specific row renderer changes only icon/text color when selected. It does not draw selected, pointer-over, or pressed backgrounds.
+Gallery no longer owns a private row renderer. `FluentNavigationItemButton` now draws the reusable
+normal, pointer-over, pressed, selected, selected-pointer-over, selected-pressed, disabled, and
+keyboard-focus states. Exact WinUI resource colors and pixel comparison remain part of visual
+acceptance rather than a missing state-model capability.
 
 Required states:
 
@@ -213,7 +241,7 @@ Required states:
 
 The selected surface and accent indicator must be coordinated. They should not be implemented as unrelated visual updates.
 
-### P1-2: Indicator choreography is complete for the shared vertical list path
+### P1-2: Indicator choreography - complete for list and NavigationView paths
 
 The shared list renderer now maintains separate previous and next indicator layers. Its vertical
 same-level path uses a stable 3 x 16 rail, a 600ms `0`, `0.333`, `1` timeline, WinUI source curves,
@@ -222,19 +250,27 @@ The model frame remains stable while the effective position keyframes encode the
 WinUI CenterPoint transition; this avoids the AppKit frame jump that a raw anchor-point mutation would
 cause.
 
-The reusable NavigationView remains incomplete for top navigation and cross-level paths. It still
-needs a public anchor/CenterPoint abstraction and coordinated row visual states. Same-target
-repetition, target replacement, cancellation, RTL leading-rail placement, and Reduce Motion are
-covered by executable validation for the current list path.
+The reusable NavigationView uses the same two-indicator engine vertically for primary/footer
+destinations and horizontally for Top navigation. Hidden Top selections route through `More` without
+moving the model indicator to an invalid destination. Same-target repetition, target replacement,
+cancellation, RTL leading-rail placement, primary-to-footer changes, Top overflow, and Reduce Motion
+are covered by executable validation. The CenterPoint behavior is represented internally through
+stable model frames plus effective position/scale keyframes; a public anchor API is not required for
+the component acceptance contract.
 
-### P1-3: Gallery navigation is not a reusable NavigationView proof
+### P1-3: Gallery navigation is not a reusable NavigationView proof - resolved
 
-The shell combines `FluentList` with Gallery-specific native rows and a separate footer button. It does not demonstrate a coherent public NavigationView component.
+Original finding: the shell combined `FluentList` with Gallery-specific native rows and a separate
+footer button, so it did not demonstrate a coherent public NavigationView component.
 
 Required correction:
 
 - Move item layout, state rendering, selection indicator, footer/settings placement, pane sizing, and pane motion into a reusable navigation presenter.
 - Keep Gallery data and destination content outside the component.
+
+Current status: complete. Gallery supplies only destination metadata, selection, pane binding, and
+page content to public `FluentNavigationView`; the component owns item/footer layout, pane modes,
+selection surfaces, overflow, indicator geometry, pane motion, keyboard, and accessibility.
 
 ## 7. Menu and Popup Audit
 
@@ -368,7 +404,7 @@ Required implementation:
 - Interruption, cancellation, timeout, and cleanup.
 - Gravity peak at the WinUI source phase with separate in/out curves, Y/Z displacement, scale, and shadow behavior.
 
-### P1-11: Transition cleanup uses timers rather than animation completion
+### P1-11: Transition cleanup uses timers rather than animation completion - resolved
 
 The transition host removes old content using a timer based on expected duration. Timers can drift from actual presentation completion during run-loop pressure, Reduce Motion changes, cancellation, or nested animations.
 
@@ -381,7 +417,11 @@ Required correction:
 
 This area is a likely source of genuine stale-view ghosting once page transitions are enabled, even though the supplied menu screenshot is primarily material transparency.
 
-### P2-4: Gallery does not exercise motion as a system
+Current status: complete. `FluentTransitionHost` installs a Core Animation completion delegate,
+guards cleanup by transition generation, cancels superseded work, resets matched-geometry transforms
+and shadows, and retains a dispatch fallback only for non-presenting validation environments.
+
+### P2-4: Gallery motion-system coverage - partially resolved
 
 The Motion page contains local examples, but primary workflows do not demonstrate page navigation, popup placement, menu hierarchy, selection movement, dialog presentation, and connected transitions together.
 
@@ -389,6 +429,10 @@ Required correction:
 
 - Add representative motion to normal Gallery workflows.
 - Keep a dedicated diagnostics page for replay, slow motion, reduced motion, and interruption testing.
+
+Current status: navigation selection, page replacement, adaptive pane motion, Top overflow, menus,
+and TeachingTip are reachable through normal Gallery workflows. Deterministic replay/slow-motion
+diagnostics and connected-animation workflow coverage remain open.
 
 ## 10. Liquid Glass Surface Requirements
 
@@ -423,13 +467,13 @@ The Gallery must become a verification application rather than a loose component
 
 Required changes:
 
-1. Use the reusable navigation component instead of Gallery-specific navigation drawing.
-2. Add a stable page transition host keyed by page identity.
+1. **Complete:** use the reusable navigation component instead of Gallery-specific navigation drawing.
+2. **Complete:** add a stable page transition host keyed by page identity.
 3. Demonstrate every visual state for every core control.
 4. Provide light, dark, increased-contrast, and Reduce Motion modes.
 5. Include popup/menu placement near every screen edge.
 6. Include rapid interaction and interruption scenarios.
-7. Remove explanatory labels such as "Native macOS rendering" when they distract from the target visual comparison.
+7. **Complete:** remove explanatory labels such as "Native macOS rendering" when they distract from the target visual comparison.
 8. Keep component examples aligned to a consistent grid and width system.
 9. Add WinUI reference captures beside automated Gallery captures outside the shipping UI.
 
@@ -437,10 +481,10 @@ Required changes:
 
 ### Phase 1: Rendering correctness
 
-1. Fix list/indicator coordinate conversion.
-2. Establish stable page and popup hosts.
-3. Replace timer-only cleanup with completion-driven cleanup.
-4. Add interruption and cancellation handling.
+1. **Complete:** fix list/indicator coordinate conversion.
+2. **Complete for page/navigation; popup placement remains:** establish stable page and popup hosts.
+3. **Complete for page/navigation:** replace timer-only cleanup with completion-driven cleanup.
+4. **Complete for page/navigation:** add interruption and cancellation handling.
 
 ### Phase 2: Surface architecture
 
@@ -450,9 +494,9 @@ Required changes:
 
 ### Phase 3: Navigation fidelity
 
-8. Implement reusable NavigationView visual states.
-9. Rewrite the selection indicator using the WinUI two-indicator algorithm.
-10. Add pane open/close and page transition choreography.
+8. **Complete:** implement reusable NavigationView visual states.
+9. **Complete:** rewrite the selection indicator using the WinUI two-indicator algorithm.
+10. **Complete:** add pane open/close and page transition choreography.
 
 ### Phase 4: Core control fidelity
 
@@ -496,7 +540,11 @@ The Gallery should be considered visually complete only when:
 
 ## 15. Final Assessment
 
-FluentKit already has enough infrastructure to support the target, but the current Gallery is not yet a trustworthy demonstration of visual fidelity. The immediate blockers are coordinate correctness, stable transition hosting, and the obsolete Acrylic surface path. After those are resolved, navigation choreography and core control chrome are the highest-value fidelity work.
+FluentKit now has stable shell coordinates, transition hosting, reusable navigation choreography, and
+custom title-bar integration. The Gallery is a reliable proof of those structural paths, but it is
+not yet a complete proof of WinUI control fidelity. The immediate non-material blockers are the
+ToggleSwitch, Slider, CheckBox/RadioButton, SegmentedControl, and ProgressBar state/geometry defects
+in section 20. The obsolete Acrylic surface path remains an explicit later phase.
 
 The target architecture should remain AppKit-native in behavior while becoming WinUI-source-driven in visible state and motion, with Liquid Glass as the macOS material adaptation for transient surfaces.
 
@@ -504,7 +552,7 @@ The target architecture should remain AppKit-native in behavior while becoming W
 
 The screenshot review identifies four additional issues and clarifies ownership. These are not one common Gallery bug.
 
-### P0-4: Divider orientation is missing
+### P0-4: Divider orientation is missing - resolved
 
 Owner: FluentKit layout component  
 File: `Sources/FluentKit/FluentContainers.swift`, `FluentDivider`
@@ -518,7 +566,9 @@ Required correction:
 - Vertical divider: fixed width, flexible height.
 - Do not rely on an unconstrained `NSStackView` arranged subview to infer orientation.
 
-### P1-12: Gallery duplicates the page title
+Current status: complete through explicit horizontal/vertical APIs and Gallery/validation coverage.
+
+### P1-12: Gallery duplicates the page title - resolved
 
 Owner: Gallery composition  
 Files: `Sources/FluentGallery/main.swift`, `GalleryNavigationShell` and `collectionsPage`
@@ -531,7 +581,9 @@ Required correction:
 - Prefer a NavigationView/Header contract: the shell owns the page title and page content owns only its local section headings.
 - Do not remove titles by visual hiding; define the hierarchy explicitly so accessibility exposes one page title.
 
-### P1-13: Collection content is constrained below its required extent
+Current status: complete. The shell owns the page title and page bodies own only section headings.
+
+### P1-13: Collection content is constrained below its required extent - resolved for Gallery
 
 Owner: Gallery sizing, with a component clipping contract to verify  
 File: `Sources/FluentGallery/main.swift`, `collectionsPage`
@@ -545,13 +597,21 @@ Required correction:
 - If it is an intrinsic preview, derive height from layout content and place the caption after the measured result.
 - Add a test for section headers and the last row at the lower edge.
 
-### P1-14: NavigationView and TitleBar capabilities are missing, not merely unused
+Current status: Gallery uses a 360pt collection viewport that exposes both audited sections without
+overlapping the following caption. A general intrinsic collection-sizing API remains separate work.
+
+### P1-14: NavigationView and TitleBar capabilities - resolved
 
 Owner: FluentKit capability plus Gallery integration
 
-WinUI 3 NavigationView exposes `Auto`, `Left`, `Top`, `LeftCompact`, and `LeftMinimal` pane modes, together with `IsPaneOpen`, `IsPaneToggleButtonVisible`, `OpenPaneLength`, `CompactPaneLength`, and responsive thresholds. The current Gallery uses a fixed-width `FluentVStack` and `FluentList`; the existing `FluentNavigationSplitView` only supports showing or hiding a sidebar and is not a NavigationView pane-mode implementation.
+Original finding: WinUI 3 NavigationView exposes `Auto`, `Left`, `Top`, `LeftCompact`, and
+`LeftMinimal` pane modes, together with bound pane state, toggle visibility, pane lengths, and
+responsive thresholds. Gallery originally used a fixed-width stack/list and only exposed the
+separate two-column `FluentNavigationSplitView` capability.
 
-WinUI 3 TitleBar also supports a compact/expanded height model, pane toggle, back button, icon, title, subtitle, left header, centered content, and right header. The Gallery currently creates a conventional AppKit title bar with `titlebarAppearsTransparent = false`; FluentKit does not yet expose a reusable Fluent TitleBar with these states.
+Original finding: WinUI 3 TitleBar also supports a compact/expanded height model, pane toggle, back
+button, icon, title, subtitle, left header, centered content, and right header. Gallery originally
+used an independent AppKit title bar and FluentKit did not expose that reusable capability.
 
 Required correction:
 
@@ -560,25 +620,28 @@ Required correction:
 - Keep AppKit traffic lights, window controls, keyboard behavior, and accessibility semantics native underneath the visual layer.
 - Refactor Gallery to consume those components instead of manually composing a fixed sidebar and independent title header.
 
+Current status: complete. `FluentNavigationView` implements all listed pane modes and bindings.
+`FluentTitleBar` implements compact/expanded geometry, pane/back controls, icon/title/subtitle,
+left/center/right slots, drag-region behavior, RTL/inactive states, native title synchronization,
+and reversible full-size chrome integration. Gallery composes the two components around one pane
+binding and disables the NavigationView's internal toggle.
+
 ### Ownership summary
 
 ```text
 FluentKit component defects:
-  divider orientation
-  list indicator coordinate conversion
-  collection clipping contract
-  missing NavigationView/TitleBar capability
+  collection intrinsic-size contract
+  exact core-control state geometry and motion
   Liquid Glass surface and motion ownership
 
 Gallery composition defects:
-  duplicate page title
-  fixed sidebar instead of pane modes
-  fixed collection height without a viewport policy
-  native standalone title bar
-  missing page transition integration
+  deterministic motion diagnostics remain incomplete
+  edge-placement popup scenarios remain incomplete
 ```
 
-The remediation order is therefore component geometry first, shared NavigationView/TitleBar and Liquid Glass capabilities second, and Gallery composition migration third.
+The next non-material remediation order is ToggleSwitch, Slider, CheckBox/RadioButton,
+SegmentedControl, and ProgressBar. Menu motion/placement follows the verified section 17 contract;
+Liquid Glass remains explicitly deferred until layout, state, and motion are stable.
 
 ## 17. Menu Inventory and Gaps
 
@@ -665,27 +728,27 @@ Required correction:
 
 ### Rendering and layout
 
-1. `FluentDivider` has no orientation and expands incorrectly in horizontal stacks.
-2. `FluentList` mixes collection layout coordinates with CALayer coordinates.
+1. **Resolved:** `FluentDivider` has explicit horizontal and vertical contracts.
+2. **Resolved:** `FluentList` converts collection layout coordinates before positioning CALayers.
 3. `FluentCollection` examples and Gallery pages use fixed heights without a clear viewport/intrinsic sizing contract.
 4. Some animated layer geometry can be overwritten by subsequent nonanimated layout passes.
 5. Transient surfaces can have multiple independent border/shadow owners.
 
 ### Gallery composition
 
-6. Gallery page content is replaced without a persistent page transition host.
-7. Shell title and page-local heading are both rendered.
-8. The sidebar is a fixed-width VStack/List rather than a NavigationView pane-mode implementation.
-9. The window uses an independent native title bar rather than a reusable Fluent TitleBar.
-10. The Gallery does not exercise menu placement, pane modes, or page transitions as normal workflows.
+6. **Resolved:** Gallery page content uses a persistent keyed transition host.
+7. **Resolved:** the shell is the single page-title owner.
+8. **Resolved:** Gallery uses public `FluentNavigationView` pane modes.
+9. **Resolved:** Gallery uses public `FluentTitleBar` above the navigation shell.
+10. **Partially resolved:** pane modes and page transitions are normal workflows; comprehensive menu
+    edge placement remains open.
 
 ### Navigation and window chrome
 
-11. There is no reusable `FluentNavigationView` with Expanded, Compact, Minimal/Overlay, and Top modes.
-12. There is no reusable `FluentTitleBar` with compact/expanded height, pane toggle, back button, icon, subtitle, left header, center content, and right header.
-13. Navigation selection states lack a complete selected/hover/pressed/focus state model.
-14. Navigation indicator choreography is implemented for the shared vertical same-level list path;
-    reusable NavigationView top/cross-level paths and coordinated row states remain open.
+11. **Resolved:** public `FluentNavigationView` covers Expanded, Compact, Minimal/Overlay, Auto, and Top.
+12. **Resolved:** public `FluentTitleBar` covers compact/expanded height and all audited content slots.
+13. **Implemented, awaiting pixel acceptance:** navigation rows own selected/hover/pressed/focus/disabled states.
+14. **Resolved:** reusable NavigationView covers vertical primary/footer and horizontal Top indicator paths.
 
 ### Menus and transient surfaces
 
@@ -700,8 +763,9 @@ Required correction:
 
 21. Generic `easeInEaseOut` defaults coexist with WinUI-derived motion tokens.
 22. Connected and Gravity animation lifecycles are incomplete.
-23. Timer-based transition cleanup is weaker than completion-driven cleanup.
-24. The Gallery lacks deterministic screenshot and normalized-keyframe verification for core workflows.
+23. **Resolved for transitions/navigation:** completion-driven cleanup has a deterministic fallback.
+24. **Partially resolved:** 14 deterministic responsive screenshots and normalized navigation
+    keyframe checks exist; per-core-control keyframe captures remain open.
 
 ## 19. Implementation Plan
 
@@ -716,8 +780,8 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 ### Phase 1: Fix shared geometry
 
-5. Make `FluentDivider` orientation explicit.
-6. Correct `FluentList` indicator coordinate conversion and relayout behavior.
+5. **Complete:** make `FluentDivider` orientation explicit.
+6. **Complete:** correct `FluentList` indicator coordinate conversion and relayout behavior.
 7. Establish collection viewport versus intrinsic-size behavior.
 8. Make animated geometry resilient to layout passes and resizing.
 
@@ -725,17 +789,17 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 9. Implement `FluentLiquidGlassSurface`.
 10. Migrate MenuFlyout, ContextMenu, TeachingTip, Popover, dialogs, and transient overlays from Acrylic to Liquid Glass.
-11. Implement `FluentTitleBar` with compact/expanded modes and AppKit drag-region integration.
-12. Verify title-bar content does not conflict with native traffic lights or window controls.
+11. **Complete:** implement `FluentTitleBar` with compact/expanded modes and AppKit drag-region integration.
+12. **Complete:** verify title-bar content does not conflict with native traffic lights or window controls.
 
 ### Phase 3: Implement NavigationView
 
-13. Implement Expanded/Left mode.
-14. Implement LeftCompact mode with icon-only pane.
-15. Implement LeftMinimal/overlay mode and pane toggle.
-16. Implement Auto thresholds and optional Top mode.
-17. Implement selected/hover/pressed/focus states and the WinUI indicator algorithm.
-18. Add pane open/close and selection motion with interruption handling.
+13. **Complete:** implement Expanded/Left mode.
+14. **Complete:** implement LeftCompact mode with icon-only pane.
+15. **Complete:** implement LeftMinimal/overlay mode and pane toggle.
+16. **Complete:** implement Auto thresholds and Top mode.
+17. **Complete structurally, pixel acceptance open:** implement row states and the WinUI indicator algorithm.
+18. **Complete:** add pane open/close and selection motion with interruption handling.
 
 ### Phase 4: Implement menu family
 
@@ -756,9 +820,9 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 ### Phase 6: Rebuild Gallery as the verification surface
 
-30. Replace the fixed Gallery shell with `FluentNavigationView` and `FluentTitleBar`.
-31. Remove duplicate page titles and fixed-size layout patches.
-32. Add visible page transitions and normal-workflow menu/pane demonstrations.
+30. **Complete:** replace the fixed Gallery shell with `FluentNavigationView` and `FluentTitleBar`.
+31. **Complete for audited title/collection defects:** remove duplicate page titles and clipping patches.
+32. **Complete for page/pane, menu edge cases open:** add visible transitions and normal-workflow demonstrations.
 33. Add Liquid Glass, theme, contrast, and Reduce Motion diagnostics.
 34. Add screenshots and animation keyframe captures for every primary component.
 

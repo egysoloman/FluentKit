@@ -169,6 +169,7 @@ private enum GalleryPage: String, CaseIterable, Hashable {
 private struct GalleryNavigationShell: FluentView {
     let page: GalleryPage
     let selection: FluentBinding<GalleryPage>
+    let isPaneOpen: FluentBinding<Bool>
     let content: FluentAnyView
     let theme: FluentTheme
     let reduceMotion: Bool
@@ -215,39 +216,44 @@ private struct GalleryNavigationShell: FluentView {
                 .fluentReduceMotion(reduceMotion)
         )
         return FluentAnyView(
-            FluentNavigationView(
-                navigationItems,
-                footerItems: footerItems,
-                selection: navigationSelection,
-                paneDisplayMode: paneDisplayMode,
-                isPaneToggleButtonVisible: true,
-                openPaneLength: theme.designTokens.navigationPaneWidth,
-                compactPaneLength: 48,
-                rowHeight: 40,
-                paneSectionTitle: "Explore"
-            ) {
-                FluentVStack(spacing: 2) {
-                    FluentText("FluentKit", style: .title2)
-                    FluentText("Gallery", style: .caption)
-                }
-                .padding(NSEdgeInsets(top: 8, left: 24, bottom: 14, right: 18))
-            } header: {
-                FluentVStack(spacing: 0) {
-                    FluentHStack(spacing: 12) {
-                        FluentText(page.title, style: .title)
-                        FluentSpacer()
-                        FluentText("Native macOS rendering", style: .caption)
+            FluentVStack(spacing: 0, alignment: .width) {
+                FluentTitleBar(
+                    title: "FluentKit Gallery",
+                    systemImageName: "square.grid.2x2.fill",
+                    heightMode: .expanded,
+                    isPaneToggleButtonVisible: paneDisplayMode != .top,
+                    isPaneOpen: isPaneOpen
+                )
+                FluentNavigationView(
+                    navigationItems,
+                    footerItems: footerItems,
+                    selection: navigationSelection,
+                    isPaneOpen: isPaneOpen,
+                    paneDisplayMode: paneDisplayMode,
+                    isPaneToggleButtonVisible: false,
+                    openPaneLength: theme.designTokens.navigationPaneWidth,
+                    compactPaneLength: 48,
+                    rowHeight: 40,
+                    paneSectionTitle: "Explore"
+                ) {
+                    FluentEmptyView()
+                } header: {
+                    FluentVStack(spacing: 0) {
+                        FluentHStack(spacing: 12) {
+                            FluentText(page.title, style: .title)
+                            FluentSpacer()
+                        }
+                        .padding(NSEdgeInsets(top: 24, left: 32, bottom: 22, right: 32))
+                        .background(theme.cardFill, cornerRadius: 0)
+                        FluentDivider()
                     }
-                    .padding(NSEdgeInsets(top: 24, left: 32, bottom: 22, right: 32))
-                    .background(theme.cardFill, cornerRadius: 0)
-                    FluentDivider()
+                } content: {
+                    FluentScrollView(.vertical) {
+                        animatedContent.padding(NSEdgeInsets(top: 28, left: 32, bottom: 36, right: 32))
+                    }
                 }
-            } content: {
-                FluentScrollView(.vertical) {
-                    animatedContent.padding(NSEdgeInsets(top: 28, left: 32, bottom: 36, right: 32))
-                }
+                .background(theme.windowBackground.withAlphaComponent(theme.isDark ? 0.92 : 0.94), cornerRadius: 0)
             }
-            .background(theme.windowBackground.withAlphaComponent(theme.isDark ? 0.92 : 0.94), cornerRadius: 0)
         )
     }
 }
@@ -255,6 +261,7 @@ private struct GalleryNavigationShell: FluentView {
 private struct WinUIStyleGalleryScreen: FluentView {
     private let applicationTheme: FluentThemeStore
     @FluentState private var page: GalleryPage = .overview
+    @FluentState private var isNavigationPaneOpen = true
     @FluentState private var notifications = true
     @FluentState private var slider = 0.62
     @FluentState private var search = ""
@@ -306,6 +313,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
             GalleryNavigationShell(
                 page: page,
                 selection: $page,
+                isPaneOpen: $isNavigationPaneOpen,
                 content: content,
                 theme: theme,
                 reduceMotion: reduceMotion,

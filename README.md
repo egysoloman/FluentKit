@@ -204,10 +204,10 @@ struct EditorApp: FluentApp, FluentApplicationCommands {
 
 ## Roadmap
 
-The framework is built in layers. Milestones 1-13, 16, and 18-20 are complete. Milestones 14-15
-continue to expand text and presentation depth. Milestone 17 is in visual acceptance after closing
-its theme/style implementation scope, and Milestone 21 has begun with native application event and
-scene services:
+The framework is built in layers. Milestones 1-13, 16, 18, 20, and 21 are complete. Milestones 14-15
+continue to expand text and presentation depth. Milestones 17 and 19 remain in visual acceptance:
+their behavior foundations exist, while exact core-control and transient-surface fidelity is still
+being audited and implemented.
 
 1. Declarative tree, AppKit host, reconciliation, state, bindings, and environment values.
 2. Fluent materials, theme tokens, layout containers, native controls, lists, menus, overlays, drag/drop, lifecycle, focus, and accessibility.
@@ -518,6 +518,32 @@ Pane opening uses separate 350ms/120ms open and close curves. Destination change
 two-indicator 600ms choreography in either vertical or horizontal orientation, with rapid-target and
 Reduce Motion handling. Arrow keys, Home/End, disabled destinations, accessibility selection, RTL
 ordering, overlay dismissal, and Top overflow all use the same stable selection model.
+
+`FluentTitleBar` provides reusable custom window chrome without replacing macOS traffic lights or
+the native main menu. Compact and expanded modes use 32pt and 48pt geometry; the title bar can own a
+shared pane binding, back action, icon, title/subtitle, and left/center/right declarative slots. It
+synchronizes the native window title, preserves drag and double-click behavior, mirrors content in
+RTL, and restores the prior AppKit chrome configuration when detached.
+
+```swift
+FluentVStack(spacing: 0, alignment: .width) {
+    FluentTitleBar(
+        title: "Workspace",
+        heightMode: .expanded,
+        isPaneToggleButtonVisible: true,
+        isPaneOpen: $isPaneOpen
+    )
+    FluentNavigationView(
+        destinations,
+        selection: $selection,
+        isPaneOpen: $isPaneOpen,
+        paneDisplayMode: .automatic,
+        isPaneToggleButtonVisible: false
+    ) {
+        PageContent(selection)
+    }
+}
+```
 
 For route-specific metadata, return a `FluentNavigationDestination` so the title and content are resolved together. Route changes can use `.none`, `.crossFade`, or `.slide` transitions:
 
