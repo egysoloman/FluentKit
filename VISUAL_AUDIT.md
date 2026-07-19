@@ -105,7 +105,8 @@ Completed in the SegmentedControl pass:
 
 Still open by design:
 
-- The remaining core-control state and geometry item in section 20 is ProgressBar.
+- Long-tail control acceptance remains open for TextBox, SearchBox, ComboBox, DatePicker, NumberBox,
+  collection controls, and transient presenters.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
   Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
   remains the implementation contract for the later menu pass.
@@ -605,9 +606,10 @@ The Gallery should be considered visually complete only when:
 
 FluentKit now has stable shell coordinates, transition hosting, reusable navigation choreography, and
 custom title-bar integration. The Gallery is a reliable proof of those structural paths, but it is
-not yet a complete proof of WinUI control fidelity. ToggleSwitch, Slider, CheckBox, and RadioButton
-now pass their source-derived geometry, interaction, motion, RTL, accessibility, and Reduce Motion
-contracts. The immediate non-material blocker is ProgressBar in section 20.
+not yet a complete proof of WinUI control fidelity. ToggleSwitch, Slider, CheckBox, RadioButton,
+SegmentedControl, and ProgressBar now pass their source-derived geometry, interaction, motion, RTL,
+accessibility, and Reduce Motion contracts. The immediate non-material work is the long-tail control
+set and transient placement/motion acceptance.
 The obsolete Acrylic surface path remains an explicit later phase.
 
 The target architecture should remain AppKit-native in behavior while becoming WinUI-source-driven in visible state and motion, with Liquid Glass as the macOS material adaptation for transient surfaces.
@@ -703,9 +705,8 @@ Gallery composition defects:
   edge-placement popup scenarios remain incomplete
 ```
 
-The next non-material remediation item is ProgressBar. Menu
-motion/placement follows the verified section 17 contract; Liquid Glass remains explicitly deferred
-until layout, state, and motion are stable.
+The next non-material remediation item is the long-tail control set and MenuFlyout placement/motion.
+Liquid Glass remains explicitly deferred until layout, state, and motion are stable.
 
 ## 17. Menu Inventory and Gaps
 
@@ -878,7 +879,7 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 25. **Complete:** Button and ToggleSwitch foundations; ToggleSwitch includes source-derived
     interaction, geometry, RTL, accessibility, and Reduce Motion verification.
-26. **Complete:** Slider, CheckBox, RadioButton, and SegmentedControl; remaining: ProgressBar.
+26. **Complete:** Slider, CheckBox, RadioButton, SegmentedControl, and ProgressBar.
 27. TextBox, SearchBox, ComboBox, DatePicker, and NumberBox/Stepper.
 28. ListView, GridView/CollectionView, Table, and Outline.
 29. Dialogs, TeachingTip, Popover, Disclosure, and remaining long-tail controls.
@@ -1023,12 +1024,19 @@ Normal/PointerOver/Pressed/Disabled with 250ms/167ms source motion. Both control
 motion across same-bounds declarative updates and cover release-outside, Escape/external-binding
 cancellation, RTL, keyboard, accessibility, disabled, Reduce Motion, and Gallery Light/Dark states.
 
-### ProgressBar clarification
+### ProgressBar - resolved
 
 Owner: FluentKit component  
 File: `Sources/FluentKit/FluentProgressBar.swift`
 
-The lower horizontal control is a determinate ProgressBar and should not receive a Slider thumb. Its current `NSAnimationContext` only marks an immediate-mode `draw()` view as needing display; `progressValue` itself is not animatable, so the fill is likely to jump rather than interpolate. This is a separate ProgressBar animation defect and must not be solved by adding the Slider circle to it.
+The lower horizontal control is a determinate ProgressBar and should not receive a Slider thumb.
+ProgressBar now owns a stable CALayer tree (`Track`, `Determinate`, `Indeterminate.Primary`, and
+`Indeterminate.Secondary`) instead of an immediate-mode `draw()` path. Determinate values animate
+the presentation width over 250ms with the control-normal curve; indeterminate mode uses a 2-second
+two-layer keyframe loop, while paused/error states stop the loop and settle the visible indicator.
+The visual state transition is coordinated by `FluentVisualStateCoordinator`, with RTL fill direction,
+Reduce Motion snapping, high-contrast geometry, and accessibility value/help coverage in the
+validation executable.
 
 ### Additional problem-list entries
 
@@ -1040,4 +1048,6 @@ The lower horizontal control is a determinate ProgressBar and should not receive
     animations from same-bounds layout.
 28. **Resolved:** CheckBox and RadioButton have independent pressed state, release-inside commit,
     stable glyph layers, and source-derived selected-glyph motion.
-29. ProgressBar marks immediate drawing dirty inside an animation context without an interpolated presentation property.
+29. **Resolved:** ProgressBar uses a stable visual layer tree, presentation-sampled determinate
+    width motion, a coordinated indeterminate loop, paused/error states, RTL, Reduce Motion, and
+    accessibility coverage.

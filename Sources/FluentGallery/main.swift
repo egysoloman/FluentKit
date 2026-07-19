@@ -275,6 +275,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var radio = false
     @FluentState private var selectedRadio = true
     @FluentState private var selectedSegment = 0
+    @FluentState private var progressMode = 0
     @FluentState private var selectedCollectionItems = Set([2])
     @FluentState private var navigationSelection: String? = "Library"
     @FluentState private var sidebarVisible = true
@@ -388,7 +389,13 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func controlsPage(_ theme: FluentTheme) -> FluentAnyView {
-        FluentAnyView(
+        let progressState: FluentProgressState = switch progressMode {
+        case 1: .paused
+        case 2: .error
+        default: .normal
+        }
+        let progressIsIndeterminate = progressMode == 3
+        return FluentAnyView(
             FluentVStack(spacing: 20) {
                 pageIntroduction("The baseline Fluent states use the same geometry and semantic colors.", theme: theme)
                 FluentVStack(spacing: 12) {
@@ -399,6 +406,24 @@ private struct WinUIStyleGalleryScreen: FluentView {
                         FluentButtonView("Outline").buttonStyle(FluentOutlineButtonStyle())
                         FluentButtonView("Subtle").buttonStyle(FluentBorderlessButtonStyle())
                     }
+                }
+                FluentVStack(spacing: 10) {
+                    FluentText("Progress", style: .headline)
+                    FluentSegmentedControl(
+                        ["Normal", "Paused", "Error", "Indeterminate"],
+                        selection: $progressMode
+                    )
+                    FluentProgressBar(
+                        value: slider,
+                        isIndeterminate: progressIsIndeterminate,
+                        state: progressState
+                    )
+                        .frame(width: 360)
+                    FluentText(
+                        progressIsIndeterminate ? "Indeterminate" : "\(Int(slider * 100))% complete",
+                        style: .caption,
+                        color: theme.textSecondary
+                    )
                 }
                 FluentVStack(spacing: 12) {
                     FluentText("Selection and range", style: .headline)
@@ -453,12 +478,6 @@ private struct WinUIStyleGalleryScreen: FluentView {
                             .disabled()
                         }
                     }
-                }
-                FluentVStack(spacing: 10) {
-                    FluentText("Progress", style: .headline)
-                    FluentProgressBar(value: slider)
-                        .frame(width: 360)
-                    FluentText("62% complete", style: .caption, color: theme.textSecondary)
                 }
             }
         )

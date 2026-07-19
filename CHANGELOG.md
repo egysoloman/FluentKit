@@ -78,3 +78,10 @@ AppKit and Swift permit it.
 - Replaced the unsourced selection scale/opacity choreography with direct model geometry and a
   presentation-sampled 167ms `(0,0,0,1)` position transition derived from the SelectorBar selection
   resource; expanded Gallery states and executable motion/identity coverage.
+- Added the shared `FluentVisualState`, `FluentVisualStateTransition`, and
+  `FluentVisualStateCoordinator` contract for named control states, motion tokens, and Reduce Motion.
+- Rebuilt ProgressBar from immediate drawing into a stable CALayer visual tree with 1pt/3pt
+  determinate geometry, presentation-sampled 250ms value motion, RTL fill direction, paused/error
+  settle states, and a two-layer indeterminate loop. Gallery now exposes Normal, Paused, Error, and
+  Indeterminate modes; validation covers layer identity, state transitions, accessibility, RTL, and
+  Reduce Motion. Regenerated Controls Light/Dark baselines.

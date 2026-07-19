@@ -928,6 +928,100 @@ require(abs((nativeStyledProgress?.value ?? 0) - 0.8) < 0.0001, "styled progress
 let progressAccessibilityValue = (nativeStyledProgress?.accessibilityValue() as? NSNumber)?.doubleValue ?? -1
 require(abs(progressAccessibilityValue - 0.8) < 0.0001, "progress updates expose the current accessibility value")
 
+let progressHost = FluentViewHost(
+    FluentProgressBar(value: 0.25),
+    context: FluentRenderContext(reduceMotion: false)
+)
+let progressWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 240, height: 32),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+progressWindow.contentView = progressHost
+progressHost.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
+progressWindow.orderFront(nil)
+progressHost.layoutSubtreeIfNeeded()
+guard let progress = firstProgressBar(in: progressHost),
+      let progressTrack = firstLayer(named: "FluentKit.ProgressBar.Track", in: progressHost),
+      let progressDeterminate = firstLayer(named: "FluentKit.ProgressBar.Determinate", in: progressHost),
+      let progressPrimary = firstLayer(named: "FluentKit.ProgressBar.Indeterminate.Primary", in: progressHost),
+      let progressSecondary = firstLayer(named: "FluentKit.ProgressBar.Indeterminate.Secondary", in: progressHost) else {
+    fatalError("ProgressBar validation hierarchy did not mount")
+}
+require(
+    progressTrack.frame.height == 1
+        && progressDeterminate.frame.height == 3
+        && abs(progressDeterminate.bounds.width - 60) < 0.001,
+    "ProgressBar starts with source-derived 1pt track, 3pt indicator, and determinate width"
+)
+progress.value = 0.75
+let progressValueAnimation = progressDeterminate.animation(forKey: "fluent.progress.value") as? CABasicAnimation
+require(
+    abs((progressValueAnimation?.duration ?? 0) - 0.250) < 0.0001
+        && abs((progressValueAnimation?.fromValue as? CGFloat ?? -1) - 60) < 0.001
+        && abs((progressValueAnimation?.toValue as? CGFloat ?? -1) - 180) < 0.001,
+    "ProgressBar value uses presentation-sampled 250ms reposition motion"
+)
+progress.layout()
+require(
+    progressDeterminate.animation(forKey: "fluent.progress.value") != nil,
+    "same-bounds ProgressBar layout preserves active value motion"
+)
+progress.isIndeterminate = true
+require(
+    progressPrimary.animation(forKey: "fluent.progress.indeterminate.primary") != nil
+        && progressSecondary.animation(forKey: "fluent.progress.indeterminate.secondary") != nil
+        && progressDeterminate.opacity == 0,
+    "normal indeterminate ProgressBar uses stable dual-layer motion"
+)
+progress.progressState = .paused
+require(
+        progressSecondary.animation(forKey: "fluent.progress.indeterminate.settle") != nil
+        && progress.accessibilityValue() as? String == "Indeterminate"
+        && progress.accessibilityHelp() == "Paused",
+    "paused ProgressBar settles and exposes its state to accessibility"
+)
+progress.progressState = .error
+require(
+    progress.accessibilityHelp() == "Error"
+        && progressSecondary.backgroundColor != nil,
+    "error ProgressBar exposes error state and keeps a stable indicator layer"
+)
+
+let reducedProgressHost = FluentViewHost(
+    FluentProgressBar(value: 0.5),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedProgressHost.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
+reducedProgressHost.layoutSubtreeIfNeeded()
+guard let reducedProgress = firstProgressBar(in: reducedProgressHost),
+      let reducedProgressDeterminate = firstLayer(named: "FluentKit.ProgressBar.Determinate", in: reducedProgressHost) else {
+    fatalError("Reduce Motion ProgressBar validation hierarchy did not mount")
+}
+reducedProgress.value = 0.9
+reducedProgress.isIndeterminate = true
+require(
+    reducedProgressDeterminate.animationKeys()?.isEmpty != false
+        && firstLayer(named: "FluentKit.ProgressBar.Indeterminate.Primary", in: reducedProgressHost)?.animationKeys()?.isEmpty != false,
+    "ProgressBar Reduce Motion reaches the final state without allocating animations"
+)
+
+let rtlProgressHost = FluentViewHost(
+    FluentProgressBar(value: 0.25),
+    context: FluentRenderContext(reduceMotion: true, layoutDirection: .rightToLeft)
+)
+rtlProgressHost.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
+rtlProgressHost.layoutSubtreeIfNeeded()
+guard let rtlProgress = firstProgressBar(in: rtlProgressHost),
+      let rtlDeterminate = firstLayer(named: "FluentKit.ProgressBar.Determinate", in: rtlProgressHost) else {
+    fatalError("RTL ProgressBar validation hierarchy did not mount")
+}
+require(
+    abs(rtlDeterminate.frame.maxX - rtlProgress.bounds.maxX) < 0.001,
+    "RTL ProgressBar fills from the trailing edge"
+)
+
 let styledCheckBoxState = FluentState(wrappedValue: true)
 let styledCheckBoxHost = FluentViewHost(
     FluentCheckBoxView("Styled check box", isChecked: styledCheckBoxState.projectedValue)

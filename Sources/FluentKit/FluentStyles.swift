@@ -672,10 +672,19 @@ public extension FluentSliderStyle where Self == FluentNeutralSliderStyle {
 
 public struct FluentProgressStyleConfiguration {
     public let valueFraction: CGFloat
+    public let isIndeterminate: Bool
+    public let state: FluentProgressState
     public let theme: FluentTheme
 
-    public init(valueFraction: CGFloat, theme: FluentTheme) {
+    public init(
+        valueFraction: CGFloat,
+        isIndeterminate: Bool = false,
+        state: FluentProgressState = .normal,
+        theme: FluentTheme
+    ) {
         self.valueFraction = min(max(valueFraction, 0), 1)
+        self.isIndeterminate = isIndeterminate
+        self.state = state
         self.theme = theme
     }
 }
@@ -684,18 +693,30 @@ public struct FluentProgressAppearance {
     public let trackColor: NSColor
     public let progressColor: NSColor
     public let trackHeight: CGFloat
+    public let indicatorHeight: CGFloat
+    public let trackCornerRadius: CGFloat
     public let cornerRadius: CGFloat
+    public let borderColor: NSColor
+    public let borderWidth: CGFloat
 
     public init(
         trackColor: NSColor,
         progressColor: NSColor,
         trackHeight: CGFloat = 4,
-        cornerRadius: CGFloat = 2
+        indicatorHeight: CGFloat? = nil,
+        trackCornerRadius: CGFloat? = nil,
+        cornerRadius: CGFloat = 2,
+        borderColor: NSColor = .clear,
+        borderWidth: CGFloat = 0
     ) {
         self.trackColor = trackColor
         self.progressColor = progressColor
         self.trackHeight = max(trackHeight, 1)
+        self.indicatorHeight = max(indicatorHeight ?? trackHeight, 1)
+        self.trackCornerRadius = max(trackCornerRadius ?? min(cornerRadius, trackHeight / 2), 0)
         self.cornerRadius = max(cornerRadius, 0)
+        self.borderColor = borderColor
+        self.borderWidth = max(borderWidth, 0)
     }
 }
 
@@ -708,11 +729,21 @@ public struct FluentAutomaticProgressStyle: FluentProgressStyle {
 
     public func appearance(for configuration: FluentProgressStyleConfiguration) -> FluentProgressAppearance {
         let theme = configuration.theme
+        let progressColor: NSColor = switch configuration.state {
+        case .normal: theme.accent
+        case .paused: theme.isHighContrast ? theme.controlStrokeStrong : .systemYellow
+        case .error: theme.isHighContrast ? NSColor.systemRed : .systemRed
+        }
+        let scale = theme.density.metricScale
         return FluentProgressAppearance(
-            trackColor: theme.controlFillTertiary,
-            progressColor: theme.accent,
-            trackHeight: (theme.isHighContrast ? 6 : 4) * theme.density.metricScale,
-            cornerRadius: (theme.isHighContrast ? 3 : 2) * theme.density.metricScale
+            trackColor: theme.controlStrokeStrong,
+            progressColor: progressColor,
+            trackHeight: (theme.isHighContrast ? 2 : 1) * scale,
+            indicatorHeight: (theme.isHighContrast ? 4 : 3) * scale,
+            trackCornerRadius: (theme.isHighContrast ? 1 : 0.5) * scale,
+            cornerRadius: (theme.isHighContrast ? 2 : 1.5) * scale,
+            borderColor: theme.isHighContrast ? theme.controlStrokeStrong : .clear,
+            borderWidth: theme.isHighContrast ? 1 : 0
         )
     }
 }
@@ -722,11 +753,21 @@ public struct FluentNeutralProgressStyle: FluentProgressStyle {
 
     public func appearance(for configuration: FluentProgressStyleConfiguration) -> FluentProgressAppearance {
         let theme = configuration.theme
+        let progressColor: NSColor = switch configuration.state {
+        case .normal: theme.controlStrokeStrong
+        case .paused: .systemYellow
+        case .error: .systemRed
+        }
+        let scale = theme.density.metricScale
         return FluentProgressAppearance(
-            trackColor: theme.controlFillTertiary,
-            progressColor: theme.controlStrokeStrong,
-            trackHeight: (theme.isHighContrast ? 7 : 5) * theme.density.metricScale,
-            cornerRadius: (theme.isHighContrast ? 3.5 : 2.5) * theme.density.metricScale
+            trackColor: theme.controlStrokeStrong.withAlphaComponent(0.45),
+            progressColor: progressColor,
+            trackHeight: (theme.isHighContrast ? 2 : 1) * scale,
+            indicatorHeight: (theme.isHighContrast ? 4 : 3) * scale,
+            trackCornerRadius: (theme.isHighContrast ? 1 : 0.5) * scale,
+            cornerRadius: (theme.isHighContrast ? 2 : 1.5) * scale,
+            borderColor: theme.isHighContrast ? theme.controlStrokeStrong : .clear,
+            borderWidth: theme.isHighContrast ? 1 : 0
         )
     }
 }

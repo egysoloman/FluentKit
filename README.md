@@ -206,8 +206,10 @@ struct EditorApp: FluentApp, FluentApplicationCommands {
 
 The framework is built in layers. Milestones 1-13, 16, 18, 20, and 21 are complete. Milestones 14-15
 continue to expand text and presentation depth. Milestones 17 and 19 remain in visual acceptance:
-their behavior foundations exist, while exact core-control and transient-surface fidelity is still
-being audited and implemented.
+their behavior foundations exist, while transient-surface fidelity and the long-tail control set are
+still being audited and implemented. The primary Button, ToggleSwitch, Slider, CheckBox, RadioButton,
+SegmentedControl, and ProgressBar state/motion foundations are now covered by the shared visual-state
+contract and executable validation.
 
 1. Declarative tree, AppKit host, reconciliation, state, bindings, and environment values.
 2. Fluent materials, theme tokens, layout containers, native controls, lists, menus, overlays, drag/drop, lifecycle, focus, and accessibility.
@@ -423,6 +425,11 @@ Combo-box fields keep their native `NSComboBox` identity and accessibility role,
 popup is an application-owned `FluentMenuFlyout`. The popup uses the same Acrylic surface, checked
 state, keyboard navigation, type-ahead, Escape/outside-click dismissal, and RTL placement as other
 in-app menus; AppKit's native combo-box popup is not used.
+
+Progress bars use stable Fluent-owned track and indicator layers. Determinate values interpolate with
+the 250ms control-normal token; indeterminate mode uses a coordinated dual-layer loop, while paused
+and error states settle without losing the native accessibility role. RTL and Reduce Motion are
+inherited from the render environment.
 
 Segmented controls use a custom Fluent renderer while preserving `NSSegmentedControl` identity.
 One shared selection surface moves between segments with the source-derived 167ms control-fast

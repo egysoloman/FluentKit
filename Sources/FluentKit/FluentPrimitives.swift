@@ -55,12 +55,16 @@ extension FluentProgressBar: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         theme = context.theme
+        reduceMotion = context.reduceMotion
+        fluentLayoutDirection = context.layoutDirection
         return self
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let progress = view as? FluentProgressBar else { return false }
         progress.theme = context.theme
+        progress.reduceMotion = context.reduceMotion
+        progress.fluentLayoutDirection = context.layoutDirection
         progress.applyDeclarativeConfiguration(from: self)
         return true
     }
