@@ -743,13 +743,26 @@ public struct FluentCheckBoxStyleConfiguration {
     public let isChecked: Bool
     public let isEnabled: Bool
     public let isPointerOver: Bool
+    public let isPressed: Bool
     public let controlSize: FluentControlSize
     public let theme: FluentTheme
 
     public init(isChecked: Bool, isEnabled: Bool, isPointerOver: Bool, controlSize: FluentControlSize, theme: FluentTheme) {
+        self.init(
+            isChecked: isChecked,
+            isEnabled: isEnabled,
+            isPointerOver: isPointerOver,
+            isPressed: false,
+            controlSize: controlSize,
+            theme: theme
+        )
+    }
+
+    public init(isChecked: Bool, isEnabled: Bool, isPointerOver: Bool, isPressed: Bool, controlSize: FluentControlSize, theme: FluentTheme) {
         self.isChecked = isChecked
         self.isEnabled = isEnabled
         self.isPointerOver = isPointerOver
+        self.isPressed = isPressed
         self.controlSize = controlSize
         self.theme = theme
     }
@@ -799,15 +812,40 @@ public struct FluentAutomaticCheckBoxStyle: FluentCheckBoxStyle {
     public func appearance(for configuration: FluentCheckBoxStyleConfiguration) -> FluentCheckBoxAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let alpha: CGFloat = configuration.isEnabled ? 1 : 0.45
-        let border = configuration.isChecked || theme.isHighContrast ? theme.controlStrokeStrong : theme.controlStroke
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isPressed {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
+        let stateAlpha: CGFloat = switch state {
+        case .pointerOver: 0.90
+        case .pressed: 0.80
+        case .disabled: 0.35
+        default: 1
+        }
+        let uncheckedFill: NSColor = switch state {
+        case .pointerOver: theme.controlFillSecondary
+        case .pressed: theme.controlFillTertiary
+        case .disabled: theme.controlFill.withAlphaComponent(0.45)
+        default: theme.controlFill
+        }
+        let fill = configuration.isChecked
+            ? theme.accent.withAlphaComponent(stateAlpha)
+            : uncheckedFill
+        let border = configuration.isChecked && !theme.isHighContrast
+            ? theme.accent.withAlphaComponent(stateAlpha)
+            : theme.controlStrokeStrong.withAlphaComponent(state == .disabled ? 0.35 : 1)
         return FluentCheckBoxAppearance(
             boxSize: 20 * scale,
             cornerRadius: 3 * scale,
-            fillColor: (configuration.isChecked ? theme.accent : (configuration.isPointerOver ? theme.controlFillSecondary : theme.controlFill)).withAlphaComponent(alpha),
-            borderColor: border.withAlphaComponent(alpha),
+            fillColor: fill,
+            borderColor: border,
             borderWidth: theme.controlStrokeWidth,
-            markColor: theme.textOnAccent,
+            markColor: theme.textOnAccent.withAlphaComponent(state == .pressed ? 0.70 : 1),
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             labelFont: theme.typography.font(for: .body).withSize(theme.typography.font(for: .body).pointSize * configuration.controlSize.metricScale),
             labelSpacing: 8 * scale
@@ -821,12 +859,26 @@ public struct FluentMonochromeCheckBoxStyle: FluentCheckBoxStyle {
     public func appearance(for configuration: FluentCheckBoxStyleConfiguration) -> FluentCheckBoxAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let alpha: CGFloat = configuration.isEnabled ? 1 : 0.45
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isPressed {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
+        let alpha: CGFloat = configuration.isEnabled ? (state == .pressed ? 0.70 : 1) : 0.35
+        let uncheckedFill: NSColor = switch state {
+        case .pointerOver: theme.controlFillSecondary
+        case .pressed: theme.controlFillTertiary
+        default: theme.controlFill
+        }
         let bodyFont = theme.typography.font(for: .body)
         return FluentCheckBoxAppearance(
             boxSize: 20 * scale,
             cornerRadius: 3 * scale,
-            fillColor: (configuration.isChecked ? theme.controlStrokeStrong : theme.controlFill).withAlphaComponent(alpha),
+            fillColor: (configuration.isChecked ? theme.controlStrokeStrong : uncheckedFill).withAlphaComponent(alpha),
             borderColor: theme.controlStrokeStrong.withAlphaComponent(alpha),
             borderWidth: theme.controlStrokeWidth,
             markColor: theme.windowBackground,
@@ -848,12 +900,27 @@ public extension FluentCheckBoxStyle where Self == FluentMonochromeCheckBoxStyle
 public struct FluentRadioButtonStyleConfiguration {
     public let isSelected: Bool
     public let isEnabled: Bool
+    public let isPointerOver: Bool
+    public let isPressed: Bool
     public let controlSize: FluentControlSize
     public let theme: FluentTheme
 
     public init(isSelected: Bool, isEnabled: Bool, controlSize: FluentControlSize, theme: FluentTheme) {
+        self.init(
+            isSelected: isSelected,
+            isEnabled: isEnabled,
+            isPointerOver: false,
+            isPressed: false,
+            controlSize: controlSize,
+            theme: theme
+        )
+    }
+
+    public init(isSelected: Bool, isEnabled: Bool, isPointerOver: Bool, isPressed: Bool, controlSize: FluentControlSize, theme: FluentTheme) {
         self.isSelected = isSelected
         self.isEnabled = isEnabled
+        self.isPointerOver = isPointerOver
+        self.isPressed = isPressed
         self.controlSize = controlSize
         self.theme = theme
     }
@@ -865,6 +932,7 @@ public struct FluentRadioButtonAppearance {
     public let borderColor: NSColor
     public let borderWidth: CGFloat
     public let dotColor: NSColor
+    public let dotDiameter: CGFloat
     public let labelColor: NSColor
     public let labelFont: NSFont
     public let labelSpacing: CGFloat
@@ -877,13 +945,15 @@ public struct FluentRadioButtonAppearance {
         dotColor: NSColor,
         labelColor: NSColor,
         labelFont: NSFont,
-        labelSpacing: CGFloat = 8
+        labelSpacing: CGFloat = 8,
+        dotDiameter: CGFloat? = nil
     ) {
         self.diameter = max(diameter, 1)
         self.fillColor = fillColor
         self.borderColor = borderColor
         self.borderWidth = max(borderWidth, 0)
         self.dotColor = dotColor
+        self.dotDiameter = min(max(dotDiameter ?? diameter * 0.6, 1), max(diameter, 1))
         self.labelColor = labelColor
         self.labelFont = labelFont
         self.labelSpacing = max(labelSpacing, 0)
@@ -900,17 +970,47 @@ public struct FluentAutomaticRadioButtonStyle: FluentRadioButtonStyle {
     public func appearance(for configuration: FluentRadioButtonStyleConfiguration) -> FluentRadioButtonAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let alpha: CGFloat = configuration.isEnabled ? 1 : 0.45
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isPressed {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
+        let accentAlpha: CGFloat = switch state {
+        case .pointerOver: 0.90
+        case .pressed: 0.80
+        case .disabled: 0.35
+        default: 1
+        }
+        let uncheckedFill: NSColor = switch state {
+        case .pointerOver: theme.controlFillSecondary
+        case .pressed: theme.controlFillTertiary
+        case .disabled: theme.controlFill.withAlphaComponent(0.45)
+        default: theme.controlFill
+        }
+        let dotDiameter: CGFloat = switch state {
+        case .pointerOver, .disabled: 14
+        case .pressed: 10
+        default: 12
+        }
         let bodyFont = theme.typography.font(for: .body)
         return FluentRadioButtonAppearance(
             diameter: 20 * scale,
-            fillColor: (configuration.isSelected ? theme.accent : theme.controlFill).withAlphaComponent(alpha),
-            borderColor: (configuration.isSelected || theme.isHighContrast ? theme.controlStrokeStrong : theme.controlStroke).withAlphaComponent(alpha),
+            fillColor: configuration.isSelected
+                ? theme.accent.withAlphaComponent(accentAlpha)
+                : uncheckedFill,
+            borderColor: configuration.isSelected && !theme.isHighContrast
+                ? theme.accent.withAlphaComponent(accentAlpha)
+                : theme.controlStrokeStrong.withAlphaComponent(state == .disabled ? 0.35 : 1),
             borderWidth: theme.controlStrokeWidth,
             dotColor: theme.textOnAccent,
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
-            labelSpacing: 8 * scale
+            labelSpacing: 8 * scale,
+            dotDiameter: (theme.isHighContrast ? dotDiameter + 2 : dotDiameter) * scale
         )
     }
 }
@@ -921,17 +1021,37 @@ public struct FluentMonochromeRadioButtonStyle: FluentRadioButtonStyle {
     public func appearance(for configuration: FluentRadioButtonStyleConfiguration) -> FluentRadioButtonAppearance {
         let theme = configuration.theme
         let scale = theme.density.metricScale * configuration.controlSize.metricScale
-        let alpha: CGFloat = configuration.isEnabled ? 1 : 0.45
+        let state: FluentControlState = if !configuration.isEnabled {
+            .disabled
+        } else if configuration.isPressed {
+            .pressed
+        } else if configuration.isPointerOver {
+            .pointerOver
+        } else {
+            .normal
+        }
+        let alpha: CGFloat = configuration.isEnabled ? (state == .pressed ? 0.70 : 1) : 0.35
+        let uncheckedFill: NSColor = switch state {
+        case .pointerOver: theme.controlFillSecondary
+        case .pressed: theme.controlFillTertiary
+        default: theme.controlFill
+        }
+        let dotDiameter: CGFloat = switch state {
+        case .pointerOver, .disabled: 14
+        case .pressed: 10
+        default: 12
+        }
         let bodyFont = theme.typography.font(for: .body)
         return FluentRadioButtonAppearance(
             diameter: 20 * scale,
-            fillColor: (configuration.isSelected ? theme.controlStrokeStrong : theme.controlFill).withAlphaComponent(alpha),
+            fillColor: (configuration.isSelected ? theme.controlStrokeStrong : uncheckedFill).withAlphaComponent(alpha),
             borderColor: theme.controlStrokeStrong.withAlphaComponent(alpha),
             borderWidth: theme.controlStrokeWidth,
             dotColor: theme.windowBackground,
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
-            labelSpacing: 8 * scale
+            labelSpacing: 8 * scale,
+            dotDiameter: (theme.isHighContrast ? dotDiameter + 2 : dotDiameter) * scale
         )
     }
 }

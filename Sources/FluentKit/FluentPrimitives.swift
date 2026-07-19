@@ -102,12 +102,19 @@ extension FluentMaterialView: FluentUpdatablePrimitiveView {
 
 extension FluentCheckBox: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
-    public func _makeView(in context: FluentRenderContext) -> NSView { theme = context.theme; return self }
+    public func _makeView(in context: FluentRenderContext) -> NSView {
+        theme = context.theme
+        reduceMotion = context.reduceMotion
+        fluentLayoutDirection = context.layoutDirection
+        return self
+    }
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let checkbox = view as? FluentCheckBox else { return false }
         checkbox.theme = context.theme
+        checkbox.reduceMotion = context.reduceMotion
+        checkbox.fluentLayoutDirection = context.layoutDirection
         checkbox.title = title
-        if checkbox.isChecked != isChecked { checkbox.isChecked = isChecked }
+        if checkbox.isChecked != isChecked { checkbox.setStateFromBinding(isChecked) }
         checkbox.fluentStyle = fluentStyle
         checkbox.fluentControlSize = fluentControlSize
         return true
@@ -116,12 +123,19 @@ extension FluentCheckBox: FluentUpdatablePrimitiveView {
 
 extension FluentRadioButton: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
-    public func _makeView(in context: FluentRenderContext) -> NSView { theme = context.theme; return self }
+    public func _makeView(in context: FluentRenderContext) -> NSView {
+        theme = context.theme
+        reduceMotion = context.reduceMotion
+        fluentLayoutDirection = context.layoutDirection
+        return self
+    }
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let radio = view as? FluentRadioButton else { return false }
         radio.theme = context.theme
+        radio.reduceMotion = context.reduceMotion
+        radio.fluentLayoutDirection = context.layoutDirection
         radio.title = title
-        if radio.isSelected != isSelected { radio.isSelected = isSelected }
+        if radio.isSelected != isSelected { radio.setStateFromBinding(isSelected) }
         radio.fluentStyle = fluentStyle
         radio.fluentControlSize = fluentControlSize
         return true

@@ -26,6 +26,8 @@ public struct FluentCubicBezier: Hashable, Sendable {
     public static let direct = FluentCubicBezier(0.1, 0.9, 0.2, 1)
     public static let navigationExit = FluentCubicBezier(0.9, 0.1, 1, 0.2)
     public static let contract = FluentCubicBezier(0.7, 0, 1, 0.5)
+    public static let checkGlyphReveal = FluentCubicBezier(0.55, 0, 0, 1)
+    public static let checkGlyphHide = FluentCubicBezier(0.167, 0.167, 0.833, 0.833)
 }
 
 /// Common timing curves used by FluentKit transitions and implicit animations.
@@ -85,6 +87,8 @@ public enum FluentMotion {
     public static let controlFaster = FluentMotionToken(duration: 0.083, curve: .controlFastOutSlowIn)
     public static let controlFast = FluentMotionToken(duration: 0.167, curve: .controlFastOutSlowIn)
     public static let controlNormal = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn)
+    public static let checkBoxGlyphOn = FluentMotionToken(duration: 19.0 / 60.0, curve: .checkGlyphReveal)
+    public static let checkBoxGlyphOff = FluentMotionToken(duration: 4.0 / 60.0, curve: .checkGlyphHide)
     public static let connectedDefault = FluentMotionToken(duration: 0.300, curve: .connectedDefault)
     public static let connectedDirect = FluentMotionToken(duration: 0.200, curve: .direct)
     public static let connectedGravity = FluentMotionToken(duration: 0.300, curve: .connectedDefault, distance: 80, scale: 1.1)

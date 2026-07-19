@@ -960,6 +960,325 @@ require(nativeStyledRadio?.accessibilityValue() as? String == "On", "radio bindi
 nativeStyledRadio?.isSelected = false
 require(!styledRadioState.wrappedValue, "radio interaction writes back to its binding")
 
+let interactiveCheckBoxState = FluentState(wrappedValue: false)
+var interactiveCheckBoxCommits: [Bool] = []
+let interactiveCheckBoxObserver = interactiveCheckBoxState.observe {
+    interactiveCheckBoxCommits.append($0)
+}
+interactiveCheckBoxCommits.removeAll()
+let interactiveCheckBoxHost = FluentViewHost(
+    FluentCheckBoxView("Completed", isChecked: interactiveCheckBoxState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false)
+)
+let interactiveCheckBoxWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 220, height: 40),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+interactiveCheckBoxWindow.contentView = interactiveCheckBoxHost
+interactiveCheckBoxHost.frame = NSRect(x: 0, y: 0, width: 220, height: 40)
+interactiveCheckBoxWindow.orderFront(nil)
+interactiveCheckBoxHost.layoutSubtreeIfNeeded()
+guard let interactiveCheckBox = firstCheckBox(in: interactiveCheckBoxHost),
+      let checkBoxBox = firstLayer(named: "FluentKit.CheckBox.Box", in: interactiveCheckBoxHost),
+      let checkBoxGlyph = firstLayer(named: "FluentKit.CheckBox.Glyph", in: interactiveCheckBoxHost) as? CAShapeLayer,
+      let checkBoxFocus = firstLayer(named: "FluentKit.CheckBox.FocusRing", in: interactiveCheckBoxHost) else {
+    fatalError("CheckBox validation hierarchy did not mount")
+}
+require(
+    checkBoxBox.bounds.size == CGSize(width: 20, height: 20)
+        && checkBoxGlyph.strokeEnd == 0
+        && checkBoxGlyph.opacity == 0,
+    "mounted CheckBox starts with exact 20pt box and hidden stable glyph"
+)
+let checkBoxPoint = NSPoint(x: 10, y: interactiveCheckBox.bounds.midY)
+interactiveCheckBox.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 40)
+)
+interactiveCheckBox.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 41)
+)
+require(
+    !interactiveCheckBoxState.wrappedValue && interactiveCheckBoxCommits.isEmpty,
+    "CheckBox mouseDown enters Pressed without committing its binding"
+)
+interactiveCheckBox.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 42)
+)
+drainMainQueue()
+require(
+    interactiveCheckBoxState.wrappedValue && interactiveCheckBoxCommits == [true],
+    "CheckBox release-inside commits its binding exactly once"
+)
+require(
+    checkBoxGlyph.strokeEnd == 1 && checkBoxGlyph.opacity == 1,
+    "CheckBox selected state exposes the stable check glyph"
+)
+let checkBoxOnAnimation = checkBoxGlyph.animation(forKey: "fluent.checkbox.glyph.strokeEnd") as? CABasicAnimation
+require(
+    abs((checkBoxOnAnimation?.duration ?? 0) - 19.0 / 60.0) < 0.0001
+        && checkBoxOnAnimation?.timingFunction != nil,
+    "CheckBox reveal uses the source-derived 19-frame glyph motion"
+)
+interactiveCheckBox.layout()
+require(
+    checkBoxGlyph.animation(forKey: "fluent.checkbox.glyph.strokeEnd") != nil,
+    "same-bounds CheckBox layout preserves active glyph motion"
+)
+
+interactiveCheckBox.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 43)
+)
+interactiveCheckBox.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 44)
+)
+drainMainQueue()
+let checkBoxOffAnimation = checkBoxGlyph.animation(forKey: "fluent.checkbox.glyph.strokeEnd") as? CABasicAnimation
+require(
+    !interactiveCheckBoxState.wrappedValue
+        && interactiveCheckBoxCommits == [true, false]
+        && abs((checkBoxOffAnimation?.duration ?? 0) - 4.0 / 60.0) < 0.0001,
+    "CheckBox clear uses the source-derived four-frame glyph motion"
+)
+
+let outsideChoicePoint = NSPoint(x: -20, y: interactiveCheckBox.bounds.midY)
+interactiveCheckBox.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 45)
+)
+interactiveCheckBox.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: outsideChoicePoint, in: interactiveCheckBox, eventNumber: 46)
+)
+require(
+    !interactiveCheckBoxState.wrappedValue && interactiveCheckBoxCommits == [true, false],
+    "CheckBox release-outside cancels without committing"
+)
+
+interactiveCheckBox.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 47)
+)
+interactiveCheckBoxState.wrappedValue = true
+drainMainQueue()
+interactiveCheckBox.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 48)
+)
+require(
+    interactiveCheckBoxState.wrappedValue,
+    "external CheckBox binding updates cancel Pressed without a stale toggle"
+)
+interactiveCheckBoxWindow.makeFirstResponder(interactiveCheckBox)
+require(checkBoxFocus.opacity == 1, "CheckBox renders a custom keyboard focus ring")
+interactiveCheckBox.keyDown(with: sliderKeyEvent(49, in: interactiveCheckBox, eventNumber: 49))
+require(!interactiveCheckBoxState.wrappedValue, "CheckBox Space commits through the keyboard path")
+require(
+    interactiveCheckBox.accessibilityPerformPress() && interactiveCheckBoxState.wrappedValue,
+    "CheckBox accessibility press commits through the same path"
+)
+interactiveCheckBox.isEnabled = false
+require(
+    !interactiveCheckBox.accessibilityPerformPress() && interactiveCheckBoxState.wrappedValue,
+    "disabled CheckBox rejects accessibility activation"
+)
+interactiveCheckBoxState.observableValue.removeObserver(interactiveCheckBoxObserver)
+interactiveCheckBoxWindow.orderOut(nil)
+
+let interactiveRadioState = FluentState(wrappedValue: false)
+var interactiveRadioCommits: [Bool] = []
+let interactiveRadioObserver = interactiveRadioState.observe { interactiveRadioCommits.append($0) }
+interactiveRadioCommits.removeAll()
+let interactiveRadioHost = FluentViewHost(
+    FluentRadioButtonView("Primary", isSelected: interactiveRadioState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false)
+)
+let interactiveRadioWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 220, height: 40),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+interactiveRadioWindow.contentView = interactiveRadioHost
+interactiveRadioHost.frame = NSRect(x: 0, y: 0, width: 220, height: 40)
+interactiveRadioWindow.orderFront(nil)
+interactiveRadioHost.layoutSubtreeIfNeeded()
+guard let interactiveRadio = firstRadioButton(in: interactiveRadioHost),
+      let radioOuter = firstLayer(named: "FluentKit.RadioButton.Outer", in: interactiveRadioHost),
+      let radioDot = firstLayer(named: "FluentKit.RadioButton.Dot", in: interactiveRadioHost),
+      let radioPressedDot = firstLayer(named: "FluentKit.RadioButton.PressedDot", in: interactiveRadioHost),
+      let radioFocus = firstLayer(named: "FluentKit.RadioButton.FocusRing", in: interactiveRadioHost) else {
+    fatalError("RadioButton validation hierarchy did not mount")
+}
+require(
+    radioOuter.bounds.size == CGSize(width: 20, height: 20)
+        && radioDot.bounds.size == CGSize(width: 12, height: 12)
+        && radioDot.opacity == 0
+        && radioPressedDot.bounds.size == CGSize(width: 4, height: 4),
+    "mounted RadioButton starts with exact outer, dot, and pressed-feedback geometry"
+)
+let radioPoint = NSPoint(x: 10, y: interactiveRadio.bounds.midY)
+interactiveRadio.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: radioPoint, in: interactiveRadio, eventNumber: 50)
+)
+require(
+    radioDot.bounds.size == CGSize(width: 14, height: 14),
+    "RadioButton PointerOver applies the 14pt dot target"
+)
+interactiveRadio.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 51)
+)
+require(
+    !interactiveRadioState.wrappedValue
+        && interactiveRadioCommits.isEmpty
+        && radioDot.bounds.size == CGSize(width: 10, height: 10)
+        && radioPressedDot.bounds.size == CGSize(width: 10, height: 10)
+        && radioPressedDot.opacity == 1,
+    "unselected RadioButton Pressed shows feedback without committing"
+)
+let radioPressedAnimation = radioPressedDot.animation(forKey: "fluent.radio.pressedDot.bounds") as? CABasicAnimation
+require(
+    abs((radioPressedAnimation?.duration ?? 0) - 0.167) < 0.0001
+        && radioPressedAnimation?.timingFunction != nil,
+    "RadioButton pressed feedback expands with the 167ms source motion"
+)
+interactiveRadio.layout()
+require(
+    radioPressedDot.animation(forKey: "fluent.radio.pressedDot.bounds") != nil,
+    "same-bounds RadioButton layout preserves active pressed motion"
+)
+interactiveRadio.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: radioPoint, in: interactiveRadio, eventNumber: 52)
+)
+drainMainQueue()
+require(
+    interactiveRadioState.wrappedValue
+        && interactiveRadioCommits == [true]
+        && radioDot.opacity == 1
+        && radioDot.bounds.size == CGSize(width: 14, height: 14),
+    "RadioButton release-inside selects once and returns to PointerOver geometry"
+)
+let radioSelectedAnimation = radioDot.animation(forKey: "fluent.radio.dot.bounds") as? CABasicAnimation
+require(
+    abs((radioSelectedAnimation?.duration ?? 0) - 0.250) < 0.0001,
+    "RadioButton selected PointerOver dot uses the 250ms state motion"
+)
+
+interactiveRadio.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 53)
+)
+interactiveRadio.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: radioPoint, in: interactiveRadio, eventNumber: 54)
+)
+require(
+    interactiveRadioState.wrappedValue && interactiveRadioCommits == [true],
+    "selecting an already-selected RadioButton does not emit a duplicate commit"
+)
+interactiveRadioState.wrappedValue = false
+drainMainQueue()
+interactiveRadio.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 55)
+)
+interactiveRadio.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: outsideChoicePoint, in: interactiveRadio, eventNumber: 56)
+)
+require(!interactiveRadioState.wrappedValue, "RadioButton release-outside cancels selection")
+interactiveRadio.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 57)
+)
+interactiveRadioState.wrappedValue = true
+drainMainQueue()
+interactiveRadio.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: radioPoint, in: interactiveRadio, eventNumber: 58)
+)
+require(
+    interactiveRadioState.wrappedValue,
+    "external RadioButton binding updates cancel Pressed without a stale selection"
+)
+interactiveRadioState.wrappedValue = false
+drainMainQueue()
+interactiveRadioWindow.makeFirstResponder(interactiveRadio)
+require(radioFocus.opacity == 1, "RadioButton renders a custom keyboard focus ring")
+interactiveRadio.keyDown(with: sliderKeyEvent(49, in: interactiveRadio, eventNumber: 59))
+require(interactiveRadioState.wrappedValue, "RadioButton Space selects through the keyboard path")
+interactiveRadio.isEnabled = false
+require(
+    radioDot.bounds.size == CGSize(width: 14, height: 14)
+        && !interactiveRadio.accessibilityPerformPress(),
+    "disabled RadioButton uses 14pt dot geometry and rejects accessibility activation"
+)
+interactiveRadioState.observableValue.removeObserver(interactiveRadioObserver)
+interactiveRadioWindow.orderOut(nil)
+
+let rtlCheckBoxState = FluentState(wrappedValue: true)
+let rtlCheckBoxHost = FluentViewHost(
+    FluentCheckBoxView("RTL check", isChecked: rtlCheckBoxState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false, layoutDirection: .rightToLeft)
+)
+rtlCheckBoxHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+rtlCheckBoxHost.layoutSubtreeIfNeeded()
+guard let rtlCheckBox = firstCheckBox(in: rtlCheckBoxHost),
+      let rtlCheckBoxBox = firstLayer(named: "FluentKit.CheckBox.Box", in: rtlCheckBoxHost) else {
+    fatalError("RTL CheckBox validation hierarchy did not mount")
+}
+require(
+    rtlCheckBoxBox.frame.midX > rtlCheckBox.bounds.midX,
+    "CheckBox mirrors its glyph and label placement in RTL"
+)
+
+let rtlRadioState = FluentState(wrappedValue: true)
+let rtlRadioHost = FluentViewHost(
+    FluentRadioButtonView("RTL radio", isSelected: rtlRadioState.projectedValue),
+    context: FluentRenderContext(reduceMotion: false, layoutDirection: .rightToLeft)
+)
+rtlRadioHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+rtlRadioHost.layoutSubtreeIfNeeded()
+guard let rtlRadio = firstRadioButton(in: rtlRadioHost),
+      let rtlRadioOuter = firstLayer(named: "FluentKit.RadioButton.Outer", in: rtlRadioHost) else {
+    fatalError("RTL RadioButton validation hierarchy did not mount")
+}
+require(
+    rtlRadioOuter.frame.midX > rtlRadio.bounds.midX,
+    "RadioButton mirrors its glyph and label placement in RTL"
+)
+
+let reducedCheckBoxState = FluentState(wrappedValue: false)
+let reducedCheckBoxHost = FluentViewHost(
+    FluentCheckBoxView("Reduced check", isChecked: reducedCheckBoxState.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedCheckBoxHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+reducedCheckBoxHost.layoutSubtreeIfNeeded()
+let reducedCheckBoxGlyph = firstLayer(named: "FluentKit.CheckBox.Glyph", in: reducedCheckBoxHost)
+reducedCheckBoxState.wrappedValue = true
+drainMainQueue()
+require(
+    reducedCheckBoxGlyph?.animationKeys()?.isEmpty != false,
+    "CheckBox Reduce Motion reaches selected geometry without allocating animations"
+)
+
+let reducedRadioState = FluentState(wrappedValue: true)
+let reducedRadioHost = FluentViewHost(
+    FluentRadioButtonView("Reduced radio", isSelected: reducedRadioState.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedRadioHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+reducedRadioHost.layoutSubtreeIfNeeded()
+guard let reducedRadio = firstRadioButton(in: reducedRadioHost),
+      let reducedRadioDot = firstLayer(named: "FluentKit.RadioButton.Dot", in: reducedRadioHost) else {
+    fatalError("Reduce Motion RadioButton validation hierarchy did not mount")
+}
+reducedRadio.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: 10, y: reducedRadio.bounds.midY),
+        in: reducedRadio,
+        eventNumber: 60
+    )
+)
+require(
+    reducedRadioDot.bounds.size == CGSize(width: 14, height: 14)
+        && reducedRadioDot.animationKeys()?.isEmpty != false,
+    "RadioButton Reduce Motion reaches PointerOver geometry without allocating animations"
+)
+
 let styledSegmentState = FluentState(wrappedValue: 0)
 let styledSegmentHost = FluentViewHost(
     FluentSegmentedControl(["First", "Second"], selection: styledSegmentState.projectedValue)

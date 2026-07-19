@@ -273,6 +273,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var quantity = 3
     @FluentState private var checked = true
     @FluentState private var radio = false
+    @FluentState private var selectedRadio = true
     @FluentState private var selectedSegment = 0
     @FluentState private var selectedCollectionItems = Set([2])
     @FluentState private var navigationSelection: String? = "Library"
@@ -423,9 +424,22 @@ private struct WinUIStyleGalleryScreen: FluentView {
                     }
                     FluentHStack(spacing: 20) {
                         FluentCheckBoxView("Completed", isChecked: $checked)
-                        FluentRadioButtonView("Primary", isSelected: $radio)
-                        FluentSegmentedControl(["One", "Two", "Three"], selection: $selectedSegment)
+                        FluentCheckBoxView(
+                            "Disabled",
+                            isChecked: FluentBinding(get: { false }, set: { _ in })
+                        )
+                        .disabled()
                     }
+                    FluentHStack(spacing: 20) {
+                        FluentRadioButtonView("Unselected", isSelected: $radio)
+                        FluentRadioButtonView("Selected", isSelected: $selectedRadio)
+                        FluentRadioButtonView(
+                            "Disabled",
+                            isSelected: FluentBinding(get: { false }, set: { _ in })
+                        )
+                        .disabled()
+                    }
+                    FluentSegmentedControl(["One", "Two", "Three"], selection: $selectedSegment)
                 }
                 FluentVStack(spacing: 10) {
                     FluentText("Progress", style: .headline)

@@ -219,14 +219,21 @@ public final class FluentBoundCheckBox: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func update(binding: FluentBinding<Bool>, theme: FluentTheme) {
+    func update(
+        binding: FluentBinding<Bool>,
+        theme: FluentTheme,
+        reduceMotion: Bool,
+        layoutDirection: FluentLayoutDirection
+    ) {
         if let observer { self.binding.removeObserver?(observer) }
         self.binding = binding
         checkBox.theme = theme
+        checkBox.reduceMotion = reduceMotion
+        checkBox.fluentLayoutDirection = layoutDirection
         let value = binding.get()
         if checkBox.isChecked != value {
             isApplyingBinding = true
-            checkBox.isChecked = value
+            checkBox.setStateFromBinding(value)
             isApplyingBinding = false
         }
         installObserver()
@@ -237,7 +244,7 @@ public final class FluentBoundCheckBox: NSView {
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.checkBox.isChecked != value else { return }
                 self.isApplyingBinding = true
-                self.checkBox.isChecked = value
+                self.checkBox.setStateFromBinding(value)
                 self.isApplyingBinding = false
             }
         }
@@ -277,14 +284,21 @@ public final class FluentBoundRadioButton: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func update(binding: FluentBinding<Bool>, theme: FluentTheme) {
+    func update(
+        binding: FluentBinding<Bool>,
+        theme: FluentTheme,
+        reduceMotion: Bool,
+        layoutDirection: FluentLayoutDirection
+    ) {
         if let observer { self.binding.removeObserver?(observer) }
         self.binding = binding
         radioButton.theme = theme
+        radioButton.reduceMotion = reduceMotion
+        radioButton.fluentLayoutDirection = layoutDirection
         let value = binding.get()
         if radioButton.isSelected != value {
             isApplyingBinding = true
-            radioButton.isSelected = value
+            radioButton.setStateFromBinding(value)
             isApplyingBinding = false
         }
         installObserver()
@@ -295,7 +309,7 @@ public final class FluentBoundRadioButton: NSView {
             DispatchQueue.main.async { [weak self] in
                 guard let self, self.radioButton.isSelected != value else { return }
                 self.isApplyingBinding = true
-                self.radioButton.isSelected = value
+                self.radioButton.setStateFromBinding(value)
                 self.isApplyingBinding = false
             }
         }

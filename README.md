@@ -412,6 +412,13 @@ source-derived 167ms/250ms motion tokens. Pointer position stays direct during d
 Home/End, accessibility increments, cancellation, external bindings, and Reduce Motion share the
 same control lifecycle.
 
+CheckBox and RadioButton keep native AppKit control semantics while FluentKit owns their complete
+visual surfaces. Pointer down enters a pressed state without changing the binding; release inside
+commits once and release outside cancels. CheckBox draws and clears its stable check path with the
+source AnimatedAccept 19-frame/four-frame curves. RadioButton uses a 20pt outer circle with
+12/14/10/14 dot states and a separate pressed-feedback dot for an unselected press. Both support
+RTL, keyboard focus, accessibility activation, external-binding cancellation, and Reduce Motion.
+
 Combo-box fields keep their native `NSComboBox` identity and accessibility role, but their option
 popup is an application-owned `FluentMenuFlyout`. The popup uses the same Acrylic surface, checked
 state, keyboard navigation, type-ahead, Escape/outside-click dismissal, and RTL placement as other

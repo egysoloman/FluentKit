@@ -47,8 +47,8 @@ AppKit and Swift permit it.
   binding, removed the duplicate native-rendering label, and regenerated all 14 responsive
   Light/Dark/RTL snapshot baselines.
 - Reconciled the visual audit against completed divider, indicator, page-transition, NavigationView,
-  and TitleBar work. Exact CheckBox/RadioButton, SegmentedControl, ProgressBar, MenuFlyout motion,
-  and deferred Liquid Glass work remain open visual-acceptance items.
+  and TitleBar work. Exact SegmentedControl, ProgressBar, MenuFlyout motion, and deferred Liquid
+  Glass work remain open visual-acceptance items.
 - Rebuilt `FluentToggle` around independent idle, pressed, and dragging interaction state. Binding
   commits now occur once on release, drag positioning is direct, cancellation/external updates are
   deterministic, and keyboard/accessibility activation shares the same commit path.
@@ -62,3 +62,13 @@ AppKit and Swift permit it.
   disabled input rejection, Escape restoration, external-binding drag cancellation, Reduce Motion,
   exact layer/motion validation, interactive/Disabled Gallery examples, and regenerated desktop and
   Minimal Light/Dark baselines.
+- Rebuilt CheckBox and RadioButton around independent pointer-over, pressed, and committed state.
+  Both now commit on release-inside, cancel outside/Escape, accept deterministic external bindings,
+  and own stable visual/focus layers with RTL, keyboard, accessibility, disabled, and Reduce Motion
+  coverage.
+- Added source-derived CheckBox check-path motion using the AnimatedAccept 19-frame reveal and
+  four-frame clear curves. RadioButton now uses a 20pt outer circle, 12/14/10/14 selected-dot states,
+  and a dedicated 4-to-10pt unselected pressed-feedback layer with 250ms/167ms motion.
+- Expanded Gallery choice-control states, regenerated desktop/Minimal Light/Dark baselines, and added
+  exact geometry, timing, same-bounds reconciliation, single-commit, cancellation, and environment
+  validation.

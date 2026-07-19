@@ -16,13 +16,20 @@ public struct FluentCheckBoxView: FluentUpdatablePrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let bound = FluentBoundCheckBox(binding, title: title)
         bound.checkBox.theme = context.theme
+        bound.checkBox.reduceMotion = context.reduceMotion
+        bound.checkBox.fluentLayoutDirection = context.layoutDirection
         bound.checkBox.fluentStyle = style ?? FluentAutomaticCheckBoxStyle()
         return bound
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let bound = view as? FluentBoundCheckBox else { return false }
-        bound.update(binding: binding, theme: context.theme)
+        bound.update(
+            binding: binding,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion,
+            layoutDirection: context.layoutDirection
+        )
         bound.checkBox.title = title
         bound.checkBox.fluentStyle = style ?? FluentAutomaticCheckBoxStyle()
         bound.invalidateIntrinsicContentSize()
@@ -50,13 +57,20 @@ public struct FluentRadioButtonView: FluentUpdatablePrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let bound = FluentBoundRadioButton(binding, title: title)
         bound.radioButton.theme = context.theme
+        bound.radioButton.reduceMotion = context.reduceMotion
+        bound.radioButton.fluentLayoutDirection = context.layoutDirection
         bound.radioButton.fluentStyle = style ?? FluentAutomaticRadioButtonStyle()
         return bound
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let bound = view as? FluentBoundRadioButton else { return false }
-        bound.update(binding: binding, theme: context.theme)
+        bound.update(
+            binding: binding,
+            theme: context.theme,
+            reduceMotion: context.reduceMotion,
+            layoutDirection: context.layoutDirection
+        )
         bound.radioButton.title = title
         bound.radioButton.fluentStyle = style ?? FluentAutomaticRadioButtonStyle()
         bound.invalidateIntrinsicContentSize()

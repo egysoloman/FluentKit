@@ -71,10 +71,25 @@ Completed in the Slider pass:
   Motion have executable coverage. Gallery exposes interactive and Disabled sliders in desktop and
   Minimal Light/Dark captures.
 
+Completed in the CheckBox and RadioButton pass:
+
+- Both controls now separate pointer-over and pressed interaction state from their committed Boolean
+  value, commit on release-inside, cancel on release-outside/Escape, and discard stale pointer input
+  when an external binding wins.
+- CheckBox uses stable box, check-glyph, and focus layers. Its check path follows the
+  `AnimatedAcceptVisualSource` markers with a 19-frame reveal using `(0.55,0,0,1)` and a four-frame
+  clear using `(0.167,0.167,0.833,0.833)`.
+- RadioButton uses stable 20pt outer, selected-dot, pressed-feedback, and focus layers. Its dot uses
+  12pt Normal, 14pt PointerOver/Disabled, and 10pt Pressed geometry with source-derived 250ms/167ms
+  motion; an unselected press expands the dedicated feedback dot from 4pt to 10pt.
+- Same-bounds reconciliation preserves explicit glyph motion. RTL, keyboard focus/activation,
+  accessibility press, disabled input, Reduce Motion, exact geometry/timing, and single-commit paths
+  have executable coverage. Gallery exposes checked, unchecked, selected, and disabled states.
+
 Still open by design:
 
-- Exact remaining control state machines and geometry are ordered in section 20:
-  CheckBox/RadioButton, SegmentedControl, then ProgressBar.
+- Exact remaining control state machines and geometry are ordered in section 20: SegmentedControl,
+  then ProgressBar.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
   Popover, or overlay material behavior. The verified MenuFlyout motion specification in section 17
   remains the implementation contract for the later menu pass.
@@ -357,10 +372,10 @@ High-priority controls:
 - Stepper/NumberBox
 - ComboBox
 - TextField/SecureField
-- CheckBox and RadioButton
 
-Slider no longer uses native chrome or a single immediate-mode thumb; its full visual surface is
-owned by stable FluentKit layers. Exact state acceptance is recorded in section 20.
+Slider, CheckBox, and RadioButton no longer use native chrome or immediate-mode selection glyphs;
+their full visual surfaces are owned by stable FluentKit layers. Exact state acceptance is recorded
+in section 20.
 
 Required approach:
 
@@ -369,12 +384,13 @@ Required approach:
 - Draw the Fluent visual surface and states in the owning wrapper.
 - Preserve native first responder, text input, selection, keyboard, and accessibility behavior.
 
-### P1-8: Control state animations can be overwritten by layout - resolved for ToggleSwitch and Slider
+### P1-8: Control state animations can be overwritten by layout - resolved for rebuilt controls
 
 Original finding: Toggle geometry was changed in an animated transaction before a layout pass wrote
-the same geometry with actions disabled. The rewritten ToggleSwitch and Slider now skip same-bounds
-geometry work and only cancel/snap-resolve animation when bounds or layout direction actually
-changes. SegmentedControl and other audited controls retain their own layout/animation conflicts.
+the same geometry with actions disabled. The rewritten ToggleSwitch, Slider, CheckBox, and
+RadioButton now skip same-bounds geometry work and only cancel/snap-resolve animation when bounds or
+layout direction actually changes. SegmentedControl and other audited controls retain their own
+layout/animation conflicts.
 
 Required correction:
 
@@ -573,10 +589,10 @@ The Gallery should be considered visually complete only when:
 
 FluentKit now has stable shell coordinates, transition hosting, reusable navigation choreography, and
 custom title-bar integration. The Gallery is a reliable proof of those structural paths, but it is
-not yet a complete proof of WinUI control fidelity. ToggleSwitch and Slider now pass their
-source-derived geometry, interaction, motion, RTL, accessibility, and Reduce Motion contracts. The
-immediate non-material blockers are CheckBox/RadioButton, SegmentedControl, and ProgressBar in
-section 20. The obsolete Acrylic surface path remains an explicit later phase.
+not yet a complete proof of WinUI control fidelity. ToggleSwitch, Slider, CheckBox, and RadioButton
+now pass their source-derived geometry, interaction, motion, RTL, accessibility, and Reduce Motion
+contracts. The immediate non-material blockers are SegmentedControl and ProgressBar in section 20.
+The obsolete Acrylic surface path remains an explicit later phase.
 
 The target architecture should remain AppKit-native in behavior while becoming WinUI-source-driven in visible state and motion, with Liquid Glass as the macOS material adaptation for transient surfaces.
 
@@ -671,9 +687,9 @@ Gallery composition defects:
   edge-placement popup scenarios remain incomplete
 ```
 
-The next non-material remediation order is CheckBox/RadioButton, SegmentedControl, and ProgressBar.
-Menu motion/placement follows the verified section 17 contract; Liquid Glass remains explicitly
-deferred until layout, state, and motion are stable.
+The next non-material remediation order is SegmentedControl, then ProgressBar. Menu
+motion/placement follows the verified section 17 contract; Liquid Glass remains explicitly deferred
+until layout, state, and motion are stable.
 
 ## 17. Menu Inventory and Gaps
 
@@ -846,7 +862,7 @@ The plan is intentionally component-oriented. Each component must be inspected a
 
 25. **Complete:** Button and ToggleSwitch foundations; ToggleSwitch includes source-derived
     interaction, geometry, RTL, accessibility, and Reduce Motion verification.
-26. **Slider complete; remaining:** CheckBox, RadioButton, SegmentedControl, and ProgressBar.
+26. **Slider, CheckBox, and RadioButton complete; remaining:** SegmentedControl and ProgressBar.
 27. TextBox, SearchBox, ComboBox, DatePicker, and NumberBox/Stepper.
 28. ListView, GridView/CollectionView, Table, and Outline.
 29. Dialogs, TeachingTip, Popover, Disclosure, and remaining long-tail controls.
@@ -953,18 +969,29 @@ arbitration; one callback per committed change; RTL endpoint mirroring; accessib
 Reduce Motion snapping. A same-bounds layout call is explicitly verified not to remove the active
 knob animation.
 
-### CheckBox and RadioButton selection motion
+### CheckBox and RadioButton selection motion - resolved
 
 Owner: FluentKit component  
 Files: `Sources/FluentKit/FluentChoiceControls.swift`, `Sources/FluentKit/FluentStyles.swift`
 
-Both controls currently mutate their Boolean state in `mouseDown` and immediately redraw. Their style configurations do not contain a pressed state; RadioButton does not even expose pointer-over state. Consequently the selected glyphs have no WinUI visual-state transition.
+Original finding: both controls mutated their Boolean state in `mouseDown` and immediately redrew.
+Their style configurations did not contain a pressed state; RadioButton did not expose pointer-over
+state. Consequently the selected glyphs had no WinUI visual-state transition.
 
 Required correction:
 
 - Add independent pointer-over, pressed, checked/unchecked or selected/unselected states.
 - Commit on pointer release inside the control and cancel when released outside.
 - Give the check mark and radio inner dot stable presentation layers so their size/opacity can animate with WinUI's 83/167/250 ms state tokens.
+
+Current status: complete. CheckBox owns stable box/check/focus layers and commits only on
+release-inside. Its shape-layer stroke follows the source AnimatedAccept marker contract: 19 frames
+to reveal with `(0.55,0,0,1)` and four frames to clear with
+`(0.167,0.167,0.833,0.833)`. RadioButton owns stable 20pt outer, selected-dot,
+pressed-feedback, and focus layers; its dot uses 12/14/10/14 geometry for
+Normal/PointerOver/Pressed/Disabled with 250ms/167ms source motion. Both controls preserve active
+motion across same-bounds declarative updates and cover release-outside, Escape/external-binding
+cancellation, RTL, keyboard, accessibility, disabled, Reduce Motion, and Gallery Light/Dark states.
 
 ### ProgressBar clarification
 
@@ -980,5 +1007,6 @@ The lower horizontal control is a determinate ProgressBar and should not receive
     source-derived Normal/PointerOver/Pressed/Disabled geometry and motion.
 27. **Resolved:** ToggleSwitch commits on release, has a direct drag state, and protects active
     animations from same-bounds layout.
-28. CheckBox and RadioButton lack independent pressed state and selected-glyph motion.
+28. **Resolved:** CheckBox and RadioButton have independent pressed state, release-inside commit,
+    stable glyph layers, and source-derived selected-glyph motion.
 29. ProgressBar marks immediate drawing dirty inside an animation context without an interpolated presentation property.
