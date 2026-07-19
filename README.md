@@ -590,9 +590,10 @@ let connected = FluentMotion.connectedDefault
 panel.transition(.crossFade, animation: connected.transaction)
 ```
 
-Single-selection `FluentList` instances use one shared selection indicator that moves between
-stable row identities. The Gallery navigation shell uses this same renderer and its directional
-600ms choreography, so application navigation does not need a private indicator implementation.
+Single-selection `FluentList` instances use one shared active selection indicator plus a transient
+outgoing indicator during movement between stable row identities. The Gallery navigation shell uses
+this same renderer and its directional 600ms choreography, so application navigation does not need a
+private indicator implementation.
 
 Animation duration and timing function can be supplied through the render environment. The same transaction is used by branch transitions, navigation route changes, and disclosure expansion:
 

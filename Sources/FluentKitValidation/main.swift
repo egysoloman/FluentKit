@@ -64,6 +64,13 @@ func firstLayer(named name: String, in view: NSView) -> CALayer? {
     return view.subviews.lazy.compactMap { firstLayer(named: name, in: $0) }.first
 }
 
+func keyframeAnimation(
+    for keyPath: String,
+    in group: CAAnimationGroup?
+) -> CAKeyframeAnimation? {
+    group?.animations?.compactMap { $0 as? CAKeyframeAnimation }.first { $0.keyPath == keyPath }
+}
+
 func firstSecureTextField(in view: NSView) -> NSSecureTextField? {
     if let field = view as? NSSecureTextField { return field }
     return view.subviews.lazy.compactMap(firstSecureTextField).first
@@ -942,7 +949,14 @@ listMotionWindow.contentView = listHost
 listMotionWindow.orderFront(nil)
 listHost.layoutSubtreeIfNeeded()
 let listSelectionIndicator = firstLayer(named: "FluentKit.List.SelectionIndicator", in: listHost)
+let previousListSelectionIndicator = firstLayer(named: "FluentKit.List.PreviousSelectionIndicator", in: listHost)
 require(listSelectionIndicator?.opacity == 1, "single-selection list exposes one shared selection indicator")
+require(previousListSelectionIndicator?.opacity == 0, "single-selection list keeps its outgoing indicator hidden at rest")
+require(
+    listSelectionIndicator?.frame.size == NSSize(width: 3, height: 16)
+        && listSelectionIndicator?.cornerRadius == 2,
+    "list selection indicator uses the NavigationView 3 x 16 geometry"
+)
 let listCollection = listSelectionIndicator?.superlayer?.delegate as? NSCollectionView
 let initiallySelectedListRow = listCollection?.item(at: IndexPath(item: 0, section: 0))?.view
 require(
@@ -970,11 +984,108 @@ require(
     rtlListSelectionIndicator.map { $0.frame.minX > (rtlListCollection?.bounds.midX ?? 0) } == true,
     "right-to-left list places the shared selection indicator on the leading edge"
 )
+let reducedListSelection = FluentState<String?>(wrappedValue: "General")
+let reducedListHost = FluentViewHost(
+    FluentList(rows: listRows, id: { $0.value }, selectionID: reducedListSelection.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+let reducedListWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 180),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+reducedListWindow.contentView = reducedListHost
+reducedListHost.frame = NSRect(x: 0, y: 0, width: 260, height: 180)
+reducedListWindow.orderFront(nil)
+reducedListHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+reducedListSelection.wrappedValue = "Privacy"
+drainMainQueue()
+let reducedListIndicatorAfterSelection = firstLayer(
+    named: "FluentKit.List.SelectionIndicator",
+    in: reducedListHost
+)
+let reducedPreviousListIndicatorAfterSelection = firstLayer(
+    named: "FluentKit.List.PreviousSelectionIndicator",
+    in: reducedListHost
+)
+let reducedListCollection = reducedListIndicatorAfterSelection?.superlayer?.delegate as? NSCollectionView
+let reducedSelectedRow = reducedListCollection?.item(at: IndexPath(item: 1, section: 0))?.view
+let reducedIndicatorCenter = reducedListIndicatorAfterSelection?.frame.midY
+let reducedRowCenter = reducedSelectedRow?.frame.midY
+require(
+    reducedListIndicatorAfterSelection?.animation(forKey: "fluent.navigation.selection") == nil
+        && reducedPreviousListIndicatorAfterSelection?.animation(forKey: "fluent.navigation.selection.outgoing") == nil,
+    "Reduce Motion snaps both navigation indicators without allocating animations"
+)
+require(
+    reducedIndicatorCenter.map { indicator in
+        reducedRowCenter.map { abs(indicator - $0) < 0.5 } == true
+    } == true,
+    "Reduce Motion preserves final navigation indicator alignment (indicator: \(String(describing: reducedIndicatorCenter)), row: \(String(describing: reducedRowCenter)), collection: \(String(describing: reducedListCollection?.bounds)), selected: \(String(describing: reducedListCollection?.selectionIndexPaths)))"
+)
 selectedID.wrappedValue = "Privacy"
 drainMainQueue()
+let downwardIncomingGroup = listSelectionIndicator?.animation(
+    forKey: "fluent.navigation.selection"
+) as? CAAnimationGroup
+let downwardOutgoingGroup = previousListSelectionIndicator?.animation(
+    forKey: "fluent.navigation.selection.outgoing"
+) as? CAAnimationGroup
 require(
-    listSelectionIndicator?.animation(forKey: "fluent.navigation.selection") != nil,
-    "stable-ID list selection starts the cross-row navigation indicator motion"
+    downwardIncomingGroup != nil && downwardOutgoingGroup != nil,
+    "stable-ID list selection animates incoming and outgoing navigation indicators (incoming: \(downwardIncomingGroup != nil), outgoing: \(downwardOutgoingGroup != nil))"
+)
+require(
+    downwardIncomingGroup?.duration == FluentMotion.navigationIndicator.duration,
+    "navigation indicator uses the 600ms motion token"
+)
+let downwardPosition = keyframeAnimation(for: "position", in: downwardIncomingGroup)
+let downwardScale = keyframeAnimation(for: "transform.scale.y", in: downwardIncomingGroup)
+let downwardOpacity = keyframeAnimation(for: "opacity", in: downwardOutgoingGroup)
+let downwardStart = (downwardPosition?.values?.first as? NSValue)?.pointValue.y
+let downwardEnd = (downwardPosition?.values?.last as? NSValue)?.pointValue.y
+require(
+    downwardStart.map { start in downwardEnd.map { start < $0 } == true } == true,
+    "navigation indicator keyframes preserve downward selection direction (start: \(String(describing: downwardStart)), end: \(String(describing: downwardEnd)))"
+)
+require(
+    ((downwardScale?.values?[1] as? NSNumber)?.doubleValue ?? 0) > 1,
+    "navigation indicator stretches across rows at the one-third keyframe"
+)
+require(
+    downwardOpacity?.values?.count == 3,
+    "outgoing navigation indicator remains visible through one third before fading"
+)
+selectedID.wrappedValue = "General"
+drainMainQueue()
+let upwardIncomingGroup = listSelectionIndicator?.animation(
+    forKey: "fluent.navigation.selection"
+) as? CAAnimationGroup
+let upwardPosition = keyframeAnimation(for: "position", in: upwardIncomingGroup)
+let upwardStart = (upwardPosition?.values?.first as? NSValue)?.pointValue.y
+let upwardEnd = (upwardPosition?.values?.last as? NSValue)?.pointValue.y
+require(
+    upwardStart.map { start in upwardEnd.map { start > $0 } == true } == true,
+    "navigation indicator keyframes preserve upward selection direction"
+)
+
+selectedID.wrappedValue = "Privacy"
+drainMainQueue()
+selectedID.wrappedValue = "About"
+drainMainQueue()
+let currentRapidIndicator = firstLayer(named: "FluentKit.List.SelectionIndicator", in: listHost)
+let rapidlyUpdatedIndicator = currentRapidIndicator?.animation(
+    forKey: "fluent.navigation.selection"
+) as? CAAnimationGroup
+let rapidPosition = keyframeAnimation(for: "position", in: rapidlyUpdatedIndicator)
+let rapidEnd = (rapidPosition?.values?.last as? NSValue)?.pointValue.y
+let currentRapidCollection = currentRapidIndicator?.superlayer?.delegate as? NSCollectionView
+let aboutRow = currentRapidCollection?.item(at: IndexPath(item: 2, section: 0))?.view
+require(
+    rapidEnd.map { end in aboutRow.map { abs(end - $0.frame.midY) < 0.5 } == true } == true,
+    "rapid navigation changes restart toward the latest requested row (end: \(String(describing: rapidEnd)), row: \(String(describing: aboutRow?.frame.midY)), values: \(String(describing: rapidPosition?.values)), indicator: \(String(describing: currentRapidIndicator?.frame)))"
 )
 selectedID.wrappedValue = "General"
 drainMainQueue()

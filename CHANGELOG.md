@@ -20,6 +20,9 @@ AppKit and Swift permit it.
 - Added explicit horizontal and vertical `FluentDivider` orientation.
 - Corrected shared list selection-rail layout updates across selection, scrolling, resizing, and
   stable-ID changes; added selected-row geometry validation.
+- Reworked the shared vertical list rail into a WinUI-inspired two-indicator choreography with
+  3 x 16 geometry, 600ms directional keyframes, connected-rect scaling, outgoing fade, RTL support,
+  rapid-target cancellation, and Reduce Motion coverage.
 - Added keyed Gallery page transitions with Reduce Motion, rapid-update coalescing, and
   completion-driven cleanup with a deterministic fallback.
 - Removed duplicate Gallery page titles and expanded the Collections example to avoid section/item

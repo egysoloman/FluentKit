@@ -18,6 +18,10 @@ Completed in the first layout and motion hardening pass:
 - Transition cleanup is driven by a Core Animation completion callback with a generation-checked
   dispatch fallback for non-presenting validation environments; rapid updates resolve to the latest
   requested page without retaining outgoing entries.
+- The shared vertical list rail now keeps separate active and outgoing indicator layers and follows
+  the WinUI same-level NavigationView choreography: 3 x 16 geometry, 600ms two-phase Scale/Offset,
+  1/3 connected-rect peak, outgoing opacity hold/fade, upward/downward direction, RTL leading edge,
+  cancellation, rapid-target replacement, and Reduce Motion snapping.
 - Duplicate page-local titles were removed, the Collections viewport was expanded to show both
   sections completely, and Controls/Inputs Light and Dark captures were regenerated.
 - `FluentKitValidation` now verifies every documented bitmap baseline for existence, dimensions,
@@ -25,9 +29,10 @@ Completed in the first layout and motion hardening pass:
 
 Still open by design:
 
-- The current shared-list rail animation remains a one-layer approximation. The final reusable
-  NavigationView must use the WinUI two-indicator Offset, Scale, CenterPoint, and Opacity algorithm
-  in both navigation directions; P1-2 is not complete.
+- The current implementation covers the vertical same-level list path. The final reusable
+  NavigationView still needs the source algorithm's cross-level and top-navigation paths, a real
+  CenterPoint/anchor abstraction, and coordinated selected/hover/pressed row states; P1-2 is
+  complete only for the shared-list path.
 - Transient material work is deferred. This pass does not change Acrylic, Mica, menu, TeachingTip,
   Popover, or overlay material behavior.
 - Full XCTest integration remains blocked until a complete Xcode toolchain provides `XCTest`.
@@ -208,20 +213,19 @@ Required states:
 
 The selected surface and accent indicator must be coordinated. They should not be implemented as unrelated visual updates.
 
-### P1-2: Indicator choreography is an approximation
+### P1-2: Indicator choreography is complete for the shared vertical list path
 
-The current implementation animates one CALayer through position and bounds-size keyframes. Peak height is based on `distance * 0.28` and capped at `56`; these are not WinUI NavigationView parameters.
+The shared list renderer now maintains separate previous and next indicator layers. Its vertical
+same-level path uses a stable 3 x 16 rail, a 600ms `0`, `0.333`, `1` timeline, WinUI source curves,
+connected-rectangle peak scaling, outgoing opacity hold/fade, and explicit direction-aware geometry.
+The model frame remains stable while the effective position keyframes encode the visual result of the
+WinUI CenterPoint transition; this avoids the AppKit frame jump that a raw anchor-point mutation would
+cause.
 
-WinUI uses separate previous and next indicators with Offset, Scale, CenterPoint, and Opacity animations. Same-level and cross-level navigation use different paths. The current implementation should be treated as a placeholder, not a completed reproduction.
-
-Required algorithm:
-
-- Maintain previous and next indicator visuals during transition.
-- Calculate positions relative to one stable navigation pane host.
-- Use `600ms` keyframe choreography with the WinUI `0`, `0.333`, and `1` phases.
-- Use the source curves for each phase.
-- Change the scale origin/anchor so the bar grows and contracts from the correct edge.
-- Handle same-target repetition, target changes, cancellation, and motion disabled states.
+The reusable NavigationView remains incomplete for top navigation and cross-level paths. It still
+needs a public anchor/CenterPoint abstraction and coordinated row visual states. Same-target
+repetition, target replacement, cancellation, RTL leading-rail placement, and Reduce Motion are
+covered by executable validation for the current list path.
 
 ### P1-3: Gallery navigation is not a reusable NavigationView proof
 
@@ -611,6 +615,52 @@ The current implementation does not yet expose a complete WinUI-style menu hiera
 
 The menu family should therefore be counted separately in the component plan. It currently contains six relevant public APIs, with three major visual components requiring focused work: MenuFlyout, ContextMenu, and the menu-triggering control. A complete target family should additionally define `FluentMenu` and, where needed, `FluentMenuBar`.
 
+### WinUI MenuFlyout motion specification
+
+WinUI does not open a menu with a generic two-axis scale-and-fade animation. It uses the dedicated internal `MenuPopupThemeTransition`, which reveals the menu vertically from the edge nearest its placement anchor.
+
+Source locations:
+
+- `microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/LayoutTransition_partial.cpp`, `MenuPopupThemeTransition::CreateStoryboardImpl`
+- `microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/MenuPopupThemeTransition_Partial.h`
+- `microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/MenuFlyout_Partial.cpp`, `PreparePopupTheme`
+- `microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/MenuFlyoutSubItem_Partial.cpp`, submenu transition setup
+
+Verified parameters and behavior:
+
+- Root MenuFlyout uses `ClosedRatio = 0.5`. Its border begins at `scaleY = 0.5` and expands to `1.0`.
+- A submenu uses `ClosedRatio = 0.67`. Its border begins at `scaleY = 0.33` and expands to `1.0`.
+- Open duration is `250 ms`.
+- Open easing is cubic Bezier `(0,0,0,1)`.
+- Opening animates clip translation, content translation, and border Y scale together. It does not scale the menu in X.
+- Direction is placement-aware. A menu placed below its target reveals downward from its top edge; a menu placed above the target reverses the animation and reveals upward from its bottom edge.
+- Closing is not the opening animation played backward. The menu fades from opacity `1` to `0` linearly over `83 ms` while preserving an interrupted opening clip if dismissal occurs mid-transition.
+- An associated light-dismiss overlay, when present, fades linearly over `83 ms`.
+- Menu-item `Normal`, `PointerOver`, `Pressed`, `Disabled`, and `SubMenuOpened` states primarily switch semantic brushes immediately. The template does not stagger menu-item entrance animations.
+- Open/close motion is skipped when WinUI's `AreOpenCloseAnimationsEnabled` is false; FluentKit must connect the equivalent behavior to Reduce Motion.
+
+The intended visual result is therefore a fast anchored reveal: the attachment edge remains visually stable while the remaining menu height is uncovered. It should not look like a floating card zooming toward the viewer.
+
+Current FluentKit divergence:
+
+- `FluentMenuFlyout` reuses `FluentMotion.teachingTipOpen` and `teachingTipClose`.
+- Opening currently combines panel opacity with vertical translation and uniform X/Y scaling.
+- Closing applies the same translated/scaled card treatment plus a fade.
+- The motion does not derive its origin or direction from final menu placement.
+- Root menus and submenus use the same geometry instead of the WinUI `0.5` versus `0.67` closed ratios.
+- Submenu hover delay is an interaction policy and must remain separate from the submenu reveal animation.
+
+Required correction:
+
+- Add dedicated `menuOpen`, `submenuOpen`, and `menuClose` motion specifications instead of reusing TeachingTip tokens.
+- Implement the reveal with a stable edge anchor, an animatable vertical mask/clip, content translation, and Y-only surface scaling.
+- Select the reveal direction only after placement and edge-flipping have resolved.
+- Open root menus from 50% height and submenus from 33% height over 250 ms with `(0,0,0,1)`.
+- Close with an 83 ms linear opacity transition and completion-driven panel removal; do not reverse-collapse the surface.
+- Preserve the current presentation clip when close interrupts open.
+- Disable geometry motion under Reduce Motion while retaining correct final placement and visibility.
+- Apply this motion to the required Liquid Glass menu surface. The WinUI Acrylic material is not part of the target; only its menu geometry and choreography are being replicated.
+
 ## 18. Consolidated Problem List
 
 ### Rendering and layout
@@ -634,7 +684,8 @@ The menu family should therefore be counted separately in the component plan. It
 11. There is no reusable `FluentNavigationView` with Expanded, Compact, Minimal/Overlay, and Top modes.
 12. There is no reusable `FluentTitleBar` with compact/expanded height, pane toggle, back button, icon, subtitle, left header, center content, and right header.
 13. Navigation selection states lack a complete selected/hover/pressed/focus state model.
-14. Navigation indicator choreography is a one-layer approximation rather than the WinUI two-indicator algorithm.
+14. Navigation indicator choreography is implemented for the shared vertical same-level list path;
+    reusable NavigationView top/cross-level paths and coordinated row states remain open.
 
 ### Menus and transient surfaces
 
