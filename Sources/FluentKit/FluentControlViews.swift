@@ -5,12 +5,26 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
     public let role: FluentButtonRole
     public let action: (() -> Void)?
     public let style: (any FluentButtonStyle)?
+    public let flyoutItems: [FluentMenuItem]?
+    public let flyoutPlacement: FluentMenuPlacement
+    public let commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration?
 
-    public init(_ title: String, role: FluentButtonRole = .standard, action: (() -> Void)? = nil, style: (any FluentButtonStyle)? = nil) {
+    public init(
+        _ title: String,
+        role: FluentButtonRole = .standard,
+        action: (() -> Void)? = nil,
+        style: (any FluentButtonStyle)? = nil,
+        flyoutItems: [FluentMenuItem]? = nil,
+        flyoutPlacement: FluentMenuPlacement = .below,
+        commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration? = nil
+    ) {
         self.title = title
         self.role = role
         self.action = action
         self.style = style
+        self.flyoutItems = flyoutItems
+        self.flyoutPlacement = flyoutPlacement
+        self.commandBarFlyoutConfiguration = commandBarFlyoutConfiguration
     }
 
     public var body: NeverFluentView { NeverFluentView() }
@@ -18,8 +32,12 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let button = FluentButton(title: title, role: role)
         button.theme = context.theme
+        button.reduceMotion = context.reduceMotion
         button.onClick = action
         button.fluentStyle = style
+        button.flyoutItems = flyoutItems
+        button.flyoutPlacement = flyoutPlacement
+        button.commandBarFlyoutConfiguration = commandBarFlyoutConfiguration
         return button
     }
 
@@ -28,15 +46,65 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
         button.title = title
         button.role = role
         button.theme = context.theme
+        button.reduceMotion = context.reduceMotion
         button.onClick = action
         button.fluentStyle = style
+        button.flyoutItems = flyoutItems
+        button.flyoutPlacement = flyoutPlacement
+        button.commandBarFlyoutConfiguration = commandBarFlyoutConfiguration
         button.setAccessibilityTitle(title)
         button.invalidateIntrinsicContentSize()
         return true
     }
 
     public func buttonStyle(_ style: any FluentButtonStyle) -> FluentButtonView {
-        FluentButtonView(title, role: role, action: action, style: style)
+        FluentButtonView(
+            title,
+            role: role,
+            action: action,
+            style: style,
+            flyoutItems: flyoutItems,
+            flyoutPlacement: flyoutPlacement,
+            commandBarFlyoutConfiguration: commandBarFlyoutConfiguration
+        )
+    }
+
+    /// Attaches an application-owned MenuFlyout to this button, matching WinUI's
+    /// `Button.Flyout` relationship.
+    public func flyout(
+        placement: FluentMenuPlacement = .below,
+        @FluentMenuBuilder items: () -> [FluentMenuItem]
+    ) -> FluentButtonView {
+        FluentButtonView(
+            title,
+            role: role,
+            action: action,
+            style: style,
+            flyoutItems: items(),
+            flyoutPlacement: placement,
+            commandBarFlyoutConfiguration: nil
+        )
+    }
+
+    /// Attaches a CommandBarFlyout while preserving the Button as the invocation target.
+    public func commandBarFlyout(
+        alwaysExpanded: Bool = false,
+        @FluentCommandBarBuilder primaryCommands: () -> [FluentCommandBarItem],
+        @FluentCommandBarBuilder secondaryCommands: () -> [FluentCommandBarItem] = { [] }
+    ) -> FluentButtonView {
+        FluentButtonView(
+            title,
+            role: role,
+            action: action,
+            style: style,
+            flyoutItems: nil,
+            flyoutPlacement: flyoutPlacement,
+            commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration(
+                primaryCommands: primaryCommands(),
+                secondaryCommands: secondaryCommands(),
+                alwaysExpanded: alwaysExpanded
+            )
+        )
     }
 }
 
@@ -110,9 +178,13 @@ public struct FluentSliderView: FluentUpdatablePrimitiveView {
             reduceMotion: context.reduceMotion,
             layoutDirection: context.layoutDirection
         )
-        slider.slider.minimumValue = range.lowerBound
-        slider.slider.maximumValue = range.upperBound
-        slider.slider.fluentStyle = style
+        if slider.slider.minimumValue != range.lowerBound {
+            slider.slider.minimumValue = range.lowerBound
+        }
+        if slider.slider.maximumValue != range.upperBound {
+            slider.slider.maximumValue = range.upperBound
+        }
+        slider.slider.applyDeclarativeStyle(style)
         return true
     }
 

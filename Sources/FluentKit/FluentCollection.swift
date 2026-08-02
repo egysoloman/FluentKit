@@ -28,8 +28,8 @@ public struct FluentCollectionLayout: Equatable {
     }
 
     public static func list(
-        rowHeight: CGFloat = 44,
-        spacing: CGFloat = 2,
+        rowHeight: CGFloat = 40,
+        spacing: CGFloat = 0,
         headerHeight: CGFloat = 34
     ) -> FluentCollectionLayout {
         FluentCollectionLayout(
@@ -65,6 +65,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
     private let layout: FluentCollectionLayout
     private let selection: FluentCollectionIdentityBinding?
     private let selections: FluentCollectionIdentitySetBinding?
+    private let isEnabled: (ItemID) -> Bool
+    private let itemStyle: any FluentCollectionItemStyle
     private let content: (ItemID) -> FluentAnyView
     private let header: ((SectionID) -> FluentAnyView)?
 
@@ -72,12 +74,16 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout = .list(),
         selectionID: FluentBinding<ItemID?>? = nil,
+        isEnabled: @escaping (ItemID) -> Bool = { _ in true },
+        itemStyle: any FluentCollectionItemStyle = FluentAutomaticCollectionItemStyle(),
         @FluentViewBuilder content: @escaping (ItemID) -> Content
     ) {
         self.snapshot = snapshot
         self.layout = layout
         selection = selectionID.map(FluentCollectionIdentityBinding.init)
         selections = nil
+        self.isEnabled = isEnabled
+        self.itemStyle = itemStyle
         self.content = { FluentAnyView(content($0)) }
         header = nil
     }
@@ -86,12 +92,16 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout = .list(),
         selectionIDs: FluentBinding<Set<ItemID>>,
+        isEnabled: @escaping (ItemID) -> Bool = { _ in true },
+        itemStyle: any FluentCollectionItemStyle = FluentAutomaticCollectionItemStyle(),
         @FluentViewBuilder content: @escaping (ItemID) -> Content
     ) {
         self.snapshot = snapshot
         self.layout = layout
         selection = nil
         selections = FluentCollectionIdentitySetBinding(selectionIDs)
+        self.isEnabled = isEnabled
+        self.itemStyle = itemStyle
         self.content = { FluentAnyView(content($0)) }
         header = nil
     }
@@ -100,6 +110,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout = .list(),
         selectionID: FluentBinding<ItemID?>? = nil,
+        isEnabled: @escaping (ItemID) -> Bool = { _ in true },
+        itemStyle: any FluentCollectionItemStyle = FluentAutomaticCollectionItemStyle(),
         @FluentViewBuilder content: @escaping (ItemID) -> Content,
         @FluentViewBuilder header: @escaping (SectionID) -> Header
     ) {
@@ -107,6 +119,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
         self.layout = layout
         selection = selectionID.map(FluentCollectionIdentityBinding.init)
         selections = nil
+        self.isEnabled = isEnabled
+        self.itemStyle = itemStyle
         self.content = { FluentAnyView(content($0)) }
         self.header = { FluentAnyView(header($0)) }
     }
@@ -115,6 +129,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout = .list(),
         selectionIDs: FluentBinding<Set<ItemID>>,
+        isEnabled: @escaping (ItemID) -> Bool = { _ in true },
+        itemStyle: any FluentCollectionItemStyle = FluentAutomaticCollectionItemStyle(),
         @FluentViewBuilder content: @escaping (ItemID) -> Content,
         @FluentViewBuilder header: @escaping (SectionID) -> Header
     ) {
@@ -122,6 +138,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
         self.layout = layout
         selection = nil
         selections = FluentCollectionIdentitySetBinding(selectionIDs)
+        self.isEnabled = isEnabled
+        self.itemStyle = itemStyle
         self.content = { FluentAnyView(content($0)) }
         self.header = { FluentAnyView(header($0)) }
     }
@@ -135,6 +153,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
             layout: layout,
             selection: selection,
             selections: selections,
+            isEnabled: isEnabled,
+            itemStyle: itemStyle,
             content: content,
             header: header,
             context: context
@@ -149,6 +169,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
             layout: layout,
             selection: selection,
             selections: selections,
+            isEnabled: isEnabled,
+            itemStyle: itemStyle,
             content: content,
             header: header,
             context: context
@@ -192,15 +214,47 @@ private struct FluentCollectionIdentitySetBinding {
 private let fluentSectionedItemIdentifier = NSUserInterfaceItemIdentifier("FluentKit.Collection.Item")
 private let fluentSectionedHeaderIdentifier = NSUserInterfaceItemIdentifier("FluentKit.Collection.Header")
 
+private final class FluentCollectionNativeView: NSCollectionView {
+    var onFocusVisibilityChange: (() -> Void)?
+
+    override func becomeFirstResponder() -> Bool {
+        let accepted = super.becomeFirstResponder()
+        if accepted { onFocusVisibilityChange?() }
+        return accepted
+    }
+
+    override func resignFirstResponder() -> Bool {
+        let resigned = super.resignFirstResponder()
+        if resigned { onFocusVisibilityChange?() }
+        return resigned
+    }
+
+    override func keyDown(with event: NSEvent) {
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        onFocusVisibilityChange?()
+        super.keyDown(with: event)
+        onFocusVisibilityChange?()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        FluentFocusVisibility.markPointerInteraction(in: window)
+        onFocusVisibilityChange?()
+        super.mouseDown(with: event)
+        onFocusVisibilityChange?()
+    }
+}
+
 private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>:
-    NSScrollView, NSCollectionViewDelegate {
+    NSScrollView, NSCollectionViewDelegate, FluentFillWidthProviding {
     // Keep the initial flow-layout geometry valid while the scroll host is still being mounted.
-    private let collectionView = NSCollectionView(frame: NSRect(x: 0, y: 0, width: 16, height: 16))
+    private let collectionView = FluentCollectionNativeView(frame: NSRect(x: 0, y: 0, width: 16, height: 16))
     private let flowLayout = NSCollectionViewFlowLayout()
     private var snapshot = FluentCollectionSnapshot<SectionID, ItemID>()
     private var layoutSpec = FluentCollectionLayout.list()
     private var selection: FluentCollectionIdentityBinding?
     private var selections: FluentCollectionIdentitySetBinding?
+    private var isItemEnabled: (ItemID) -> Bool = { _ in true }
+    private var itemStyle: any FluentCollectionItemStyle = FluentAutomaticCollectionItemStyle()
     private var observedSelection: FluentCollectionIdentityBinding?
     private var observedSelections: FluentCollectionIdentitySetBinding?
     private var selectionObserverID: UUID?
@@ -211,6 +265,11 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
     private var theme: FluentTheme
     private var isApplyingSelection = false
     private var needsInitialSnapshot = false
+    private var hasAppliedSelection = false
+    private var pressedIndexPath: IndexPath?
+    private var pointerEventMonitor: Any?
+    private var lastViewportWidth: CGFloat = -1
+    private var lastResolvedColumnCount = 0
     private var diffableDataSource: NSCollectionViewDiffableDataSource<AnyHashable, AnyHashable>!
 
     init(theme: FluentTheme) {
@@ -229,6 +288,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         collectionView.collectionViewLayout = flowLayout
         collectionView.delegate = self
         collectionView.isSelectable = true
+        collectionView.focusRingType = .none
         collectionView.backgroundColors = [.clear]
         collectionView.register(
             FluentSectionedCollectionItem.self,
@@ -245,8 +305,8 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
 
         diffableDataSource = NSCollectionViewDiffableDataSource<AnyHashable, AnyHashable>(
             collectionView: collectionView
-        ) { [weak self] collectionView, indexPath, identifier in
-            self?.makeItem(in: collectionView, at: indexPath, identifier: identifier)
+        ) { [weak self] collectionView, indexPath, _ in
+            self?.makeItem(in: collectionView, at: indexPath)
                 ?? NSCollectionViewItem()
         }
         diffableDataSource.supplementaryViewProvider = { [weak self] (
@@ -257,6 +317,10 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
             self?.makeHeader(in: collectionView, kind: kind, at: indexPath)
         }
         collectionView.dataSource = diffableDataSource
+        collectionView.onFocusVisibilityChange = { [weak self] in
+            DispatchQueue.main.async { [weak self] in self?.updateVisibleItemStates(animated: false) }
+        }
+        installPointerEventMonitor()
         updateAccessibilityRole()
     }
 
@@ -264,11 +328,21 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
 
     override func layout() {
         super.layout()
-        let hasUsableViewport = updateLayoutMetrics()
-        if hasUsableViewport, needsInitialSnapshot {
+        let metrics = updateLayoutMetrics()
+        if metrics.changed {
+            collectionView.needsLayout = true
+            collectionView.visibleItems().forEach { $0.view.needsLayout = true }
+        }
+        if metrics.usable, needsInitialSnapshot {
             needsInitialSnapshot = false
             applySnapshot(reloadingContent: false, animatingDifferences: false)
         }
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        lastViewportWidth = -1
+        needsLayout = true
     }
 
     func setData(
@@ -276,6 +350,8 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         layout: FluentCollectionLayout,
         selection: FluentCollectionIdentityBinding?,
         selections: FluentCollectionIdentitySetBinding?,
+        isEnabled: @escaping (ItemID) -> Bool,
+        itemStyle: any FluentCollectionItemStyle,
         content: @escaping (ItemID) -> FluentAnyView,
         header: ((SectionID) -> FluentAnyView)?,
         context: FluentRenderContext
@@ -284,6 +360,8 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         layoutSpec = layout
         self.selection = selection
         self.selections = selections
+        isItemEnabled = isEnabled
+        self.itemStyle = itemStyle
         self.content = content
         self.header = header
         self.context = context
@@ -304,6 +382,8 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         layout: FluentCollectionLayout,
         selection: FluentCollectionIdentityBinding?,
         selections: FluentCollectionIdentitySetBinding?,
+        isEnabled: @escaping (ItemID) -> Bool,
+        itemStyle: any FluentCollectionItemStyle,
         content: @escaping (ItemID) -> FluentAnyView,
         header: ((SectionID) -> FluentAnyView)?,
         context: FluentRenderContext
@@ -315,6 +395,8 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         layoutSpec = layout
         self.selection = selection
         self.selections = selections
+        isItemEnabled = isEnabled
+        self.itemStyle = itemStyle
         self.content = content
         self.header = header
         self.context = context
@@ -343,26 +425,40 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
     }
 
     @discardableResult
-    private func updateLayoutMetrics() -> Bool {
+    private func updateLayoutMetrics() -> (usable: Bool, changed: Bool) {
         let insets = flowLayout.sectionInset
         let viewportWidth = contentView.bounds.width
-        guard viewportWidth > insets.left + insets.right + 1 else { return false }
+        guard viewportWidth > insets.left + insets.right + 1 else { return (false, false) }
         let availableWidth = viewportWidth - insets.left - insets.right
         let itemWidth: CGFloat
+        let columns: Int
         switch layoutSpec.kind {
         case .list:
+            columns = 1
             itemWidth = availableWidth
         case .adaptiveGrid:
-            let columns = max(Int((availableWidth + layoutSpec.spacing)
+            columns = max(Int((availableWidth + layoutSpec.spacing)
                 / (layoutSpec.minimumItemWidth + layoutSpec.spacing)), 1)
             itemWidth = (availableWidth - CGFloat(columns - 1) * layoutSpec.spacing) / CGFloat(columns)
         }
-        let itemSize = NSSize(width: floor(itemWidth), height: layoutSpec.itemHeight)
-        if flowLayout.itemSize != itemSize {
+        let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
+        let alignedItemWidth = floor(itemWidth * max(scale, 1)) / max(scale, 1)
+        let itemSize = NSSize(width: alignedItemWidth, height: layoutSpec.itemHeight)
+        let headerSize = header == nil
+            ? NSSize.zero
+            : NSSize(width: availableWidth, height: layoutSpec.headerHeight)
+        let changed = abs(lastViewportWidth - viewportWidth) > 0.001
+            || lastResolvedColumnCount != columns
+            || flowLayout.itemSize != itemSize
+            || flowLayout.headerReferenceSize != headerSize
+        if changed {
+            lastViewportWidth = viewportWidth
+            lastResolvedColumnCount = columns
             flowLayout.itemSize = itemSize
+            flowLayout.headerReferenceSize = headerSize
             flowLayout.invalidateLayout()
         }
-        return true
+        return (true, changed)
     }
 
     private var hasUsableViewport: Bool {
@@ -401,18 +497,27 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
 
     private func makeItem(
         in collectionView: NSCollectionView,
-        at indexPath: IndexPath,
-        identifier: AnyHashable
+        at indexPath: IndexPath
     ) -> NSCollectionViewItem {
         let item = collectionView.makeItem(withIdentifier: fluentSectionedItemIdentifier, for: indexPath)
         guard let host = item as? FluentSectionedCollectionItem,
-              let itemID = identifier.base as? ItemID,
+              snapshot.sectionIdentifiers.indices.contains(indexPath.section),
               let content else { return item }
+        let sectionID = snapshot.sectionIdentifiers[indexPath.section]
+        let sectionItems = snapshot.itemIdentifiers(inSection: sectionID)
+        guard sectionItems.indices.contains(indexPath.item) else { return item }
+        let itemID = sectionItems[indexPath.item]
+        let selected = collectionView.selectionIndexPaths.contains(indexPath)
         host.update(
             content: content(itemID),
             context: context,
             theme: theme,
-            selected: collectionView.selectionIndexPaths.contains(indexPath)
+            layoutKind: layoutSpec.kind,
+            itemStyle: itemStyle,
+            enabled: isItemEnabled(itemID),
+            selected: selected,
+            focused: selected && isKeyboardFocusVisible,
+            reduceMotion: context.reduceMotion
         )
         host.view.setAccessibilityLabel("Item \(indexPath.item + 1)")
         return host
@@ -454,6 +559,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
     private func applySelection() {
         isApplyingSelection = true
         defer { isApplyingSelection = false }
+        let previousIndexPaths = collectionView.selectionIndexPaths
         let availableIDs = Set(snapshot.itemIdentifiers.map(AnyHashable.init))
         let selectedIDs: Set<AnyHashable>
         if let selections {
@@ -467,14 +573,26 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         }
         let indexPaths = Set(selectedIDs.compactMap { diffableDataSource.indexPath(for: $0) })
         collectionView.selectionIndexPaths = indexPaths
-        updateVisibleSelection()
+        let shouldAnimate = hasAppliedSelection
+            && previousIndexPaths != indexPaths
+            && window != nil
+        hasAppliedSelection = true
+        updateVisibleItemStates(animated: shouldAnimate)
     }
 
-    private func updateVisibleSelection() {
+    private var isKeyboardFocusVisible: Bool {
+        collectionView.window?.firstResponder === collectionView
+            && FluentFocusVisibility.isKeyboardFocusVisible(for: collectionView)
+    }
+
+    private func updateVisibleItemStates(animated: Bool) {
         for item in collectionView.visibleItems() {
             guard let host = item as? FluentSectionedCollectionItem,
                   let indexPath = collectionView.indexPath(for: item) else { continue }
-            host.setSelected(collectionView.selectionIndexPaths.contains(indexPath), theme: theme)
+            let selected = collectionView.selectionIndexPaths.contains(indexPath)
+            host.setSelected(selected, animated: animated)
+            host.setFocused(selected && isKeyboardFocusVisible)
+            host.setPressed(indexPath == pressedIndexPath)
         }
     }
 
@@ -487,8 +605,20 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         } else {
             selection?.set(selectedIDs.first)
         }
-        updateVisibleSelection()
+        updateVisibleItemStates(animated: true)
         context.invalidate?()
+    }
+
+    func collectionView(
+        _ collectionView: NSCollectionView,
+        shouldSelectItemsAt indexPaths: Set<IndexPath>
+    ) -> Set<IndexPath> {
+        Set(indexPaths.filter { indexPath in
+            guard snapshot.sectionIdentifiers.indices.contains(indexPath.section) else { return false }
+            let sectionID = snapshot.sectionIdentifiers[indexPath.section]
+            let items = snapshot.itemIdentifiers(inSection: sectionID)
+            return items.indices.contains(indexPath.item) && isItemEnabled(items[indexPath.item])
+        })
     }
 
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
@@ -501,7 +631,58 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         synchronizeSelection()
     }
 
+    private func installPointerEventMonitor() {
+        pointerEventMonitor = NSEvent.addLocalMonitorForEvents(
+            matching: [.leftMouseDown, .leftMouseDragged, .leftMouseUp]
+        ) { [weak self] event in
+            guard let self,
+                  event.window === self.collectionView.window else { return event }
+            let point = self.collectionView.convert(event.locationInWindow, from: nil)
+            let nextIndexPath = self.collectionView.bounds.contains(point)
+                ? self.collectionView.indexPathForItem(at: point)
+                : nil
+            switch event.type {
+            case .leftMouseDown:
+                if let nextIndexPath, self.itemIsEnabled(at: nextIndexPath) {
+                    self.setPressedIndexPath(nextIndexPath)
+                } else {
+                    self.setPressedIndexPath(nil)
+                }
+            case .leftMouseDragged:
+                self.setPressedIndexPath(
+                    nextIndexPath == self.pressedIndexPath ? self.pressedIndexPath : nil
+                )
+            case .leftMouseUp:
+                self.setPressedIndexPath(nil)
+            default:
+                break
+            }
+            return event
+        }
+    }
+
+    private func itemIsEnabled(at indexPath: IndexPath) -> Bool {
+        guard snapshot.sectionIdentifiers.indices.contains(indexPath.section) else { return false }
+        let sectionID = snapshot.sectionIdentifiers[indexPath.section]
+        let items = snapshot.itemIdentifiers(inSection: sectionID)
+        return items.indices.contains(indexPath.item) && isItemEnabled(items[indexPath.item])
+    }
+
+    private func setPressedIndexPath(_ indexPath: IndexPath?) {
+        guard pressedIndexPath != indexPath else { return }
+        if let pressedIndexPath,
+           let oldItem = collectionView.item(at: pressedIndexPath) as? FluentSectionedCollectionItem {
+            oldItem.setPressed(false)
+        }
+        pressedIndexPath = indexPath
+        if let indexPath,
+           let newItem = collectionView.item(at: indexPath) as? FluentSectionedCollectionItem {
+            newItem.setPressed(true)
+        }
+    }
+
     deinit {
+        if let pointerEventMonitor { NSEvent.removeMonitor(pointerEventMonitor) }
         if let selectionObserverID { observedSelection?.removeObserver?(selectionObserverID) }
         if let selectionsObserverID { observedSelections?.removeObserver?(selectionsObserverID) }
     }
@@ -514,53 +695,428 @@ private final class FluentSectionedCollectionItem: NSCollectionViewItem {
         view = FluentSectionedCollectionCell()
     }
 
-    func update(content: FluentAnyView, context: FluentRenderContext, theme: FluentTheme, selected: Bool) {
+    func update(
+        content: FluentAnyView,
+        context: FluentRenderContext,
+        theme: FluentTheme,
+        layoutKind: FluentCollectionLayout.Kind,
+        itemStyle: any FluentCollectionItemStyle,
+        enabled: Bool,
+        selected: Bool,
+        focused: Bool,
+        reduceMotion: Bool
+    ) {
+        cellView.updateConfiguration(
+            theme: theme,
+            layoutKind: layoutKind,
+            itemStyle: itemStyle,
+            enabled: enabled,
+            selected: selected,
+            focused: focused,
+            reduceMotion: reduceMotion
+        )
         cellView.update(content: content, context: context)
-        setSelected(selected, theme: theme)
     }
 
-    func setSelected(_ selected: Bool, theme: FluentTheme) {
+    func setSelected(_ selected: Bool, animated: Bool) {
         isSelected = selected
-        cellView.updateSelection(selected, theme: theme)
+        cellView.setSelected(selected, animated: animated)
+    }
+
+    func setFocused(_ focused: Bool) { cellView.setFocused(focused) }
+    func setPressed(_ pressed: Bool) { cellView.setPressed(pressed) }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cellView.prepareForReuse()
     }
 }
 
 private final class FluentSectionedCollectionCell: NSView {
     private var contentView: NSView?
+    private var contentConstraints: [NSLayoutConstraint] = []
+    private let surfaceLayer = CALayer()
+    private let gridOuterBorderLayer = CAShapeLayer()
+    private let gridInnerBorderLayer = CAShapeLayer()
+    private let selectionIndicatorLayer = CALayer()
+    private let focusOuterLayer = CAShapeLayer()
+    private let focusInnerLayer = CAShapeLayer()
+    private let animationCoordinator = FluentAnimationCoordinator()
+    private var pointerTrackingArea: NSTrackingArea?
+    private var theme = FluentTheme.current
+    private var layoutKind = FluentCollectionLayout.Kind.list
+    private var itemStyle: any FluentCollectionItemStyle = FluentAutomaticCollectionItemStyle()
+    private var enabled = true
+    private var selected = false
+    private var focused = false
+    private var pointerOver = false
+    private var pressed = false
+    private var reduceMotion = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
-        layer?.cornerRadius = 6
+        layer?.masksToBounds = false
+        surfaceLayer.name = "FluentKit.CollectionItem.Surface"
+        surfaceLayer.zPosition = -1
+        layer?.addSublayer(surfaceLayer)
+        gridOuterBorderLayer.name = "FluentKit.CollectionItem.GridOuterBorder"
+        gridOuterBorderLayer.fillRule = .evenOdd
+        gridOuterBorderLayer.zPosition = 10
+        layer?.addSublayer(gridOuterBorderLayer)
+        gridInnerBorderLayer.name = "FluentKit.CollectionItem.GridInnerBorder"
+        gridInnerBorderLayer.fillRule = .evenOdd
+        gridInnerBorderLayer.zPosition = 11
+        layer?.addSublayer(gridInnerBorderLayer)
+        selectionIndicatorLayer.name = "FluentKit.CollectionItem.SelectionIndicator"
+        selectionIndicatorLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        selectionIndicatorLayer.zPosition = 12
+        layer?.addSublayer(selectionIndicatorLayer)
+        focusOuterLayer.name = "FluentKit.CollectionItem.FocusOuter"
+        focusOuterLayer.fillRule = .evenOdd
+        focusOuterLayer.zPosition = 20
+        layer?.addSublayer(focusOuterLayer)
+        focusInnerLayer.name = "FluentKit.CollectionItem.FocusInner"
+        focusInnerLayer.fillRule = .evenOdd
+        focusInnerLayer.zPosition = 21
+        layer?.addSublayer(focusInnerLayer)
         setAccessibilityElement(true)
         setAccessibilityRole(.cell)
+        setAccessibilityEnabled(true)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    override func updateTrackingAreas() {
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        super.updateTrackingAreas()
+        let trackingArea = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        pointerTrackingArea = trackingArea
+        addTrackingArea(trackingArea)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        guard enabled else { return }
+        pointerOver = true
+        applyAppearance(animated: true)
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        pointerOver = false
+        pressed = false
+        applyAppearance(animated: true)
+    }
+
+    override func layout() {
+        super.layout()
+        updateLayerGeometry(for: resolvedAppearance())
+    }
+
+    func updateConfiguration(
+        theme: FluentTheme,
+        layoutKind: FluentCollectionLayout.Kind,
+        itemStyle: any FluentCollectionItemStyle,
+        enabled: Bool,
+        selected: Bool,
+        focused: Bool,
+        reduceMotion: Bool
+    ) {
+        let layoutChanged = self.layoutKind != layoutKind
+        self.theme = theme
+        self.layoutKind = layoutKind
+        self.itemStyle = itemStyle
+        self.enabled = enabled
+        self.selected = selected
+        self.focused = focused
+        self.reduceMotion = reduceMotion
+        animationCoordinator.reduceMotion = reduceMotion
+        userInterfaceLayoutDirection = superview?.userInterfaceLayoutDirection ?? userInterfaceLayoutDirection
+        if !enabled {
+            pointerOver = false
+            pressed = false
+        }
+        setAccessibilityEnabled(enabled)
+        setAccessibilitySelected(selected)
+        applyAppearance(animated: false)
+        if layoutChanged { installContentConstraints() }
+    }
+
     func update(content: FluentAnyView, context: FluentRenderContext) {
-        if let contentView, content._update(contentView, in: context) { return }
+        userInterfaceLayoutDirection = context.layoutDirection.appKitValue
+        if let contentView, content._update(contentView, in: context) {
+            contentView.alphaValue = resolvedAppearance().contentOpacity
+            installContentConstraints()
+            needsLayout = true
+            return
+        }
         contentView?.removeFromSuperview()
         let mounted = content._mount(in: context)
         contentView = mounted
+        mounted.alphaValue = resolvedAppearance().contentOpacity
         addSubview(mounted)
         mounted.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            mounted.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            mounted.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
-            mounted.topAnchor.constraint(equalTo: topAnchor, constant: 6),
-            mounted.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6)
-        ])
+        installContentConstraints()
+        needsLayout = true
     }
 
-    func updateSelection(_ selected: Bool, theme: FluentTheme) {
-        layer?.backgroundColor = selected
-            ? theme.accent.withAlphaComponent(0.16).cgColor
-            : theme.controlFill.withAlphaComponent(0.36).cgColor
-        layer?.borderWidth = 1
-        layer?.borderColor = (selected ? theme.accent : theme.controlStroke)
-            .withAlphaComponent(selected ? 0.6 : 0.45).cgColor
+    func setSelected(_ selected: Bool, animated: Bool) {
+        guard self.selected != selected else { return }
+        self.selected = selected
         setAccessibilitySelected(selected)
+        applyAppearance(animated: animated, selectionChanged: true)
+    }
+
+    func setFocused(_ focused: Bool) {
+        guard self.focused != focused else { return }
+        self.focused = focused
+        applyAppearance(animated: false)
+    }
+
+    func setPressed(_ pressed: Bool) {
+        let next = enabled && pressed
+        guard self.pressed != next else { return }
+        self.pressed = next
+        applyAppearance(animated: true, pressedChanged: true)
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        pointerOver = false
+        pressed = false
+        focused = false
+        selected = false
+        animationCoordinator.cancelAll(on: [surfaceLayer, selectionIndicatorLayer])
+        applyAppearance(animated: false)
+    }
+
+    private var controlState: FluentControlState {
+        if !enabled { return .disabled }
+        if pressed { return .pressed }
+        if pointerOver { return .pointerOver }
+        if focused { return .focused }
+        return .normal
+    }
+
+    private func resolvedAppearance() -> FluentCollectionItemAppearance {
+        itemStyle.appearance(
+            for: FluentCollectionItemStyleConfiguration(
+                layoutKind: layoutKind,
+                controlState: controlState,
+                isSelected: selected,
+                isEnabled: enabled,
+                isFocused: focused,
+                theme: theme
+            )
+        )
+    }
+
+    private func applyAppearance(
+        animated: Bool,
+        selectionChanged: Bool = false,
+        pressedChanged: Bool = false
+    ) {
+        let appearance = resolvedAppearance()
+        animationCoordinator.reduceMotion = reduceMotion
+        let usesMotion = animated && window != nil
+        let previousBackground = (surfaceLayer.presentation() ?? surfaceLayer).backgroundColor
+        let previousIndicatorOpacity = (selectionIndicatorLayer.presentation() ?? selectionIndicatorLayer).opacity
+        let previousIndicatorScale = selectionIndicatorLayer.presentation()?.transform.m22
+            ?? selectionIndicatorLayer.transform.m22
+        let indicatorVisible = layoutKind == .list && selected
+        let targetIndicatorOpacity: Float = indicatorVisible ? 1 : 0
+        let targetScale = pressed && selected ? appearance.selectionIndicatorPressedScale : 1
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        surfaceLayer.backgroundColor = appearance.backgroundColor.cgColor
+        surfaceLayer.cornerRadius = appearance.cornerRadius
+        surfaceLayer.cornerCurve = .continuous
+        contentView?.alphaValue = appearance.contentOpacity
+        selectionIndicatorLayer.backgroundColor = appearance.selectionIndicatorColor.cgColor
+        selectionIndicatorLayer.cornerRadius = appearance.selectionIndicatorSize.width / 2
+        selectionIndicatorLayer.cornerCurve = .continuous
+        selectionIndicatorLayer.opacity = targetIndicatorOpacity
+        selectionIndicatorLayer.setAffineTransform(CGAffineTransform(scaleX: 1, y: targetScale))
+        CATransaction.commit()
+        updateLayerGeometry(for: appearance)
+        installContentConstraints(appearance: appearance)
+
+        animationCoordinator.animateState(
+            [
+                FluentLayerAnimationChange(
+                    layer: surfaceLayer,
+                    key: "fluent.collectionItem.background",
+                    keyPath: "backgroundColor",
+                    fromValue: previousBackground,
+                    toValue: appearance.backgroundColor.cgColor
+                ) { [surfaceLayer] in
+                    surfaceLayer.backgroundColor = appearance.backgroundColor.cgColor
+                }
+            ],
+            motion: FluentMotion.controlFaster,
+            animated: usesMotion
+        )
+
+        guard layoutKind == .list else {
+            animationCoordinator.cancel(
+                layer: selectionIndicatorLayer,
+                key: "fluent.collectionItem.indicator.opacity"
+            )
+            animationCoordinator.cancel(
+                layer: selectionIndicatorLayer,
+                key: "fluent.collectionItem.indicator.scale"
+            )
+            return
+        }
+        if selectionChanged {
+            animationCoordinator.animateState(
+                [
+                    FluentLayerAnimationChange(
+                        layer: selectionIndicatorLayer,
+                        key: "fluent.collectionItem.indicator.opacity",
+                        keyPath: "opacity",
+                        fromValue: previousIndicatorOpacity,
+                        toValue: targetIndicatorOpacity
+                    ) { [selectionIndicatorLayer] in
+                        selectionIndicatorLayer.opacity = targetIndicatorOpacity
+                    }
+                ],
+                motion: FluentMotion.collectionSelectionOpacity,
+                animated: usesMotion
+            )
+            if selected {
+                animationCoordinator.animateState(
+                    [
+                        FluentLayerAnimationChange(
+                            layer: selectionIndicatorLayer,
+                            key: "fluent.collectionItem.indicator.scale",
+                            keyPath: "transform.scale.y",
+                            fromValue: 0,
+                            toValue: targetScale
+                        ) { [selectionIndicatorLayer] in
+                            selectionIndicatorLayer.setAffineTransform(
+                                CGAffineTransform(scaleX: 1, y: targetScale)
+                            )
+                        }
+                    ],
+                    motion: FluentMotion.collectionSelectionReveal,
+                    animated: usesMotion
+                )
+            } else {
+                animationCoordinator.cancel(
+                    layer: selectionIndicatorLayer,
+                    key: "fluent.collectionItem.indicator.scale"
+                )
+            }
+        } else if pressedChanged, selected {
+            animationCoordinator.animateState(
+                [
+                    FluentLayerAnimationChange(
+                        layer: selectionIndicatorLayer,
+                        key: "fluent.collectionItem.indicator.scale",
+                        keyPath: "transform.scale.y",
+                        fromValue: previousIndicatorScale,
+                        toValue: targetScale
+                    ) { [selectionIndicatorLayer] in
+                        selectionIndicatorLayer.setAffineTransform(
+                            CGAffineTransform(scaleX: 1, y: targetScale)
+                        )
+                    }
+                ],
+                motion: FluentMotion.collectionSelectionPress,
+                animated: usesMotion
+            )
+        }
+    }
+
+    private func installContentConstraints(appearance: FluentCollectionItemAppearance? = nil) {
+        guard let contentView else { return }
+        NSLayoutConstraint.deactivate(contentConstraints)
+        let insets = (appearance ?? resolvedAppearance()).contentInsets
+        contentConstraints = [
+            contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: insets.left),
+            contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right),
+            contentView.topAnchor.constraint(equalTo: topAnchor, constant: insets.top),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
+        ]
+        NSLayoutConstraint.activate(contentConstraints)
+    }
+
+    private func updateLayerGeometry(for appearance: FluentCollectionItemAppearance) {
+        guard bounds.width > 0, bounds.height > 0 else { return }
+        let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        surfaceLayer.frame = bounds
+        for visualLayer in [gridOuterBorderLayer, gridInnerBorderLayer, focusOuterLayer, focusInnerLayer] {
+            visualLayer.frame = bounds
+            visualLayer.contentsScale = scale
+            visualLayer.strokeColor = nil
+        }
+
+        gridOuterBorderLayer.path = ringPath(
+            outer: bounds,
+            width: appearance.outerBorderWidth,
+            radius: appearance.cornerRadius
+        )
+        gridOuterBorderLayer.fillColor = appearance.outerBorderColor.cgColor
+        gridOuterBorderLayer.isHidden = layoutKind != .adaptiveGrid || appearance.outerBorderWidth <= 0
+
+        let innerOuter = bounds.insetBy(
+            dx: appearance.outerBorderWidth,
+            dy: appearance.outerBorderWidth
+        )
+        gridInnerBorderLayer.path = ringPath(
+            outer: innerOuter,
+            width: appearance.innerBorderWidth,
+            radius: max(appearance.cornerRadius - appearance.outerBorderWidth, 0)
+        )
+        gridInnerBorderLayer.fillColor = appearance.innerBorderColor.cgColor
+        gridInnerBorderLayer.isHidden = layoutKind != .adaptiveGrid || appearance.innerBorderWidth <= 0
+
+        let indicatorHeight = min(appearance.selectionIndicatorSize.height, bounds.height)
+        let indicatorX = userInterfaceLayoutDirection == .rightToLeft
+            ? bounds.maxX - appearance.selectionIndicatorLeadingMargin - appearance.selectionIndicatorSize.width
+            : bounds.minX + appearance.selectionIndicatorLeadingMargin
+        selectionIndicatorLayer.frame = NSRect(
+            x: indicatorX,
+            y: bounds.midY - indicatorHeight / 2,
+            width: appearance.selectionIndicatorSize.width,
+            height: indicatorHeight
+        )
+        selectionIndicatorLayer.isHidden = layoutKind != .list
+
+        focusOuterLayer.path = ringPath(outer: bounds, width: 2, radius: appearance.cornerRadius)
+        focusOuterLayer.fillColor = appearance.focusOuterColor.cgColor
+        focusOuterLayer.isHidden = !focused
+        let focusInnerRect = bounds.insetBy(dx: 2, dy: 2)
+        focusInnerLayer.path = ringPath(
+            outer: focusInnerRect,
+            width: 1,
+            radius: max(appearance.cornerRadius - 2, 0)
+        )
+        focusInnerLayer.fillColor = appearance.focusInnerColor.cgColor
+        focusInnerLayer.isHidden = !focused
+        CATransaction.commit()
+    }
+
+    private func ringPath(outer: CGRect, width: CGFloat, radius: CGFloat) -> CGPath? {
+        guard width > 0, outer.width > 0, outer.height > 0 else { return nil }
+        let path = CGMutablePath()
+        path.addRoundedRect(in: outer, cornerWidth: radius, cornerHeight: radius)
+        let inner = outer.insetBy(dx: width, dy: width)
+        if inner.width > 0, inner.height > 0 {
+            path.addRoundedRect(
+                in: inner,
+                cornerWidth: max(radius - width, 0),
+                cornerHeight: max(radius - width, 0)
+            )
+        }
+        return path
     }
 }
 
@@ -581,9 +1137,11 @@ private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewEle
         contentView = mounted
         addSubview(mounted)
         mounted.translatesAutoresizingMaskIntoConstraints = false
+        mounted.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        mounted.setContentCompressionResistancePriority(.required, for: .horizontal)
         NSLayoutConstraint.activate([
             mounted.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            mounted.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -6),
+            mounted.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
             mounted.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }

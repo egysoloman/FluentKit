@@ -9,13 +9,30 @@ public enum FluentButtonRole: Hashable, Sendable {
 public final class FluentButton: NSButton {
     public var theme: FluentTheme = .current {
         didSet {
+            guard oldValue != theme else { return }
             font = theme.typography.font(for: .body).withSize(theme.typography.font(for: .body).pointSize * fluentControlSize.metricScale)
             invalidateIntrinsicContentSize()
             refreshAppearance(animated: false)
         }
     }
     public var fluentStyle: (any FluentButtonStyle)? { didSet { invalidateIntrinsicContentSize(); refreshAppearance(animated: false) } }
-    public var controlState: FluentControlState = .normal { didSet { refreshAppearance(animated: true) } }
+    public var controlState: FluentControlState = .normal {
+        didSet {
+            guard oldValue != controlState else { return }
+            refreshAppearance(animated: true)
+        }
+    }
+    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+        didSet {
+            guard oldValue != reduceMotion else { return }
+            visualStateCoordinator.reduceMotion = reduceMotion
+            if reduceMotion {
+                layer?.removeAllAnimations()
+                elevationBorderLayer.removeAllAnimations()
+            }
+            refreshAppearance(animated: false)
+        }
+    }
     public var role: FluentButtonRole { didSet { refreshAppearance(animated: false) } }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
@@ -29,8 +46,32 @@ public final class FluentButton: NSButton {
 
     public var onClick: (() -> Void)?
 
+    /// Declarative items for a button-owned in-app flyout. This mirrors WinUI's
+    /// `Button.Flyout` contract while keeping the native button as the event target.
+    public var flyoutItems: [FluentMenuItem]? {
+        didSet {
+            if flyoutItems == nil, menuFlyout != nil {
+                dismissMenuFlyout(animated: false)
+            }
+            updateAttachedFlyoutAccessibility()
+        }
+    }
+    public var flyoutPlacement: FluentMenuPlacement = .below
+    public var commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration? {
+        didSet {
+            if commandBarFlyoutConfiguration == nil, commandBarFlyoutPresenter != nil {
+                dismissCommandBarFlyout()
+            }
+            updateAttachedFlyoutAccessibility()
+        }
+    }
+
     private let elevationBorderLayer = CAGradientLayer()
     private let elevationBorderMask = CAShapeLayer()
+    private let visualStateCoordinator = FluentVisualStateCoordinator()
+    private var menuFlyout: FluentMenuFlyout?
+    private var commandBarFlyoutPresenter: FluentCommandBarFlyout?
+    private var isPointerOver = false
 
     public init(title: String = "Button", role: FluentButtonRole = .standard) {
         self.role = role
@@ -44,7 +85,9 @@ public final class FluentButton: NSButton {
         target = self
         action = #selector(invoke)
         wantsLayer = true
+        layer?.masksToBounds = false
         focusRingType = .none
+        visualStateCoordinator.reduceMotion = reduceMotion
         configureElevationBorder()
         setAccessibilityRole(.button)
         setAccessibilityTitle(title)
@@ -56,7 +99,9 @@ public final class FluentButton: NSButton {
         role = .standard
         super.init(coder: coder)
         wantsLayer = true
+        layer?.masksToBounds = false
         focusRingType = .none
+        visualStateCoordinator.reduceMotion = reduceMotion
         configureElevationBorder()
         refreshAppearance(animated: false)
     }
@@ -81,13 +126,35 @@ public final class FluentButton: NSButton {
         updateElevationBorderGeometry(for: resolvedAppearance())
     }
 
+    public override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        updateElevationBorderGeometry(for: resolvedAppearance())
+    }
+
+    public override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        updateElevationBorderGeometry(for: resolvedAppearance())
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateElevationBorderGeometry(for: resolvedAppearance())
+    }
+
+    public override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        updateElevationBorderGeometry(for: resolvedAppearance())
+    }
+
     public override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
+        isPointerOver = true
         controlState = .pointerOver
     }
 
     public override func mouseExited(with event: NSEvent) {
         guard isEnabled else { return }
+        isPointerOver = false
         controlState = .normal
     }
 
@@ -97,7 +164,7 @@ public final class FluentButton: NSButton {
         controlState = .pressed
         super.mouseDown(with: event)
         if isEnabled {
-            controlState = .pointerOver
+            controlState = isPointerOver ? .pointerOver : .normal
         }
     }
 
@@ -145,21 +212,39 @@ public final class FluentButton: NSButton {
         }
 
         let textSize = (title as NSString).size(withAttributes: [.font: font as Any])
-        let textRect = NSRect(x: bounds.midX - textSize.width / 2, y: bounds.midY - textSize.height / 2 + 1, width: textSize.width, height: textSize.height)
+        let textRect = fluentSingleLineTextRect(
+            NSRect(x: bounds.midX - textSize.width / 2, y: 0, width: textSize.width, height: textSize.height),
+            in: bounds,
+            font: font
+        )
         appearance.foregroundColor.set()
         (title as NSString).draw(in: textRect, withAttributes: [.font: font as Any, .foregroundColor: appearance.foregroundColor])
     }
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
+        fluentNotifyAppearanceCoordinator(from: self)
         needsDisplay = true
     }
 
     public override var isEnabled: Bool {
-        didSet { controlState = isEnabled ? .normal : .disabled; needsDisplay = true }
+        didSet {
+            if !isEnabled { dismissAttachedFlyout() }
+            controlState = isEnabled ? (isPointerOver ? .pointerOver : .normal) : .disabled
+            needsDisplay = true
+        }
     }
 
-    @objc private func invoke() { onClick?() }
+    @objc private func invoke() {
+        onClick?()
+        guard flyoutItems != nil || commandBarFlyoutConfiguration != nil else { return }
+        if menuFlyout != nil || commandBarFlyoutPresenter != nil {
+            dismissAttachedFlyout()
+            return
+        }
+        // AppKit's button tracking must finish before the child panel is ordered above it.
+        DispatchQueue.main.async { [weak self] in self?.presentFlyoutIfNeeded() }
+    }
 
     func applyDeclarativeConfiguration(from source: FluentButton) {
         title = source.title
@@ -168,13 +253,99 @@ public final class FluentButton: NSButton {
         font = source.font
         fluentStyle = source.fluentStyle
         onClick = source.onClick
+        flyoutItems = source.flyoutItems
+        flyoutPlacement = source.flyoutPlacement
+        commandBarFlyoutConfiguration = source.commandBarFlyoutConfiguration
         isEnabled = source.isEnabled
         needsDisplay = true
         invalidateIntrinsicContentSize()
         refreshAppearance(animated: false)
     }
 
+    private func presentFlyoutIfNeeded() {
+        guard isEnabled, menuFlyout == nil, commandBarFlyoutPresenter == nil, window != nil else { return }
+        if let configuration = commandBarFlyoutConfiguration {
+            let presented = FluentCommandBarFlyout(
+                primaryCommands: configuration.primaryCommands,
+                secondaryCommands: configuration.secondaryCommands,
+                alwaysExpanded: configuration.alwaysExpanded,
+                theme: theme,
+                reduceMotion: reduceMotion
+            )
+            commandBarFlyoutPresenter = presented
+            presented.onDismiss = { [weak self, weak presented] in
+                guard let self, self.commandBarFlyoutPresenter === presented else { return }
+                self.commandBarFlyoutPresenter = nil
+                self.controlState = self.isPointerOver ? .pointerOver : .normal
+                self.setAccessibilityValue("Closed")
+                self.needsDisplay = true
+            }
+            controlState = isPointerOver ? .pointerOver : .normal
+            setAccessibilityValue("Open")
+            presented.present(relativeTo: self, at: NSPoint(x: bounds.midX, y: bounds.minY))
+            return
+        }
+        guard let flyoutItems, !flyoutItems.isEmpty else { return }
+        let presented = FluentMenuFlyout(
+            items: flyoutItems,
+            theme: theme,
+            reduceMotion: reduceMotion
+        )
+        menuFlyout = presented
+        presented.onDismiss = { [weak self, weak presented] in
+            guard let self, self.menuFlyout === presented else { return }
+            self.menuFlyout = nil
+            self.controlState = self.isPointerOver ? .pointerOver : .normal
+            self.setAccessibilityValue("Closed")
+            self.needsDisplay = true
+        }
+        controlState = isPointerOver ? .pointerOver : .normal
+        setAccessibilityValue("Open")
+        presented.present(relativeTo: self, placement: flyoutPlacement)
+    }
+
+    private func dismissMenuFlyout(animated: Bool) {
+        menuFlyout?.dismiss(animated: animated)
+        menuFlyout = nil
+        restoreAfterFlyoutDismissal()
+    }
+
+    private func dismissCommandBarFlyout() {
+        commandBarFlyoutPresenter?.dismiss()
+        commandBarFlyoutPresenter = nil
+        restoreAfterFlyoutDismissal()
+    }
+
+    private func dismissAttachedFlyout() {
+        menuFlyout?.dismiss(animated: false)
+        commandBarFlyoutPresenter?.dismiss()
+        menuFlyout = nil
+        commandBarFlyoutPresenter = nil
+        restoreAfterFlyoutDismissal()
+    }
+
+    private func restoreAfterFlyoutDismissal() {
+        guard menuFlyout == nil, commandBarFlyoutPresenter == nil else { return }
+        controlState = isEnabled ? (isPointerOver ? .pointerOver : .normal) : .disabled
+        setAccessibilityValue("Closed")
+    }
+
+    private func updateAttachedFlyoutAccessibility() {
+        setAccessibilityRole(
+            flyoutItems == nil && commandBarFlyoutConfiguration == nil ? .button : .popUpButton
+        )
+    }
+
+    deinit {
+        menuFlyout?.dismiss(animated: false)
+        commandBarFlyoutPresenter?.dismiss()
+    }
+
     private func resolvedAppearance() -> FluentButtonAppearance {
+        resolvedAppearance(for: visualStateCoordinator.state.primaryControlState)
+    }
+
+    private func resolvedAppearance(for controlState: FluentControlState) -> FluentButtonAppearance {
         let configuration = FluentButtonStyleConfiguration(
             title: title,
             role: role,
@@ -187,22 +358,29 @@ public final class FluentButton: NSButton {
     }
 
     private func refreshAppearance(animated: Bool) {
-        guard let layer else {
-            needsDisplay = true
-            return
+        visualStateCoordinator.reduceMotion = reduceMotion
+        visualStateCoordinator.transition(
+            to: .forControlState(controlState),
+            animated: animated,
+            motion: FluentMotion.controlFaster
+        ) { [weak self] transition in
+            self?.applyVisualState(transition)
         }
-        let appearance = resolvedAppearance()
-        let motion = FluentMotion.controlFaster
+    }
+
+    private func applyVisualState(_ transition: FluentVisualStateTransition) {
+        guard let layer else { needsDisplay = true; return }
+        let appearance = resolvedAppearance(for: transition.to.primaryControlState)
         CATransaction.begin()
-        CATransaction.setDisableActions(!animated)
-        CATransaction.setAnimationDuration(animated ? motion.duration : 0)
-        CATransaction.setAnimationTimingFunction(motion.curve.timingFunction)
+        CATransaction.setDisableActions(!transition.isAnimated)
+        CATransaction.setAnimationDuration(transition.isAnimated ? transition.motion.duration : 0)
+        CATransaction.setAnimationTimingFunction(transition.motion.curve.timingFunction)
         layer.backgroundColor = appearance.backgroundColor.cgColor
         layer.borderWidth = 0
         layer.cornerRadius = appearance.cornerRadius
+        layer.cornerCurve = .continuous
         elevationBorderLayer.colors = (appearance.borderGradientColors
             ?? [appearance.borderColor, appearance.borderColor]).map(\.cgColor)
-        elevationBorderLayer.locations = [0.33, 1]
         CATransaction.commit()
         updateElevationBorderGeometry(for: appearance)
         needsDisplay = true
@@ -210,11 +388,8 @@ public final class FluentButton: NSButton {
 
     private func configureElevationBorder() {
         elevationBorderLayer.name = "FluentKit.Button.ElevationBorder"
-        elevationBorderLayer.startPoint = CGPoint(x: 0.5, y: 0)
-        elevationBorderLayer.endPoint = CGPoint(x: 0.5, y: 1)
-        elevationBorderLayer.mask = elevationBorderMask
-        elevationBorderMask.fillColor = NSColor.clear.cgColor
-        elevationBorderMask.strokeColor = NSColor.black.cgColor
+        configureFluentElevationBorderLayer(elevationBorderLayer, mask: elevationBorderMask)
+        elevationBorderLayer.isHidden = true
         layer?.addSublayer(elevationBorderLayer)
     }
 
@@ -222,17 +397,14 @@ public final class FluentButton: NSButton {
         guard bounds.width > 0, bounds.height > 0 else { return }
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        elevationBorderLayer.frame = bounds
-        elevationBorderMask.frame = bounds
-        elevationBorderMask.lineWidth = appearance.borderWidth
-        let inset = appearance.borderWidth / 2
-        elevationBorderMask.path = CGPath(
-            roundedRect: bounds.insetBy(dx: inset, dy: inset),
-            cornerWidth: max(appearance.cornerRadius - inset, 0),
-            cornerHeight: max(appearance.cornerRadius - inset, 0),
-            transform: nil
+        updateFluentElevationBorderLayer(
+            elevationBorderLayer,
+            mask: elevationBorderMask,
+            bounds: bounds,
+            appearance: appearance,
+            visualYAxis: .resolved(for: self.layer, fallbackView: self),
+            backingScale: window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
         )
-        elevationBorderLayer.isHidden = appearance.borderWidth <= 0
         CATransaction.commit()
     }
 }

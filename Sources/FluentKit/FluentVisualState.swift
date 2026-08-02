@@ -20,6 +20,32 @@ public struct FluentVisualState: OptionSet, Hashable, Sendable {
     public static let indeterminate = FluentVisualState(rawValue: 1 << 7)
     public static let paused = FluentVisualState(rawValue: 1 << 8)
     public static let error = FluentVisualState(rawValue: 1 << 9)
+
+    /// Maps the single-axis control state used by existing Fluent styles into the
+    /// named-state vocabulary shared by templates and composite presenters.
+    public static func forControlState(_ state: FluentControlState) -> FluentVisualState {
+        switch state {
+        case .normal: return .normal
+        case .pointerOver: return [.normal, .pointerOver]
+        case .pressed: return [.normal, .pressed]
+        case .disabled: return .disabled
+        case .focused: return [.normal, .focused]
+        case .selected: return [.normal, .selected]
+        case .checked: return [.normal, .selected]
+        }
+    }
+
+    /// Resolves a combination to the style state precedence used by WinUI common states.
+    /// Disabled and pressed suppress hover/focus; selected remains available to controls that
+    /// have a separate selection resource group.
+    public var primaryControlState: FluentControlState {
+        if contains(.disabled) { return .disabled }
+        if contains(.pressed) { return .pressed }
+        if contains(.pointerOver) { return .pointerOver }
+        if contains(.focused) { return .focused }
+        if contains(.selected) { return .selected }
+        return .normal
+    }
 }
 
 public struct FluentVisualStateTransition {
@@ -75,7 +101,7 @@ public final class FluentVisualStateCoordinator {
                 from: previous,
                 to: next,
                 motion: motion,
-                isAnimated: animated && !reduceMotion && motion.duration > 0,
+                isAnimated: changed && animated && !reduceMotion && motion.duration > 0,
                 changed: changed
             )
         )

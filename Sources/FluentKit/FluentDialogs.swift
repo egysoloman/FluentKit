@@ -67,7 +67,10 @@ private final class FluentConfirmationDialogHost: NSView {
     private var actions: [FluentDialogAction]
     private var observerID: UUID?
     private var alert: NSAlert?
-    private var isProgrammaticDismissal = false
+    private weak var presentationCoordinator: FluentPresentationCoordinator?
+    private var presentationToken: FluentPresentationCoordinator.Token?
+    private var alertToken: FluentPresentationCoordinator.Token?
+    private var programmaticDismissalToken: FluentPresentationCoordinator.Token?
 
     init(
         content: NSView,
@@ -96,6 +99,10 @@ private final class FluentConfirmationDialogHost: NSView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if window == nil {
+            cancelPresentation()
+            return
+        }
         DispatchQueue.main.async { [weak self] in self?.synchronizePresentation() }
     }
 
@@ -105,12 +112,15 @@ private final class FluentConfirmationDialogHost: NSView {
         isPresented: FluentBinding<Bool>,
         actions: [FluentDialogAction]
     ) {
-        if let observerID { self.isPresented.removeObserver?(observerID) }
+        let reusesObservation = self.isPresented.observationIdentity != nil
+            && self.isPresented.observationIdentity == isPresented.observationIdentity
+        if !reusesObservation, let observerID { self.isPresented.removeObserver?(observerID) }
         self.title = title
         self.message = message
         self.isPresented = isPresented
         self.actions = actions
-        installObserver()
+        if !reusesObservation { installObserver() }
+        updatePresentedAlert()
         synchronizePresentation()
     }
 
@@ -121,26 +131,92 @@ private final class FluentConfirmationDialogHost: NSView {
     }
 
     private func synchronizePresentation() {
-        guard let window else { return }
+        guard let window else {
+            cancelPresentation()
+            return
+        }
         if isPresented.get() {
-            guard alert == nil else { return }
-            let alert = makeAlert()
-            self.alert = alert
-            alert.beginSheetModal(for: window) { [weak self, weak alert] response in
-                guard let self else { return }
-                let wasProgrammatic = self.isProgrammaticDismissal
-                self.isProgrammaticDismissal = false
+            guard presentationToken == nil else { return }
+            let coordinator = FluentPresentationCoordinator.coordinator(for: window)
+            presentationCoordinator = coordinator
+            presentationToken = coordinator.enqueue(
+                owner: self,
+                present: { [weak self, weak window] in
+                    guard let self, let window else { return }
+                    self.beginPresentation(on: window)
+                },
+                cancel: { [weak self] in self?.endPresentationForCancellation() }
+            )
+        } else {
+            cancelPresentation()
+        }
+    }
+
+    private func beginPresentation(on window: NSWindow) {
+        guard let token = presentationToken else { return }
+        guard isPresented.get() else {
+            presentationCoordinator?.finish(token)
+            presentationToken = nil
+            return
+        }
+
+        let alert = makeAlert()
+        self.alert = alert
+        alertToken = token
+        let coordinator = presentationCoordinator
+        alert.beginSheetModal(for: window) { [weak self, weak alert, coordinator] response in
+            coordinator?.finish(token)
+            guard let self else { return }
+            let wasProgrammatic = self.programmaticDismissalToken === token
+            if wasProgrammatic { self.programmaticDismissalToken = nil }
+            if self.alertToken === token {
+                self.alertToken = nil
                 self.alert = nil
-                if self.isPresented.get() { self.isPresented.set(false) }
-                guard !wasProgrammatic, let alert else { return }
-                let offset = response.rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
-                guard offset >= 0, offset < self.actions.count else { return }
-                self.actions[offset].action()
-                _ = alert
             }
-        } else if let alert {
-            isProgrammaticDismissal = true
-            window.endSheet(alert.window, returnCode: .cancel)
+            guard self.presentationToken === token else { return }
+            self.presentationToken = nil
+            if !wasProgrammatic, self.isPresented.get() { self.isPresented.set(false) }
+            guard !wasProgrammatic, alert != nil else { return }
+            let offset = response.rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
+            let actions = self.effectiveActions
+            guard offset >= 0, offset < actions.count else { return }
+            actions[offset].action()
+        }
+    }
+
+    private func cancelPresentation() {
+        guard let token = presentationToken else { return }
+        programmaticDismissalToken = token
+        presentationCoordinator?.cancel(token)
+        if presentationToken === token { presentationToken = nil }
+    }
+
+    private func endPresentationForCancellation() {
+        guard let token = presentationToken else { return }
+        if let alert, alertToken === token, let parent = window ?? alert.window.sheetParent {
+            parent.endSheet(alert.window, returnCode: .cancel)
+        } else {
+            presentationCoordinator?.finish(token)
+        }
+    }
+
+    private var effectiveActions: [FluentDialogAction] {
+        actions.isEmpty ? [FluentDialogAction("OK")] : actions
+    }
+
+    private func updatePresentedAlert() {
+        guard let alert else { return }
+        let actions = effectiveActions
+        guard alert.buttons.count == actions.count else {
+            cancelPresentation()
+            synchronizePresentation()
+            return
+        }
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = actions.contains { $0.role == .destructive } ? .warning : .informational
+        for (index, action) in actions.enumerated() {
+            configure(alert.buttons[index], for: action, at: index)
         }
     }
 
@@ -149,22 +225,22 @@ private final class FluentConfirmationDialogHost: NSView {
         alert.messageText = title
         alert.informativeText = message
         alert.alertStyle = actions.contains { $0.role == .destructive } ? .warning : .informational
-        let effectiveActions = actions.isEmpty ? [FluentDialogAction("OK")] : actions
         for (index, action) in effectiveActions.enumerated() {
             let button = alert.addButton(withTitle: action.title)
-            if action.role == .cancel { button.keyEquivalent = "\u{1b}" }
-            if action.role == .destructive {
-                button.contentTintColor = .systemRed
-            } else if index == 0 {
-                button.keyEquivalent = "\r"
-            }
+            configure(button, for: action, at: index)
         }
-        if actions.isEmpty { self.actions = effectiveActions }
         return alert
+    }
+
+    private func configure(_ button: NSButton, for action: FluentDialogAction, at index: Int) {
+        button.title = action.title
+        button.keyEquivalent = action.role == .cancel ? "\u{1b}" : (index == 0 ? "\r" : "")
+        button.contentTintColor = action.role == .destructive ? .systemRed : nil
     }
 
     deinit {
         if let observerID { isPresented.removeObserver?(observerID) }
+        if let token = presentationToken { presentationCoordinator?.cancel(token) }
     }
 }
 

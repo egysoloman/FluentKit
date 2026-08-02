@@ -1,53 +1,156 @@
 import AppKit
 
+private final class FluentSecureTextFieldCell: NSTextFieldCell {
+    override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
+        configureFluentSingleLineFieldEditor(super.setUpFieldEditorAttributes(textObj))
+    }
+
+    override func drawingRect(forBounds rect: NSRect) -> NSRect {
+        fluentTextControlRect(
+            super.drawingRect(forBounds: rect),
+            in: rect,
+            font: font,
+            leadingInset: 10,
+            trailingInset: 6
+        )
+    }
+
+    override func titleRect(forBounds rect: NSRect) -> NSRect {
+        drawingRect(forBounds: rect)
+    }
+
+    override func edit(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        event: NSEvent?
+    ) {
+        super.edit(
+            withFrame: titleRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            event: event
+        )
+    }
+
+    override func select(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        start selStart: Int,
+        length selLength: Int
+    ) {
+        super.select(
+            withFrame: titleRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            start: selStart,
+            length: selLength
+        )
+    }
+}
+
+private final class FluentSearchFieldCell: NSSearchFieldCell {
+    override func searchTextRect(forBounds rect: NSRect) -> NSRect {
+        fluentTextControlRect(
+            super.searchTextRect(forBounds: rect),
+            in: rect,
+            font: font,
+            leadingInset: 4,
+            trailingInset: 4
+        )
+    }
+
+    override func searchButtonRect(forBounds rect: NSRect) -> NSRect {
+        fluentCenteredAdornmentRect(super.searchButtonRect(forBounds: rect), in: rect)
+    }
+
+    override func cancelButtonRect(forBounds rect: NSRect) -> NSRect {
+        fluentCenteredAdornmentRect(super.cancelButtonRect(forBounds: rect), in: rect)
+    }
+
+    override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
+        configureFluentSingleLineFieldEditor(super.setUpFieldEditorAttributes(textObj))
+    }
+
+    override func edit(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        event: NSEvent?
+    ) {
+        super.edit(
+            withFrame: editorRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            event: event
+        )
+    }
+
+    override func select(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        start selStart: Int,
+        length selLength: Int
+    ) {
+        super.select(
+            withFrame: editorRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            start: selStart,
+            length: selLength
+        )
+    }
+
+    private func editorRect(forBounds rect: NSRect) -> NSRect {
+        var result = searchTextRect(forBounds: rect)
+        // NSSearchField inserts its editor through a flipped keyboard-focus clip view. In that
+        // coordinate space a one-point negative adjustment brings the screen-space caret back to
+        // the same baseline as the cell's drawing rect.
+        result.origin.y -= 1
+        return result
+    }
+}
+
 private protocol FluentInputChrome: FluentControlSizeConfigurable where Self: NSControl {
     var theme: FluentTheme { get set }
     var fluentStyle: any FluentTextFieldStyle { get set }
 }
 
 private extension FluentInputChrome {
-    func resolvedFluentAppearance(focused: Bool) -> FluentTextFieldAppearance {
+    func resolvedFluentAppearance(focused: Bool, pointerOver: Bool) -> FluentTextFieldAppearance {
         fluentStyle.appearance(
             for: FluentTextFieldStyleConfiguration(
                 isEnabled: isEnabled,
                 isFocused: focused,
+                isPointerOver: pointerOver,
                 controlSize: fluentControlSize,
                 theme: theme
             )
         )
     }
 
-    func drawFluentChrome(in bounds: NSRect, appearance: FluentTextFieldAppearance) {
-        appearance.backgroundColor.setFill()
-        bounds.fill()
-        appearance.borderColor.setStroke()
-        switch appearance.borderShape {
-        case .rounded:
-            let rect = bounds.insetBy(dx: appearance.borderWidth / 2, dy: appearance.borderWidth / 2)
-            let path = NSBezierPath(roundedRect: rect, xRadius: appearance.cornerRadius, yRadius: appearance.cornerRadius)
-            appearance.backgroundColor.setFill()
-            path.fill()
-            if appearance.borderWidth > 0 {
-                path.lineWidth = appearance.borderWidth
-                path.stroke()
-            }
-        case .underline:
-            guard appearance.borderWidth > 0 else { return }
-            let path = NSBezierPath()
-            let visualBottom = isFlipped
-                ? bounds.maxY - appearance.borderWidth / 2
-                : bounds.minY + appearance.borderWidth / 2
-            path.move(to: NSPoint(x: bounds.minX, y: visualBottom))
-            path.line(to: NSPoint(x: bounds.maxX, y: visualBottom))
-            path.lineWidth = appearance.borderWidth
-            path.stroke()
-        }
-    }
 }
 
 /// A Fluent-styled native secure text field. Prefer `FluentSecureField` when binding state.
 public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
-    public var theme: FluentTheme = .current { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    public var theme: FluentTheme = .current {
+        didSet {
+            guard oldValue != theme else { return }
+            textEditingSession.theme = theme
+            invalidateIntrinsicContentSize()
+            needsDisplay = true
+        }
+    }
     public var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
@@ -56,9 +159,16 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
             needsDisplay = true
         }
     }
+    private var isPointerOver = false
+    private var pointerTrackingArea: NSTrackingArea?
+    private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: theme, isSecure: true)
 
     public init(placeholder: String = "") {
         super.init(frame: .zero)
+        cell = FluentSecureTextFieldCell(textCell: "")
+        configureFluentSingleLineTextControl(self)
+        isEditable = true
+        isSelectable = true
         placeholderString = placeholder
         isBordered = false
         isBezeled = false
@@ -68,6 +178,7 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
         wantsLayer = true
         setAccessibilityRole(.textField)
         setAccessibilityLabel("Secure text field")
+        _ = textEditingSession
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -76,12 +187,63 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
         NSSize(width: 220 * theme.density.metricScale, height: theme.controlHeight(for: fluentControlSize))
     }
 
+    public override func updateTrackingAreas() {
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        super.updateTrackingAreas()
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        pointerTrackingArea = area
+        addTrackingArea(area)
+    }
+
+    public override func mouseEntered(with event: NSEvent) {
+        guard isEnabled else { return }
+        isPointerOver = true
+        needsDisplay = true
+    }
+
+    public override func mouseExited(with event: NSEvent) {
+        isPointerOver = false
+        needsDisplay = true
+    }
+
+    public override func textDidBeginEditing(_ notification: Notification) {
+        super.textDidBeginEditing(notification)
+        textEditingSession.didBeginEditing()
+        needsDisplay = true
+    }
+
+    public override func selectText(_ sender: Any?) {
+        super.selectText(sender)
+        textEditingSession.didBeginEditing()
+    }
+
+    public override func textDidEndEditing(_ notification: Notification) {
+        super.textDidEndEditing(notification)
+        textEditingSession.didEndEditing()
+        needsDisplay = true
+    }
+
+    public override func rightMouseDown(with event: NSEvent) {
+        if !textEditingSession.presentContextCommands(for: event) {
+            super.rightMouseDown(with: event)
+        }
+    }
+
     public override func draw(_ dirtyRect: NSRect) {
-        let appearance = resolvedFluentAppearance(focused: window?.firstResponder === self || window?.firstResponder === currentEditor())
-        textColor = appearance.textColor
+        let appearance = resolvedFluentAppearance(
+            focused: fluentTextControlHasFocus(self),
+            pointerOver: isPointerOver
+        )
         if let resolvedFont = appearance.font, font != resolvedFont { font = resolvedFont }
-        drawFluentChrome(in: bounds, appearance: appearance)
+        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
+        drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .background)
         super.draw(dirtyRect)
+        drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .borderAndFocus)
     }
 
     @discardableResult
@@ -93,7 +255,16 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
 
 /// A Fluent-styled native search field with AppKit's standard search and cancel affordances.
 public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
-    public var theme: FluentTheme = .current { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    /// Called when the field editor routes Escape through `cancelOperation(_:)`.
+    public var onCancel: (() -> Void)?
+    public var theme: FluentTheme = .current {
+        didSet {
+            guard oldValue != theme else { return }
+            textEditingSession.theme = theme
+            invalidateIntrinsicContentSize()
+            needsDisplay = true
+        }
+    }
     public var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
@@ -102,9 +273,16 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
             needsDisplay = true
         }
     }
+    private var isPointerOver = false
+    private var pointerTrackingArea: NSTrackingArea?
+    private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: theme, isSecure: false)
 
     public init(placeholder: String = "Search") {
         super.init(frame: .zero)
+        cell = FluentSearchFieldCell(textCell: "")
+        configureFluentSingleLineTextControl(self)
+        isEditable = true
+        isSelectable = true
         placeholderString = placeholder
         isBordered = false
         isBezeled = false
@@ -114,6 +292,7 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
         wantsLayer = true
         setAccessibilityRole(.textField)
         setAccessibilityLabel(placeholder.isEmpty ? "Search" : placeholder)
+        _ = textEditingSession
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -122,12 +301,71 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
         NSSize(width: 240 * theme.density.metricScale, height: theme.controlHeight(for: fluentControlSize))
     }
 
+    public override func updateTrackingAreas() {
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        super.updateTrackingAreas()
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        pointerTrackingArea = area
+        addTrackingArea(area)
+    }
+
+    public override func mouseEntered(with event: NSEvent) {
+        guard isEnabled else { return }
+        isPointerOver = true
+        needsDisplay = true
+    }
+
+    public override func mouseExited(with event: NSEvent) {
+        isPointerOver = false
+        needsDisplay = true
+    }
+
+    public override func textDidBeginEditing(_ notification: Notification) {
+        super.textDidBeginEditing(notification)
+        textEditingSession.didBeginEditing()
+        needsDisplay = true
+    }
+
+    public override func selectText(_ sender: Any?) {
+        super.selectText(sender)
+        textEditingSession.didBeginEditing()
+    }
+
+    public override func textDidEndEditing(_ notification: Notification) {
+        super.textDidEndEditing(notification)
+        textEditingSession.didEndEditing()
+        needsDisplay = true
+    }
+
+    public override func rightMouseDown(with event: NSEvent) {
+        if !textEditingSession.presentContextCommands(for: event) {
+            super.rightMouseDown(with: event)
+        }
+    }
+
+    public override func cancelOperation(_ sender: Any?) {
+        if let onCancel {
+            onCancel()
+        } else {
+            super.cancelOperation(sender)
+        }
+    }
+
     public override func draw(_ dirtyRect: NSRect) {
-        let appearance = resolvedFluentAppearance(focused: window?.firstResponder === self || window?.firstResponder === currentEditor())
-        textColor = appearance.textColor
+        let appearance = resolvedFluentAppearance(
+            focused: fluentTextControlHasFocus(self),
+            pointerOver: isPointerOver
+        )
         if let resolvedFont = appearance.font, font != resolvedFont { font = resolvedFont }
-        drawFluentChrome(in: bounds, appearance: appearance)
+        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
+        drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .background)
         super.draw(dirtyRect)
+        drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .borderAndFocus)
     }
 
     @discardableResult
@@ -214,11 +452,9 @@ public struct FluentSearchField: FluentUpdatablePrimitiveView {
 
 private final class FluentBoundSecureField: NSView, NSTextFieldDelegate {
     let field: FluentSecureTextField
-    private var binding: FluentBinding<String>
-    private var observerID: UUID?
+    private var bindingCoordinator: FluentStringBindingCoordinator!
 
     init(binding: FluentBinding<String>, placeholder: String, theme: FluentTheme, style: any FluentTextFieldStyle) {
-        self.binding = binding
         field = FluentSecureTextField(placeholder: placeholder)
         super.init(frame: .zero)
         field.theme = theme
@@ -229,7 +465,7 @@ private final class FluentBoundSecureField: NSView, NSTextFieldDelegate {
         field.action = #selector(commit)
         addSubview(field)
         pin(field)
-        installObserver()
+        bindingCoordinator = FluentStringBindingCoordinator(field: field, binding: binding)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -237,37 +473,21 @@ private final class FluentBoundSecureField: NSView, NSTextFieldDelegate {
     override var intrinsicContentSize: NSSize { field.intrinsicContentSize }
 
     func update(binding: FluentBinding<String>, placeholder: String, theme: FluentTheme, style: any FluentTextFieldStyle) {
-        removeObserver()
-        self.binding = binding
-        field.placeholderString = placeholder
-        field.theme = theme
+        bindingCoordinator.update(binding: binding)
+        if field.placeholderString != placeholder { field.placeholderString = placeholder }
+        if field.theme != theme { field.theme = theme }
         field.fluentStyle = style
-        let isEditing = field.window.map { $0.firstResponder === field.currentEditor() } ?? false
-        if !isEditing, field.stringValue != binding.get() {
-            field.stringValue = binding.get()
-        }
-        installObserver()
     }
 
-    func controlTextDidChange(_ obj: Notification) { binding.set(field.stringValue) }
-
-    @objc private func commit() { binding.set(field.stringValue) }
-
-    private func installObserver() {
-        observerID = binding.observe { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self,
-                      !(self.field.window.map { $0.firstResponder === self.field.currentEditor() } ?? false),
-                      self.field.stringValue != value else { return }
-                self.field.stringValue = value
-            }
-        }
+    func controlTextDidChange(_ obj: Notification) {
+        bindingCoordinator.scheduleCurrentValuePublication()
     }
 
-    private func removeObserver() {
-        if let observerID { binding.removeObserver(observerID) }
-        observerID = nil
+    func controlTextDidEndEditing(_ obj: Notification) {
+        bindingCoordinator.publishCurrentValue()
     }
+
+    @objc private func commit() { bindingCoordinator.publishCurrentValue() }
 
     private func pin(_ view: NSView) {
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -279,13 +499,11 @@ private final class FluentBoundSecureField: NSView, NSTextFieldDelegate {
         ])
     }
 
-    deinit { removeObserver() }
 }
 
 private final class FluentBoundSearchField: NSView, NSSearchFieldDelegate {
     let field: FluentSearchTextField
-    private var binding: FluentBinding<String>
-    private var observerID: UUID?
+    private var bindingCoordinator: FluentStringBindingCoordinator!
     private var onSubmit: (() -> Void)?
 
     init(
@@ -295,7 +513,6 @@ private final class FluentBoundSearchField: NSView, NSSearchFieldDelegate {
         style: any FluentTextFieldStyle,
         onSubmit: (() -> Void)?
     ) {
-        self.binding = binding
         self.onSubmit = onSubmit
         field = FluentSearchTextField(placeholder: placeholder)
         super.init(frame: .zero)
@@ -313,7 +530,7 @@ private final class FluentBoundSearchField: NSView, NSSearchFieldDelegate {
             field.topAnchor.constraint(equalTo: topAnchor),
             field.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-        installObserver()
+        bindingCoordinator = FluentStringBindingCoordinator(field: field, binding: binding)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -327,62 +544,58 @@ private final class FluentBoundSearchField: NSView, NSSearchFieldDelegate {
         style: any FluentTextFieldStyle,
         onSubmit: (() -> Void)?
     ) {
-        removeObserver()
-        self.binding = binding
+        bindingCoordinator.update(binding: binding)
         self.onSubmit = onSubmit
-        field.placeholderString = placeholder
-        field.theme = theme
+        if field.placeholderString != placeholder { field.placeholderString = placeholder }
+        if field.theme != theme { field.theme = theme }
         field.fluentStyle = style
-        let isEditing = field.window.map { $0.firstResponder === field.currentEditor() } ?? false
-        if !isEditing, field.stringValue != binding.get() {
-            field.stringValue = binding.get()
-        }
-        installObserver()
     }
 
-    func controlTextDidChange(_ obj: Notification) { binding.set(field.stringValue) }
+    func controlTextDidChange(_ obj: Notification) {
+        bindingCoordinator.scheduleCurrentValuePublication()
+    }
+
+    func controlTextDidEndEditing(_ obj: Notification) {
+        bindingCoordinator.publishCurrentValue()
+    }
 
     @objc private func submit() {
-        binding.set(field.stringValue)
+        bindingCoordinator.publishCurrentValue()
         onSubmit?()
     }
 
-    private func installObserver() {
-        observerID = binding.observe { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self,
-                      !(self.field.window.map { $0.firstResponder === self.field.currentEditor() } ?? false),
-                      self.field.stringValue != value else { return }
-                self.field.stringValue = value
-            }
-        }
-    }
-
-    private func removeObserver() {
-        if let observerID { binding.removeObserver(observerID) }
-        observerID = nil
-    }
-
-    deinit { removeObserver() }
 }
 
 /// A native combo box whose bound selection retains the option's stable value rather than its
 /// display text.
+public enum FluentComboBoxMode: Hashable, Sendable {
+    /// The closed control displays one selected item and centers that item when opened.
+    case selection
+    /// The closed control exposes an editable text box and opens its popup below the field.
+    case editable
+}
+
 public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     private let options: [Option]
     private let selection: FluentBinding<Option?>
+    private let text: FluentBinding<String>?
+    private let mode: FluentComboBoxMode
     private let title: (Option) -> String
     private let style: any FluentTextFieldStyle
 
     public init(
         options: [Option],
         selection: FluentBinding<Option?>,
+        mode: FluentComboBoxMode = .selection,
+        text: FluentBinding<String>? = nil,
         style: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle(),
         title: @escaping (Option) -> String = { String(describing: $0) }
     ) {
         precondition(Set(options).count == options.count, "Fluent combo-box options must be unique")
         self.options = options
         self.selection = selection
+        self.text = text
+        self.mode = mode
         self.style = style
         self.title = title
     }
@@ -393,6 +606,8 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
         FluentComboBoxHost(
             options: options,
             selection: selection,
+            text: text,
+            mode: mode,
             title: title,
             theme: context.theme,
             style: style,
@@ -405,6 +620,8 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
         host.update(
             options: options,
             selection: selection,
+            text: text,
+            mode: mode,
             title: title,
             theme: context.theme,
             style: style,
@@ -414,13 +631,266 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     }
 
     public func textFieldStyle(_ style: any FluentTextFieldStyle) -> FluentComboBox<Option> {
-        FluentComboBox(options: options, selection: selection, style: style, title: title)
+        FluentComboBox(options: options, selection: selection, mode: mode, text: text, style: style, title: title)
+    }
+}
+
+private final class FluentComboBoxCell: NSComboBoxCell {
+    override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
+        configureFluentSingleLineFieldEditor(super.setUpFieldEditorAttributes(textObj))
+    }
+
+    override func drawingRect(forBounds rect: NSRect) -> NSRect {
+        fluentTextControlRect(
+            super.drawingRect(forBounds: rect),
+            in: rect,
+            font: font,
+            leadingInset: 11,
+            trailingInset: 38
+        )
+    }
+
+    override func titleRect(forBounds rect: NSRect) -> NSRect { drawingRect(forBounds: rect) }
+
+    override func edit(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        event: NSEvent?
+    ) {
+        super.edit(
+            withFrame: titleRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            event: event
+        )
+    }
+
+    override func select(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        start selStart: Int,
+        length selLength: Int
+    ) {
+        super.select(
+            withFrame: titleRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            start: selStart,
+            length: selLength
+        )
+    }
+}
+
+private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
+    override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
+        configureFluentSingleLineFieldEditor(super.setUpFieldEditorAttributes(textObj))
+    }
+
+    override func drawingRect(forBounds rect: NSRect) -> NSRect {
+        fluentTextControlRect(
+            super.drawingRect(forBounds: rect),
+            in: rect,
+            font: font,
+            leadingInset: 11,
+            trailingInset: 38
+        )
+    }
+
+    override func titleRect(forBounds rect: NSRect) -> NSRect { drawingRect(forBounds: rect) }
+
+    override func edit(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        event: NSEvent?
+    ) {
+        super.edit(withFrame: titleRect(forBounds: frame), in: controlView, editor: textObj, delegate: delegate, event: event)
+    }
+
+    override func select(
+        withFrame frame: NSRect,
+        in controlView: NSView,
+        editor textObj: NSText,
+        delegate: Any?,
+        start selStart: Int,
+        length selLength: Int
+    ) {
+        super.select(
+            withFrame: titleRect(forBounds: frame),
+            in: controlView,
+            editor: textObj,
+            delegate: delegate,
+            start: selStart,
+            length: selLength
+        )
+    }
+}
+
+private final class FluentComboBoxEditableTextField: NSTextField {
+    var fluentTheme: FluentTheme = .current {
+        didSet {
+            guard oldValue != fluentTheme else { return }
+            textEditingSession.theme = fluentTheme
+        }
+    }
+    var onRequestFlyout: (() -> Void)?
+    var onFocusChange: ((Bool) -> Void)?
+    var onPressChange: ((Bool) -> Void)?
+    var onPointerChange: ((Bool) -> Void)?
+    var onGlyphPointerChange: ((Bool) -> Void)?
+    private var pointerTrackingArea: NSTrackingArea?
+    private var isTrackingGlyphPress = false
+    private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: fluentTheme, isSecure: false)
+
+    override func updateTrackingAreas() {
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        super.updateTrackingAreas()
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        pointerTrackingArea = area
+        addTrackingArea(area)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        onPointerChange?(true)
+        onGlyphPointerChange?(isInGlyphColumn(event))
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        onPointerChange?(true)
+        onGlyphPointerChange?(isInGlyphColumn(event))
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        onPointerChange?(false)
+        onGlyphPointerChange?(false)
+    }
+
+    override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { onFocusChange?(true) }
+        return result
+    }
+
+    override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { onFocusChange?(false) }
+        return result
+    }
+
+    override func textDidBeginEditing(_ notification: Notification) {
+        super.textDidBeginEditing(notification)
+        textEditingSession.didBeginEditing()
+    }
+
+    override func selectText(_ sender: Any?) {
+        super.selectText(sender)
+        textEditingSession.didBeginEditing()
+    }
+
+    override func textDidEndEditing(_ notification: Notification) {
+        super.textDidEndEditing(notification)
+        textEditingSession.didEndEditing()
+    }
+
+    override func rightMouseDown(with event: NSEvent) {
+        if !textEditingSession.presentContextCommands(for: event) {
+            super.rightMouseDown(with: event)
+        }
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard isInGlyphColumn(event) else {
+            super.mouseDown(with: event)
+            return
+        }
+        FluentFocusVisibility.markPointerInteraction(in: window)
+        isTrackingGlyphPress = true
+        onGlyphPointerChange?(true)
+        onPressChange?(true)
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard isTrackingGlyphPress else { return }
+        let inside = isInGlyphColumn(event)
+        onGlyphPointerChange?(inside)
+        onPressChange?(inside)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard isTrackingGlyphPress else { return }
+        let opensPopup = isInGlyphColumn(event)
+        isTrackingGlyphPress = false
+        onPressChange?(false)
+        onGlyphPointerChange?(opensPopup)
+        if opensPopup { DispatchQueue.main.async { [weak self] in self?.onRequestFlyout?() } }
+    }
+
+    override func keyDown(with event: NSEvent) {
+        if event.modifierFlags.contains(.option), event.keyCode == 125 || event.keyCode == 126 {
+            onRequestFlyout?()
+            return
+        }
+        super.keyDown(with: event)
+    }
+
+    private func isInGlyphColumn(_ event: NSEvent) -> Bool {
+        let point = convert(event.locationInWindow, from: nil)
+        let glyphColumn: CGFloat = 38
+        return userInterfaceLayoutDirection == .rightToLeft
+            ? point.x <= glyphColumn
+            : point.x >= bounds.maxX - glyphColumn
     }
 }
 
 private final class FluentComboBoxNative: NSComboBox {
     var onRequestFlyout: (() -> Void)?
     var onFocusChange: ((Bool) -> Void)?
+    var onPressChange: ((Bool) -> Void)?
+    var onPointerChange: ((Bool) -> Void)?
+    var usesCustomPopup = true
+    var tracksPointerInteractions = true {
+        didSet {
+            guard oldValue != tracksPointerInteractions else { return }
+            updateTrackingAreas()
+            if !tracksPointerInteractions { onPointerChange?(false) }
+        }
+    }
+    private var pointerTrackingArea: NSTrackingArea?
+    private var isTrackingPress = false
+
+    override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+
+    override func updateTrackingAreas() {
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        super.updateTrackingAreas()
+        guard tracksPointerInteractions else {
+            pointerTrackingArea = nil
+            return
+        }
+        let trackingArea = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        pointerTrackingArea = trackingArea
+        addTrackingArea(trackingArea)
+    }
+
+    override func mouseEntered(with event: NSEvent) { onPointerChange?(true) }
+    override func mouseExited(with event: NSEvent) { onPointerChange?(false) }
 
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
@@ -436,12 +906,45 @@ private final class FluentComboBoxNative: NSComboBox {
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
+
+        // WinUI editable ComboBox keeps the text portion as a real TextBox. Only the
+        // glyph column opens the ComboBox popup; forwarding the other hit to AppKit
+        // preserves insertion, selection and IME behavior.
+        if isEditable, usesCustomPopup {
+            let point = convert(event.locationInWindow, from: nil)
+            let glyphColumn: CGFloat = 38
+            let inGlyphColumn = userInterfaceLayoutDirection == .rightToLeft
+                ? point.x <= glyphColumn
+                : point.x >= bounds.maxX - glyphColumn
+            if !inGlyphColumn {
+                super.mouseDown(with: event)
+                return
+            }
+        }
         window?.makeFirstResponder(self)
-        onFocusChange?(true)
-        onRequestFlyout?()
+        // PointerFocused keeps native focus semantics without showing the keyboard focus Pill.
+        onFocusChange?(false)
+        isTrackingPress = true
+        onPressChange?(true)
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard isTrackingPress else { return }
+        onPressChange?(bounds.contains(convert(event.locationInWindow, from: nil)))
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard isTrackingPress else { return }
+        let opensPopup = bounds.contains(convert(event.locationInWindow, from: nil))
+        isTrackingPress = false
+        onPressChange?(false)
+        if opensPopup { DispatchQueue.main.async { [weak self] in self?.onRequestFlyout?() } }
     }
 
     override func keyDown(with event: NSEvent) {
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        onFocusChange?(true)
         switch event.keyCode {
         case 36, 49, 125, 126: onRequestFlyout?()
         default: super.keyDown(with: event)
@@ -450,6 +953,7 @@ private final class FluentComboBoxNative: NSComboBox {
 
     override func performClick(_ sender: Any?) {
         guard isEnabled else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
         window?.makeFirstResponder(self)
         onFocusChange?(true)
         onRequestFlyout?()
@@ -466,28 +970,59 @@ private enum FluentComboBoxMetrics {
     static let focusHighlightCornerRadius: CGFloat = 7
     static let contentLeadingPadding: CGFloat = 12
     static let glyphColumnWidth: CGFloat = 38
+    static let glyphWidth: CGFloat = 12
+    static let glyphTrailingPadding: CGFloat = 14
 }
 
 private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDelegate, FluentControlSizeConfigurable {
     let comboBox = FluentComboBoxNative(frame: .zero)
-    var theme: FluentTheme = .current { didSet { applyTheme() } }
+    let editableField = FluentComboBoxEditableTextField(frame: .zero)
+    var theme: FluentTheme = .current {
+        didSet {
+            guard oldValue != theme else { return }
+            applyTheme()
+        }
+    }
     var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { applyTheme() } }
     var fluentControlSize: FluentControlSize = .regular {
         didSet { applyControlSize() }
     }
     private var options: [Option]
     private var selection: FluentBinding<Option?>
+    private var text: FluentBinding<String>?
+    private var mode: FluentComboBoxMode
     private var title: (Option) -> String
     private var observerID: UUID?
+    private var textObserverID: UUID?
+    private var selectionSubscriptionGeneration: UInt = 0
+    private var textSubscriptionGeneration: UInt = 0
+    private var editPublicationGeneration: UInt = 0
+    private var editPublicationScheduled = false
+    private var pendingEditableValue: String?
     private var isApplyingSelection = false
-    private var menuFlyout: FluentMenuFlyout?
+    private var comboPopup: FluentComboBoxPopup?
     private var reduceMotion: Bool
     private let focusHighlightLayer = CALayer()
     private let focusPillLayer = CALayer()
+    private let elevationBorderLayer = CAGradientLayer()
+    private let elevationBorderMask = CAShapeLayer()
+    private let dropDownOverlayLayer = CALayer()
+    private let chevronLayer = FluentAnimatedChevronLayer()
+    private let visualStateCoordinator = FluentVisualStateCoordinator()
+    private let animationCoordinator = FluentAnimationCoordinator()
+    private var pointerTrackingArea: NSTrackingArea?
+    private var isPointerOver = false
+    private var isPointerOverGlyph = false
+    private var isPressed = false
+    private var isEditingText = false
+
+    override var isFlipped: Bool { true }
 
     init(
         options: [Option],
         selection: FluentBinding<Option?>,
+        text: FluentBinding<String>?,
+        mode: FluentComboBoxMode,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
         style: any FluentTextFieldStyle,
@@ -495,12 +1030,21 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     ) {
         self.options = options
         self.selection = selection
+        self.text = text
+        self.mode = mode
         self.title = title
         self.reduceMotion = reduceMotion
         super.init(frame: .zero)
+        identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBox.Host")
         self.theme = theme
         fluentStyle = style
+        visualStateCoordinator.reduceMotion = reduceMotion
+        animationCoordinator.reduceMotion = reduceMotion
         wantsLayer = true
+        layer?.masksToBounds = false
+        elevationBorderLayer.name = "FluentKit.ComboBox.ElevationBorder"
+        configureFluentElevationBorderLayer(elevationBorderLayer, mask: elevationBorderMask)
+        layer?.addSublayer(elevationBorderLayer)
         focusHighlightLayer.name = "FluentKit.ComboBox.FocusHighlight"
         focusHighlightLayer.borderWidth = FluentComboBoxMetrics.focusHighlightBorderWidth
         focusHighlightLayer.cornerRadius = FluentComboBoxMetrics.focusHighlightCornerRadius
@@ -508,21 +1052,50 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         focusPillLayer.name = "FluentKit.ComboBox.FocusPill"
         focusPillLayer.cornerRadius = FluentComboBoxMetrics.pillCornerRadius
         layer?.addSublayer(focusPillLayer)
-        comboBox.isEditable = false
+        dropDownOverlayLayer.name = "FluentKit.ComboBox.DropDownOverlay"
+        dropDownOverlayLayer.cornerRadius = 4
+        layer?.addSublayer(dropDownOverlayLayer)
+        chevronLayer.name = "FluentKit.ComboBox.Chevron"
+        layer?.addSublayer(chevronLayer)
+        comboBox.cell = FluentComboBoxCell(textCell: "")
+        comboBox.identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBox.NativeBridge")
+        configureFluentSingleLineTextControl(comboBox)
+        if let cell = comboBox.cell as? NSComboBoxCell {
+            cell.isButtonBordered = false
+            cell.isBordered = false
+            cell.isBezeled = false
+            cell.drawsBackground = false
+        }
+        comboBox.isEditable = mode == .editable
+        comboBox.isSelectable = true
         comboBox.completes = true
         comboBox.focusRingType = .none
         comboBox.isBordered = false
+        comboBox.isBezeled = false
         comboBox.drawsBackground = false
+        // The native combo remains a data/accessibility bridge only. Both public modes render
+        // their own faceplate, so the AppKit arrow must never flash during mount or mode changes.
         comboBox.alphaValue = 0
+        comboBox.isHidden = mode == .editable
+        comboBox.tracksPointerInteractions = false
         comboBox.delegate = self
         comboBox.setAccessibilityRole(.comboBox)
         comboBox.setAccessibilityHelp("Shows the available options")
         comboBox.onFocusChange = { [weak self] focused in
             self?.updateFocusPill(focused: focused, animated: false)
+            self?.applyButtonChrome(animated: true)
         }
-        comboBox.onRequestFlyout = { [weak self] in self?.showOptions() }
+        comboBox.onPressChange = { [weak self] pressed in
+            self?.isPressed = pressed
+            self?.applyButtonChrome(animated: true)
+        }
+        comboBox.onPointerChange = { [weak self] over in
+            self?.isPointerOver = over
+            self?.applyButtonChrome(animated: true)
+        }
+        comboBox.onRequestFlyout = { [weak self] in self?.requestOpen() }
         comboBox.target = self
-        comboBox.action = #selector(showOptions)
+        comboBox.action = #selector(requestOpen)
         addSubview(comboBox)
         comboBox.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -531,8 +1104,48 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             comboBox.topAnchor.constraint(equalTo: topAnchor),
             comboBox.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+        editableField.cell = FluentComboBoxEditableTextFieldCell(textCell: "")
+        configureFluentSingleLineTextControl(editableField)
+        editableField.fluentTheme = theme
+        editableField.isEditable = true
+        editableField.isSelectable = true
+        editableField.isBordered = false
+        editableField.isBezeled = false
+        editableField.drawsBackground = false
+        editableField.focusRingType = .none
+        editableField.delegate = self
+        editableField.isHidden = mode != .editable
+        editableField.identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBox.EditableText")
+        editableField.setAccessibilityRole(.comboBox)
+        editableField.setAccessibilityHelp("Edits a value or shows the available options")
+        editableField.onFocusChange = { [weak self] focused in
+            self?.updateFocusPill(focused: focused, animated: false)
+            self?.applyButtonChrome(animated: true)
+        }
+        editableField.onPressChange = { [weak self] pressed in
+            self?.isPressed = pressed
+            self?.applyButtonChrome(animated: true)
+        }
+        editableField.onPointerChange = { [weak self] over in
+            self?.isPointerOver = over
+            self?.applyButtonChrome(animated: true)
+        }
+        editableField.onGlyphPointerChange = { [weak self] over in
+            self?.isPointerOverGlyph = over
+            self?.applyButtonChrome(animated: true)
+        }
+        editableField.onRequestFlyout = { [weak self] in self?.requestOpen() }
+        addSubview(editableField)
+        editableField.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            editableField.leadingAnchor.constraint(equalTo: leadingAnchor),
+            editableField.trailingAnchor.constraint(equalTo: trailingAnchor),
+            editableField.topAnchor.constraint(equalTo: topAnchor),
+            editableField.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
         reloadOptions()
         installObserver()
+        installTextObserver()
         applyControlSize()
         applySelection()
         updateFocusPill(focused: false, animated: false)
@@ -541,86 +1154,213 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override var intrinsicContentSize: NSSize {
-        NSSize(width: 220 * theme.density.metricScale, height: theme.controlHeight(for: fluentControlSize))
+        NSSize(width: 240 * theme.density.metricScale, height: theme.controlHeight(for: fluentControlSize))
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        guard bounds.contains(point) else { return nil }
+        if mode == .selection { return comboBox.isEnabled ? self : nil }
+        return super.hitTest(point)
+    }
+
+    override func updateTrackingAreas() {
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        super.updateTrackingAreas()
+        guard mode == .selection else {
+            pointerTrackingArea = nil
+            return
+        }
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        pointerTrackingArea = area
+        addTrackingArea(area)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        guard mode == .selection, comboBox.isEnabled else { return }
+        isPointerOver = true
+        applyButtonChrome(animated: true)
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        guard mode == .selection else { return }
+        isPointerOver = false
+        applyButtonChrome(animated: true)
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard mode == .selection, comboBox.isEnabled else { return super.mouseDown(with: event) }
+        FluentFocusVisibility.markPointerInteraction(in: window)
+        _ = window?.makeFirstResponder(comboBox)
+        updateFocusPill(focused: false, animated: false)
+        isPressed = true
+        applyButtonChrome(animated: true)
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard mode == .selection else { return super.mouseDragged(with: event) }
+        let pressed = bounds.contains(convert(event.locationInWindow, from: nil))
+        guard pressed != isPressed else { return }
+        isPressed = pressed
+        applyButtonChrome(animated: true)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard mode == .selection else { return super.mouseUp(with: event) }
+        let opens = isPressed && bounds.contains(convert(event.locationInWindow, from: nil))
+        isPressed = false
+        applyButtonChrome(animated: true)
+        if opens { requestOpen() }
     }
 
     override func layout() {
         super.layout()
+        synchronizeVisualGeometry()
+    }
+
+    override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        synchronizeVisualGeometry()
+    }
+
+    override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        synchronizeVisualGeometry()
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        synchronizeVisualGeometry()
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        synchronizeVisualGeometry()
+    }
+
+    private func synchronizeVisualGeometry() {
         let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
         let height = min(FluentComboBoxMetrics.pillHeight, max(0, bounds.height - 4))
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         focusHighlightLayer.frame = bounds.insetBy(dx: -FluentComboBoxMetrics.focusHighlightMargin, dy: -FluentComboBoxMetrics.focusHighlightMargin)
         focusPillLayer.frame = NSRect(
-            x: rightToLeft ? bounds.maxX - FluentComboBoxMetrics.pillWidth : bounds.minX,
+            x: rightToLeft
+                ? bounds.maxX - FluentComboBoxMetrics.pillWidth - 1
+                : bounds.minX + 1,
             y: bounds.midY - height / 2,
             width: FluentComboBoxMetrics.pillWidth,
             height: height
         )
+        dropDownOverlayLayer.frame = NSRect(
+            x: rightToLeft ? bounds.minX + 4 : bounds.maxX - 34,
+            y: bounds.minY + 4,
+            width: 30,
+            height: max(0, bounds.height - 8)
+        )
+        updateElevationBorderGeometry()
+        updateChevron(animated: false)
         CATransaction.commit()
     }
 
     func update(
         options: [Option],
         selection: FluentBinding<Option?>,
+        text: FluentBinding<String>?,
+        mode: FluentComboBoxMode,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
         style: any FluentTextFieldStyle,
         reduceMotion: Bool
     ) {
-        removeObserver()
+        let modeChanged = self.mode != mode
+        let reusesSelectionObservation = self.selection.observationIdentity != nil
+            && self.selection.observationIdentity == selection.observationIdentity
+        let reusesTextObservation: Bool
+        switch (self.text?.observationIdentity, text?.observationIdentity) {
+        case let (oldID?, newID?):
+            reusesTextObservation = oldID == newID
+        case (nil, nil):
+            reusesTextObservation = self.text == nil && text == nil
+        default:
+            reusesTextObservation = false
+        }
+        if !reusesSelectionObservation { removeSelectionObserver() }
+        if !reusesTextObservation {
+            cancelScheduledEditablePublication()
+            removeTextObserver()
+        }
         let optionsChanged = self.options != options
         if optionsChanged {
-            menuFlyout?.dismiss(animated: false)
-            menuFlyout = nil
+            comboPopup?.dismiss(animated: false)
+            comboPopup = nil
         }
         self.options = options
         self.selection = selection
+        self.text = text
+        self.mode = mode
         self.title = title
         self.reduceMotion = reduceMotion
-        self.theme = theme
+        if self.theme != theme { self.theme = theme }
         self.fluentStyle = style
+        editableField.fluentTheme = theme
+        comboBox.isEditable = mode == .editable
+        comboBox.alphaValue = 0
+        comboBox.isHidden = mode == .editable
+        comboBox.tracksPointerInteractions = false
+        editableField.isHidden = mode != .editable
+        if modeChanged {
+            isPointerOver = false
+            isPointerOverGlyph = false
+            isPressed = false
+            updateTrackingAreas()
+            invalidateIntrinsicContentSize()
+        }
+        if let cell = comboBox.cell as? NSComboBoxCell {
+            cell.isButtonBordered = false
+            cell.isBordered = false
+            cell.isBezeled = false
+            cell.drawsBackground = false
+        }
+        visualStateCoordinator.reduceMotion = reduceMotion
+        animationCoordinator.reduceMotion = reduceMotion
+        if reduceMotion {
+            layer?.removeAllAnimations()
+            elevationBorderLayer.removeAllAnimations()
+            chevronLayer.removeAllAnimations()
+        }
         if optionsChanged { reloadOptions() } else { refreshTitles() }
         applyControlSize()
         applySelection()
-        updateFocusPill(focused: window?.firstResponder === comboBox, animated: false)
-        installObserver()
+        updateFocusPill(focused: isTextFocusActive, animated: false)
+        if !reusesSelectionObservation { installObserver() }
+        if !reusesTextObservation { installTextObserver() }
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let appearance = fluentStyle.appearance(
-            for: FluentTextFieldStyleConfiguration(
-                isEnabled: comboBox.isEnabled,
-                isFocused: window?.firstResponder === comboBox || window?.firstResponder === comboBox.currentEditor(),
-                controlSize: fluentControlSize,
-                theme: theme
+        if usesEditableTextChrome {
+            let appearance = fluentStyle.appearance(
+                for: FluentTextFieldStyleConfiguration(
+                    isEnabled: comboBox.isEnabled,
+                    isFocused: true,
+                    controlSize: fluentControlSize,
+                    theme: theme
+                )
             )
-        )
-        appearance.backgroundColor.setFill()
-        bounds.fill()
-        appearance.borderColor.setStroke()
-        switch appearance.borderShape {
-        case .rounded:
-            let rect = bounds.insetBy(dx: appearance.borderWidth / 2, dy: appearance.borderWidth / 2)
-            let path = NSBezierPath(roundedRect: rect, xRadius: appearance.cornerRadius, yRadius: appearance.cornerRadius)
-            appearance.backgroundColor.setFill()
-            path.fill()
-            if appearance.borderWidth > 0 {
-                path.lineWidth = appearance.borderWidth
-                path.stroke()
-            }
-        case .underline:
-            if appearance.borderWidth > 0 {
-                let path = NSBezierPath()
-                path.move(to: NSPoint(x: bounds.minX, y: appearance.borderWidth / 2))
-                path.line(to: NSPoint(x: bounds.maxX, y: appearance.borderWidth / 2))
-                path.lineWidth = appearance.borderWidth
-                path.stroke()
-            }
+            drawFluentTextFieldChrome(
+                in: bounds,
+                appearance: appearance,
+                isFlipped: isFlipped
+            )
+        } else {
+            applyButtonChrome(animated: false)
         }
         super.draw(dirtyRect)
-        drawSelectedTitle()
-        drawChevron()
+        if mode == .selection { drawSelectedTitle() }
     }
 
     func comboBoxSelectionDidChange(_ notification: Notification) {
@@ -629,30 +1369,122 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         selection.set(options.indices.contains(index) ? options[index] : nil)
     }
 
-    @objc private func showOptions() {
-        guard comboBox.isEnabled, !options.isEmpty else { return }
-        updateFocusPill(focused: true, animated: false)
-        menuFlyout?.dismiss(animated: false)
-        let selected = selection.get()
-        let items = options.map { option in
-            FluentMenuItem(
-                title(option),
-                state: option == selected ? .on : .off,
-                selectionIndicator: .pill
-            ) { [weak self] in
-                guard let self else { return }
-                self.selection.set(option)
-                self.applySelection()
-            }
+    func controlTextDidChange(_ notification: Notification) {
+        guard mode == .editable, !isApplyingSelection else { return }
+        let value = (notification.object as? NSTextField)?.stringValue ?? editableField.stringValue
+        editableField.stringValue = value
+        comboBox.stringValue = value
+        scheduleEditablePublication(value)
+        needsDisplay = true
+    }
+
+    private func scheduleEditablePublication(_ value: String) {
+        pendingEditableValue = value
+        guard !editPublicationScheduled else { return }
+        editPublicationScheduled = true
+        let publication = editPublicationGeneration
+        DispatchQueue.main.async { [weak self] in
+            guard let self,
+                  self.editPublicationScheduled,
+                  publication == self.editPublicationGeneration,
+                  let value = self.pendingEditableValue else { return }
+            self.editPublicationScheduled = false
+            self.pendingEditableValue = nil
+            self.publishEditableValue(value)
         }
-        let flyout = FluentMenuFlyout(
-            items: items,
-            theme: theme,
-            minimumWidth: bounds.width,
-            reduceMotion: reduceMotion
+    }
+
+    private func flushEditablePublication() {
+        let value = pendingEditableValue ?? editableField.stringValue
+        cancelScheduledEditablePublication()
+        publishEditableValue(value)
+    }
+
+    private func cancelScheduledEditablePublication() {
+        editPublicationGeneration &+= 1
+        editPublicationScheduled = false
+        pendingEditableValue = nil
+    }
+
+    private func publishEditableValue(_ value: String) {
+        guard mode == .editable else { return }
+        if text?.get() != value { text?.set(value) }
+        let exactIndex = options.firstIndex { title($0) == value }
+        if let exactIndex {
+            if selection.get() != options[exactIndex] { selection.set(options[exactIndex]) }
+        } else if selection.get() != nil {
+            selection.set(nil)
+        }
+        comboPopup?.updateSelectedIndex(exactIndex)
+        needsDisplay = true
+    }
+
+    func controlTextDidBeginEditing(_ notification: Notification) {
+        guard mode == .editable, (notification.object as? NSTextField) === editableField else { return }
+        isEditingText = true
+        applyButtonChrome(animated: true)
+    }
+
+    func controlTextDidEndEditing(_ notification: Notification) {
+        guard mode == .editable, (notification.object as? NSTextField) === editableField else { return }
+        flushEditablePublication()
+        isEditingText = false
+        applyButtonChrome(animated: true)
+    }
+
+    @objc private func requestOpen() {
+        guard comboBox.isEnabled, !options.isEmpty else { return }
+        if comboPopup?.isPresented == true {
+            comboPopup?.dismiss(animated: false)
+            comboPopup = nil
+            applyButtonChrome(animated: true)
+            return
+        }
+        updateFocusPill(
+            focused: FluentFocusVisibility.isKeyboardFocusVisible(for: mode == .editable ? editableField : comboBox),
+            animated: false
         )
-        menuFlyout = flyout
-        flyout.present(relativeTo: self)
+        let selectedIndex = selection.get().flatMap { options.firstIndex(of: $0) }
+        let popup = FluentComboBoxPopup(
+            titles: options.map(title),
+            selectedIndex: selectedIndex,
+            placement: mode == .editable ? .editable : .selectionCentered,
+            theme: theme,
+            layoutDirection: userInterfaceLayoutDirection,
+            reduceMotion: reduceMotion,
+            onMove: { [weak self] index in self?.selectOption(at: index, dismiss: false) },
+            onCommit: { [weak self] index in self?.selectOption(at: index, dismiss: false) },
+            onDismiss: { [weak self] in
+                self?.comboPopup = nil
+                self?.applyButtonChrome(animated: true)
+            }
+        )
+        comboPopup = popup
+        popup.present(relativeTo: self)
+        // Opening changes the editable faceplate from Button-like chrome to the TextControl
+        // state. Apply that state only after `present` has established `isPresented`.
+        applyButtonChrome(animated: true)
+    }
+
+    private func selectOption(at index: Int, dismiss: Bool) {
+        guard options.indices.contains(index) else { return }
+        cancelScheduledEditablePublication()
+        let option = options[index]
+        if mode == .editable {
+            let value = title(option)
+            if text?.get() != value { text?.set(value) }
+            comboBox.stringValue = value
+            editableField.stringValue = value
+        }
+        if selection.get() != option {
+            selection.set(option)
+        }
+        applySelection()
+        comboPopup?.updateSelectedIndex(index)
+        if dismiss {
+            comboPopup?.dismiss(animated: true)
+            comboPopup = nil
+        }
     }
 
     private func reloadOptions() {
@@ -664,66 +1496,195 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     private func refreshTitles() {
-        let selected = selection.get()
         reloadOptions()
-        selection.set(selected)
+        applySelection()
     }
 
     private func applySelection() {
         isApplyingSelection = true
         defer { isApplyingSelection = false }
+        let selectedIndex: Int?
+        if mode == .editable, let text {
+            let isLocallyEditing = editableField.currentEditor() != nil
+                || window?.firstResponder === editableField
+            let value = isLocallyEditing ? editableField.stringValue : text.get()
+            comboBox.stringValue = value
+            if !isLocallyEditing, editableField.stringValue != value {
+                editableField.stringValue = value
+            }
+            if let exactIndex = options.firstIndex(where: { title($0) == value }) {
+                comboBox.selectItem(at: exactIndex)
+                selectedIndex = exactIndex
+            } else {
+                comboBox.deselectItem(at: comboBox.indexOfSelectedItem)
+                selectedIndex = nil
+            }
+            needsDisplay = true
+            comboPopup?.updateSelectedIndex(selectedIndex)
+            return
+        }
         if let selected = selection.get(), let index = options.firstIndex(of: selected) {
             comboBox.selectItem(withObjectValue: title(selected))
             comboBox.stringValue = title(selected)
+            editableField.stringValue = title(selected)
             comboBox.selectItem(at: index)
+            selectedIndex = index
+            if mode == .editable { text?.set(title(selected)) }
         } else {
             comboBox.deselectItem(at: comboBox.indexOfSelectedItem)
-            comboBox.stringValue = ""
+            selectedIndex = nil
+            // An editable ComboBox may intentionally contain text that is not one of the
+            // options. Clearing it here would make every non-matching keystroke disappear.
+            if mode == .selection { comboBox.stringValue = "" }
             if selection.get() != nil { selection.set(nil) }
         }
+        comboPopup?.updateSelectedIndex(selectedIndex)
         needsDisplay = true
     }
 
     private func installObserver() {
+        selectionSubscriptionGeneration &+= 1
+        let subscription = selectionSubscriptionGeneration
         observerID = selection.observe { [weak self] _ in
-            DispatchQueue.main.async { [weak self] in self?.applySelection() }
+            let apply = { [weak self] in
+                guard let self, subscription == self.selectionSubscriptionGeneration else { return }
+                self.applySelection()
+            }
+            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
         }
     }
 
-    private func removeObserver() {
+    private func installTextObserver() {
+        guard let text else { return }
+        textSubscriptionGeneration &+= 1
+        let subscription = textSubscriptionGeneration
+        textObserverID = text.observe { [weak self] value in
+            let apply = { [weak self] in
+                guard let self,
+                      subscription == self.textSubscriptionGeneration,
+                      self.text?.get() == value,
+                      self.mode == .editable,
+                      self.window?.firstResponder !== self.comboBox,
+                      self.window?.firstResponder !== self.editableField,
+                      self.comboBox.currentEditor() == nil,
+                      self.editableField.currentEditor() == nil,
+                      self.comboBox.stringValue != value else { return }
+                self.isApplyingSelection = true
+                self.comboBox.stringValue = value
+                self.editableField.stringValue = value
+                self.isApplyingSelection = false
+                self.needsDisplay = true
+            }
+            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
+        }
+    }
+
+    private func removeSelectionObserver() {
+        selectionSubscriptionGeneration &+= 1
         if let observerID { selection.removeObserver(observerID) }
         observerID = nil
     }
 
+    private func removeTextObserver() {
+        textSubscriptionGeneration &+= 1
+        if let textObserverID { text?.removeObserver(textObserverID) }
+        textObserverID = nil
+    }
+
     private func applyControlSize() {
         comboBox.controlSize = fluentControlSize.appKitSize
-        let appearance = fluentStyle.appearance(
+        let contentAppearance = fluentStyle.appearance(
             for: FluentTextFieldStyleConfiguration(
                 isEnabled: comboBox.isEnabled,
-                isFocused: window?.firstResponder === comboBox || window?.firstResponder === comboBox.currentEditor(),
+                isFocused: isTextFocusActive,
                 controlSize: fluentControlSize,
                 theme: theme
             )
         )
         let bodyFont = theme.typography.font(for: .body)
-        comboBox.font = appearance.font ?? bodyFont.withSize(bodyFont.pointSize * fluentControlSize.metricScale)
-        comboBox.textColor = appearance.textColor
+        comboBox.font = contentAppearance.font
+            ?? bodyFont.withSize(bodyFont.pointSize * fluentControlSize.metricScale)
+        comboBox.textColor = theme.textPrimary
+        editableField.controlSize = fluentControlSize.appKitSize
+        editableField.font = comboBox.font
+        editableField.textColor = theme.textPrimary
         comboBox.invalidateIntrinsicContentSize()
+        applyButtonChrome(animated: false)
         invalidateIntrinsicContentSize()
         needsDisplay = true
     }
 
     private func applyTheme() {
         applyControlSize()
-        focusPillLayer.backgroundColor = theme.accent.cgColor
+        focusPillLayer.backgroundColor = theme.accentFillDefault.cgColor
         needsDisplay = true
     }
 
+    private func applyButtonChrome(animated: Bool) {
+        visualStateCoordinator.reduceMotion = reduceMotion
+        visualStateCoordinator.transition(
+            to: .forControlState(resolvedButtonControlState()),
+            animated: animated,
+            motion: FluentMotion.controlFaster
+        ) { [weak self] transition in
+            self?.applyButtonVisualState(transition)
+        }
+    }
+
+    private func applyButtonVisualState(_ transition: FluentVisualStateTransition) {
+        if usesEditableTextChrome {
+            guard let layer else { return }
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            layer.backgroundColor = NSColor.clear.cgColor
+            layer.borderWidth = 0
+            elevationBorderLayer.isHidden = true
+            CATransaction.commit()
+            updateDropDownOverlay()
+            updateChevron(animated: transition.isAnimated)
+            needsDisplay = true
+            return
+        }
+        let appearance = resolvedButtonAppearance(for: transition.to.primaryControlState)
+        guard let layer else { return }
+        applyFluentButtonChrome(
+            to: layer,
+            elevationLayer: elevationBorderLayer,
+            elevationMask: elevationBorderMask,
+            bounds: bounds,
+            appearance: appearance,
+            visualYAxis: .resolved(for: layer, fallbackView: self),
+            backingScale: window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1,
+            animationCoordinator: animationCoordinator,
+            motion: transition.motion,
+            animated: transition.isAnimated
+        )
+        updateDropDownOverlay()
+        updateChevron(animated: transition.isAnimated)
+        needsDisplay = true
+    }
+
+    private func updateElevationBorderGeometry(for appearance: FluentButtonAppearance? = nil) {
+        guard bounds.width > 0, bounds.height > 0 else { return }
+        let resolvedAppearance = appearance ?? resolvedButtonAppearance()
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        updateFluentElevationBorderLayer(
+            elevationBorderLayer,
+            mask: elevationBorderMask,
+            bounds: bounds,
+            appearance: resolvedAppearance,
+            visualYAxis: .resolved(for: self.layer, fallbackView: self),
+            backingScale: window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
+        )
+        CATransaction.commit()
+    }
+
     private func updateFocusPill(focused: Bool, animated: Bool) {
-        focusPillLayer.backgroundColor = theme.accent.cgColor
+        focusPillLayer.backgroundColor = theme.accentFillDefault.cgColor
         focusHighlightLayer.borderColor = theme.accent.cgColor
         focusHighlightLayer.backgroundColor = NSColor.clear.cgColor
-        let targetOpacity: Float = focused && comboBox.isEnabled ? 1 : 0
+        let targetOpacity: Float = mode == .selection && focused && comboBox.isEnabled ? 1 : 0
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         focusHighlightLayer.opacity = targetOpacity
@@ -738,56 +1699,123 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         }
     }
 
-    private func drawChevron() {
+    private func updateChevron(animated: Bool) {
+        let pointerOver = mode == .editable && usesEditableTextChrome
+            ? isPointerOverGlyph
+            : isPointerOver
+        let state: FluentControlState = !comboBox.isEnabled
+            ? .disabled
+            : (isPressed
+                ? .pressed
+                : (pointerOver
+                    ? .pointerOver
+                    : (FluentFocusVisibility.isKeyboardFocusVisible(for: comboBox) ? .focused : .normal)))
+        let color: NSColor = switch state {
+        case .pressed: theme.textSecondary.withAlphaComponent(0.72)
+        case .pointerOver: theme.textSecondary.withAlphaComponent(0.86)
+        case .disabled: theme.textDisabled
+        default: theme.textSecondary
+        }
         let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
-        let centerX = rightToLeft
-            ? bounds.minX + FluentComboBoxMetrics.glyphColumnWidth / 2
-            : bounds.maxX - FluentComboBoxMetrics.glyphColumnWidth / 2
-        let path = NSBezierPath()
-        path.move(to: NSPoint(x: centerX - 3, y: bounds.midY + 2))
-        path.line(to: NSPoint(x: centerX, y: bounds.midY - 1.5))
-        path.line(to: NSPoint(x: centerX + 3, y: bounds.midY + 2))
-        path.lineWidth = 1.4
-        theme.textSecondary.setStroke()
-        path.stroke()
+        let x = rightToLeft
+            ? bounds.minX + FluentComboBoxMetrics.glyphTrailingPadding
+            : bounds.maxX - FluentComboBoxMetrics.glyphTrailingPadding - FluentComboBoxMetrics.glyphWidth
+        chevronLayer.update(
+            frame: NSRect(x: x, y: bounds.midY - 6, width: FluentComboBoxMetrics.glyphWidth, height: FluentComboBoxMetrics.glyphWidth),
+            color: color,
+            state: state,
+            visual: .downSmall,
+            animated: animated
+        )
+    }
+
+    private func updateDropDownOverlay() {
+        let color: NSColor
+        if mode == .editable, usesEditableTextChrome, isPressed {
+            color = theme.subtleFillTertiary
+        } else if mode == .editable, usesEditableTextChrome, isPointerOverGlyph {
+            color = theme.subtleFillSecondary
+        } else {
+            color = .clear
+        }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        dropDownOverlayLayer.backgroundColor = color.cgColor
+        dropDownOverlayLayer.isHidden = mode != .editable
+        CATransaction.commit()
     }
 
     private func drawSelectedTitle() {
         guard !comboBox.stringValue.isEmpty else { return }
-        let appearance = fluentStyle.appearance(
-            for: FluentTextFieldStyleConfiguration(
-                isEnabled: comboBox.isEnabled,
-                isFocused: focusPillLayer.opacity > 0,
-                controlSize: fluentControlSize,
-                theme: theme
-            )
-        )
-        let font = appearance.font
-            ?? theme.typography.font(for: .body).withSize(
-                theme.typography.font(for: .body).pointSize * fluentControlSize.metricScale
-            )
+        let appearance = resolvedButtonAppearance()
+        let bodyFont = theme.typography.font(for: .body)
+        let font = comboBox.font
+            ?? bodyFont.withSize(bodyFont.pointSize * fluentControlSize.metricScale)
         let size = (comboBox.stringValue as NSString).size(withAttributes: [.font: font])
         let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = rightToLeft ? .right : .left
-        (comboBox.stringValue as NSString).draw(
-            in: NSRect(
+        let textRect = fluentSingleLineTextRect(
+            NSRect(
                 x: rightToLeft ? FluentComboBoxMetrics.glyphColumnWidth : FluentComboBoxMetrics.contentLeadingPadding,
-                y: bounds.midY - size.height / 2,
+                y: 0,
                 width: max(0, bounds.width - FluentComboBoxMetrics.glyphColumnWidth - FluentComboBoxMetrics.contentLeadingPadding),
                 height: size.height
             ),
+            in: bounds,
+            font: font,
+            topInset: 5,
+            bottomInset: 7
+        )
+        (comboBox.stringValue as NSString).draw(
+            in: textRect,
             withAttributes: [
                 .font: font,
-                .foregroundColor: appearance.textColor,
+                .foregroundColor: appearance.foregroundColor,
                 .paragraphStyle: paragraph
             ]
         )
     }
 
+    private func resolvedButtonAppearance() -> FluentButtonAppearance {
+        resolvedButtonAppearance(for: visualStateCoordinator.state.primaryControlState)
+    }
+
+    private func resolvedButtonAppearance(for state: FluentControlState) -> FluentButtonAppearance {
+        return FluentAutomaticButtonStyle().appearance(
+            for: FluentButtonStyleConfiguration(
+                title: comboBox.stringValue,
+                controlState: state,
+                isEnabled: comboBox.isEnabled,
+                theme: theme
+            )
+        )
+    }
+
+    private func resolvedButtonControlState() -> FluentControlState {
+        let focused = isTextFocusActive
+        return isPressed
+            ? .pressed
+            : (isPointerOver ? .pointerOver : (focused ? .focused : .normal))
+    }
+
+    private var usesEditableTextChrome: Bool {
+        mode == .editable && (isEditingText || isTextFocusActive || comboPopup?.isPresented == true)
+    }
+
+    private var isTextFocusActive: Bool {
+        guard let firstResponder = window?.firstResponder else { return false }
+        return firstResponder === comboBox
+            || firstResponder === comboBox.currentEditor()
+            || firstResponder === editableField
+            || firstResponder === editableField.currentEditor()
+    }
+
     deinit {
-        removeObserver()
-        menuFlyout?.dismiss(animated: false)
+        cancelScheduledEditablePublication()
+        removeSelectionObserver()
+        removeTextObserver()
+        comboPopup?.dismiss(animated: false)
     }
 }
 
@@ -867,15 +1895,88 @@ public struct FluentStepper: FluentUpdatablePrimitiveView {
     }
 }
 
+private final class FluentStepperNative: NSStepper {
+    var onStep: ((Bool) -> Void)?
+    var onPointerSideChange: ((Bool?) -> Void)?
+    private var trackingArea: NSTrackingArea?
+    private(set) var pointerSideIsIncrement: Bool?
+    private(set) var pressedSideIsIncrement: Bool?
+
+    // NSStepper reserves bezel alignment insets even when its native drawing is suppressed.
+    // Zero them so the visible/hit-test column matches NumberBox's 72pt template column.
+    override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+
+    override func updateTrackingAreas() {
+        if let trackingArea { removeTrackingArea(trackingArea) }
+        super.updateTrackingAreas()
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        trackingArea = area
+        addTrackingArea(area)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        updatePointerSide(with: event)
+    }
+
+    override func mouseMoved(with event: NSEvent) {
+        updatePointerSide(with: event)
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        pointerSideIsIncrement = nil
+        onPointerSideChange?(nil)
+        needsDisplay = true
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard isEnabled else { return }
+        let localPoint = convert(event.locationInWindow, from: nil)
+        let isLeadingHalf = localPoint.x < bounds.midX
+        let increment = userInterfaceLayoutDirection == .rightToLeft ? !isLeadingHalf : isLeadingHalf
+        pressedSideIsIncrement = increment
+        pointerSideIsIncrement = increment
+        onPointerSideChange?(increment)
+        needsDisplay = true
+        onStep?(increment)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        pressedSideIsIncrement = nil
+        updatePointerSide(with: event)
+        needsDisplay = true
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        // Keep AppKit stepping and accessibility while FluentStepperHost owns the pixels.
+    }
+
+    private func updatePointerSide(with event: NSEvent) {
+        let localPoint = convert(event.locationInWindow, from: nil)
+        let isLeadingHalf = localPoint.x < bounds.midX
+        let side = bounds.contains(localPoint)
+            ? (userInterfaceLayoutDirection == .rightToLeft ? !isLeadingHalf : isLeadingHalf)
+            : nil
+        pointerSideIsIncrement = side
+        onPointerSideChange?(side)
+        needsDisplay = true
+    }
+}
+
 private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentControlSizeConfigurable {
     let titleLabel = NSTextField(labelWithString: "")
     let valueField = FluentTextField()
-    let stepper = NSStepper(frame: .zero)
+    let stepper = FluentStepperNative(frame: .zero)
     var fluentControlSize: FluentControlSize = .regular { didSet { applyControlSize() } }
     private var theme: FluentTheme = .current
     private var style: any FluentStepperStyle = FluentAutomaticStepperStyle()
     private var stack: NSStackView!
     private var valueWidthConstraint: NSLayoutConstraint!
+    private var stepperWidthConstraint: NSLayoutConstraint!
     private var binding: FluentBinding<Double>
     private var range: ClosedRange<Double>
     private var step: Double
@@ -907,8 +2008,11 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
         valueField.delegate = self
         valueField.target = self
         valueField.action = #selector(commitText)
+        valueField.onFluentPointerChange = { [weak self] _ in self?.needsDisplay = true }
         stepper.target = self
         stepper.action = #selector(stepValue)
+        stepper.onStep = { [weak self] increment in self?.stepValueByDirection(increment: increment) }
+        stepper.onPointerSideChange = { [weak self] _ in self?.needsDisplay = true }
         stack = NSStackView(views: [titleLabel, valueField, stepper])
         stack.orientation = .horizontal
         stack.alignment = .centerY
@@ -916,12 +2020,14 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
         addSubview(stack)
         stack.translatesAutoresizingMaskIntoConstraints = false
         valueWidthConstraint = valueField.widthAnchor.constraint(equalToConstant: 88)
+        stepperWidthConstraint = stepper.widthAnchor.constraint(equalToConstant: 28)
         NSLayoutConstraint.activate([
             stack.leadingAnchor.constraint(equalTo: leadingAnchor),
             stack.trailingAnchor.constraint(equalTo: trailingAnchor),
             stack.topAnchor.constraint(equalTo: topAnchor),
             stack.bottomAnchor.constraint(equalTo: bottomAnchor),
-            valueWidthConstraint
+            valueWidthConstraint,
+            stepperWidthConstraint
         ])
         configureNativeControls()
         applyValue(binding.get(), writeBinding: true)
@@ -931,6 +2037,23 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func layout() {
+        super.layout()
+        let appearance = style.appearance(
+            for: FluentStepperStyleConfiguration(
+                isEnabled: valueField.isEnabled && stepper.isEnabled,
+                controlSize: fluentControlSize,
+                theme: theme
+            )
+        )
+        guard appearance.drawsContainerChrome else { return }
+        let expectedWidth = max(0, bounds.width - appearance.arrowColumnWidth)
+        if abs(valueWidthConstraint.constant - expectedWidth) > 0.1 {
+            valueWidthConstraint.constant = expectedWidth
+            needsLayout = true
+        }
+    }
 
     func update(
         title: String,
@@ -961,6 +2084,11 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
     func controlTextDidEndEditing(_ obj: Notification) { commitText() }
 
     @objc private func stepValue() { applyValue(stepper.doubleValue, writeBinding: true) }
+
+    private func stepValueByDirection(increment: Bool) {
+        let nextValue = binding.get() + (increment ? step : -step)
+        applyValue(nextValue, writeBinding: true)
+    }
 
     @objc private func commitText() {
         guard let value = Double(valueField.stringValue) else {
@@ -1019,8 +2147,101 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
         valueWidthConstraint?.constant = appearance.valueFieldWidth
         valueField.fluentStyle = appearance.textFieldStyle
         valueField.fluentControlSize = fluentControlSize
+        // NumberBox uses the TextBox's natural reading alignment; the compact inline
+        // stepper keeps its numeric value right-aligned beside the arrows.
+        valueField.alignment = appearance.drawsContainerChrome ? .natural : .right
+        valueField.drawsFluentChrome = !appearance.drawsContainerChrome
         stepper.controlSize = fluentControlSize.appKitSize
+        stepperWidthConstraint?.constant = appearance.arrowColumnWidth
+        if appearance.drawsContainerChrome {
+            valueWidthConstraint?.constant = bounds.width > 0
+                ? max(0, bounds.width - appearance.arrowColumnWidth)
+                : appearance.valueFieldWidth
+        }
         invalidateIntrinsicContentSize()
+        needsDisplay = true
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        let appearance = style.appearance(
+            for: FluentStepperStyleConfiguration(
+                isEnabled: valueField.isEnabled && stepper.isEnabled,
+                controlSize: fluentControlSize,
+                theme: theme
+            )
+        )
+        if appearance.drawsContainerChrome {
+            let focused = fluentTextControlHasFocus(valueField)
+            let fieldAppearance = appearance.textFieldStyle.appearance(
+                for: FluentTextFieldStyleConfiguration(
+                    isEnabled: valueField.isEnabled,
+                    isFocused: focused,
+                    isPointerOver: valueField.isFluentPointerOver,
+                    controlSize: fluentControlSize,
+                    theme: theme
+                )
+            )
+            drawFluentTextFieldChrome(in: bounds, appearance: fieldAppearance, isFlipped: isFlipped)
+        }
+        drawStepperArrows(
+            in: stepper.convert(stepper.bounds, to: self),
+            enabled: valueField.isEnabled && stepper.isEnabled,
+            pointerSide: stepper.pointerSideIsIncrement,
+            pressedSide: stepper.pressedSideIsIncrement
+        )
+    }
+
+    private func drawStepperArrows(
+        in frame: NSRect,
+        enabled: Bool,
+        pointerSide: Bool?,
+        pressedSide: Bool?
+    ) {
+        guard frame.width > 0, frame.height > 0 else { return }
+        let color = (enabled ? theme.textSecondary : theme.textDisabled).withAlphaComponent(enabled ? 1 : 0.55)
+        let buttonWidth = frame.width / 2
+        let arrowHeight: CGFloat = 4
+        let arrowWidth: CGFloat = 5
+        let incrementIndex = userInterfaceLayoutDirection == .rightToLeft ? 1 : 0
+        let visualUpSign: CGFloat = isFlipped ? -1 : 1
+        for index in 0...1 {
+            let sideIsIncrement = index == incrementIndex
+            let pointsUp = sideIsIncrement
+            let buttonFrame = NSRect(
+                x: frame.minX + CGFloat(index) * buttonWidth,
+                y: frame.minY,
+                width: buttonWidth,
+                height: frame.height
+            )
+            let fill: NSColor
+            if pressedSide == sideIsIncrement {
+                fill = theme.controlFillTertiary
+            } else if pointerSide == sideIsIncrement {
+                fill = theme.controlFillSecondary
+            } else {
+                fill = .clear
+            }
+            fill.setFill()
+            NSBezierPath(roundedRect: buttonFrame, xRadius: 3, yRadius: 3).fill()
+
+            let centerX = buttonFrame.midX
+            let centerY = buttonFrame.midY
+            let path = NSBezierPath()
+            if pointsUp {
+                path.move(to: NSPoint(x: centerX - arrowWidth / 2, y: centerY - visualUpSign * arrowHeight / 2))
+                path.line(to: NSPoint(x: centerX, y: centerY + visualUpSign * arrowHeight / 2))
+                path.line(to: NSPoint(x: centerX + arrowWidth / 2, y: centerY - visualUpSign * arrowHeight / 2))
+            } else {
+                path.move(to: NSPoint(x: centerX - arrowWidth / 2, y: centerY + visualUpSign * arrowHeight / 2))
+                path.line(to: NSPoint(x: centerX, y: centerY - visualUpSign * arrowHeight / 2))
+                path.line(to: NSPoint(x: centerX + arrowWidth / 2, y: centerY + visualUpSign * arrowHeight / 2))
+            }
+            path.lineWidth = 1.2
+            path.lineJoinStyle = .round
+            color.setStroke()
+            path.stroke()
+        }
     }
 
     deinit { removeObserver() }

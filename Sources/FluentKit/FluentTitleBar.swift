@@ -7,18 +7,27 @@ public enum FluentTitleBarHeightMode: String, CaseIterable, Hashable, Sendable {
     case expanded
 }
 
+public enum FluentTitleBarBackgroundStyle: String, CaseIterable, Hashable, Sendable {
+    case solid
+    case transparent
+}
+
 /// Native window chrome that preserves macOS window controls while providing Fluent title content.
 public struct FluentTitleBar: FluentUpdatablePrimitiveView {
     private let title: String
     private let subtitle: String?
     private let systemImageName: String?
     private let heightMode: FluentTitleBarHeightMode
+    private let backgroundStyle: FluentTitleBarBackgroundStyle
     private let isBackButtonVisible: Bool
     private let isBackButtonEnabled: Bool
+    private let isForwardButtonVisible: Bool
+    private let isForwardButtonEnabled: Bool
     private let isPaneToggleButtonVisible: Bool
     private let isPaneOpen: FluentBinding<Bool>?
     private let extendsIntoWindowChrome: Bool
     private let onBack: (() -> Void)?
+    private let onForward: (() -> Void)?
     private let onPaneToggle: (() -> Void)?
     private let leftHeader: FluentAnyView?
     private let centerContent: FluentAnyView?
@@ -29,12 +38,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         subtitle: String? = nil,
         systemImageName: String? = nil,
         heightMode: FluentTitleBarHeightMode = .automatic,
+        backgroundStyle: FluentTitleBarBackgroundStyle = .solid,
         isBackButtonVisible: Bool = false,
         isBackButtonEnabled: Bool = true,
+        isForwardButtonVisible: Bool = false,
+        isForwardButtonEnabled: Bool = true,
         isPaneToggleButtonVisible: Bool = false,
         isPaneOpen: FluentBinding<Bool>? = nil,
         extendsIntoWindowChrome: Bool = true,
         onBack: (() -> Void)? = nil,
+        onForward: (() -> Void)? = nil,
         onPaneToggle: (() -> Void)? = nil
     ) {
         self.init(
@@ -42,12 +55,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             subtitle: subtitle,
             systemImageName: systemImageName,
             heightMode: heightMode,
+            backgroundStyle: backgroundStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
+            isForwardButtonVisible: isForwardButtonVisible,
+            isForwardButtonEnabled: isForwardButtonEnabled,
             isPaneToggleButtonVisible: isPaneToggleButtonVisible,
             isPaneOpen: isPaneOpen,
             extendsIntoWindowChrome: extendsIntoWindowChrome,
             onBack: onBack,
+            onForward: onForward,
             onPaneToggle: onPaneToggle,
             leftHeader: nil,
             centerContent: nil,
@@ -60,12 +77,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         subtitle: String? = nil,
         systemImageName: String? = nil,
         heightMode: FluentTitleBarHeightMode = .automatic,
+        backgroundStyle: FluentTitleBarBackgroundStyle = .solid,
         isBackButtonVisible: Bool = false,
         isBackButtonEnabled: Bool = true,
+        isForwardButtonVisible: Bool = false,
+        isForwardButtonEnabled: Bool = true,
         isPaneToggleButtonVisible: Bool = false,
         isPaneOpen: FluentBinding<Bool>? = nil,
         extendsIntoWindowChrome: Bool = true,
         onBack: (() -> Void)? = nil,
+        onForward: (() -> Void)? = nil,
         onPaneToggle: (() -> Void)? = nil,
         @FluentViewBuilder leftHeader: () -> LeftHeader,
         @FluentViewBuilder content: () -> CenterContent,
@@ -76,12 +97,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             subtitle: subtitle,
             systemImageName: systemImageName,
             heightMode: heightMode,
+            backgroundStyle: backgroundStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
+            isForwardButtonVisible: isForwardButtonVisible,
+            isForwardButtonEnabled: isForwardButtonEnabled,
             isPaneToggleButtonVisible: isPaneToggleButtonVisible,
             isPaneOpen: isPaneOpen,
             extendsIntoWindowChrome: extendsIntoWindowChrome,
             onBack: onBack,
+            onForward: onForward,
             onPaneToggle: onPaneToggle,
             leftHeader: FluentAnyView(leftHeader()),
             centerContent: FluentAnyView(content()),
@@ -94,12 +119,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         subtitle: String?,
         systemImageName: String?,
         heightMode: FluentTitleBarHeightMode,
+        backgroundStyle: FluentTitleBarBackgroundStyle,
         isBackButtonVisible: Bool,
         isBackButtonEnabled: Bool,
+        isForwardButtonVisible: Bool,
+        isForwardButtonEnabled: Bool,
         isPaneToggleButtonVisible: Bool,
         isPaneOpen: FluentBinding<Bool>?,
         extendsIntoWindowChrome: Bool,
         onBack: (() -> Void)?,
+        onForward: (() -> Void)?,
         onPaneToggle: (() -> Void)?,
         leftHeader: FluentAnyView?,
         centerContent: FluentAnyView?,
@@ -109,12 +138,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         self.subtitle = subtitle
         self.systemImageName = systemImageName
         self.heightMode = heightMode
+        self.backgroundStyle = backgroundStyle
         self.isBackButtonVisible = isBackButtonVisible
         self.isBackButtonEnabled = isBackButtonEnabled
+        self.isForwardButtonVisible = isForwardButtonVisible
+        self.isForwardButtonEnabled = isForwardButtonEnabled
         self.isPaneToggleButtonVisible = isPaneToggleButtonVisible
         self.isPaneOpen = isPaneOpen
         self.extendsIntoWindowChrome = extendsIntoWindowChrome
         self.onBack = onBack
+        self.onForward = onForward
         self.onPaneToggle = onPaneToggle
         self.leftHeader = leftHeader
         self.centerContent = centerContent
@@ -129,12 +162,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             subtitle: subtitle,
             systemImageName: systemImageName,
             heightMode: heightMode,
+            backgroundStyle: backgroundStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
+            isForwardButtonVisible: isForwardButtonVisible,
+            isForwardButtonEnabled: isForwardButtonEnabled,
             isPaneToggleButtonVisible: isPaneToggleButtonVisible,
             isPaneOpen: isPaneOpen,
             extendsIntoWindowChrome: extendsIntoWindowChrome,
             onBack: onBack,
+            onForward: onForward,
             onPaneToggle: onPaneToggle,
             leftHeader: leftHeader,
             centerContent: centerContent,
@@ -150,12 +187,16 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             subtitle: subtitle,
             systemImageName: systemImageName,
             heightMode: heightMode,
+            backgroundStyle: backgroundStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
+            isForwardButtonVisible: isForwardButtonVisible,
+            isForwardButtonEnabled: isForwardButtonEnabled,
             isPaneToggleButtonVisible: isPaneToggleButtonVisible,
             isPaneOpen: isPaneOpen,
             extendsIntoWindowChrome: extendsIntoWindowChrome,
             onBack: onBack,
+            onForward: onForward,
             onPaneToggle: onPaneToggle,
             leftHeader: leftHeader,
             centerContent: centerContent,
@@ -181,12 +222,16 @@ private final class FluentTitleBarHost: NSView {
     private var subtitle: String?
     private var systemImageName: String?
     private var heightMode: FluentTitleBarHeightMode
+    private var backgroundStyle: FluentTitleBarBackgroundStyle
     private var isBackButtonVisible: Bool
     private var isBackButtonEnabled: Bool
+    private var isForwardButtonVisible: Bool
+    private var isForwardButtonEnabled: Bool
     private var isPaneToggleButtonVisible: Bool
     private var paneOpenBinding: FluentBinding<Bool>?
     private var extendsIntoWindowChrome: Bool
     private var onBack: (() -> Void)?
+    private var onForward: (() -> Void)?
     private var onPaneToggle: (() -> Void)?
     private var leftHeader: FluentAnyView?
     private var centerContent: FluentAnyView?
@@ -194,6 +239,7 @@ private final class FluentTitleBarHost: NSView {
     private var context: FluentRenderContext
 
     private let backButton = FluentTitleBarButton(kind: .back)
+    private let forwardButton = FluentTitleBarButton(kind: .forward)
     private let paneToggleButton = FluentTitleBarButton(kind: .pane)
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
@@ -222,12 +268,16 @@ private final class FluentTitleBarHost: NSView {
         subtitle: String?,
         systemImageName: String?,
         heightMode: FluentTitleBarHeightMode,
+        backgroundStyle: FluentTitleBarBackgroundStyle,
         isBackButtonVisible: Bool,
         isBackButtonEnabled: Bool,
+        isForwardButtonVisible: Bool,
+        isForwardButtonEnabled: Bool,
         isPaneToggleButtonVisible: Bool,
         isPaneOpen: FluentBinding<Bool>?,
         extendsIntoWindowChrome: Bool,
         onBack: (() -> Void)?,
+        onForward: (() -> Void)?,
         onPaneToggle: (() -> Void)?,
         leftHeader: FluentAnyView?,
         centerContent: FluentAnyView?,
@@ -238,12 +288,16 @@ private final class FluentTitleBarHost: NSView {
         self.subtitle = subtitle
         self.systemImageName = systemImageName
         self.heightMode = heightMode
+        self.backgroundStyle = backgroundStyle
         self.isBackButtonVisible = isBackButtonVisible
         self.isBackButtonEnabled = isBackButtonEnabled
+        self.isForwardButtonVisible = isForwardButtonVisible
+        self.isForwardButtonEnabled = isForwardButtonEnabled
         self.isPaneToggleButtonVisible = isPaneToggleButtonVisible
         paneOpenBinding = isPaneOpen
         self.extendsIntoWindowChrome = extendsIntoWindowChrome
         self.onBack = onBack
+        self.onForward = onForward
         self.onPaneToggle = onPaneToggle
         self.leftHeader = leftHeader
         self.centerContent = centerContent
@@ -256,8 +310,10 @@ private final class FluentTitleBarHost: NSView {
         setAccessibilityLabel(title)
 
         backButton.identifier = NSUserInterfaceItemIdentifier("FluentKit.TitleBar.Back")
+        forwardButton.identifier = NSUserInterfaceItemIdentifier("FluentKit.TitleBar.Forward")
         paneToggleButton.identifier = NSUserInterfaceItemIdentifier("FluentKit.TitleBar.PaneToggle")
         backButton.onInvoke = { [weak self] in self?.onBack?() }
+        forwardButton.onInvoke = { [weak self] in self?.onForward?() }
         paneToggleButton.onInvoke = { [weak self] in self?.togglePane() }
 
         iconView.identifier = NSUserInterfaceItemIdentifier("FluentKit.TitleBar.Icon")
@@ -267,6 +323,7 @@ private final class FluentTitleBarHost: NSView {
         configureLabel(subtitleLabel, identifier: "FluentKit.TitleBar.Subtitle")
 
         addSubview(backButton)
+        addSubview(forwardButton)
         addSubview(paneToggleButton)
         addSubview(iconView)
         addSubview(titleLabel)
@@ -285,12 +342,16 @@ private final class FluentTitleBarHost: NSView {
         subtitle: String?,
         systemImageName: String?,
         heightMode: FluentTitleBarHeightMode,
+        backgroundStyle: FluentTitleBarBackgroundStyle,
         isBackButtonVisible: Bool,
         isBackButtonEnabled: Bool,
+        isForwardButtonVisible: Bool,
+        isForwardButtonEnabled: Bool,
         isPaneToggleButtonVisible: Bool,
         isPaneOpen: FluentBinding<Bool>?,
         extendsIntoWindowChrome: Bool,
         onBack: (() -> Void)?,
+        onForward: (() -> Void)?,
         onPaneToggle: (() -> Void)?,
         leftHeader: FluentAnyView?,
         centerContent: FluentAnyView?,
@@ -303,12 +364,16 @@ private final class FluentTitleBarHost: NSView {
         self.subtitle = subtitle
         self.systemImageName = systemImageName
         self.heightMode = heightMode
+        self.backgroundStyle = backgroundStyle
         self.isBackButtonVisible = isBackButtonVisible
         self.isBackButtonEnabled = isBackButtonEnabled
+        self.isForwardButtonVisible = isForwardButtonVisible
+        self.isForwardButtonEnabled = isForwardButtonEnabled
         self.isPaneToggleButtonVisible = isPaneToggleButtonVisible
         paneOpenBinding = isPaneOpen
         self.extendsIntoWindowChrome = extendsIntoWindowChrome
         self.onBack = onBack
+        self.onForward = onForward
         self.onPaneToggle = onPaneToggle
         self.leftHeader = leftHeader
         self.centerContent = centerContent
@@ -346,12 +411,21 @@ private final class FluentTitleBarHost: NSView {
         }
 
         var leading: CGFloat = 2
+        backButton.isHidden = !isBackButtonVisible
         if isBackButtonVisible {
             backButton.frame = physicalFrame(logicalX: leading, width: Self.buttonWidth)
             leading += Self.buttonWidth
         } else {
             backButton.frame = .zero
         }
+        forwardButton.isHidden = !isForwardButtonVisible
+        if isForwardButtonVisible {
+            forwardButton.frame = physicalFrame(logicalX: leading, width: Self.buttonWidth)
+            leading += Self.buttonWidth
+        } else {
+            forwardButton.frame = .zero
+        }
+        paneToggleButton.isHidden = !isPaneToggleButtonVisible
         if isPaneToggleButtonVisible {
             paneToggleButton.frame = physicalFrame(logicalX: leading, width: Self.buttonWidth)
             leading += Self.buttonWidth
@@ -382,33 +456,43 @@ private final class FluentTitleBarHost: NSView {
             if width > 0 { leading += min(Self.leftHeaderSpacing, max(contentLimit - leading, 0)) }
         }
 
+        // WinUI treats title-bar content as interactive chrome. Reserve its requested width before
+        // fitting the optional app identity so a narrow window truncates the title instead of the
+        // SearchBox or another center control.
+        let centerContentWidth = fittedWidth(
+            centerContentHost,
+            maximum: max(contentLimit - leading, 0)
+        )
+        let centerSpacing = centerContentWidth > 0 ? Self.titleSpacing : 0
+        let identityLimit = max(contentLimit - centerContentWidth - centerSpacing, leading)
+
         let hasIcon = systemImageName?.isEmpty == false
-        iconView.isHidden = !hasIcon || contentLimit - leading < Self.iconWidth
+        iconView.isHidden = !hasIcon || identityLimit - leading < Self.iconWidth
         if !iconView.isHidden {
             iconView.frame = centeredRect(in: physicalFrame(logicalX: leading, width: Self.iconWidth), size: NSSize(width: 16, height: 16))
             leading += Self.iconWidth
-            leading += min(Self.iconSpacing, max(contentLimit - leading, 0))
+            leading += min(Self.iconSpacing, max(identityLimit - leading, 0))
         } else {
             iconView.frame = .zero
         }
 
         let titleNaturalWidth = measuredWidth(of: title, in: titleLabel)
-        let titleWidth = min(titleNaturalWidth, max(contentLimit - leading, 0))
+        let titleWidth = min(titleNaturalWidth, max(identityLimit - leading, 0))
         titleLabel.frame = centeredLabelFrame(physicalFrame(logicalX: leading, width: titleWidth), label: titleLabel)
         titleLabel.isHidden = title.isEmpty || titleWidth <= 0
         leading += titleWidth
-        if titleWidth > 0 { leading += min(Self.titleSpacing, max(contentLimit - leading, 0)) }
+        if titleWidth > 0 { leading += min(Self.titleSpacing, max(identityLimit - leading, 0)) }
 
         let subtitleNaturalWidth = measuredWidth(of: subtitle ?? "", in: subtitleLabel)
-        let subtitleWidth = min(subtitleNaturalWidth, max(contentLimit - leading, 0))
+        let subtitleWidth = min(subtitleNaturalWidth, max(identityLimit - leading, 0))
         subtitleLabel.frame = centeredLabelFrame(physicalFrame(logicalX: leading, width: subtitleWidth), label: subtitleLabel)
         subtitleLabel.isHidden = subtitle?.isEmpty != false || subtitleWidth <= 0
         leading += subtitleWidth
-        if subtitleWidth > 0 { leading += min(Self.subtitleSpacing, max(contentLimit - leading, 0)) }
+        if subtitleWidth > 0 { leading += min(Self.subtitleSpacing, max(identityLimit - leading, 0)) }
 
         if let centerContentHost {
             let contentWidth = min(
-                fittedWidth(centerContentHost, maximum: max(contentLimit - leading, 0)),
+                centerContentWidth,
                 max(contentLimit - leading, 0)
             )
             let contentX = leading + max((contentLimit - leading - contentWidth) / 2, 0)
@@ -420,15 +504,15 @@ private final class FluentTitleBarHost: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        context.theme.windowBackground.setFill()
-        dirtyRect.fill()
-        context.theme.divider.setFill()
-        NSRect(x: 0, y: max(bounds.height - 1, 0), width: bounds.width, height: 1).fill()
+        if backgroundStyle == .solid {
+            context.theme.windowBackground.setFill()
+            dirtyRect.fill()
+        }
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         guard let hit = super.hitTest(point) else { return nil }
-        if hit === backButton || hit === paneToggleButton { return hit }
+        if hit === backButton || hit === forwardButton || hit === paneToggleButton { return hit }
         if let control = hit as? NSControl,
            control.isEnabled,
            !(control is NSTextField && !(control as! NSTextField).isEditable && !(control as! NSTextField).isSelectable) {
@@ -514,6 +598,13 @@ private final class FluentTitleBarHost: NSView {
             layoutDirection: context.layoutDirection,
             isActive: isWindowActive,
             isEnabled: isBackButtonEnabled,
+            accessibilityValue: nil
+        )
+        forwardButton.update(
+            theme: theme,
+            layoutDirection: context.layoutDirection,
+            isActive: isWindowActive,
+            isEnabled: isForwardButtonEnabled,
             accessibilityValue: nil
         )
         let paneValue = paneOpenBinding.map { $0.get() ? "Expanded" : "Collapsed" }
@@ -681,6 +772,7 @@ private struct WindowConfiguration {
 private final class FluentTitleBarButton: NSButton {
     enum Kind {
         case back
+        case forward
         case pane
     }
 
@@ -691,6 +783,7 @@ private final class FluentTitleBarButton: NSButton {
     private var isWindowActive = true
     private var pointerOver = false
     private var pressed = false
+    private let chevronLayer = FluentChevronPrimitiveLayer()
 
     override var acceptsFirstResponder: Bool { isEnabled }
 
@@ -699,11 +792,24 @@ private final class FluentTitleBarButton: NSButton {
         super.init(frame: .zero)
         isBordered = false
         focusRingType = .none
+        wantsLayer = true
+        layer?.masksToBounds = false
+        if kind != .pane {
+            chevronLayer.name = kind == .back
+                ? "FluentKit.TitleBar.BackChevron"
+                : "FluentKit.TitleBar.ForwardChevron"
+            layer?.addSublayer(chevronLayer)
+        }
         target = self
         action = #selector(invoke)
         setAccessibilityRole(.button)
-        setAccessibilityTitle(kind == .back ? "Back" : "Navigation")
-        toolTip = kind == .back ? "Back" : "Navigation"
+        let label = switch kind {
+        case .back: "Back"
+        case .forward: "Forward"
+        case .pane: "Navigation"
+        }
+        setAccessibilityTitle(label)
+        toolTip = label
         addTrackingArea(
             NSTrackingArea(
                 rect: .zero,
@@ -730,32 +836,53 @@ private final class FluentTitleBarButton: NSButton {
         setAccessibilityEnabled(isEnabled)
         setAccessibilityValue(accessibilityValue)
         needsDisplay = true
+        updateBackChevron(animated: false)
+    }
+
+    override func layout() {
+        super.layout()
+        updateBackChevron(animated: false)
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        updateBackChevron(animated: false)
     }
 
     override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
         pointerOver = true
         needsDisplay = true
+        updateBackChevron(animated: true)
     }
 
     override func mouseExited(with event: NSEvent) {
         pointerOver = false
         pressed = false
         needsDisplay = true
+        updateBackChevron(animated: true)
     }
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         pressed = true
         needsDisplay = true
+        updateBackChevron(animated: true)
         super.mouseDown(with: event)
         pressed = false
         pointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
         needsDisplay = true
+        updateBackChevron(animated: true)
     }
 
     override func keyDown(with event: NSEvent) {
         if event.keyCode == 36 || event.keyCode == 49 { performClick(nil) } else { super.keyDown(with: event) }
+    }
+
+    override func accessibilityPerformPress() -> Bool {
+        guard isEnabled, !isHidden else { return false }
+        performClick(nil)
+        return true
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -773,14 +900,11 @@ private final class FluentTitleBarButton: NSButton {
         background.setFill()
         NSBezierPath(roundedRect: surface, xRadius: 4, yRadius: 4).fill()
 
-        let symbol: String = switch kind {
-        case .back: layoutDirection == .rightToLeft ? "chevron.right" : "chevron.left"
-        case .pane: "line.3.horizontal"
-        }
         let color = !isEnabled
             ? theme.textDisabled
             : (isWindowActive ? theme.textPrimary : theme.textSecondary)
-        if let image = NSImage(systemSymbolName: symbol, accessibilityDescription: accessibilityTitle()) {
+        if kind == .pane,
+           let image = NSImage(systemSymbolName: "line.3.horizontal", accessibilityDescription: accessibilityTitle()) {
             let point = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
             let tint = NSImage.SymbolConfiguration(hierarchicalColor: color)
             image.withSymbolConfiguration(point.applying(tint))?.draw(
@@ -793,6 +917,32 @@ private final class FluentTitleBarButton: NSButton {
             focus.lineWidth = theme.focusStrokeWidth
             focus.stroke()
         }
+    }
+
+    private func updateBackChevron(animated: Bool) {
+        guard kind != .pane, bounds.width > 0, bounds.height > 0 else { return }
+        let state: FluentControlState = !isEnabled
+            ? .disabled
+            : (pressed ? .pressed : (pointerOver ? .pointerOver : .normal))
+        let color = !isEnabled
+            ? theme.textDisabled
+            : (isWindowActive ? theme.textPrimary : theme.textSecondary)
+        let direction: FluentChevronDirection
+        switch (kind, layoutDirection) {
+        case (.back, .rightToLeft), (.forward, .leftToRight), (.forward, .system):
+            direction = .right
+        default:
+            direction = .left
+        }
+        chevronLayer.update(
+            frame: NSRect(x: bounds.midX - 6, y: bounds.midY - 6, width: 12, height: 12),
+            color: color,
+            state: state,
+            visual: .directional,
+            direction: direction,
+            backingScale: window?.backingScaleFactor,
+            animated: animated && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        )
     }
 
     @objc private func invoke() { if isEnabled { onInvoke?() } }

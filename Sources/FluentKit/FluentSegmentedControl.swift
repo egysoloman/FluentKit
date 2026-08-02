@@ -46,6 +46,10 @@ private final class FluentSegmentedLabel: NSTextField {
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
 }
 
+private final class FluentSegmentedBorderOverlayView: NSView {
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+}
+
 private final class FluentSegmentedControlNative: NSSegmentedControl, FluentControlSizeConfigurable {
     public var theme: FluentTheme = .current { didSet { applyTheme() } }
     public var fluentStyle: any FluentSegmentedStyle = FluentAutomaticSegmentedStyle() { didSet { applyTheme() } }
@@ -81,6 +85,9 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
     private var segmentTitles: [String]
     private var segmentLabels: [FluentSegmentedLabel] = []
     private let selectionIndicatorView = NSView()
+    private let borderOverlayView = FluentSegmentedBorderOverlayView()
+    private let outerBorderLayer = CAShapeLayer()
+    private let focusBorderLayer = CAShapeLayer()
     private var lastRenderedSelection = -1
     private var hoveredSegment = -1
     private var pressedSegment = -1
@@ -108,7 +115,20 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         selectionIndicatorView.wantsLayer = true
         selectionIndicatorView.layer?.name = "FluentKit.Segmented.SelectionIndicator"
         selectionIndicatorView.layer?.opacity = 0
+        selectionIndicatorView.layer?.masksToBounds = true
+        selectionIndicatorView.layer?.cornerCurve = .continuous
         addSubview(selectionIndicatorView)
+        borderOverlayView.identifier = NSUserInterfaceItemIdentifier("FluentKit.Segmented.BorderOverlay")
+        borderOverlayView.wantsLayer = true
+        borderOverlayView.layer?.masksToBounds = false
+        addSubview(borderOverlayView, positioned: .above, relativeTo: selectionIndicatorView)
+        outerBorderLayer.name = "FluentKit.Segmented.OuterBorder"
+        outerBorderLayer.fillRule = .evenOdd
+        focusBorderLayer.name = "FluentKit.Segmented.FocusBorder"
+        focusBorderLayer.fillRule = .evenOdd
+        focusBorderLayer.zPosition = 1
+        borderOverlayView.layer?.addSublayer(outerBorderLayer)
+        borderOverlayView.layer?.addSublayer(focusBorderLayer)
         synchronizeLabelViews()
         addTrackingArea(
             NSTrackingArea(
@@ -148,18 +168,22 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         guard bounds.size != lastLayoutSize || direction != lastLayoutDirection else { return }
         lastLayoutSize = bounds.size
         lastLayoutDirection = direction
+        borderOverlayView.frame = bounds
 
         let width = segmentLabels.isEmpty ? 0 : bounds.width / CGFloat(segmentLabels.count)
+        let font = resolvedAppearance().font
+        let lineHeight = ceil(font.ascender - font.descender + font.leading)
         for (index, label) in segmentLabels.enumerated() {
             let slot = visualSlot(for: index)
             label.frame = NSRect(
                 x: CGFloat(slot) * width,
-                y: 0,
+                y: floor(bounds.midY - lineHeight / 2),
                 width: width,
-                height: bounds.height
+                height: lineHeight
             )
         }
         snapSelectionIndicatorToModelGeometry()
+        updateBorderOverlays()
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -184,25 +208,6 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
             ).fill()
         }
 
-        appearance.borderColor.setStroke()
-        let border = NSBezierPath(
-            roundedRect: rect,
-            xRadius: appearance.cornerRadius,
-            yRadius: appearance.cornerRadius
-        )
-        border.lineWidth = appearance.borderWidth
-        border.stroke()
-
-        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
-            theme.accent.setStroke()
-            let focus = NSBezierPath(
-                roundedRect: rect.insetBy(dx: 2, dy: 2),
-                xRadius: max(appearance.cornerRadius - 2, 0),
-                yRadius: max(appearance.cornerRadius - 2, 0)
-            )
-            focus.lineWidth = theme.focusStrokeWidth
-            focus.stroke()
-        }
     }
 
     override func mouseMoved(with event: NSEvent) {
@@ -288,12 +293,14 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
     override func becomeFirstResponder() -> Bool {
         let accepted = super.becomeFirstResponder()
         if accepted { needsDisplay = true }
+        updateBorderOverlays()
         return accepted
     }
 
     override func resignFirstResponder() -> Bool {
         let resigned = super.resignFirstResponder()
         if resigned { needsDisplay = true }
+        updateBorderOverlays()
         return resigned
     }
 
@@ -375,7 +382,7 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
                 label.drawsBackground = false
                 label.isBordered = false
                 label.setAccessibilityElement(false)
-                addSubview(label, positioned: .above, relativeTo: selectionIndicatorView)
+                addSubview(label, positioned: .below, relativeTo: borderOverlayView)
                 return label
             }
             lastLayoutSize = NSSize(width: -1, height: -1)
@@ -527,6 +534,58 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         needsDisplay = true
     }
 
+    private func updateBorderOverlays() {
+        guard bounds.width > 0, bounds.height > 0 else { return }
+        let appearance = resolvedAppearance()
+        let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
+        borderOverlayView.frame = bounds
+        let overlayBounds = borderOverlayView.bounds
+        let outer = overlayBounds
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        outerBorderLayer.contentsScale = scale
+        outerBorderLayer.frame = overlayBounds
+        outerBorderLayer.path = insideRingPath(
+            outer: outer,
+            inner: outer.insetBy(dx: appearance.borderWidth, dy: appearance.borderWidth),
+            outerRadius: appearance.cornerRadius,
+            innerRadius: max(appearance.cornerRadius - appearance.borderWidth, 0)
+        )
+        outerBorderLayer.fillColor = appearance.borderColor.cgColor
+        outerBorderLayer.strokeColor = nil
+        outerBorderLayer.lineWidth = 0
+        outerBorderLayer.isHidden = appearance.borderWidth <= 0
+
+        let showsFocus = FluentFocusVisibility.isKeyboardFocusVisible(for: self)
+        let focusOuter = outer.insetBy(dx: 2, dy: 2)
+        let focusInner = focusOuter.insetBy(dx: theme.focusStrokeWidth, dy: theme.focusStrokeWidth)
+        focusBorderLayer.contentsScale = scale
+        focusBorderLayer.frame = overlayBounds
+        focusBorderLayer.path = insideRingPath(
+            outer: focusOuter,
+            inner: focusInner,
+            outerRadius: max(appearance.cornerRadius - 2, 0),
+            innerRadius: max(appearance.cornerRadius - 2 - theme.focusStrokeWidth, 0)
+        )
+        focusBorderLayer.fillColor = theme.accent.cgColor
+        focusBorderLayer.isHidden = !showsFocus
+        CATransaction.commit()
+    }
+
+    private func insideRingPath(
+        outer: CGRect,
+        inner: CGRect,
+        outerRadius: CGFloat,
+        innerRadius: CGFloat
+    ) -> CGPath {
+        let path = CGMutablePath()
+        path.addRoundedRect(in: outer, cornerWidth: outerRadius, cornerHeight: outerRadius)
+        if inner.width > 0, inner.height > 0 {
+            path.addRoundedRect(in: inner, cornerWidth: innerRadius, cornerHeight: innerRadius)
+        }
+        return path
+    }
+
     private func cancelInteraction(refresh: Bool = true) {
         guard pressedSegment >= 0 || hoveredSegment >= 0 else { return }
         pressedSegment = -1
@@ -549,6 +608,7 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         updateLabels()
         updateSelectionIndicatorAppearance(appearance)
         selectionIndicatorView.layer?.cornerRadius = max(appearance.cornerRadius - 2, 0)
+        updateBorderOverlays()
         invalidateIntrinsicContentSize()
         needsDisplay = true
     }

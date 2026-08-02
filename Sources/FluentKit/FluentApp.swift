@@ -170,7 +170,7 @@ public struct FluentWindowScene<Content: FluentView>: FluentScene {
         role: FluentWindowRole = .standard,
         tabbing: FluentWindowTabbing = .automatic,
         initiallyVisible: Bool = true,
-        theme: FluentTheme = .current,
+        theme: FluentTheme = FluentTheme(),
         spacing: CGFloat = 12,
         animationDuration: TimeInterval = FluentAnimation.content,
         animationTimingFunction: CAMediaTimingFunction = CAMediaTimingFunction(name: .easeInEaseOut),
@@ -211,7 +211,7 @@ public struct FluentSettingsScene<Content: FluentView>: FluentScene {
         minimumSize: NSSize = NSSize(width: 480, height: 360),
         material: FluentMaterial? = .mica,
         initiallyVisible: Bool = false,
-        theme: FluentTheme = .current,
+        theme: FluentTheme = FluentTheme(),
         spacing: CGFloat = 12,
         @FluentViewBuilder content: () -> Content
     ) {
@@ -256,6 +256,8 @@ public final class FluentWindowCoordinator: NSObject, NSWindowDelegate {
     private let positionWindow: (NSWindow, Int, FluentWindowPlacement) -> Void
     private var windowsByID: [String: NSWindow] = [:]
     private let defaults: UserDefaults
+    private let openWindowsDefaultsKey = "FluentKit.windows.openIDs"
+    private let activeWindowDefaultsKey = "FluentKit.windows.activeID"
 
     public var onWindowOpened: ((String, NSWindow) -> Void)?
     public var onWindowClosed: ((String) -> Void)?
@@ -306,10 +308,18 @@ public final class FluentWindowCoordinator: NSObject, NSWindowDelegate {
         let window = makeWindow(description)
         let index = windowsByID.count
         positionWindow(window, index, description.placement)
-        restoreFrameIfAvailable(for: window, description: description)
+        let didRestoreFrame = restoreFrameIfAvailable(for: window, description: description)
         window.delegate = self
         windowsByID[id] = window
+        persistOpenWindowState()
         window.makeKeyAndOrderFront(nil)
+        if didRestoreFrame {
+            // AppKit may cascade a newly ordered titled window after the initial frame restore.
+            // Reapply the persisted frame after ordering so independent scene IDs keep their own
+            // origins as well as their sizes.
+            _ = restoreFrameIfAvailable(for: window, description: description)
+        }
+        activeWindowID = id
         onWindowOpened?(id, window)
         return window
     }
@@ -319,6 +329,7 @@ public final class FluentWindowCoordinator: NSObject, NSWindowDelegate {
     public func focus(id: String) {
         guard let window = windowsByID[id] else { return }
         window.makeKeyAndOrderFront(nil)
+        activeWindowID = id
         NSApp.activate(ignoringOtherApps: true)
     }
 
@@ -337,8 +348,22 @@ public final class FluentWindowCoordinator: NSObject, NSWindowDelegate {
         return window(for: command.id)
     }
 
-    func openInitiallyVisibleWindows() {
-        orderedIDs.compactMap { descriptions[$0] }.filter(\.initiallyVisible).forEach { _ = open(id: $0.id) }
+    /// Opens the declaration's initial windows or the persisted multi-window presentation state.
+    /// The application runner calls this automatically after constructing the coordinator.
+    public func openInitiallyVisibleWindows() {
+        let restoredIDs = restoredOpenWindowIDs
+        // Opening a window updates the persisted active ID. Capture the launch-time value before
+        // opening the restored set so the last declaration does not accidentally win focus.
+        let restoredActiveID = restoredActiveWindowID
+        let descriptionsToOpen = orderedIDs.compactMap { descriptions[$0] }.filter { description in
+            guard description.restoration == .automatic else { return description.initiallyVisible }
+            guard let restoredIDs else { return description.initiallyVisible }
+            return restoredIDs.contains(description.id)
+        }
+        descriptionsToOpen.forEach { _ = open(id: $0.id) }
+        if let restoredActiveID, windowsByID[restoredActiveID] != nil {
+            focus(id: restoredActiveID)
+        }
     }
 
     public func windowWillClose(_ notification: Notification) {
@@ -346,23 +371,87 @@ public final class FluentWindowCoordinator: NSObject, NSWindowDelegate {
               let entry = windowsByID.first(where: { $0.value === closingWindow }) else { return }
         saveFrame(for: entry.key, window: closingWindow)
         windowsByID.removeValue(forKey: entry.key)
+        if activeWindowID == entry.key {
+            activeWindowID = orderedIDs.first { windowsByID[$0] != nil }
+        }
+        persistOpenWindowState()
         onWindowClosed?(entry.key)
     }
 
-    func saveOpenWindowFrames() {
-        for (id, window) in windowsByID { saveFrame(for: id, window: window) }
+    public func windowDidBecomeKey(_ notification: Notification) {
+        guard let focusedWindow = notification.object as? NSWindow,
+              let entry = windowsByID.first(where: { $0.value === focusedWindow }) else { return }
+        activeWindowID = entry.key
     }
 
-    private func frameKey(for id: String) -> String { "FluentKit.window.(id).frame" }
+    /// Persists the current open-window set, active window, and automatic-restoration frames.
+    /// Applications embedding a coordinator without `FluentApp` can call this during their own
+    /// termination hook.
+    public func saveRestorationState() {
+        for (id, window) in windowsByID { saveFrame(for: id, window: window) }
+        persistOpenWindowState()
+    }
 
-    private func restoreFrameIfAvailable(for window: NSWindow, description: FluentWindowDescription) {
+    func saveOpenWindowFrames() { saveRestorationState() }
+
+    public private(set) var activeWindowID: String? {
+        get { defaults.string(forKey: activeWindowDefaultsKey) }
+        set {
+            if let newValue { defaults.set(newValue, forKey: activeWindowDefaultsKey) }
+            else { defaults.removeObject(forKey: activeWindowDefaultsKey) }
+        }
+    }
+
+    private var restoredOpenWindowIDs: Set<String>? {
+        guard let values = defaults.array(forKey: openWindowsDefaultsKey) as? [String] else { return nil }
+        return Set(values)
+    }
+
+    private var restoredActiveWindowID: String? {
+        defaults.string(forKey: activeWindowDefaultsKey)
+    }
+
+    private func persistOpenWindowState() {
+        let ids = orderedIDs.filter { windowsByID[$0] != nil }
+        defaults.set(ids, forKey: openWindowsDefaultsKey)
+        if let activeWindowID, windowsByID[activeWindowID] == nil {
+            self.activeWindowID = ids.first
+        }
+    }
+
+    private func frameKey(for id: String) -> String { "FluentKit.window.\(id).frame" }
+
+    @discardableResult
+    private func restoreFrameIfAvailable(for window: NSWindow, description: FluentWindowDescription) -> Bool {
         guard description.restoration == .automatic,
               let values = defaults.array(forKey: frameKey(for: description.id)) as? [Double],
-              values.count == 4 else { return }
+              values.count == 4,
+              values.allSatisfy(\.isFinite) else { return false }
         let frame = NSRect(x: values[0], y: values[1], width: values[2], height: values[3])
         guard frame.width >= description.minimumSize.width, frame.height >= description.minimumSize.height,
-              NSScreen.screens.contains(where: { $0.visibleFrame.intersects(frame) }) else { return }
-        window.setFrame(frame, display: false)
+              let screen = NSScreen.screens.max(by: { lhs, rhs in
+                  let lhsIntersection = lhs.visibleFrame.intersection(frame)
+                  let rhsIntersection = rhs.visibleFrame.intersection(frame)
+                  return lhsIntersection.width * lhsIntersection.height
+                      < rhsIntersection.width * rhsIntersection.height
+              }),
+              screen.visibleFrame.intersects(frame) else { return false }
+        // AppKit owns the final visible-frame policy. This keeps a restored window reachable when
+        // a monitor, dock, menu bar, or saved coordinate system changed since the last launch.
+        let visibleFrame = screen.visibleFrame
+        var constrainedFrame = window.constrainFrameRect(frame, to: screen)
+        constrainedFrame.size.width = min(constrainedFrame.width, visibleFrame.width)
+        constrainedFrame.size.height = min(constrainedFrame.height, visibleFrame.height)
+        constrainedFrame.origin.x = min(
+            max(constrainedFrame.minX, visibleFrame.minX),
+            visibleFrame.maxX - constrainedFrame.width
+        )
+        constrainedFrame.origin.y = min(
+            max(constrainedFrame.minY, visibleFrame.minY),
+            visibleFrame.maxY - constrainedFrame.height
+        )
+        window.setFrame(constrainedFrame, display: false)
+        return true
     }
 
     private func saveFrame(for id: String, window: NSWindow) {
@@ -553,9 +642,15 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
             window.tabbingMode = .disallowed
         }
 
-        let host = FluentViewHost(description.content, context: description.context)
+        let appearanceCoordinator = FluentAppearanceCoordinator(theme: description.context.theme)
+        var context = description.context
+        context.appearanceCoordinator = appearanceCoordinator
+        let host = FluentViewHost(description.content, context: context)
         if let material = description.material {
             let materialView = FluentMaterialView(material: material)
+            materialView.fluentTheme = context.theme
+            materialView.isMaterialEnabled = context.theme.materialEffectsEnabled
+            materialView.fallbackColor = context.theme.windowBackground
             materialView.translatesAutoresizingMaskIntoConstraints = false
             materialView.addSubview(host)
             host.translatesAutoresizingMaskIntoConstraints = false
@@ -569,8 +664,10 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
             window.titlebarAppearsTransparent = true
             window.isOpaque = false
             window.backgroundColor = .clear
+            appearanceCoordinator.attach(to: window, rootMaterialView: materialView)
         } else {
             window.contentView = host
+            appearanceCoordinator.attach(to: window)
         }
         return window
     }
@@ -582,7 +679,7 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
     func applicationWillTerminate(_ notification: Notification) {
         app.applicationWillTerminate()
         if let coordinator {
-            coordinator.saveOpenWindowFrames()
+            coordinator.saveRestorationState()
             (app as? any FluentWindowLifecycle)?.applicationWillTerminate(with: coordinator)
         }
     }

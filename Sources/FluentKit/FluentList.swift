@@ -260,8 +260,12 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
         axis: .vertical
     )
     private var lastIndicatorIndex: Int?
+    private var isApplyingSelectionTransition = false
     private var selectionGeometryObservers: [NSObjectProtocol] = []
     private var selectionGeometryUpdateScheduled = false
+    private let hoverCoordinator = FluentHoverCoordinator<FluentListItemView> { row, hovering in
+        row.setPointerOver(hovering)
+    }
 
     init(theme: FluentTheme, spacing: CGFloat, rowHeight: CGFloat) {
         self.theme = theme
@@ -307,6 +311,7 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
                 queue: .main
             ) { [weak self] _ in
                 self?.scheduleSelectionGeometryUpdate()
+                self?.refreshPointerState()
             },
             notificationCenter.addObserver(
                 forName: NSView.boundsDidChangeNotification,
@@ -314,6 +319,7 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
                 queue: .main
             ) { [weak self] _ in
                 self?.scheduleSelectionGeometryUpdate()
+                self?.refreshPointerState()
             },
             notificationCenter.addObserver(
                 forName: NSView.frameDidChangeNotification,
@@ -321,6 +327,15 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
                 queue: .main
             ) { [weak self] _ in
                 self?.scheduleSelectionGeometryUpdate()
+                self?.refreshPointerState()
+            },
+            notificationCenter.addObserver(
+                forName: NSWindow.didResignKeyNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                guard notification.object as? NSWindow === self?.window else { return }
+                self?.resetPointerState()
             }
         ]
 
@@ -355,12 +370,16 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
             collectionView.reloadData()
             applySelection()
         }
-        updateSelectionIndicator(animated: false)
+        if !isApplyingSelectionTransition {
+            updateSelectionIndicator(animated: false)
+        }
+        refreshPointerState()
     }
 
     override func reflectScrolledClipView(_ cClipView: NSClipView) {
         super.reflectScrolledClipView(cClipView)
         scheduleSelectionGeometryUpdate()
+        refreshPointerState()
     }
 
     private func scheduleSelectionGeometryUpdate() {
@@ -388,6 +407,7 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
 
     func setListRenderingSuspended(_ suspended: Bool) {
         if suspended {
+            resetPointerState()
             guard !needsDataSourceSetup else { return }
             collectionView.dataSource = nil
             collectionView.collectionViewLayout = nil
@@ -464,6 +484,7 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
         installSelectionObserver()
 
         let structureChanged = self.rows.count != rows.count || oldRowIDs != rowIDs
+        if structureChanged { resetPointerState() }
         self.rows = rows
         self.rowIDs = rowIDs
         let requestedIndex = selection?.get()
@@ -647,12 +668,19 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
                 selected: isSelected(indexPath.item),
                 update: { [row = rows[indexPath.item], context] nativeView in row._update(nativeView, in: context) },
                 make: { [row = rows[indexPath.item], context] in row._mount(in: context) },
-                onSelect: { [weak self] modifiers in self?.select(index: indexPath.item, modifiers: modifiers) }
+                onSelect: { [weak self] modifiers in self?.select(index: indexPath.item, modifiers: modifiers) },
+                onHoverChange: { [weak self] row, hovering in
+                    self?.hoverCoordinator.update(row, hovering: hovering)
+                }
             )
         }
+        refreshPointerState()
     }
 
     private func applySelection() {
+        let shouldAnimateIndicator = lastIndicatorIndex != nil && lastIndicatorIndex != currentSelection
+        isApplyingSelectionTransition = shouldAnimateIndicator
+        defer { isApplyingSelectionTransition = false }
         isApplyingSelection = true
         defer { isApplyingSelection = false }
 
@@ -669,7 +697,9 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
                   let indexPath = collectionView.indexPath(for: item) else { continue }
             item.setSelected(selectedIndices.contains(indexPath.item))
         }
-        updateSelectionIndicator(animated: lastIndicatorIndex != nil && lastIndicatorIndex != currentSelection)
+        collectionView.needsLayout = true
+        collectionView.layoutSubtreeIfNeeded()
+        updateSelectionIndicator(animated: shouldAnimateIndicator)
         collectionView.needsLayout = true
         scheduleSelectionGeometryUpdate()
     }
@@ -680,7 +710,7 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
               rows.indices.contains(currentSelection) else {
             selectionIndicatorAnimator.update(
                 target: nil,
-                color: theme.accent,
+                color: theme.accentFillDefault,
                 animated: false,
                 reduceMotion: context.reduceMotion
             )
@@ -704,7 +734,7 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
         let target = NSRect(x: railX, y: itemFrame.midY - 8, width: 3, height: 16)
         selectionIndicatorAnimator.update(
             target: target,
-            color: theme.accent,
+            color: theme.accentFillDefault,
             animated: animated,
             reduceMotion: context.reduceMotion
         )
@@ -817,9 +847,37 @@ private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionV
             selected: isSelected(indexPath.item),
             update: { [context] nativeView in row._update(nativeView, in: context) },
             make: { [context] in row._mount(in: context) },
-            onSelect: { [weak self] modifiers in self?.select(index: indexPath.item, modifiers: modifiers) }
+            onSelect: { [weak self] modifiers in self?.select(index: indexPath.item, modifiers: modifiers) },
+            onHoverChange: { [weak self] row, hovering in
+                self?.hoverCoordinator.update(row, hovering: hovering)
+            }
         )
         return item
+    }
+
+    private var visibleRowViews: [FluentListItemView] {
+        collectionView.visibleItems().compactMap { $0.view as? FluentListItemView }
+    }
+
+    private func resetPointerState() {
+        let rows = visibleRowViews
+        hoverCoordinator.reset(items: rows)
+        rows.forEach { $0.resetPointerState() }
+    }
+
+    private func refreshPointerState() {
+        guard let window, window.isVisible, window.isKeyWindow else {
+            resetPointerState()
+            return
+        }
+        let windowPoint = window.mouseLocationOutsideOfEventStream
+        guard let row = visibleRowViews.first(where: {
+            !$0.isHidden && $0.bounds.contains($0.convert(windowPoint, from: nil))
+        }) else {
+            resetPointerState()
+            return
+        }
+        hoverCoordinator.update(row, hovering: true)
     }
 
     func collectionView(_ collectionView: NSCollectionView, didSelectItemsAt indexPaths: Set<IndexPath>) {
@@ -916,15 +974,22 @@ private final class FluentCollectionItem: NSCollectionViewItem {
         selected: Bool,
         update: @escaping (NSView) -> Bool,
         make: @escaping () -> NSView,
-        onSelect: @escaping (NSEvent.ModifierFlags) -> Void
+        onSelect: @escaping (NSEvent.ModifierFlags) -> Void,
+        onHoverChange: @escaping (FluentListItemView, Bool) -> Void
     ) {
         let row = rowView
-        row.index = index
+        row.prepareForConfiguration(index: index)
         row.theme = theme
         row.isSelected = selected
         row.onSelect = onSelect
+        row.onHoverChange = onHoverChange
         row.updateContent(update: update, make: make)
         row.setAccessibilityTitle("Row \(index + 1)")
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        rowView.detachPointerOwnership()
     }
 }
 
@@ -939,8 +1004,13 @@ private final class FluentListItemView: NSView {
         }
     }
     var onSelect: ((NSEvent.ModifierFlags) -> Void)?
-    private var isPointerOver = false
+    var onHoverChange: ((FluentListItemView, Bool) -> Void)?
+    private var pointerState = FluentPointerInteractionState()
     private var contentView: NSView?
+    private lazy var pointerTrackingAreaHost = FluentTrackingAreaHost(
+        view: self,
+        options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect]
+    )
 
     init(index: Int, isSelected: Bool, theme: FluentTheme) {
         self.index = index
@@ -952,10 +1022,30 @@ private final class FluentListItemView: NSView {
         setAccessibilityTitle("Row \(index + 1)")
         setAccessibilityValue(isSelected ? "Selected" : "Not selected")
         setAccessibilitySelected(isSelected)
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
+        pointerTrackingAreaHost.update()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        pointerTrackingAreaHost.update()
+    }
+
+    func prepareForConfiguration(index: Int) {
+        if self.index != index {
+            onHoverChange?(self, false)
+            resetPointerState()
+        }
+        self.index = index
+    }
+
+    func detachPointerOwnership() {
+        onHoverChange?(self, false)
+        onHoverChange = nil
+        onSelect = nil
+        resetPointerState()
+    }
 
     func setContent(_ view: NSView) {
         contentView?.removeFromSuperview()
@@ -978,29 +1068,65 @@ private final class FluentListItemView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         let fill: NSColor = isSelected
             ? theme.controlFillSecondary
-            : (isPointerOver ? theme.controlFill : .clear)
+            : (pointerState.isPointerOver ? theme.controlFill : .clear)
         fill.setFill()
         let radius = theme.designTokens.controlCornerRadius
         NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius).fill()
     }
 
     override func accessibilityValue() -> Any? { isSelected ? "Selected" : "Not selected" }
-    override func mouseEntered(with event: NSEvent) { isPointerOver = true; needsDisplay = true }
-    override func mouseExited(with event: NSEvent) { isPointerOver = false; needsDisplay = true }
+    override func mouseEntered(with event: NSEvent) { onHoverChange?(self, true) }
+    override func mouseExited(with event: NSEvent) { onHoverChange?(self, false) }
     override func mouseDown(with event: NSEvent) { onSelect?(event.modifierFlags) }
+
+    func setPointerOver(_ value: Bool) {
+        guard pointerState.setPointerOver(value) else { return }
+        needsDisplay = true
+    }
+
+    func resetPointerState() {
+        guard pointerState.reset() else { return }
+        needsDisplay = true
+    }
 }
 
-public final class FluentMenuButton: NSButton {
+/// A WinUI-style DropDownButton. The button owns its attached MenuFlyout trigger state;
+/// the flyout presenter remains an independent `FluentMenuFlyout` instance.
+public class FluentDropDownButton: NSButton {
     public var theme: FluentTheme = .current {
         didSet {
+            guard oldValue != theme else { return }
             font = theme.typography.font(for: .body)
-            needsDisplay = true
             invalidateIntrinsicContentSize()
+            refreshAppearance(animated: false)
         }
     }
-    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+        didSet {
+            guard oldValue != reduceMotion else { return }
+            visualStateCoordinator.reduceMotion = reduceMotion
+            animationCoordinator.reduceMotion = reduceMotion
+            if reduceMotion {
+                layer?.removeAllAnimations()
+                elevationBorderLayer.removeAllAnimations()
+                chevronLayer.removeAllAnimations()
+            }
+            refreshAppearance(animated: false)
+        }
+    }
     private var menuItems: [FluentMenuItem]
     private var menuFlyout: FluentMenuFlyout?
+    private var isPointerOver = false
+    private var isPressed = false
+    private var isTrackingPointerPress = false
+    private let elevationBorderLayer = CAGradientLayer()
+    private let elevationBorderMask = CAShapeLayer()
+    private let chevronLayer = FluentAnimatedChevronLayer()
+    private let visualStateCoordinator = FluentVisualStateCoordinator()
+    private let animationCoordinator = FluentAnimationCoordinator()
+
+    /// Mirrors DropDownButton's automation-facing open state without exposing the presenter.
+    public var isFlyoutPresented: Bool { menuFlyout?.isPresented == true }
 
     public init(title: String, items: [FluentMenuItem]) {
         self.menuItems = items
@@ -1010,55 +1136,325 @@ public final class FluentMenuButton: NSButton {
         bezelStyle = .regularSquare
         font = FluentTheme.current.typography.font(for: .body)
         focusRingType = .none
+        wantsLayer = true
+        layer?.masksToBounds = false
+        visualStateCoordinator.reduceMotion = reduceMotion
+        animationCoordinator.reduceMotion = reduceMotion
+        configureElevationBorder()
+        chevronLayer.name = "FluentKit.DropDownButton.Chevron"
+        layer?.addSublayer(chevronLayer)
         setAccessibilityRole(.popUpButton)
         setAccessibilityTitle(title)
+        setAccessibilityValue("Closed")
         target = self
         action = #selector(showMenu)
+        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
+        refreshAppearance(animated: false)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     public override var intrinsicContentSize: NSSize {
         let text = (title as NSString).size(withAttributes: [.font: font as Any])
-        return NSSize(width: text.width + 34, height: 32)
+        let appearance = resolvedAppearance()
+        let insets = appearance.contentInsets
+        let chevronWidth: CGFloat = 20
+        let height = max(theme.controlHeight(for: .regular), text.height + insets.top + insets.bottom)
+        return NSSize(width: ceil(text.width + insets.left + insets.right + chevronWidth), height: ceil(height))
+    }
+
+    public override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if trackingAreas.isEmpty {
+            addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil))
+        }
+    }
+
+    public override func layout() {
+        super.layout()
+        synchronizeVisualGeometry()
+    }
+
+    public override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        synchronizeVisualGeometry()
+    }
+
+    public override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        synchronizeVisualGeometry()
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        synchronizeVisualGeometry()
+    }
+
+    public override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        synchronizeVisualGeometry()
+    }
+
+    private func synchronizeVisualGeometry() {
+        updateElevationBorderGeometry(for: resolvedAppearance())
+        updateChevron(animated: false)
+    }
+
+    public override var isEnabled: Bool {
+        didSet {
+            guard oldValue != isEnabled else { return }
+            if !isEnabled {
+                menuFlyout?.dismiss(animated: false)
+                menuFlyout = nil
+                isPressed = false
+                isTrackingPointerPress = false
+                setAccessibilityValue("Closed")
+            }
+            refreshAppearance(animated: true)
+        }
+    }
+
+    public override func mouseEntered(with event: NSEvent) {
+        guard isEnabled else { return }
+        isPointerOver = true
+        refreshAppearance(animated: true)
+    }
+
+    public override func mouseExited(with event: NSEvent) {
+        guard isEnabled else { return }
+        isPointerOver = false
+        if !isPressed { refreshAppearance(animated: true) }
     }
 
     public override func draw(_ dirtyRect: NSRect) {
-        let radius = theme.designTokens.controlCornerRadius
-        let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), xRadius: radius, yRadius: radius)
-        theme.controlFill.setFill(); path.fill()
-        theme.controlStroke.setStroke(); path.lineWidth = 1; path.stroke()
-        let attrs: [NSAttributedString.Key: Any] = [.font: font as Any, .foregroundColor: theme.textPrimary]
-        let text = (title as NSString).size(withAttributes: attrs)
-        (title as NSString).draw(in: NSRect(x: 14, y: bounds.midY - text.height / 2 + 1, width: text.width, height: text.height), withAttributes: attrs)
-        let chevronEndY = isFlipped ? bounds.midY - 2 : bounds.midY + 2
-        let chevronTipY = isFlipped ? bounds.midY + 2 : bounds.midY - 2
-        let chevron = NSBezierPath(); chevron.move(to: NSPoint(x: bounds.maxX - 18, y: chevronEndY)); chevron.line(to: NSPoint(x: bounds.maxX - 14, y: chevronTipY)); chevron.line(to: NSPoint(x: bounds.maxX - 10, y: chevronEndY)); chevron.lineWidth = 1.2; theme.textSecondary.setStroke(); chevron.stroke()
+        let appearance = resolvedAppearance()
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self),
+           let focusRingColor = appearance.focusRingColor {
+            focusRingColor.setStroke()
+            let focusPath = NSBezierPath(
+                roundedRect: bounds.insetBy(dx: 2, dy: 2),
+                xRadius: max(appearance.cornerRadius - 2, 0),
+                yRadius: max(appearance.cornerRadius - 2, 0)
+            )
+            focusPath.lineWidth = appearance.focusRingWidth
+            focusPath.stroke()
+        }
+
+        let insets = appearance.contentInsets
+        let textSize = (title as NSString).size(withAttributes: [.font: font as Any])
+        let isRTL = userInterfaceLayoutDirection == .rightToLeft
+        let textLeading = isRTL ? insets.left + 20 : insets.left
+        let textTrailing = isRTL ? bounds.maxX - insets.right : bounds.maxX - insets.right - 20
+        let textRect = fluentSingleLineTextRect(
+            NSRect(
+                x: textLeading,
+                y: 0,
+                width: max(0, textTrailing - textLeading),
+                height: textSize.height
+            ),
+            in: bounds,
+            font: font
+        )
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = isRTL ? .right : .left
+        (title as NSString).draw(
+            in: textRect,
+            withAttributes: [
+                .font: font as Any,
+                .foregroundColor: appearance.foregroundColor,
+                .paragraphStyle: paragraph
+            ]
+        )
+
+        // The chevron is a dedicated animated layer so its pressed state follows the WinUI
+        // AnimatedChevronDownSmallVisualSource instead of being redrawn as a static stroke.
     }
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
-        showMenu()
+        if menuFlyout?.isPresented == true {
+            menuFlyout?.dismiss(animated: true)
+            menuFlyout = nil
+            isTrackingPointerPress = false
+            isPressed = false
+            setAccessibilityValue("Closed")
+            refreshAppearance(animated: true)
+            return
+        }
+        isTrackingPointerPress = true
+        isPressed = true
+        refreshAppearance(animated: true)
+        displayIfNeeded()
+    }
+
+    public override func mouseDragged(with event: NSEvent) {
+        guard isTrackingPointerPress else { return }
+        let inside = bounds.contains(convert(event.locationInWindow, from: nil))
+        isPointerOver = inside
+        if isPressed != inside {
+            isPressed = inside
+            refreshAppearance(animated: true)
+        }
+    }
+
+    public override func mouseUp(with event: NSEvent) {
+        guard isTrackingPointerPress else { return }
+        let opensMenu = bounds.contains(convert(event.locationInWindow, from: nil))
+        isTrackingPointerPress = false
+        isPressed = false
+        isPointerOver = opensMenu
+        refreshAppearance(animated: true)
+        guard opensMenu else { return }
+        // Release the chevron before ordering the child panel above the button.
+        DispatchQueue.main.async { [weak self] in self?.presentMenu() }
     }
 
     public override func keyDown(with event: NSEvent) {
         if event.keyCode == 36 || event.keyCode == 49 { showMenu() } else { super.keyDown(with: event) }
     }
 
-    func applyDeclarativeConfiguration(from source: FluentMenuButton) {
+    func applyDeclarativeConfiguration(from source: FluentDropDownButton) {
         title = source.title
         font = source.font
         menuItems = source.menuItems
+        if menuItems.isEmpty, menuFlyout != nil {
+            menuFlyout?.dismiss(animated: false)
+            menuFlyout = nil
+            setAccessibilityValue("Closed")
+        }
         setAccessibilityTitle(title)
         invalidateIntrinsicContentSize()
-        needsDisplay = true
+        refreshAppearance(animated: false)
     }
 
     @objc private func showMenu() {
+        if menuFlyout?.isPresented == true {
+            menuFlyout?.dismiss(animated: true)
+            menuFlyout = nil
+            setAccessibilityValue("Closed")
+            return
+        }
+        DispatchQueue.main.async { [weak self] in self?.presentMenu() }
+    }
+
+    private func presentMenu() {
+        guard isEnabled, !menuItems.isEmpty, menuFlyout?.isPresented != true else { return }
         let flyout = FluentMenuFlyout(items: menuItems, theme: theme, reduceMotion: reduceMotion)
         menuFlyout = flyout
-        flyout.present(relativeTo: self, at: NSPoint(x: bounds.minX, y: bounds.minY))
+        flyout.onDismiss = { [weak self, weak flyout] in
+            guard let self, self.menuFlyout === flyout else { return }
+            self.menuFlyout = nil
+            self.isPressed = false
+            self.setAccessibilityValue("Closed")
+            self.refreshAppearance(animated: true)
+        }
+        isPressed = false
+        setAccessibilityValue("Open")
+        refreshAppearance(animated: true)
+        flyout.present(relativeTo: self, placement: .below)
+    }
+
+    private var controlState: FluentControlState {
+        if !isEnabled { return .disabled }
+        if isPressed { return .pressed }
+        if isPointerOver { return .pointerOver }
+        if window?.firstResponder === self, FluentFocusVisibility.isKeyboardFocusVisible(for: self) { return .focused }
+        return .normal
+    }
+
+    private func resolvedAppearance() -> FluentButtonAppearance {
+        resolvedAppearance(for: visualStateCoordinator.state.primaryControlState)
+    }
+
+    private func resolvedAppearance(for controlState: FluentControlState) -> FluentButtonAppearance {
+        FluentAutomaticButtonStyle().appearance(
+            for: FluentButtonStyleConfiguration(
+                title: title,
+                controlState: controlState,
+                isEnabled: isEnabled,
+                theme: theme
+            )
+        )
+    }
+
+    private func refreshAppearance(animated: Bool) {
+        visualStateCoordinator.reduceMotion = reduceMotion
+        visualStateCoordinator.transition(
+            to: .forControlState(controlState),
+            animated: animated,
+            motion: FluentMotion.controlFaster
+        ) { [weak self] transition in
+            self?.applyVisualState(transition)
+        }
+    }
+
+    private func applyVisualState(_ transition: FluentVisualStateTransition) {
+        guard let layer else { needsDisplay = true; return }
+        let appearance = resolvedAppearance(for: transition.to.primaryControlState)
+        applyFluentButtonChrome(
+            to: layer,
+            elevationLayer: elevationBorderLayer,
+            elevationMask: elevationBorderMask,
+            bounds: bounds,
+            appearance: appearance,
+            visualYAxis: .resolved(for: layer, fallbackView: self),
+            backingScale: window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1,
+            animationCoordinator: animationCoordinator,
+            motion: transition.motion,
+            animated: transition.isAnimated
+        )
+        updateChevron(animated: transition.isAnimated)
+        needsDisplay = true
+    }
+
+    private func updateChevron(animated: Bool) {
+        let appearance = resolvedAppearance()
+        let state = controlState
+        let color: NSColor = switch state {
+        case .pressed: theme.textSecondary.withAlphaComponent(0.72)
+        case .pointerOver: theme.textSecondary.withAlphaComponent(0.86)
+        case .disabled: theme.textDisabled
+        default: theme.textSecondary
+        }
+        let isRTL = userInterfaceLayoutDirection == .rightToLeft
+        let x = isRTL
+            ? appearance.contentInsets.left
+            : bounds.maxX - appearance.contentInsets.right - 12
+        chevronLayer.update(
+            frame: NSRect(x: x, y: bounds.midY - 6, width: 12, height: 12),
+            color: color,
+            state: state,
+            visual: .downSmall,
+            direction: .down,
+            backingScale: window?.backingScaleFactor,
+            animated: animated
+        )
+    }
+
+    private func configureElevationBorder() {
+        elevationBorderLayer.name = "FluentKit.DropDownButton.ElevationBorder"
+        configureFluentElevationBorderLayer(elevationBorderLayer, mask: elevationBorderMask)
+        layer?.addSublayer(elevationBorderLayer)
+    }
+
+    private func updateElevationBorderGeometry(for appearance: FluentButtonAppearance) {
+        guard bounds.width > 0, bounds.height > 0 else { return }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        updateFluentElevationBorderLayer(
+            elevationBorderLayer,
+            mask: elevationBorderMask,
+            bounds: bounds,
+            appearance: appearance,
+            visualYAxis: .resolved(for: self.layer, fallbackView: self),
+            backingScale: window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
+        )
+        CATransaction.commit()
     }
 }
+
+/// Backwards-compatible name for the pre-0.1.0 menu-trigger implementation.
+@available(*, deprecated, renamed: "FluentDropDownButton")
+public typealias FluentMenuButton = FluentDropDownButton

@@ -4,12 +4,14 @@ import AppKit
 public final class FluentToggle: NSControl {
     public var theme: FluentTheme = .current {
         didSet {
+            guard oldValue != theme else { return }
             refreshAppearance(animated: false)
             invalidateIntrinsicContentSize()
         }
     }
     public var fluentStyle: (any FluentToggleStyle)? {
         didSet {
+            guard !appearancesMatch(oldValue, fluentStyle) else { return }
             refreshAppearance(animated: false)
             invalidateIntrinsicContentSize()
         }
@@ -17,6 +19,7 @@ public final class FluentToggle: NSControl {
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
         didSet {
             guard oldValue != reduceMotion else { return }
+            animationCoordinator.reduceMotion = reduceMotion
             if reduceMotion { removeVisualAnimations() }
             refreshAppearance(animated: false)
         }
@@ -71,6 +74,7 @@ public final class FluentToggle: NSControl {
     private let focusLayer = CALayer()
     private let trackLayer = CALayer()
     private let knobLayer = CALayer()
+    private lazy var animationCoordinator = FluentAnimationCoordinator(reduceMotion: reduceMotion)
     private var pointerState: PointerState = .idle
     private var isPointerOver = false
     private var lastLayoutSize = NSSize(width: -1, height: -1)
@@ -287,7 +291,8 @@ public final class FluentToggle: NSControl {
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
-        refreshAppearance(animated: false)
+        fluentNotifyAppearanceCoordinator(from: self)
+        needsDisplay = true
     }
 
     func applyDeclarativeConfiguration(from source: FluentToggle) {
@@ -350,13 +355,34 @@ public final class FluentToggle: NSControl {
         repositionMotion: FluentMotionToken? = nil
     ) {
         let appearance = resolvedAppearance()
-        applyVisualState(
-            appearance,
-            animated: animated && !reduceMotion,
-            motion: motion,
-            repositionMotion: repositionMotion ?? motion
-        )
+        animationCoordinator.reduceMotion = reduceMotion
+        animationCoordinator.transitionState(
+            to: resolvedVisualState,
+            animated: animated,
+            motion: motion
+        ) { [weak self] transition in
+            self?.applyVisualState(
+                appearance,
+                animated: transition.isAnimated,
+                motion: motion,
+                repositionMotion: repositionMotion ?? motion
+            )
+        }
         needsDisplay = true
+    }
+
+    private var resolvedVisualState: FluentVisualState {
+        var state: FluentVisualState = .normal
+        if isOn { state.insert(.selected) }
+        if !isEnabled {
+            state.insert(.disabled)
+        } else if isPressed || isDragging {
+            state.insert(.pressed)
+        } else if isPointerOver {
+            state.insert(.pointerOver)
+        }
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) { state.insert(.focused) }
+        return state
     }
 
     private func resolvedAppearance() -> FluentToggleAppearance {
@@ -371,6 +397,35 @@ public final class FluentToggle: NSControl {
         )
         return fluentStyle?.appearance(for: configuration)
             ?? FluentAutomaticToggleStyle().appearance(for: configuration)
+    }
+
+    private func appearancesMatch(
+        _ lhs: (any FluentToggleStyle)?,
+        _ rhs: (any FluentToggleStyle)?
+    ) -> Bool {
+        let configuration = FluentToggleStyleConfiguration(
+            isOn: isOn,
+            isEnabled: isEnabled,
+            isPointerOver: isPointerOver,
+            isPressed: isPressed,
+            isDragging: isDragging,
+            controlSize: fluentControlSize,
+            theme: theme
+        )
+        let automatic = FluentAutomaticToggleStyle()
+        let left = lhs?.appearance(for: configuration) ?? automatic.appearance(for: configuration)
+        let right = rhs?.appearance(for: configuration) ?? automatic.appearance(for: configuration)
+        return left.trackColor.isEqual(right.trackColor)
+            && left.trackBorderColor.isEqual(right.trackBorderColor)
+            && left.trackBorderWidth == right.trackBorderWidth
+            && left.knobColor.isEqual(right.knobColor)
+            && left.knobBorderColor.isEqual(right.knobBorderColor)
+            && left.knobBorderWidth == right.knobBorderWidth
+            && left.labelColor.isEqual(right.labelColor)
+            && left.knobShadowColor.isEqual(right.knobShadowColor)
+            && left.trackSize == right.trackSize
+            && left.knobSize == right.knobSize
+            && left.labelSpacing == right.labelSpacing
     }
 
     private func trackRect(for appearance: FluentToggleAppearance) -> NSRect {
@@ -423,29 +478,14 @@ public final class FluentToggle: NSControl {
         let knobRect = knobRect(for: appearance, trackRect: trackRect)
         let visibleScale = trackRect.height / 20
         let focusRect = trackRect.insetBy(dx: -3 * visibleScale, dy: -3 * visibleScale)
+        let knobBounds = NSRect(origin: .zero, size: knobRect.size)
+        let knobPosition = NSPoint(x: knobRect.midX, y: knobRect.midY)
 
-        let oldTrack = trackLayer.presentation() ?? trackLayer
-        let oldKnob = knobLayer.presentation() ?? knobLayer
-        let oldTrackBackground = oldTrack.backgroundColor
-        let oldTrackBorder = oldTrack.borderColor
-        let oldKnobPosition = oldKnob.position
-        let oldKnobBounds = oldKnob.bounds
-        let oldKnobCornerRadius = oldKnob.cornerRadius
-        let oldKnobBackground = oldKnob.backgroundColor
-        let oldKnobBorder = oldKnob.borderColor
-
-        removeVisualAnimations()
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         trackLayer.frame = trackRect
         trackLayer.cornerRadius = trackRect.height / 2
-        trackLayer.backgroundColor = appearance.trackColor.cgColor
-        trackLayer.borderColor = appearance.trackBorderColor.cgColor
         trackLayer.borderWidth = appearance.trackBorderWidth
-        knobLayer.frame = knobRect
-        knobLayer.cornerRadius = min(knobRect.width, knobRect.height) / 2
-        knobLayer.backgroundColor = appearance.knobColor.cgColor
-        knobLayer.borderColor = appearance.knobBorderColor.cgColor
         knobLayer.borderWidth = appearance.knobBorderWidth
         knobLayer.shadowColor = appearance.knobShadowColor.cgColor
         knobLayer.shadowOpacity = appearance.knobShadowColor.alphaComponent > 0 ? 1 : 0
@@ -457,90 +497,67 @@ public final class FluentToggle: NSControl {
         focusLayer.borderWidth = theme.focusStrokeWidth
         CATransaction.commit()
 
-        if animated, motion.duration > 0 {
-            addAnimation(
-                to: trackLayer,
-                key: "fluent.toggle.track.background",
-                keyPath: "backgroundColor",
-                from: oldTrackBackground,
-                to: appearance.trackColor.cgColor,
-                motion: motion
-            )
-            addAnimation(
-                to: trackLayer,
-                key: "fluent.toggle.track.border",
-                keyPath: "borderColor",
-                from: oldTrackBorder,
-                to: appearance.trackBorderColor.cgColor,
-                motion: motion
-            )
-            addAnimation(
-                to: knobLayer,
-                key: "fluent.toggle.knob.position",
-                keyPath: "position",
-                from: NSValue(point: oldKnobPosition),
-                to: NSValue(point: knobLayer.position),
-                motion: repositionMotion
-            )
-            addAnimation(
-                to: knobLayer,
-                key: "fluent.toggle.knob.bounds",
-                keyPath: "bounds",
-                from: NSValue(rect: oldKnobBounds),
-                to: NSValue(rect: knobLayer.bounds),
-                motion: motion
-            )
-            addAnimation(
-                to: knobLayer,
-                key: "fluent.toggle.knob.cornerRadius",
-                keyPath: "cornerRadius",
-                from: oldKnobCornerRadius,
-                to: knobLayer.cornerRadius,
-                motion: motion
-            )
-            addAnimation(
-                to: knobLayer,
-                key: "fluent.toggle.knob.background",
-                keyPath: "backgroundColor",
-                from: oldKnobBackground,
-                to: appearance.knobColor.cgColor,
-                motion: motion
-            )
-            addAnimation(
-                to: knobLayer,
-                key: "fluent.toggle.knob.border",
-                keyPath: "borderColor",
-                from: oldKnobBorder,
-                to: appearance.knobBorderColor.cgColor,
-                motion: motion
-            )
-        }
+        animationCoordinator.animateState(
+            [
+                FluentLayerAnimationChange(
+                    layer: trackLayer,
+                    key: "fluent.toggle.track.background",
+                    keyPath: "backgroundColor",
+                    toValue: appearance.trackColor.cgColor
+                ) { [trackLayer] in trackLayer.backgroundColor = appearance.trackColor.cgColor },
+                FluentLayerAnimationChange(
+                    layer: trackLayer,
+                    key: "fluent.toggle.track.border",
+                    keyPath: "borderColor",
+                    toValue: appearance.trackBorderColor.cgColor
+                ) { [trackLayer] in trackLayer.borderColor = appearance.trackBorderColor.cgColor },
+                FluentLayerAnimationChange(
+                    layer: knobLayer,
+                    key: "fluent.toggle.knob.bounds",
+                    keyPath: "bounds",
+                    toValue: NSValue(rect: knobBounds)
+                ) { [knobLayer] in knobLayer.bounds = knobBounds },
+                FluentLayerAnimationChange(
+                    layer: knobLayer,
+                    key: "fluent.toggle.knob.cornerRadius",
+                    keyPath: "cornerRadius",
+                    toValue: min(knobRect.width, knobRect.height) / 2
+                ) { [knobLayer] in
+                    knobLayer.cornerRadius = min(knobRect.width, knobRect.height) / 2
+                },
+                FluentLayerAnimationChange(
+                    layer: knobLayer,
+                    key: "fluent.toggle.knob.background",
+                    keyPath: "backgroundColor",
+                    toValue: appearance.knobColor.cgColor
+                ) { [knobLayer] in knobLayer.backgroundColor = appearance.knobColor.cgColor },
+                FluentLayerAnimationChange(
+                    layer: knobLayer,
+                    key: "fluent.toggle.knob.border",
+                    keyPath: "borderColor",
+                    toValue: appearance.knobBorderColor.cgColor
+                ) { [knobLayer] in knobLayer.borderColor = appearance.knobBorderColor.cgColor }
+            ],
+            motion: motion,
+            animated: animated
+        )
+        animationCoordinator.animateState(
+            [
+                FluentLayerAnimationChange(
+                    layer: knobLayer,
+                    key: "fluent.toggle.knob.position",
+                    keyPath: "position",
+                    toValue: NSValue(point: knobPosition)
+                ) { [knobLayer] in knobLayer.position = knobPosition }
+            ],
+            motion: repositionMotion,
+            animated: animated
+        )
         updateFocusRing()
     }
 
-    private func addAnimation(
-        to layer: CALayer,
-        key: String,
-        keyPath: String,
-        from: Any?,
-        to: Any,
-        motion: FluentMotionToken
-    ) {
-        let animation = CABasicAnimation(keyPath: keyPath)
-        animation.fromValue = from
-        animation.toValue = to
-        animation.duration = motion.duration
-        animation.timingFunction = motion.curve.timingFunction
-        if motion.delay > 0 {
-            animation.beginTime = CACurrentMediaTime() + motion.delay
-            animation.fillMode = .backwards
-        }
-        layer.add(animation, forKey: key)
-    }
-
     private func removeVisualAnimations() {
-        trackLayer.removeAllAnimations()
-        knobLayer.removeAllAnimations()
+        animationCoordinator.cancelAll(on: [trackLayer, knobLayer])
     }
 
     private func updateFocusRing() {

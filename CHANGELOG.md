@@ -17,6 +17,59 @@ Changes after `0.1.0` will be grouped here until the next tagged release. Breaki
 require a major version; additive APIs remain source-compatible within a major version whenever
 AppKit and Swift permit it.
 
+- Gallery navigation now uses a dedicated `.bottomUp` page entrance while the existing generic
+  NavigationView transition modes remain available. `.entrance` follows WinUI's asymmetric
+  forward/back triggers, while `.bottomUp` remains fixed to the lower-edge Gallery direction.
+  Added a global `materialEffectsEnabled` theme switch and migrated transient and
+  NavigationView surfaces to Liquid Glass with an opaque fallback when effects are disabled.
+- NavigationStack now uses the shared page presenter for coordinated push/pop transitions, including
+  duplicate route values at different depths. Window restoration preserves a launch-time active ID,
+  rejects non-finite saved frames, and contains partially off-screen frames within the best visible
+  screen.
+- RichTextEditor now publishes drag-selection changes once per RunLoop turn, reuses stable binding
+  observers across declarative updates, and drops stale asynchronous text or selection deliveries.
+- Added public `FluentWindowShell` configuration axes and presets for native/extended title bars,
+  optional title-bar search, title-bar or pane toggles, vertical Compact/Minimal/Left navigation,
+  horizontal Top navigation, Solid/Mica/Liquid Glass backdrops, and content-corner policies. The
+  Gallery now consumes the shell, and its HeaderContent and page content share one clipped WinUI-like
+  ContentSurface with responsive title-bar slot priority.
+- Completed the WindowShell state matrix: Back and pane-header content are public, native chrome
+  normalizes unsupported Fluent search/title-bar toggle requests, and TitleBar/NavigationView
+  toggles now expose reliable accessibility press actions. Added extended-reference and native+
+  vertical-pane Light shell baselines plus same-window native/extended switching validation.
+- Added a window-owned document-modal presentation coordinator shared by custom Sheet,
+  ConfirmationDialog, FluentAlert, file importer, and file exporter hosts. Presentations now queue per window,
+  restore focus, reuse stable binding observers, survive rapid close/reopen without stale writeback,
+  and cancel when their host leaves the window. Presented Sheets update content, title, size, theme,
+  and Liquid Glass fallback state in place while native ConfirmationDialog remains backed by
+  `NSAlert`.
+- Added binding-driven `FluentPopover` with automatic/top/bottom/leading/trailing placement,
+  RTL edge mapping, transient/semitransient/application-defined behavior, native focus restore,
+  Liquid Glass content, Reduce Motion, stable same-size updates, and geometry-safe presenter
+  replacement when AppKit cannot resize a live popover. `FluentPopoverButton` now shares the same
+  material/content controller and exposes placement, behavior, RTL, and Reduce Motion configuration.
+- Completed multi-window presentation restoration: frame keys are now scene-specific, automatic
+  scenes persist their declaration-ordered open set and active window ID, disabled-restoration
+  scenes are excluded from reopen, and restored frames are reapplied after AppKit window ordering
+  so native cascade behavior cannot shift independent windows.
+- Switched Liquid Glass composition to behind-window blending, made the Gallery window transparent
+  to wallpaper-level material, and guarded material updates against redundant appearance recursion.
+  ComboBox popup rows and NavigationView items now use host-owned single-hover state with one
+  tracking area per row and deterministic reset during scrolling, layout, focus loss, and dismissal.
+- Added source-aligned MenuFlyout system-icon slots with presenter-wide 28pt check/icon placeholders,
+  16pt symbols, 11pt narrow padding, accelerator and submenu trailing columns, native `NSMenu`
+  forwarding, and mirrored slot placement without mirroring non-directional glyphs. Added dedicated
+  Light/Dark flyout baselines. TextCommandBarFlyout now commits More expansion geometry immediately
+  and runs the source 250ms collapsed-to-expanded clip instead of animating the panel model frame.
+- Added MenuFlyout-specific High Contrast resources for system Highlight/HighlightText/GrayText
+  states and a dedicated high-contrast bitmap baseline. Added public `FluentCommandBarFlyout`,
+  `FluentCommandBarItem`, primary/secondary builders, action/toggle/separator elements,
+  `AlwaysExpanded`, a regular Button attachment, source-sized More expansion, Liquid Glass, immediate
+  dismissal, executable behavior coverage, and Light/Dark expanded baselines.
+- Routed MenuFlyout, ComboBox SplitOpen, Toggle binding updates, and CollectionItem background/
+  selection motion through the shared animation execution layer. Batches preserve source geometry,
+  presentation-state interruption, Reduce Motion, synchronized start times, and generation-safe
+  completion without serializing unrelated controls.
 - Added explicit horizontal and vertical `FluentDivider` orientation.
 - Corrected shared list selection-rail layout updates across selection, scrolling, resizing, and
   stable-ID changes; added selected-row geometry validation.
@@ -69,6 +122,11 @@ AppKit and Swift permit it.
 - Added source-derived CheckBox check-path motion using the AnimatedAccept 19-frame reveal and
   four-frame clear curves. RadioButton now uses a 20pt outer circle, 12/14/10/14 selected-dot states,
   and a dedicated 4-to-10pt unselected pressed-feedback layer with 250ms/167ms motion.
+- Added native `FluentToggleButton` and `FluentRepeatButton` controls with declarative wrappers,
+  source-mapped Button-family resources, explicit 83ms background transitions, keyboard and
+  accessibility paths, Reduce Motion, stable update identity, Gallery examples, and Light/Dark
+  baselines. ToggleButton supports two/three-state cycling; RepeatButton follows press-mode
+  invocation with 500ms/33ms defaults and deterministic pointer, focus, disable, and timer cleanup.
 - Expanded Gallery choice-control states, regenerated desktop/Minimal Light/Dark baselines, and added
   exact geometry, timing, same-bounds reconciliation, single-commit, cancellation, and environment
   validation.

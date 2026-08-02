@@ -15,6 +15,20 @@ func drainMainQueue() {
     RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
 }
 
+@discardableResult
+func waitUntil(
+    timeout: TimeInterval,
+    pollInterval: TimeInterval = 0.005,
+    _ condition: () -> Bool
+) -> Bool {
+    let deadline = Date(timeIntervalSinceNow: timeout)
+    repeat {
+        if condition() { return true }
+        RunLoop.main.run(until: min(Date(timeIntervalSinceNow: pollInterval), deadline))
+    } while Date() < deadline
+    return condition()
+}
+
 func firstLabel(in view: NSView) -> NSTextField? {
     if let label = view as? NSTextField, !label.isEditable { return label }
     return view.subviews.lazy.compactMap(firstLabel).first
@@ -23,6 +37,21 @@ func firstLabel(in view: NSView) -> NSTextField? {
 func firstButton(in view: NSView) -> FluentButton? {
     if let button = view as? FluentButton { return button }
     return view.subviews.lazy.compactMap(firstButton).first
+}
+
+func firstRepeatButton(in view: NSView) -> FluentRepeatButton? {
+    if let button = view as? FluentRepeatButton { return button }
+    return view.subviews.lazy.compactMap(firstRepeatButton).first
+}
+
+func firstNumberBox(in view: NSView) -> FluentNumberBoxControl? {
+    if let numberBox = view as? FluentNumberBoxControl { return numberBox }
+    return view.subviews.lazy.compactMap(firstNumberBox).first
+}
+
+func firstToggleButton(in view: NSView) -> FluentToggleButton? {
+    if let button = view as? FluentToggleButton { return button }
+    return view.subviews.lazy.compactMap(firstToggleButton).first
 }
 
 func firstToggle(in view: NSView) -> FluentToggle? {
@@ -45,6 +74,18 @@ func firstSegmentedControl(in view: NSView) -> NSSegmentedControl? {
     return view.subviews.lazy.compactMap(firstSegmentedControl).first
 }
 
+func layers(named name: String, in view: NSView) -> [CALayer] {
+    func collect(_ layer: CALayer) -> [CALayer] {
+        var matches = layer.name == name ? [layer] : []
+        if let mask = layer.mask { matches.append(contentsOf: collect(mask)) }
+        for child in layer.sublayers ?? [] { matches.append(contentsOf: collect(child)) }
+        return matches
+    }
+    var matches = view.layer.map(collect) ?? []
+    for child in view.subviews { matches.append(contentsOf: layers(named: name, in: child)) }
+    return matches
+}
+
 func firstSlider(in view: NSView) -> FluentSlider? {
     if let slider = view as? FluentSlider { return slider }
     return view.subviews.lazy.compactMap(firstSlider).first
@@ -58,10 +99,105 @@ func firstProgressBar(in view: NSView) -> FluentProgressBar? {
 func firstLayer(named name: String, in view: NSView) -> CALayer? {
     func search(_ layer: CALayer) -> CALayer? {
         if layer.name == name { return layer }
+        if let mask = layer.mask, let match = search(mask) { return match }
         return layer.sublayers?.lazy.compactMap(search).first
     }
     if let layer = view.layer, let match = search(layer) { return match }
     return view.subviews.lazy.compactMap { firstLayer(named: name, in: $0) }.first
+}
+
+func pathVertices(_ path: CGPath?) -> [CGPoint] {
+    guard let path else { return [] }
+    var points: [CGPoint] = []
+    path.applyWithBlock { elementPointer in
+        let element = elementPointer.pointee
+        switch element.type {
+        case .moveToPoint, .addLineToPoint:
+            points.append(element.points[0])
+        case .addQuadCurveToPoint:
+            points.append(element.points[1])
+        case .addCurveToPoint:
+            points.append(element.points[2])
+        case .closeSubpath:
+            break
+        @unknown default:
+            break
+        }
+    }
+    return points
+}
+
+func chevronPointsVisuallyDown(_ points: [CGPoint], in layer: CALayer?) -> Bool {
+    guard let layer, points.count == 3 else { return false }
+    // FluentAnimatedChevronLayer owns a stable top-down path. Its AppKit host may be flipped
+    // independently, so inspecting `isGeometryFlipped` here would reintroduce the cold-start bug.
+    return !layer.isGeometryFlipped
+        && points[1].y > points[0].y
+        && points[1].y > points[2].y
+}
+
+func translationMovesVisuallyDown(_ offset: CGFloat, in layer: CALayer?) -> Bool {
+    guard let layer else { return false }
+    return !layer.isGeometryFlipped && offset > 0
+}
+
+func elevationGradientMatchesVisualEdge(
+    _ layer: CAGradientLayer,
+    edge: FluentElevationBorderEdge,
+    extent: CGFloat = 3,
+    hostView: NSView? = nil
+) -> Bool {
+    // A WindowShell can flip the backing layer inherited by a control without changing the
+    // control's own AppKit coordinate system. Validate against the local view when available.
+    let hostIsFlipped = hostView?.isFlipped ?? (layer.superlayer?.isGeometryFlipped ?? false)
+    let visualBottom: CGFloat = hostIsFlipped ? 1 : 0
+    let visualTop: CGFloat = hostIsFlipped ? 0 : 1
+    let visualDownSign: CGFloat = hostIsFlipped ? 1 : -1
+    let expectedStart = edge == .bottom ? visualBottom : visualTop
+    let expectedDirection = edge == .bottom ? -visualDownSign : visualDownSign
+    let actualDirection = layer.endPoint.y - layer.startPoint.y
+    return abs(layer.startPoint.y - expectedStart) < 0.001
+        && actualDirection * expectedDirection > 0
+        && abs(abs(actualDirection) * layer.bounds.height - extent) < 0.001
+}
+
+func pathBoundsUseContainedAntialiasing(
+    _ pathBounds: CGRect,
+    in bounds: CGRect,
+    backingScale: CGFloat
+) -> Bool {
+    let inset = 0.5 / max(backingScale, 1)
+    return abs(pathBounds.minX - (bounds.minX + inset)) < 0.001
+        && abs(pathBounds.minY - (bounds.minY + inset)) < 0.001
+        && abs(pathBounds.maxX - (bounds.maxX - inset)) < 0.001
+        && abs(pathBounds.maxY - (bounds.maxY - inset)) < 0.001
+}
+
+func colorMatches(_ color: CGColor?, _ expected: NSColor, tolerance: CGFloat = 0.001) -> Bool {
+    guard let color,
+          let actual = NSColor(cgColor: color)?.usingColorSpace(.deviceRGB),
+          let target = expected.usingColorSpace(.deviceRGB) else { return false }
+    return abs(actual.redComponent - target.redComponent) < tolerance
+        && abs(actual.greenComponent - target.greenComponent) < tolerance
+        && abs(actual.blueComponent - target.blueComponent) < tolerance
+        && abs(actual.alphaComponent - target.alphaComponent) < tolerance
+}
+
+func timingFunctionMatches(
+    _ actual: CAMediaTimingFunction?,
+    _ expected: CAMediaTimingFunction,
+    tolerance: Float = 0.0001
+) -> Bool {
+    guard let actual else { return false }
+    for index in 0...3 {
+        var actualPoint = [Float](repeating: 0, count: 2)
+        var expectedPoint = [Float](repeating: 0, count: 2)
+        actual.getControlPoint(at: index, values: &actualPoint)
+        expected.getControlPoint(at: index, values: &expectedPoint)
+        guard abs(actualPoint[0] - expectedPoint[0]) < tolerance,
+              abs(actualPoint[1] - expectedPoint[1]) < tolerance else { return false }
+    }
+    return true
 }
 
 func keyframeAnimation(
@@ -99,6 +235,18 @@ func firstView(withAccessibilityRole role: NSAccessibility.Role, in view: NSView
 func firstView(identifier: String, in view: NSView) -> NSView? {
     if view.identifier?.rawValue == identifier { return view }
     return view.subviews.lazy.compactMap { firstView(identifier: identifier, in: $0) }.first
+}
+
+func firstMaterialView(in view: NSView) -> FluentMaterialView? {
+    if let material = view as? FluentMaterialView { return material }
+    return view.subviews.lazy.compactMap(firstMaterialView).first
+}
+
+func materialViews(in view: NSView) -> [FluentMaterialView] {
+    var materials: [FluentMaterialView] = []
+    if let material = view as? FluentMaterialView { materials.append(material) }
+    for child in view.subviews { materials.append(contentsOf: materialViews(in: child)) }
+    return materials
 }
 
 func views(identifier: String, in view: NSView) -> [NSView] {
@@ -145,6 +293,24 @@ func bitmapHasVisibleVariation(_ bitmap: NSBitmapImageRep) -> Bool {
         }
     }
     return false
+}
+
+func renderedColor(in view: NSView, at point: NSPoint) -> NSColor? {
+    guard view.bounds.width > 0,
+          view.bounds.height > 0,
+          let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
+    view.layoutSubtreeIfNeeded()
+    view.displayIfNeeded()
+    view.cacheDisplay(in: view.bounds, to: bitmap)
+    let scaleX = CGFloat(bitmap.pixelsWide) / view.bounds.width
+    let scaleY = CGFloat(bitmap.pixelsHigh) / view.bounds.height
+    let x = min(max(Int((point.x - view.bounds.minX) * scaleX), 0), bitmap.pixelsWide - 1)
+    let y = min(max(Int((point.y - view.bounds.minY) * scaleY), 0), bitmap.pixelsHigh - 1)
+    return bitmap.colorAt(x: x, y: y)?.usingColorSpace(.deviceRGB)
+}
+
+func renderedBackgroundAlpha(in view: NSView) -> CGFloat {
+    renderedColor(in: view, at: NSPoint(x: 6, y: view.bounds.midY))?.alphaComponent ?? 0
 }
 
 struct ValidationButtonStyle: FluentButtonStyle {
@@ -293,6 +459,98 @@ case .acrylic: break
 default: require(false, "custom theme stores material")
 }
 require(theme.buttonCornerRadius > 0, "theme exposes control metrics")
+let aquaAppearance = NSAppearance(named: .aqua)!
+let darkAquaAppearance = NSAppearance(named: .darkAqua)!
+let requestedSystemStore = FluentThemeStore(
+    preference: .system,
+    resolvedTheme: FluentTheme.custom(colorScheme: .light)
+)
+require(
+    requestedSystemStore.preference == .system
+        && requestedSystemStore.resolvedTheme.colorScheme != .system,
+    "theme store separates requested System preference from its actual resolved theme"
+)
+require(
+    requestedSystemStore.resolve(using: darkAquaAppearance).colorScheme == .dark
+        && requestedSystemStore.resolve(using: aquaAppearance).colorScheme == .light,
+    "the single theme resolver maps AppKit appearance to actual Light/Dark themes"
+)
+requestedSystemStore.preference = .dark
+require(
+    requestedSystemStore.preference == .dark
+        && requestedSystemStore.resolvedTheme.colorScheme == .dark,
+    "manual Dark preference uses the same resolved downstream path"
+)
+let defaultContextTheme = FluentRenderContext(theme: FluentTheme()).theme
+require(defaultContextTheme.colorScheme != .system, "render contexts never pass an unresolved System theme to controls")
+require(
+    theme.material(for: .transient) == .liquidGlass
+        && theme.material(for: .navigation) == .mica
+        && theme.material(for: .window) == .mica
+        && theme.materialEffectsEnabled,
+    "theme keeps Liquid Glass transient while persistent navigation and window surfaces use Mica"
+)
+let expectedLiquidGlassBackend: FluentMaterialBackend = if NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency {
+    .opaque
+} else if FluentMaterialView.isNativeLiquidGlassAvailable {
+    .nativeGlass
+} else {
+    .visualEffect
+}
+let nativeGlassProbe = FluentMaterialView(material: .liquidGlass)
+nativeGlassProbe.frame = NSRect(x: 0, y: 0, width: 180, height: 80)
+nativeGlassProbe.layoutSubtreeIfNeeded()
+require(
+    nativeGlassProbe.resolvedBackend == expectedLiquidGlassBackend
+        && nativeGlassProbe.state == .followsWindowActiveState,
+    "Liquid Glass selects the native runtime backend when available and follows window active state"
+)
+require(
+    (expectedLiquidGlassBackend != .nativeGlass)
+        || firstView(identifier: "FluentKit.Material.NativeGlass", in: nativeGlassProbe)?.frame == nativeGlassProbe.bounds,
+    "native Liquid Glass fills the Fluent material surface without replacing its content host"
+)
+let micaProbeTheme = FluentTheme.custom(colorScheme: .light)
+let micaProbe = FluentMaterialView(material: .mica)
+micaProbe.fluentTheme = micaProbeTheme
+micaProbe.frame = NSRect(x: 0, y: 0, width: 180, height: 80)
+micaProbe.layoutSubtreeIfNeeded()
+require(
+    micaProbe.resolvedBackend == expectedLiquidGlassBackend
+        && micaProbe.state == .followsWindowActiveState
+        && micaProbe.tintColor == nil
+        && firstLayer(named: "FluentKit.Material.MicaTint", in: micaProbe)?.backgroundColor != nil
+        && (micaProbe.resolvedBackend != .visualEffect || micaProbe.material == .underWindowBackground),
+    "Mica selects Glass at runtime or underWindowBackground without a version check and supplies its theme tint"
+)
+micaProbe.isMaterialEnabled = false
+require(
+    micaProbe.resolvedBackend == .opaque
+        && firstLayer(named: "FluentKit.Material.MicaTint", in: micaProbe)?.isHidden == true
+        && firstLayer(named: "FluentKit.Material.OpaqueFallback", in: micaProbe)?.opacity == 1,
+    "Mica disables both Glass and tint when the single opaque fallback owns the surface"
+)
+nativeGlassProbe.isMaterialEnabled = false
+require(
+    nativeGlassProbe.resolvedBackend == .opaque
+        && firstView(identifier: "FluentKit.Material.NativeGlass", in: nativeGlassProbe)?.isHidden != false,
+    "the global material switch moves Liquid Glass to the opaque accessibility backend"
+)
+let visualEffectProbe = FluentMaterialView(material: .sidebar)
+require(
+    visualEffectProbe.resolvedBackend == (NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency ? .opaque : .visualEffect)
+        && visualEffectProbe.state == .followsWindowActiveState
+        && (visualEffectProbe.resolvedBackend != .visualEffect || visualEffectProbe.blendingMode == .behindWindow),
+    "legacy sidebar material uses a semantic behind-window visual-effect fallback"
+)
+let effectsDisabledTheme = theme.with(materialEffectsEnabled: false)
+require(
+    effectsDisabledTheme.material(for: .transient) == nil
+        && effectsDisabledTheme.material(for: .navigation) == nil
+        && effectsDisabledTheme.material(for: .window) == nil
+        && !effectsDisabledTheme.materialEffectsEnabled,
+    "theme-level material switch disables transient, navigation, and window effects"
+)
 let regularDesignTokens = FluentDesignTokens()
 let compactDesignTokens = FluentDesignTokens(density: .compact)
 require(regularDesignTokens.controlHeight == 32, "design tokens expose the regular control height")
@@ -304,6 +562,7 @@ let derivedTheme = theme.with(accent: .systemPink).with(material: .sidebar)
 require(derivedTheme.accent == .systemPink, "theme derives a new accent while preserving other values")
 require(derivedTheme.material == .sidebar, "theme derives a new material while preserving other values")
 require(derivedTheme.density == theme.density && derivedTheme.contrast == theme.contrast, "theme derivation preserves density and contrast")
+require(derivedTheme.materialEffectsEnabled == theme.materialEffectsEnabled, "theme derivation preserves the global material switch")
 let horizontalDivider = FluentDivider()._mount(in: FluentRenderContext(theme: theme))
 let verticalDivider = FluentDivider(orientation: .vertical)._mount(in: FluentRenderContext(theme: theme))
 require(
@@ -327,6 +586,126 @@ require(compactHighContrastTheme.isHighContrast, "high contrast theme resolves i
 require(compactHighContrastTheme.controlHeight < theme.controlHeight, "compact density reduces control metrics")
 let standardSelectionTheme = FluentTheme.custom(contrast: .standard, typography: FluentTypography(scale: 1))
 let highContrastSelectionTheme = FluentTheme.custom(contrast: .high, typography: FluentTypography(scale: 1.4))
+let sourceLightTheme = FluentTheme.custom(contrast: .standard, colorScheme: .light)
+let sourceDarkTheme = FluentTheme.custom(contrast: .standard, colorScheme: .dark)
+require(
+    colorMatches(
+        highContrastSelectionTheme.menuItemBackground(for: .pointerOver).cgColor,
+        .selectedContentBackgroundColor
+    )
+        && colorMatches(
+            highContrastSelectionTheme.menuItemBackground(for: .pressed).cgColor,
+            .selectedContentBackgroundColor
+        )
+        && colorMatches(
+            highContrastSelectionTheme.menuItemForeground(for: .pointerOver).cgColor,
+            .selectedMenuItemTextColor
+        )
+        && colorMatches(
+            highContrastSelectionTheme.menuItemForeground(for: .disabled).cgColor,
+            .disabledControlTextColor
+        )
+        && colorMatches(
+            highContrastSelectionTheme.menuAcceleratorForeground(for: .normal).cgColor,
+            .textColor
+        )
+        && colorMatches(
+            highContrastSelectionTheme.menuAcceleratorForeground(for: .pressed).cgColor,
+            .selectedMenuItemTextColor
+        ),
+    "High Contrast MenuFlyout resources map system Highlight, HighlightText, GrayText, and WindowText"
+)
+require(
+    colorMatches(
+        standardSelectionTheme.menuItemBackground(for: .pointerOver).cgColor,
+        standardSelectionTheme.subtleFillSecondary
+    )
+        && colorMatches(
+            standardSelectionTheme.menuItemBackground(for: .pressed).cgColor,
+            standardSelectionTheme.subtleFillTertiary
+        )
+        && colorMatches(
+            standardSelectionTheme.menuItemForeground(for: .normal).cgColor,
+            standardSelectionTheme.textPrimary
+        )
+        && colorMatches(
+            standardSelectionTheme.menuAcceleratorForeground(for: .normal).cgColor,
+            standardSelectionTheme.textSecondary
+        ),
+    "standard MenuFlyout resources preserve the Light/Dark subtle-fill hierarchy"
+)
+require(
+    colorMatches(sourceDarkTheme.windowBackground.cgColor, NSColor(calibratedWhite: 32.0 / 255.0, alpha: 1))
+        && colorMatches(sourceLightTheme.windowBackground.cgColor, NSColor(calibratedWhite: 243.0 / 255.0, alpha: 1)),
+    "Light and Dark window backgrounds map SolidBackgroundFillColorBase exactly"
+)
+require(
+    colorMatches(sourceDarkTheme.textPrimary.cgColor, .white)
+        && colorMatches(sourceDarkTheme.textSecondary.cgColor, NSColor(calibratedWhite: 1, alpha: 197.0 / 255.0))
+        && colorMatches(sourceDarkTheme.textTertiary.cgColor, NSColor(calibratedWhite: 1, alpha: 135.0 / 255.0))
+        && colorMatches(sourceDarkTheme.textDisabled.cgColor, NSColor(calibratedWhite: 1, alpha: 93.0 / 255.0)),
+    "Dark text hierarchy maps TextFillColorPrimary/Secondary/Tertiary/Disabled exactly"
+)
+require(
+    colorMatches(sourceLightTheme.textPrimary.cgColor, NSColor(calibratedWhite: 0, alpha: 228.0 / 255.0))
+        && colorMatches(sourceLightTheme.textSecondary.cgColor, NSColor(calibratedWhite: 0, alpha: 158.0 / 255.0)),
+    "Light primary and secondary text retain source alpha instead of precomposited gray"
+)
+require(
+    colorMatches(sourceDarkTheme.textOnAccent.cgColor, .black)
+        && colorMatches(sourceLightTheme.textOnAccent.cgColor, .white),
+    "TextOnAccentFillColorPrimary switches from black in Dark to white in Light"
+)
+require(
+    colorMatches(
+        FluentTheme.defaultAccent.cgColor,
+        NSColor(calibratedRed: 0, green: 120.0 / 255.0, blue: 212.0 / 255.0, alpha: 1)
+    )
+        && colorMatches(
+            sourceDarkTheme.accentFillDefault.cgColor,
+            NSColor(calibratedRed: 118.0 / 255.0, green: 185.0 / 255.0, blue: 237.0 / 255.0, alpha: 1)
+        )
+        && colorMatches(
+            sourceLightTheme.accentFillDefault.cgColor,
+            NSColor(calibratedRed: 0, green: 90.0 / 255.0, blue: 158.0 / 255.0, alpha: 1)
+        ),
+    "SystemAccentColor and AccentFillColorDefault use the source fallback palette"
+)
+require(
+    colorMatches(sourceDarkTheme.accentTextPrimary.cgColor, NSColor(
+        calibratedRed: 166.0 / 255.0,
+        green: 216.0 / 255.0,
+        blue: 1,
+        alpha: 1
+    ))
+        && colorMatches(sourceLightTheme.accentTextPrimary.cgColor, NSColor(
+            calibratedRed: 0,
+            green: 66.0 / 255.0,
+            blue: 117.0 / 255.0,
+            alpha: 1
+        )),
+    "AccentTextFillColorPrimary resolves Light3 in Dark and Dark2 in Light"
+)
+require(
+    colorMatches(sourceDarkTheme.controlStroke.cgColor, NSColor(calibratedWhite: 1, alpha: 18.0 / 255.0))
+        && colorMatches(sourceDarkTheme.controlStrokeStrong.cgColor, NSColor(calibratedWhite: 1, alpha: 139.0 / 255.0))
+        && colorMatches(sourceDarkTheme.divider.cgColor, NSColor(calibratedWhite: 1, alpha: 21.0 / 255.0)),
+    "Dark default, strong, and divider strokes use the Common theme resources"
+)
+require(
+    colorMatches(sourceDarkTheme.cardFill.cgColor, NSColor(calibratedWhite: 1, alpha: 13.0 / 255.0))
+        && colorMatches(sourceDarkTheme.cardStroke.cgColor, NSColor(calibratedWhite: 0, alpha: 25.0 / 255.0))
+        && colorMatches(
+            sourceDarkTheme.layerFill.cgColor,
+            NSColor(
+                calibratedRed: 58.0 / 255.0,
+                green: 58.0 / 255.0,
+                blue: 58.0 / 255.0,
+                alpha: 76.0 / 255.0
+            )
+        ),
+    "Dark card and layer surfaces retain source color channels and alpha"
+)
 let standardCheckBoxAppearance = FluentAutomaticCheckBoxStyle().appearance(
     for: FluentCheckBoxStyleConfiguration(isChecked: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: standardSelectionTheme)
 )
@@ -391,10 +770,89 @@ require(highContrastSliderAppearance.knobDiameter > standardSliderAppearance.kno
 let standardFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
     for: FluentTextFieldStyleConfiguration(isEnabled: true, isFocused: false, controlSize: .regular, theme: standardSelectionTheme)
 )
+let focusedFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(isEnabled: true, isFocused: true, controlSize: .regular, theme: standardSelectionTheme)
+)
+let hoveredFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(
+        isEnabled: true,
+        isFocused: false,
+        isPointerOver: true,
+        controlSize: .regular,
+        theme: standardSelectionTheme
+    )
+)
+let focusedHoveredFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(
+        isEnabled: true,
+        isFocused: true,
+        isPointerOver: true,
+        controlSize: .regular,
+        theme: standardSelectionTheme
+    )
+)
 let highContrastFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
     for: FluentTextFieldStyleConfiguration(isEnabled: true, isFocused: false, controlSize: .regular, theme: highContrastSelectionTheme)
 )
 require(highContrastFieldAppearance.borderWidth > standardFieldAppearance.borderWidth, "high contrast increases text field border emphasis")
+require(
+    colorMatches(hoveredFieldAppearance.backgroundColor.cgColor, standardSelectionTheme.controlFillSecondary),
+    "TextBox PointerOver uses TextControlBackgroundPointerOver"
+)
+require(
+    colorMatches(focusedHoveredFieldAppearance.backgroundColor.cgColor, focusedFieldAppearance.backgroundColor),
+    "TextBox Focused takes precedence over PointerOver"
+)
+require(
+    focusedFieldAppearance.focusIndicatorWidth == 2
+        && focusedFieldAppearance.borderShape == .rounded,
+    "focused TextBox uses a dedicated 2pt bottom accent indicator"
+)
+let lightFocusedFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(
+        isEnabled: true,
+        isFocused: true,
+        controlSize: .regular,
+        theme: sourceLightTheme
+    )
+)
+let darkFocusedFieldAppearance = FluentAutomaticTextFieldStyle().appearance(
+    for: FluentTextFieldStyleConfiguration(
+        isEnabled: true,
+        isFocused: true,
+        controlSize: .regular,
+        theme: sourceDarkTheme
+    )
+)
+require(
+    colorMatches(lightFocusedFieldAppearance.focusIndicatorColor?.cgColor, sourceLightTheme.accentDark1)
+        && colorMatches(darkFocusedFieldAppearance.focusIndicatorColor?.cgColor, sourceDarkTheme.accentLight2),
+    "TextBox resolves the source Dark1 Light focus stroke and Light2 Dark focus stroke"
+)
+require(
+    standardFieldAppearance.borderGradientLocations == [0.5, 1]
+        && standardFieldAppearance.borderGradientEdge == .bottom
+        && standardFieldAppearance.borderGradientExtent == 2
+        && standardFieldAppearance.borderGradientColors?.count == 2,
+    "TextBox uses the source TextControlElevationBorderBrush two-point bottom extent"
+)
+require(
+    focusedFieldAppearance.borderGradientColors?.count == 2
+        && colorMatches(
+            focusedFieldAppearance.borderGradientColors?.first?.cgColor,
+            standardFieldAppearance.borderGradientColors?.first ?? .clear
+        )
+        && colorMatches(
+            focusedFieldAppearance.borderGradientColors?.last?.cgColor,
+            standardFieldAppearance.borderGradientColors?.last ?? .clear
+        ),
+    "focused TextBox keeps one base elevation ring and replaces only its 2pt bottom edge"
+)
+require(
+    colorMatches(standardFieldAppearance.borderGradientColors?.first?.cgColor, standardSelectionTheme.controlStrokeStrong)
+        && colorMatches(standardFieldAppearance.borderGradientColors?.last?.cgColor, standardSelectionTheme.controlStrokeDefault),
+    "TextBox uses TextControl elevation colors instead of Button elevation colors"
+)
 let standardProgressAppearance = FluentAutomaticProgressStyle().appearance(
     for: FluentProgressStyleConfiguration(valueFraction: 0.5, theme: standardSelectionTheme)
 )
@@ -526,6 +984,616 @@ func sliderKeyEvent(_ keyCode: UInt16, in view: NSView, eventNumber: Int) -> NSE
     return event
 }
 
+func toggleButtonKeyEvent(
+    _ type: NSEvent.EventType,
+    keyCode: UInt16,
+    in view: NSView,
+    eventNumber: Int
+) -> NSEvent {
+    guard let event = NSEvent.keyEvent(
+        with: type,
+        location: .zero,
+        modifierFlags: [],
+        timestamp: TimeInterval(eventNumber) / 100,
+        windowNumber: view.window?.windowNumber ?? 0,
+        context: nil,
+        characters: keyCode == 49 ? " " : "\r",
+        charactersIgnoringModifiers: keyCode == 49 ? " " : "\r",
+        isARepeat: false,
+        keyCode: keyCode
+    ) else {
+        fatalError("could not create ToggleButton validation key event")
+    }
+    return event
+}
+
+let automaticToggleButtonStyle = FluentAutomaticToggleButtonStyle()
+let toggleButtonOffAppearance = automaticToggleButtonStyle.appearance(
+    for: FluentToggleButtonStyleConfiguration(
+        title: "Off",
+        selectionState: .off,
+        controlState: .normal,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let toggleButtonOnAppearance = automaticToggleButtonStyle.appearance(
+    for: FluentToggleButtonStyleConfiguration(
+        title: "On",
+        selectionState: .on,
+        controlState: .normal,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let toggleButtonOnPressedAppearance = automaticToggleButtonStyle.appearance(
+    for: FluentToggleButtonStyleConfiguration(
+        title: "On",
+        selectionState: .on,
+        controlState: .pressed,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let toggleButtonMixedAppearance = automaticToggleButtonStyle.appearance(
+    for: FluentToggleButtonStyleConfiguration(
+        title: "Mixed",
+        selectionState: .mixed,
+        controlState: .normal,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let toggleButtonDisabledAppearance = automaticToggleButtonStyle.appearance(
+    for: FluentToggleButtonStyleConfiguration(
+        title: "Disabled",
+        selectionState: .on,
+        controlState: .normal,
+        isEnabled: false,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+require(
+    colorMatches(toggleButtonOffAppearance.backgroundColor.cgColor, theme.buttonBackground(for: .normal))
+        && toggleButtonOffAppearance.borderGradientColors?.count == 2,
+    "ToggleButton Normal maps to ControlFillColorDefault and ControlElevationBorderBrush"
+)
+require(
+    colorMatches(toggleButtonOnAppearance.backgroundColor.cgColor, theme.accentFill(for: .normal))
+        && colorMatches(toggleButtonOnAppearance.foregroundColor.cgColor, theme.textOnAccent)
+        && toggleButtonOnAppearance.borderGradientColors?.count == 2,
+    "ToggleButton Checked maps to AccentFillColorDefault and AccentControlElevationBorderBrush"
+)
+require(
+    colorMatches(toggleButtonOnPressedAppearance.backgroundColor.cgColor, theme.accentFill(for: .pressed))
+        && colorMatches(toggleButtonOnPressedAppearance.foregroundColor.cgColor, theme.textOnAccentSecondary)
+        && toggleButtonOnPressedAppearance.borderGradientColors == nil,
+    "ToggleButton CheckedPressed maps to tertiary accent fill without elevation"
+)
+require(
+    colorMatches(toggleButtonMixedAppearance.backgroundColor.cgColor, theme.buttonBackground(for: .normal)),
+    "ToggleButton Indeterminate uses its source-defined unaccented surface"
+)
+require(
+    colorMatches(toggleButtonDisabledAppearance.backgroundColor.cgColor, theme.accentFill(for: .disabled))
+        && colorMatches(toggleButtonDisabledAppearance.foregroundColor.cgColor, theme.textOnAccentDisabled),
+    "ToggleButton CheckedDisabled maps to disabled accent resources"
+)
+
+let interactiveToggleButtonState = FluentState(wrappedValue: FluentToggleButtonState.off)
+var interactiveToggleButtonCommits: [FluentToggleButtonState] = []
+let interactiveToggleButtonObserver = interactiveToggleButtonState.observe {
+    interactiveToggleButtonCommits.append($0)
+}
+interactiveToggleButtonCommits.removeAll()
+let interactiveToggleButtonHost = FluentViewHost(
+    FluentToggleButtonView("Toggle button", state: interactiveToggleButtonState.projectedValue),
+    context: FluentRenderContext(theme: theme, reduceMotion: false)
+)
+let interactiveToggleButtonWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 180, height: 40),
+    styleMask: [.titled, .closable],
+    backing: .buffered,
+    defer: false
+)
+interactiveToggleButtonWindow.contentView = interactiveToggleButtonHost
+interactiveToggleButtonHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+interactiveToggleButtonWindow.orderFront(nil)
+interactiveToggleButtonHost.layoutSubtreeIfNeeded()
+guard let interactiveToggleButton = firstToggleButton(in: interactiveToggleButtonHost),
+      let interactiveToggleButtonBorder = firstLayer(
+        named: "FluentKit.ToggleButton.ElevationBorder",
+        in: interactiveToggleButtonHost
+      ) as? CAGradientLayer else {
+    fatalError("ToggleButton validation hierarchy did not mount")
+}
+require(
+    interactiveToggleButton.selectionState == .off,
+    "mounted ToggleButton reads its initial binding state"
+)
+require(
+    interactiveToggleButton.accessibilityRole() == .checkBox
+        && interactiveToggleButton.accessibilityValue() as? String == "Off",
+    "mounted ToggleButton exposes native toggle accessibility"
+)
+require(
+    interactiveToggleButton.intrinsicContentSize.height == theme.controlHeight,
+    "ToggleButton preserves the WinUI 32pt default control height"
+)
+require(
+    elevationGradientMatchesVisualEdge(
+        interactiveToggleButtonBorder,
+        edge: .bottom,
+        hostView: interactiveToggleButton
+    ),
+    "ToggleButton resolves its visual elevation edge before pointer interaction"
+)
+interactiveToggleButtonState.wrappedValue = .on
+drainMainQueue()
+require(
+    firstToggleButton(in: interactiveToggleButtonHost) === interactiveToggleButton
+        && interactiveToggleButton.selectionState == .on,
+    "ToggleButton binding updates preserve native identity"
+)
+interactiveToggleButtonState.wrappedValue = .off
+drainMainQueue()
+interactiveToggleButtonCommits.removeAll()
+
+let toggleButtonPoint = NSPoint(x: interactiveToggleButton.bounds.midX, y: interactiveToggleButton.bounds.midY)
+interactiveToggleButton.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 12)
+)
+interactiveToggleButton.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 13)
+)
+require(
+    interactiveToggleButton.selectionState == .off
+        && interactiveToggleButtonCommits.isEmpty
+        && colorMatches(interactiveToggleButton.layer?.backgroundColor, theme.buttonBackground(for: .pressed)),
+    "ToggleButton mouseDown enters Pressed without committing"
+)
+let toggleButtonBackgroundAnimation = interactiveToggleButton.layer?.animation(
+    forKey: "fluent.toggleButton.background"
+)
+require(
+    abs((toggleButtonBackgroundAnimation?.duration ?? 0) - FluentMotion.controlFaster.duration) < 0.0001,
+    "ToggleButton surface transitions use the WinUI 83ms BrushTransition"
+)
+let toggleButtonOutsidePoint = NSPoint(x: -20, y: interactiveToggleButton.bounds.midY)
+interactiveToggleButton.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: toggleButtonOutsidePoint, in: interactiveToggleButton, eventNumber: 14)
+)
+require(
+    interactiveToggleButton.selectionState == .off && interactiveToggleButtonCommits.isEmpty,
+    "ToggleButton release-outside cancels activation"
+)
+interactiveToggleButton.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 15)
+)
+interactiveToggleButton.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 16)
+)
+drainMainQueue()
+require(
+    interactiveToggleButton.selectionState == .on && interactiveToggleButtonCommits == [.on],
+    "ToggleButton release-inside commits exactly once"
+)
+require(
+    colorMatches(interactiveToggleButton.layer?.backgroundColor, theme.accentFill(for: .pointerOver))
+        && interactiveToggleButtonBorder.colors?.count == 2,
+    "ToggleButton CheckedPointerOver applies accent fill and elevation resources"
+)
+
+interactiveToggleButtonState.wrappedValue = .off
+drainMainQueue()
+interactiveToggleButtonCommits.removeAll()
+interactiveToggleButtonWindow.makeFirstResponder(interactiveToggleButton)
+interactiveToggleButton.keyDown(
+    with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveToggleButton, eventNumber: 17)
+)
+require(
+    interactiveToggleButton.selectionState == .off && interactiveToggleButtonCommits.isEmpty,
+    "ToggleButton Space enters Pressed before committing"
+)
+interactiveToggleButton.keyUp(
+    with: toggleButtonKeyEvent(.keyUp, keyCode: 49, in: interactiveToggleButton, eventNumber: 18)
+)
+drainMainQueue()
+require(
+    interactiveToggleButton.selectionState == .on && interactiveToggleButtonCommits == [.on],
+    "ToggleButton Space release uses the same single-commit path"
+)
+
+interactiveToggleButton.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 19)
+)
+interactiveToggleButtonState.wrappedValue = .off
+drainMainQueue()
+interactiveToggleButton.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 20)
+)
+require(
+    interactiveToggleButton.selectionState == .off,
+    "external ToggleButton binding updates cancel an in-flight pointer activation"
+)
+require(
+    interactiveToggleButton.accessibilityPerformPress()
+        && interactiveToggleButton.selectionState == .on
+        && interactiveToggleButton.accessibilityValue() as? String == "On",
+    "ToggleButton accessibility press uses the shared activation path"
+)
+interactiveToggleButton.isEnabled = false
+require(
+    !interactiveToggleButton.accessibilityPerformPress(),
+    "disabled ToggleButton rejects accessibility activation"
+)
+interactiveToggleButtonState.observableValue.removeObserver(interactiveToggleButtonObserver)
+interactiveToggleButtonWindow.orderOut(nil)
+
+let threeStateToggleButton = FluentToggleButton(title: "Three state", state: .on, allowsMixedState: true)
+require(
+    threeStateToggleButton.accessibilityPerformPress()
+        && threeStateToggleButton.selectionState == .mixed
+        && threeStateToggleButton.accessibilityValue() as? String == "Mixed",
+    "three-state ToggleButton cycles Checked to Indeterminate"
+)
+require(
+    threeStateToggleButton.accessibilityPerformPress() && threeStateToggleButton.selectionState == .off,
+    "three-state ToggleButton cycles Indeterminate to Unchecked"
+)
+
+let reducedToggleButtonState = FluentState(wrappedValue: FluentToggleButtonState.off)
+let reducedToggleButtonHost = FluentViewHost(
+    FluentToggleButtonView("Reduced", state: reducedToggleButtonState.projectedValue),
+    context: FluentRenderContext(theme: theme, reduceMotion: true)
+)
+reducedToggleButtonHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+reducedToggleButtonHost.layoutSubtreeIfNeeded()
+guard let reducedToggleButton = firstToggleButton(in: reducedToggleButtonHost) else {
+    fatalError("Reduce Motion ToggleButton did not mount")
+}
+reducedToggleButton.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: reducedToggleButton.bounds.midX, y: reducedToggleButton.bounds.midY),
+        in: reducedToggleButton,
+        eventNumber: 21
+    )
+)
+require(
+    reducedToggleButton.layer?.animationKeys()?.isEmpty != false,
+    "ToggleButton Reduce Motion reaches PointerOver without allocating animations"
+)
+
+let automaticRepeatButtonStyle = FluentAutomaticRepeatButtonStyle()
+let repeatButtonNormalAppearance = automaticRepeatButtonStyle.appearance(
+    for: FluentRepeatButtonStyleConfiguration(
+        title: "Repeat",
+        controlState: .normal,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let repeatButtonPointerAppearance = automaticRepeatButtonStyle.appearance(
+    for: FluentRepeatButtonStyleConfiguration(
+        title: "Repeat",
+        controlState: .pointerOver,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let repeatButtonPressedAppearance = automaticRepeatButtonStyle.appearance(
+    for: FluentRepeatButtonStyleConfiguration(
+        title: "Repeat",
+        controlState: .pressed,
+        isEnabled: true,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+let repeatButtonDisabledAppearance = automaticRepeatButtonStyle.appearance(
+    for: FluentRepeatButtonStyleConfiguration(
+        title: "Repeat",
+        controlState: .normal,
+        isEnabled: false,
+        controlSize: .regular,
+        theme: theme
+    )
+)
+require(
+    colorMatches(repeatButtonNormalAppearance.backgroundColor.cgColor, theme.buttonBackground(for: .normal))
+        && repeatButtonNormalAppearance.borderGradientColors?.count == 2
+        && repeatButtonNormalAppearance.borderGradientEdge == .bottom,
+    "RepeatButton Normal maps to ControlFillColorDefault and ControlElevationBorderBrush"
+)
+require(
+    colorMatches(repeatButtonPointerAppearance.backgroundColor.cgColor, theme.buttonBackground(for: .pointerOver))
+        && repeatButtonPointerAppearance.borderGradientColors?.count == 2,
+    "RepeatButton PointerOver maps to ControlFillColorSecondary and elevation resources"
+)
+require(
+    colorMatches(repeatButtonPressedAppearance.backgroundColor.cgColor, theme.buttonBackground(for: .pressed))
+        && colorMatches(repeatButtonPressedAppearance.foregroundColor.cgColor, theme.buttonForeground(for: .pressed))
+        && repeatButtonPressedAppearance.borderGradientColors == nil,
+    "RepeatButton Pressed maps to tertiary fill and the ordinary control stroke"
+)
+require(
+    colorMatches(repeatButtonDisabledAppearance.backgroundColor.cgColor, theme.buttonBackground(for: .disabled))
+        && colorMatches(repeatButtonDisabledAppearance.foregroundColor.cgColor, theme.buttonForeground(for: .disabled)),
+    "RepeatButton Disabled maps to disabled control resources"
+)
+
+let repeatButtonTitle = FluentObservable("Hold")
+struct RepeatButtonIdentityProbe: FluentView {
+    let title: FluentObservable<String>
+    let action: () -> Void
+
+    var body: FluentRepeatButtonView {
+        FluentRepeatButtonView(title.value, action: action)
+    }
+}
+let repeatButtonIdentityHost = FluentViewHost(
+    RepeatButtonIdentityProbe(title: repeatButtonTitle, action: {})
+)
+let nativeIdentityRepeatButton = firstRepeatButton(in: repeatButtonIdentityHost)
+repeatButtonTitle.value = "Keep holding"
+drainMainQueue()
+require(
+    firstRepeatButton(in: repeatButtonIdentityHost) === nativeIdentityRepeatButton
+        && nativeIdentityRepeatButton?.title == "Keep holding",
+    "RepeatButton declarative updates preserve native identity"
+)
+
+var repeatButtonInvocations = 0
+let interactiveRepeatButtonHost = FluentViewHost(
+    FluentRepeatButtonView("Hold +", delay: 0.040, interval: 0.020) {
+        repeatButtonInvocations += 1
+    },
+    context: FluentRenderContext(theme: theme, reduceMotion: false)
+)
+let interactiveRepeatButtonWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 180, height: 40),
+    styleMask: [.titled, .closable],
+    backing: .buffered,
+    defer: false
+)
+interactiveRepeatButtonWindow.contentView = interactiveRepeatButtonHost
+interactiveRepeatButtonHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+interactiveRepeatButtonWindow.orderFront(nil)
+interactiveRepeatButtonHost.layoutSubtreeIfNeeded()
+guard let interactiveRepeatButton = firstRepeatButton(in: interactiveRepeatButtonHost),
+      let repeatButtonElevationBorder = firstLayer(
+        named: "FluentKit.RepeatButton.ElevationBorder",
+        in: interactiveRepeatButtonHost
+      ) as? CAGradientLayer,
+      let repeatButtonFocus = firstLayer(
+        named: "FluentKit.RepeatButton.FocusRing",
+        in: interactiveRepeatButtonHost
+      ) else {
+    fatalError("RepeatButton validation hierarchy did not mount")
+}
+require(
+    FluentRepeatButton.defaultDelay == 0.500
+        && FluentRepeatButton.defaultInterval == 0.033
+        && interactiveRepeatButton.intrinsicContentSize.height == theme.controlHeight
+        && interactiveRepeatButton.accessibilityRole() == .button,
+    "RepeatButton exposes the WinUI 500ms/33ms defaults, Button geometry, and native role"
+)
+require(
+    elevationGradientMatchesVisualEdge(
+        repeatButtonElevationBorder,
+        edge: .bottom,
+        hostView: interactiveRepeatButton
+    ),
+    "RepeatButton resolves its visual elevation edge before pointer interaction"
+)
+let repeatButtonPoint = NSPoint(
+    x: interactiveRepeatButton.bounds.midX,
+    y: interactiveRepeatButton.bounds.midY
+)
+interactiveRepeatButton.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: repeatButtonPoint, in: interactiveRepeatButton, eventNumber: 22)
+)
+interactiveRepeatButton.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: repeatButtonPoint, in: interactiveRepeatButton, eventNumber: 23)
+)
+require(
+    repeatButtonInvocations == 1
+        && colorMatches(interactiveRepeatButton.layer?.backgroundColor, theme.buttonBackground(for: .pressed)),
+    "RepeatButton uses ClickMode Press and enters Pressed before its delay"
+)
+let repeatButtonBackgroundAnimation = interactiveRepeatButton.layer?.animation(
+    forKey: "fluent.repeatButton.background"
+)
+require(
+    abs((repeatButtonBackgroundAnimation?.duration ?? 0) - FluentMotion.controlFaster.duration) < 0.0001,
+    "RepeatButton background uses the source 83ms BrushTransition"
+)
+require(
+    waitUntil(timeout: 0.20) { repeatButtonInvocations >= 3 },
+    "RepeatButton invokes after its delay and continues at its interval"
+)
+
+let repeatButtonOutsidePoint = NSPoint(x: -20, y: interactiveRepeatButton.bounds.midY)
+interactiveRepeatButton.mouseDragged(
+    with: toggleMouseEvent(
+        .leftMouseDragged,
+        at: repeatButtonOutsidePoint,
+        in: interactiveRepeatButton,
+        eventNumber: 24
+    )
+)
+let repeatCountOutside = repeatButtonInvocations
+require(
+    !waitUntil(timeout: 0.080) { repeatButtonInvocations != repeatCountOutside },
+    "RepeatButton stops repeating while a pressed pointer is outside"
+)
+interactiveRepeatButton.mouseDragged(
+    with: toggleMouseEvent(
+        .leftMouseDragged,
+        at: repeatButtonPoint,
+        in: interactiveRepeatButton,
+        eventNumber: 25
+    )
+)
+require(
+    repeatButtonInvocations == repeatCountOutside,
+    "RepeatButton pointer re-entry restarts the delay without an extra immediate click"
+)
+require(
+    waitUntil(timeout: 0.16) { repeatButtonInvocations > repeatCountOutside },
+    "RepeatButton resumes after the restarted delay"
+)
+interactiveRepeatButton.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: repeatButtonPoint, in: interactiveRepeatButton, eventNumber: 26)
+)
+let repeatCountAfterPointerRelease = repeatButtonInvocations
+require(
+    !waitUntil(timeout: 0.080) { repeatButtonInvocations != repeatCountAfterPointerRelease },
+    "RepeatButton pointer release cancels its interval timer"
+)
+
+repeatButtonInvocations = 0
+interactiveRepeatButtonWindow.makeFirstResponder(interactiveRepeatButton)
+interactiveRepeatButton.keyDown(
+    with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveRepeatButton, eventNumber: 27)
+)
+require(
+    repeatButtonInvocations == 1 && repeatButtonFocus.opacity == 1,
+    "RepeatButton Space presses immediately and reveals keyboard focus"
+)
+require(
+    waitUntil(timeout: 0.20) { repeatButtonInvocations >= 3 },
+    "RepeatButton Space follows the same delayed repeat path"
+)
+interactiveRepeatButton.keyUp(
+    with: toggleButtonKeyEvent(.keyUp, keyCode: 49, in: interactiveRepeatButton, eventNumber: 28)
+)
+let repeatCountAfterKeyRelease = repeatButtonInvocations
+require(
+    !waitUntil(timeout: 0.080) { repeatButtonInvocations != repeatCountAfterKeyRelease },
+    "RepeatButton Space release cancels repeating"
+)
+repeatButtonInvocations = 0
+interactiveRepeatButton.keyDown(
+    with: toggleButtonKeyEvent(.keyDown, keyCode: 36, in: interactiveRepeatButton, eventNumber: 29)
+)
+require(
+    repeatButtonInvocations == 1
+        && !waitUntil(timeout: 0.080) { repeatButtonInvocations != 1 },
+    "RepeatButton Return invokes once without starting Space repeat behavior"
+)
+repeatButtonInvocations = 0
+interactiveRepeatButton.keyDown(
+    with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveRepeatButton, eventNumber: 30)
+)
+interactiveRepeatButton.keyDown(
+    with: toggleButtonKeyEvent(.keyDown, keyCode: 53, in: interactiveRepeatButton, eventNumber: 31)
+)
+require(
+    repeatButtonInvocations == 1
+        && !waitUntil(timeout: 0.080) { repeatButtonInvocations != 1 },
+    "RepeatButton Escape cancels an active keyboard repeat"
+)
+interactiveRepeatButton.keyDown(
+    with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveRepeatButton, eventNumber: 32)
+)
+_ = interactiveRepeatButtonWindow.makeFirstResponder(nil)
+let repeatCountAfterFocusLoss = repeatButtonInvocations
+require(
+    !waitUntil(timeout: 0.080) { repeatButtonInvocations != repeatCountAfterFocusLoss },
+    "RepeatButton focus loss cancels an active keyboard repeat"
+)
+require(
+    interactiveRepeatButton.accessibilityPerformPress()
+        && repeatButtonInvocations == repeatCountAfterFocusLoss + 1,
+    "RepeatButton accessibility press invokes exactly once"
+)
+interactiveRepeatButton.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: repeatButtonPoint, in: interactiveRepeatButton, eventNumber: 33)
+)
+interactiveRepeatButton.isEnabled = false
+let repeatCountAfterDisable = repeatButtonInvocations
+require(
+    !waitUntil(timeout: 0.080) { repeatButtonInvocations != repeatCountAfterDisable }
+        && !interactiveRepeatButton.accessibilityPerformPress(),
+    "disabling RepeatButton cancels active repetition and rejects activation"
+)
+interactiveRepeatButton.isEnabled = true
+repeatButtonInvocations = 0
+interactiveRepeatButton.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: repeatButtonPoint, in: interactiveRepeatButton, eventNumber: 34)
+)
+interactiveRepeatButton.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: repeatButtonPoint, in: interactiveRepeatButton, eventNumber: 35)
+)
+interactiveRepeatButtonWindow.contentView = NSView()
+let repeatCountAfterRemoval = repeatButtonInvocations
+require(
+    !waitUntil(timeout: 0.080) { repeatButtonInvocations != repeatCountAfterRemoval },
+    "removing RepeatButton from its window cancels active repetition"
+)
+interactiveRepeatButtonWindow.orderOut(nil)
+
+var callbackRemovalCount = 0
+let callbackRemovalButton = FluentRepeatButton(title: "Remove", delay: 0.020, interval: 0.010)
+let callbackRemovalWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 120, height: 32),
+    styleMask: [.titled, .closable],
+    backing: .buffered,
+    defer: false
+)
+callbackRemovalButton.frame = NSRect(x: 0, y: 0, width: 120, height: 32)
+callbackRemovalWindow.contentView = callbackRemovalButton
+callbackRemovalWindow.orderFront(nil)
+callbackRemovalButton.onClick = {
+    callbackRemovalCount += 1
+    callbackRemovalWindow.contentView = NSView()
+}
+callbackRemovalButton.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: 60, y: 16),
+        in: callbackRemovalButton,
+        eventNumber: 36
+    )
+)
+require(
+    callbackRemovalCount == 1
+        && !waitUntil(timeout: 0.060) { callbackRemovalCount != 1 },
+    "RepeatButton does not schedule a tick after its callback removes it from the window"
+)
+callbackRemovalWindow.orderOut(nil)
+
+let reducedRepeatButtonHost = FluentViewHost(
+    FluentRepeatButtonView("Reduced") {},
+    context: FluentRenderContext(theme: theme, reduceMotion: true)
+)
+reducedRepeatButtonHost.frame = NSRect(x: 0, y: 0, width: 180, height: 40)
+reducedRepeatButtonHost.layoutSubtreeIfNeeded()
+guard let reducedRepeatButton = firstRepeatButton(in: reducedRepeatButtonHost) else {
+    fatalError("Reduce Motion RepeatButton did not mount")
+}
+reducedRepeatButton.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: reducedRepeatButton.bounds.midX, y: reducedRepeatButton.bounds.midY),
+        in: reducedRepeatButton,
+        eventNumber: 37
+    )
+)
+require(
+    reducedRepeatButton.layer?.animationKeys()?.isEmpty != false,
+    "RepeatButton Reduce Motion reaches PointerOver without allocating animations"
+)
+
 let interactiveToggleState = FluentState(wrappedValue: false)
 var interactiveToggleCommits: [Bool] = []
 let interactiveToggleObserver = interactiveToggleState.observe { interactiveToggleCommits.append($0) }
@@ -594,6 +1662,10 @@ drainMainQueue()
 require(
     interactiveToggleState.wrappedValue && interactiveToggleCommits == [true],
     "ToggleSwitch release-inside commits its binding exactly once"
+)
+require(
+    interactiveKnob.animation(forKey: "fluent.toggle.knob.position") != nil,
+    "ToggleSwitch keeps release motion alive across its binding-driven declarative update"
 )
 require(
     interactiveTrack.borderWidth == 0,
@@ -913,6 +1985,13 @@ let styledTextHost = FluentViewHost(
 )
 let nativeStyledTextField = firstFluentTextField(in: styledTextHost)
 require(nativeStyledTextField?.fluentStyle != nil, "text field style mounts on the native field")
+require(
+    nativeStyledTextField?.usesSingleLineMode == true
+        && nativeStyledTextField?.maximumNumberOfLines == 1
+        && nativeStyledTextField?.cell?.wraps == false
+        && nativeStyledTextField?.cell?.isScrollable == true,
+    "TextBox explicitly uses the shared one-line scrolling cell protocol"
+)
 styledTextState.wrappedValue = "updated"
 drainMainQueue()
 require(firstFluentTextField(in: styledTextHost) === nativeStyledTextField, "styled text field updates preserve native identity")
@@ -1136,8 +2215,8 @@ interactiveCheckBox.mouseDown(
 interactiveCheckBox.mouseUp(
     with: toggleMouseEvent(.leftMouseUp, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 44)
 )
-drainMainQueue()
 let checkBoxOffAnimation = checkBoxGlyph.animation(forKey: "fluent.checkbox.glyph.strokeEnd") as? CABasicAnimation
+drainMainQueue()
 require(
     !interactiveCheckBoxState.wrappedValue
         && interactiveCheckBoxCommits == [true, false]
@@ -1413,6 +2492,29 @@ require(
         && abs((segmentedSelectionIndicator?.frame.width ?? 0) - expectedSegmentIndicatorWidth) < 0.001,
     "segmented control keeps one shared inset selection indicator"
 )
+guard let segmentedOuterBorder = firstLayer(named: "FluentKit.Segmented.OuterBorder", in: nativeStyledSegmented ?? styledSegmentHost) as? CAShapeLayer,
+      let segmentedOuterBorderPath = segmentedOuterBorder.path else {
+    fatalError("segmented outer border overlay did not mount")
+}
+let segmentedBorderOverlay = nativeStyledSegmented?.subviews.first {
+    $0.identifier?.rawValue == "FluentKit.Segmented.BorderOverlay"
+}
+let segmentedSubviewOrder = nativeStyledSegmented?.subviews ?? []
+let segmentedIndicatorIndex = segmentedSelectionIndicator.flatMap { segmentedSubviewOrder.firstIndex(of: $0) }
+let segmentedOverlayIndex = segmentedBorderOverlay.flatMap { segmentedSubviewOrder.firstIndex(of: $0) }
+require(
+    segmentedOuterBorder.fillRule == .evenOdd
+        && segmentedOuterBorder.superlayer === segmentedBorderOverlay?.layer
+        && (segmentedOverlayIndex ?? -1) > (segmentedIndicatorIndex ?? Int.max)
+        && segmentedOuterBorder.fillColor != NSColor.clear.cgColor
+        && segmentedOuterBorder.strokeColor == nil
+        && segmentedOuterBorder.lineWidth == 0
+        && abs(segmentedOuterBorderPath.boundingBox.minX - (nativeStyledSegmented?.bounds.minX ?? 0)) < 0.001
+        && abs(segmentedOuterBorderPath.boundingBox.minY - (nativeStyledSegmented?.bounds.minY ?? 0)) < 0.001
+        && abs(segmentedOuterBorderPath.boundingBox.maxX - (nativeStyledSegmented?.bounds.maxX ?? 0)) < 0.001
+        && abs(segmentedOuterBorderPath.boundingBox.maxY - (nativeStyledSegmented?.bounds.maxY ?? 0)) < 0.001,
+    "segmented selection cannot cover or clip the topmost inside fill-ring border"
+)
 require(
     segmentedLabels.count == 2
         && segmentedLabels[0].stringValue == "First"
@@ -1516,6 +2618,142 @@ drainMainQueue()
 require(
     reducedSegmentIndicator?.layer?.animation(forKey: "fluent.segmented.selection") == nil,
     "segmented Reduce Motion reaches selected geometry without allocating animations"
+)
+
+let selectorItems = [
+    FluentSelectorBarItem(value: 0, title: "Grid", systemImage: "square.grid.2x2"),
+    FluentSelectorBarItem(value: 1, title: "Disabled", isEnabled: false),
+    FluentSelectorBarItem(value: 2, title: "List", systemImage: "list.bullet")
+]
+let selectorState = FluentState(wrappedValue: 0)
+let selectorHost = FluentViewHost(
+    FluentSelectorBar(selectorItems, selection: selectorState.projectedValue)
+)
+let selectorWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 72),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+selectorWindow.contentView = selectorHost
+selectorWindow.orderFront(nil)
+selectorHost.layoutSubtreeIfNeeded()
+guard let selectorBar = firstView(identifier: "FluentKit.SelectorBar", in: selectorHost) else {
+    fatalError("SelectorBar validation hierarchy did not mount")
+}
+let selectorItemViews = views(identifier: "FluentKit.SelectorBar.Item", in: selectorBar)
+require(firstSegmentedControl(in: selectorHost) == nil, "SelectorBar uses a dedicated AppKit host instead of NSSegmentedControl")
+require(selectorBar.accessibilityRole() == .radioGroup, "SelectorBar exposes radio-group accessibility semantics")
+require(
+    selectorItemViews.count == 3
+        && selectorItemViews.allSatisfy { $0.accessibilityRole() == .radioButton },
+    "SelectorBar exposes one radio-button accessibility child per item"
+)
+let selectorPills = layers(named: "FluentKit.SelectorBar.ItemPill", in: selectorBar)
+require(selectorPills.count == 3, "SelectorBar gives every item an independent selection pill")
+require(
+    selectorPills.allSatisfy { $0.bounds.size == CGSize(width: 4, height: 3) },
+    "SelectorBar item pills preserve the source 4 by 3 base geometry"
+)
+require(
+    abs(selectorPills[0].transform.m11 - 4) < 0.001
+        && selectorPills[0].opacity == 1
+        && selectorPills.dropFirst().allSatisfy { $0.opacity == 0 },
+    "SelectorBar selection expands only the selected item's own pill"
+)
+let originalSelectorIdentities = Dictionary(
+    uniqueKeysWithValues: selectorItemViews.compactMap { view in
+        view.accessibilityTitle().map { ($0, ObjectIdentifier(view)) }
+    }
+)
+selectorState.wrappedValue = 2
+drainMainQueue()
+guard let selectedListItem = firstView(withAccessibilityTitle: "List", in: selectorBar),
+      let selectedListPill = firstLayer(named: "FluentKit.SelectorBar.ItemPill", in: selectedListItem) else {
+    fatalError("SelectorBar selected item did not expose its pill")
+}
+let selectorPillScaleAnimation = selectedListPill.animation(forKey: "fluent.selectorbar.pill.scale") as? CABasicAnimation
+let selectorPillOpacityAnimation = selectedListPill.animation(forKey: "fluent.selectorbar.pill.opacity") as? CABasicAnimation
+require(
+    abs((selectorPillScaleAnimation?.duration ?? 0) - FluentMotion.controlFast.duration) < 0.000_001
+        && abs((selectorPillOpacityAnimation?.duration ?? 0) - FluentMotion.controlFast.duration) < 0.000_001,
+    "SelectorBar pill scale and opacity use the source-derived 167ms duration"
+)
+require(selectorState.wrappedValue == 2, "SelectorBar observes external binding changes")
+selectorHost.update(
+    FluentSelectorBar([selectorItems[2], selectorItems[0], selectorItems[1]], selection: selectorState.projectedValue)
+)
+selectorHost.layoutSubtreeIfNeeded()
+let reorderedSelectorItems = views(identifier: "FluentKit.SelectorBar.Item", in: selectorHost)
+require(
+    reorderedSelectorItems.allSatisfy { view in
+        guard let title = view.accessibilityTitle(), let identity = originalSelectorIdentities[title] else { return false }
+        return ObjectIdentifier(view) == identity
+    },
+    "SelectorBar reordering preserves compatible item identities"
+)
+guard let reorderedListItem = firstView(withAccessibilityTitle: "List", in: selectorHost) else {
+    fatalError("SelectorBar reordered item did not mount")
+}
+reorderedListItem.keyDown(with: sliderKeyEvent(124, in: reorderedListItem, eventNumber: 78))
+require(selectorState.wrappedValue == 0, "SelectorBar arrows change selection and skip disabled items")
+selectorWindow.orderOut(nil)
+
+let rtlSelectorState = FluentState(wrappedValue: 1)
+let rtlSelectorHost = FluentViewHost(
+    FluentSelectorBar([
+        FluentSelectorBarItem(value: 0, title: "First"),
+        FluentSelectorBarItem(value: 1, title: "Second"),
+        FluentSelectorBarItem(value: 2, title: "Third")
+    ], selection: rtlSelectorState.projectedValue),
+    context: FluentRenderContext(layoutDirection: .rightToLeft)
+)
+rtlSelectorHost.frame = NSRect(x: 0, y: 0, width: 260, height: 64)
+rtlSelectorHost.layoutSubtreeIfNeeded()
+guard let rtlFirstSelectorItem = firstView(withAccessibilityTitle: "First", in: rtlSelectorHost),
+      let rtlSecondSelectorItem = firstView(withAccessibilityTitle: "Second", in: rtlSelectorHost),
+      let rtlThirdSelectorItem = firstView(withAccessibilityTitle: "Third", in: rtlSelectorHost) else {
+    fatalError("RTL SelectorBar validation hierarchy did not mount")
+}
+require(rtlFirstSelectorItem.frame.minX > rtlThirdSelectorItem.frame.minX, "SelectorBar mirrors item order in RTL")
+rtlSecondSelectorItem.keyDown(with: sliderKeyEvent(123, in: rtlSecondSelectorItem, eventNumber: 79))
+require(rtlSelectorState.wrappedValue == 2, "SelectorBar RTL left arrow advances in visual order")
+
+let optionalSelectorState = FluentState<Int?>(wrappedValue: nil)
+let optionalSelectorHost = FluentViewHost(
+    FluentSelectorBar([
+        FluentSelectorBarItem(value: 0, title: "Grid"),
+        FluentSelectorBarItem(value: 1, title: "List")
+    ], selection: optionalSelectorState.projectedValue)
+)
+optionalSelectorHost.frame = NSRect(x: 0, y: 0, width: 180, height: 64)
+optionalSelectorHost.layoutSubtreeIfNeeded()
+require(
+    layers(named: "FluentKit.SelectorBar.ItemPill", in: optionalSelectorHost).allSatisfy { $0.opacity == 0 },
+    "SelectorBar optional binding preserves a valid empty selection"
+)
+
+let reducedSelectorState = FluentState(wrappedValue: 0)
+let reducedSelectorHost = FluentViewHost(
+    FluentSelectorBar([
+        FluentSelectorBarItem(value: 0, title: "Grid"),
+        FluentSelectorBarItem(value: 1, title: "List")
+    ], selection: reducedSelectorState.projectedValue),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedSelectorHost.frame = NSRect(x: 0, y: 0, width: 180, height: 64)
+reducedSelectorHost.layoutSubtreeIfNeeded()
+reducedSelectorState.wrappedValue = 1
+drainMainQueue()
+guard let reducedListItem = firstView(withAccessibilityTitle: "List", in: reducedSelectorHost),
+      let reducedSelectorPill = firstLayer(named: "FluentKit.SelectorBar.ItemPill", in: reducedListItem) else {
+    fatalError("Reduce Motion SelectorBar validation hierarchy did not mount")
+}
+require(
+    reducedSelectorPill.transform.m11 == 4
+        && reducedSelectorPill.opacity == 1
+        && reducedSelectorPill.animationKeys()?.isEmpty != false,
+    "SelectorBar Reduce Motion reaches selected geometry without allocating animations"
 )
 
 let themeStore = FluentThemeStore(FluentTheme.custom(colorScheme: .light, typography: FluentTypography(scale: 1)))
@@ -1647,6 +2885,13 @@ require(textEditorView === textEditor, "text editor mounts as its native AppKit 
 require(textEditor.textView.string == "Initial notes", "text editor reads its initial binding value")
 require(textEditor.textView.accessibilityRole() == NSAccessibility.Role.textArea, "text editor exposes native multiline accessibility semantics")
 require(textEditor.intrinsicContentSize.height == 96, "text editor honors its declarative minimum height")
+require(
+    textEditor.textView.isVerticallyResizable
+        && !textEditor.textView.isHorizontallyResizable
+        && textEditor.textView.textContainer?.widthTracksTextView == true
+        && textEditor.textView.textContainer?.maximumNumberOfLines == 0,
+    "TextEditor remains a wrapping multiline editor outside the shared single-line protocol"
+)
 textEditor.textView.string = "Edited notes"
 textEditor.commitText()
 require(editorText.wrappedValue == "Edited notes", "text editor writes native edits through its binding")
@@ -1668,6 +2913,92 @@ require(richEditor.textView.string == "Hello Fluent Hello", "rich editor reads a
 require(richEditor.textView.accessibilityRole() == NSAccessibility.Role.textArea, "rich editor exposes multiline accessibility semantics")
 require(richEditor.intrinsicContentSize.height == 110, "rich editor honors minimum height")
 require(richEditor.find("hello").map { $0.location } == [0, 13], "rich editor finds case-insensitive matches")
+var repeatedSelectionValue = FluentTextSelection(location: 0, length: 0)
+var repeatedSelectionWrites = 0
+let repeatedSelectionBinding = FluentBinding<FluentTextSelection>(
+    get: { repeatedSelectionValue },
+    set: {
+        repeatedSelectionValue = $0
+        repeatedSelectionWrites += 1
+    }
+)
+let repeatedSelectionEditor = FluentRichTextEditor(
+    FluentBinding(get: { NSAttributedString(string: "Selection stress") }, set: { _ in }),
+    selection: repeatedSelectionBinding,
+    minimumHeight: 80
+)
+_ = repeatedSelectionEditor._mount(in: FluentRenderContext())
+let repeatedInitialRange = repeatedSelectionEditor.textView.selectedRange()
+repeatedSelectionValue = FluentTextSelection(
+    location: repeatedInitialRange.location,
+    length: repeatedInitialRange.length
+)
+repeatedSelectionWrites = 0
+for _ in 0..<1_000 {
+    repeatedSelectionEditor.textViewDidChangeSelection(Notification(name: NSTextView.didChangeSelectionNotification))
+}
+require(
+    repeatedSelectionWrites == 0,
+    "rich editor ignores repeated selection callbacks for an unchanged range"
+)
+repeatedSelectionEditor.textView.setSelectedRange(NSRange(location: 0, length: 4))
+repeatedSelectionEditor.textViewDidChangeSelection(Notification(name: NSTextView.didChangeSelectionNotification))
+for _ in 0..<1_000 {
+    repeatedSelectionEditor.textViewDidChangeSelection(Notification(name: NSTextView.didChangeSelectionNotification))
+}
+require(
+    repeatedSelectionWrites == 0,
+    "rich editor defers a new selection update until the current RunLoop turn settles"
+)
+drainMainQueue()
+require(
+    repeatedSelectionWrites == 1,
+    "rich editor publishes one binding update for a new range and suppresses duplicate callbacks"
+)
+var coalescedSelectionValue = FluentTextSelection(location: 0, length: 0)
+var coalescedSelectionWrites = 0
+let coalescedSelectionEditor = FluentRichTextEditor(
+    FluentBinding(get: { NSAttributedString(string: String(repeating: "Drag ", count: 80)) }, set: { _ in }),
+    selection: FluentBinding(
+        get: { coalescedSelectionValue },
+        set: {
+            coalescedSelectionValue = $0
+            coalescedSelectionWrites += 1
+        }
+    ),
+    minimumHeight: 80
+)
+_ = coalescedSelectionEditor._mount(in: FluentRenderContext())
+for index in 1...250 {
+    coalescedSelectionEditor.textView.setSelectedRange(NSRange(location: 0, length: index))
+    coalescedSelectionEditor.textViewDidChangeSelection(Notification(name: NSTextView.didChangeSelectionNotification))
+}
+require(coalescedSelectionWrites == 0, "rich editor does not synchronously publish every drag-selection callback")
+drainMainQueue()
+require(
+    coalescedSelectionWrites == 1
+        && coalescedSelectionValue == FluentTextSelection(location: 0, length: 250),
+    "rich editor coalesces a drag-selection burst to its final range"
+)
+let observedSelectionState = FluentState(wrappedValue: FluentTextSelection(location: 0, length: 0))
+let observedSelectionEditor = FluentRichTextEditor(
+    FluentBinding(get: { NSAttributedString(string: String(repeating: "Selection ", count: 40)) }, set: { _ in }),
+    selection: observedSelectionState.projectedValue,
+    minimumHeight: 80
+)
+_ = observedSelectionEditor._mount(in: FluentRenderContext())
+for index in 1...250 {
+    observedSelectionEditor.textView.setSelectedRange(NSRange(location: 0, length: index))
+    observedSelectionEditor.textViewDidChangeSelection(Notification(name: NSTextView.didChangeSelectionNotification))
+}
+observedSelectionEditor.textView.delegate = nil
+observedSelectionEditor.textView.setSelectedRange(NSRange(location: 0, length: 0))
+observedSelectionEditor.textView.delegate = observedSelectionEditor
+drainMainQueue()
+require(
+    observedSelectionEditor.textView.selectedRange() == NSRange(location: 0, length: 0),
+    "rich editor does not queue and replay locally published drag-selection ranges"
+)
 richEditor.textView.setSelectedRange(NSRange(location: 0, length: 5))
 richEditor.toggleBold()
 let boldFont = richEditor.textView.textStorage?.attribute(.font, at: 0, effectiveRange: nil) as? NSFont
@@ -1724,8 +3055,27 @@ let secureView = FluentSecureField(secureText.projectedValue, placeholder: "Pass
     .textFieldStyle(ValidationTextFieldStyle())
     ._mount(in: FluentRenderContext())
 let secureField = firstSecureTextField(in: secureView)
+var secureTitleRect: NSRect?
 require(secureField?.stringValue == "initial-secret", "secure field reads its initial binding value")
 require((secureField as? FluentSecureTextField)?.fluentStyle is ValidationTextFieldStyle, "secure field receives the shared text field style")
+require(
+    secureField?.usesSingleLineMode == true
+        && secureField?.maximumNumberOfLines == 1
+        && secureField?.cell?.wraps == false
+        && secureField?.cell?.isScrollable == true,
+    "PasswordBox uses the shared one-line scrolling cell protocol"
+)
+if let secureField, let cell = secureField.cell {
+    secureField.frame = NSRect(x: 0, y: 0, width: 280, height: 32)
+    let titleRect = cell.titleRect(forBounds: secureField.bounds)
+    secureTitleRect = titleRect
+    require(
+        titleRect.minY >= secureField.bounds.minY
+            && titleRect.maxY <= secureField.bounds.maxY
+            && titleRect.midY < secureField.bounds.midY,
+        "secure field keeps the full native line box inside the source-asymmetric 32pt Fluent content region"
+    )
+}
 secureText.wrappedValue = "external-secret"
 drainMainQueue()
 require(secureField?.stringValue == "external-secret", "secure field reflects external binding updates")
@@ -1733,7 +3083,89 @@ secureField?.stringValue = "edited-secret"
 if let secureField, let delegate = secureField.delegate {
     delegate.controlTextDidChange?(Notification(name: NSControl.textDidChangeNotification, object: secureField))
 }
+drainMainQueue()
 require(secureText.wrappedValue == "edited-secret", "secure field writes native edits through its binding")
+
+var coalescedSingleLineValue = ""
+var coalescedSingleLineWrites = 0
+let coalescedSingleLineBinding = FluentBinding<String>(
+    get: { coalescedSingleLineValue },
+    set: {
+        coalescedSingleLineValue = $0
+        coalescedSingleLineWrites += 1
+    }
+)
+let coalescedSingleLineHost = FluentBoundTextField(coalescedSingleLineBinding)
+for index in 1...250 {
+    coalescedSingleLineHost.field.stringValue = "Value \(index)"
+    coalescedSingleLineHost.controlTextDidChange(
+        Notification(name: NSControl.textDidChangeNotification, object: coalescedSingleLineHost.field)
+    )
+}
+require(
+    coalescedSingleLineWrites == 0 && coalescedSingleLineHost.field.stringValue == "Value 250",
+    "single-line native editing remains immediate without synchronously refreshing the declarative tree"
+)
+drainMainQueue()
+require(
+    coalescedSingleLineWrites == 1 && coalescedSingleLineValue == "Value 250",
+    "single-line input coalesces an edit callback burst to one final binding publication"
+)
+
+let textGeometryField = FluentTextField(placeholder: "Geometry")
+textGeometryField.stringValue = "0123456789"
+textGeometryField.frame = NSRect(x: 20, y: 20, width: 240, height: 32)
+let textGeometryRoot = NSView(frame: NSRect(x: 0, y: 0, width: 420, height: 80))
+textGeometryRoot.addSubview(textGeometryField)
+let textGeometryWindow = NSWindow(
+    contentRect: textGeometryRoot.bounds,
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+textGeometryWindow.contentView = textGeometryRoot
+textGeometryWindow.makeKeyAndOrderFront(nil)
+_ = textGeometryWindow.makeFirstResponder(textGeometryField)
+textGeometryField.selectText(nil)
+drainMainQueue()
+guard let textGeometryEditor = textGeometryField.currentEditor() as? NSTextView,
+      let textGeometryEditorHost = textGeometryEditor.superview,
+      let textGeometryCell = textGeometryField.cell else {
+    fatalError("TextBox did not create a shared native field editor")
+}
+let initialTextGeometry = textGeometryCell.titleRect(forBounds: textGeometryField.bounds)
+let initialEditorRectInControl = textGeometryEditor.convert(textGeometryEditor.bounds, to: textGeometryField)
+require(
+    abs(initialEditorRectInControl.minX - initialTextGeometry.minX) <= 0.5
+        && abs(initialEditorRectInControl.minY - initialTextGeometry.minY) <= 0.5
+        && abs(initialEditorRectInControl.width - initialTextGeometry.width) <= 0.5
+        && abs(initialEditorRectInControl.height - initialTextGeometry.height) <= 0.5
+        && textGeometryEditor.textContainer?.lineFragmentPadding == 0
+        && textGeometryEditor.textContainerInset == .zero,
+    "TextBox drawing, placeholder, editor, caret, and selection share one content rectangle "
+        + "(content: \(initialTextGeometry), editor: \(textGeometryEditor.frame), "
+        + "editorInControl: \(initialEditorRectInControl), host: \(textGeometryEditorHost.frame), padding: "
+        + "\(String(describing: textGeometryEditor.textContainer?.lineFragmentPadding)))"
+)
+let preservedTextSelection = NSRange(location: 2, length: 4)
+textGeometryEditor.setSelectedRange(preservedTextSelection)
+textGeometryField.setFrameSize(NSSize(width: 340, height: 40))
+textGeometryRoot.layoutSubtreeIfNeeded()
+drainMainQueue()
+let resizedTextGeometry = textGeometryCell.titleRect(forBounds: textGeometryField.bounds)
+let resizedEditorRectInControl = textGeometryEditor.convert(textGeometryEditor.bounds, to: textGeometryField)
+require(
+    textGeometryEditor.selectedRange() == preservedTextSelection
+        && abs(resizedEditorRectInControl.minX - resizedTextGeometry.minX) <= 0.5
+        && abs(resizedEditorRectInControl.minY - resizedTextGeometry.minY) <= 0.5
+        && abs(resizedEditorRectInControl.width - resizedTextGeometry.width) <= 0.5
+        && abs(resizedEditorRectInControl.height - resizedTextGeometry.height) <= 0.5,
+    "TextBox resize updates the field-editor viewport without resetting the active selection "
+        + "(content: \(resizedTextGeometry), editor: \(textGeometryEditor.frame), "
+        + "editorInControl: \(resizedEditorRectInControl), host: \(textGeometryEditorHost.frame), "
+        + "selection: \(textGeometryEditor.selectedRange()))"
+)
+textGeometryWindow.orderOut(nil)
 
 let searchText = FluentState(wrappedValue: "")
 var searchSubmits = 0
@@ -1746,10 +3178,60 @@ let searchView = FluentSearchField(
 let searchField = firstSearchField(in: searchView)
 require(searchField?.placeholderString == "Filter", "search field preserves its placeholder")
 require((searchField as? FluentSearchTextField)?.fluentStyle is ValidationTextFieldStyle, "search field receives the shared text field style")
+require(
+    searchField?.usesSingleLineMode == true
+        && searchField?.maximumNumberOfLines == 1
+        && searchField?.cell?.wraps == false
+        && searchField?.cell?.isScrollable == true,
+    "SearchBox uses the shared one-line scrolling cell protocol"
+)
+if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
+    searchField.frame = NSRect(x: 0, y: 0, width: 280, height: 32)
+    let textRect = cell.searchTextRect(forBounds: searchField.bounds)
+    let iconRect = cell.searchButtonRect(forBounds: searchField.bounds)
+    require(
+        abs(iconRect.midY - searchField.bounds.midY) <= 0.5,
+        "SearchBox keeps its search adornment geometrically centered"
+    )
+    require(
+        textRect.minX >= iconRect.maxX + 3,
+        "SearchBox reserves a stable content gap after the native search icon column"
+    )
+    if let secureTitleRect {
+        require(
+            abs(secureTitleRect.midY - textRect.midY) <= 2,
+            "PasswordBox and SearchBox retain the same source-derived native text baseline"
+        )
+    }
+}
+let ordinarySearchState = FluentState(wrappedValue: "")
+let ordinarySearchView = FluentSearchField(
+    ordinarySearchState.projectedValue,
+    placeholder: "Ordinary search"
+)._mount(in: FluentRenderContext())
+let ordinarySearchField = firstSearchField(in: ordinarySearchView) as? FluentSearchTextField
+let ordinarySearchAppearance = ordinarySearchField.map { field in
+    field.fluentStyle.appearance(
+        for: FluentTextFieldStyleConfiguration(
+            isEnabled: field.isEnabled,
+            isFocused: false,
+            isPointerOver: false,
+            controlSize: field.fluentControlSize,
+            theme: field.theme
+        )
+    )
+}
+require(
+    ordinarySearchAppearance.map {
+        abs($0.cornerRadius - (ordinarySearchField?.theme.designTokens.controlCornerRadius ?? 0)) < 0.001
+    } == true,
+    "ordinary SearchBox resolves WinUI ControlCornerRadius through the shared automatic TextControl style"
+)
 searchField?.stringValue = "fluent"
 if let searchField, let delegate = searchField.delegate {
     delegate.controlTextDidChange?(Notification(name: NSControl.textDidChangeNotification, object: searchField))
 }
+drainMainQueue()
 require(searchText.wrappedValue == "fluent", "search field writes native edits through its binding")
 searchText.wrappedValue = "external-filter"
 drainMainQueue()
@@ -1758,6 +3240,284 @@ if let searchField, let action = searchField.action {
     require(NSApp.sendAction(action, to: searchField.target, from: searchField), "search field sends its submit action")
 }
 require(searchSubmits == 1, "search field invokes submit callback")
+if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
+    let searchEditingWindow = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 320, height: 80),
+        styleMask: [.borderless],
+        backing: .buffered,
+        defer: false
+    )
+    searchView.frame = NSRect(x: 20, y: 20, width: 280, height: 32)
+    searchEditingWindow.contentView = searchView
+    let searchAppearanceCoordinator = FluentAppearanceCoordinator(
+        theme: theme.with(colorScheme: .light)
+    )
+    searchAppearanceCoordinator.attach(to: searchEditingWindow)
+    searchEditingWindow.makeKeyAndOrderFront(nil)
+    _ = searchEditingWindow.makeFirstResponder(searchField)
+    searchField.selectText(nil)
+    drainMainQueue()
+    guard let editor = searchField.currentEditor() as? NSTextView,
+          let editorSuperview = editor.superview else {
+        fatalError("SearchBox did not create a native field editor")
+    }
+    require(
+        !editor.isVerticallyResizable
+            && editor.isHorizontallyResizable
+            && editor.textContainer?.maximumNumberOfLines == 1
+            && editor.textContainer?.lineBreakMode == .byClipping
+            && editor.textContainer?.widthTracksTextView == false
+            && editor.textContainer?.heightTracksTextView == true,
+        "single-line controls configure the shared AppKit field editor without replacing it"
+    )
+    let searchTheme = (searchField as? FluentSearchTextField)?.theme ?? .current
+    require(
+        colorMatches(editor.insertionPointColor.cgColor, searchTheme.textCaret),
+        "SearchBox field editor uses the source-derived TextControl caret color (actual: \(String(describing: editor.insertionPointColor.usingColorSpace(.deviceRGB))), expected: \(String(describing: searchTheme.textCaret.usingColorSpace(.deviceRGB))))"
+    )
+    require(
+        !editor.drawsBackground
+            && colorMatches(editor.textColor?.cgColor, searchTheme.textPrimary)
+            && colorMatches(
+                (editor.typingAttributes[.foregroundColor] as? NSColor)?.cgColor,
+                searchTheme.textPrimary
+            ),
+        "SearchBox field editor reapplies Fluent foreground and transparent background after AppKit setup"
+    )
+    require(
+        colorMatches(
+            (editor.selectedTextAttributes[.backgroundColor] as? NSColor)?.cgColor,
+            searchTheme.textSelectionBackground
+        ) && colorMatches(
+            (editor.selectedTextAttributes[.foregroundColor] as? NSColor)?.cgColor,
+            searchTheme.textSelectionForeground
+        ),
+        "SearchBox field editor uses the WinUI selection highlight and selected-text colors"
+    )
+    editor.setSelectedRange(NSRange(location: 0, length: 0))
+    let caretScreenRect = editor.firstRect(
+        forCharacterRange: NSRange(location: 0, length: 0),
+        actualRange: nil
+    )
+    let expectedTextRect = cell.searchTextRect(forBounds: searchField.bounds)
+    let expectedTextScreenRect = searchEditingWindow.convertToScreen(
+        searchField.convert(expectedTextRect, to: nil)
+    )
+    require(
+        abs(caretScreenRect.minX - expectedTextScreenRect.minX) <= 1
+            && abs(caretScreenRect.midY - expectedTextScreenRect.midY) <= 1,
+        "SearchBox caret uses the same content geometry as placeholder text (caret: \(caretScreenRect), expected: \(expectedTextScreenRect), editor: \(editor.frame), superview: \(editorSuperview.frame))"
+    )
+    let searchIconRect = cell.searchButtonRect(forBounds: searchField.bounds)
+    require(
+        abs(searchIconRect.midY - expectedTextRect.midY) <= 0.5,
+        "SearchBox icon, caret, and edited text share one vertical center"
+    )
+
+    editor.setSelectedRange(NSRange(location: 0, length: min(4, editor.string.utf16.count)))
+    searchField.rightMouseDown(
+        with: toggleMouseEvent(
+            .rightMouseDown,
+            at: NSPoint(x: expectedTextRect.minX + 12, y: expectedTextRect.midY),
+            in: searchField,
+            eventNumber: 91
+        )
+    )
+    require(
+        waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
+        "SearchBox replaces the AppKit context menu with an application-owned text command flyout"
+    )
+    if let commandPanel = searchEditingWindow.childWindows?.first,
+       let commandPresenter = commandPanel.contentView.flatMap({
+           firstView(withAccessibilityRole: .menu, in: $0)
+       }) {
+        let commandSurface = commandPanel.contentView.flatMap(firstMaterialView)
+        require(
+            commandSurface?.materialStyle == .liquidGlass
+                && commandSurface?.isMaterialEnabled == true,
+            "TextCommandBarFlyout uses the global Liquid Glass transient surface"
+        )
+        let overlayCornerRadius = (searchField as? FluentSearchTextField)?.theme.designTokens.cardCornerRadius ?? 8
+        require(
+            commandPanel.contentView?.layer?.masksToBounds == true
+                && abs((commandPanel.contentView?.layer?.cornerRadius ?? 0) - overlayCornerRadius) < 0.001
+                && commandSurface?.layer?.masksToBounds == true
+                && abs((commandSurface?.layer?.cornerRadius ?? 0) - overlayCornerRadius) < 0.001,
+            "TextCommandBarFlyout clips material and commands once at the source OverlayCornerRadius"
+        )
+        let textCommandEntrance = commandPanel.contentView?.layer?.animation(
+            forKey: "fluent.popup.textCommandBar.open.opacity"
+        ) as? CABasicAnimation
+        require(
+            abs((textCommandEntrance?.duration ?? 0) - FluentMotion.commandBarFlyoutOpen.duration) < 0.0001
+                && (textCommandEntrance?.fromValue as? NSNumber)?.doubleValue == 0
+                && (textCommandEntrance?.toValue as? NSNumber)?.doubleValue == 1
+                && timingFunctionMatches(
+                    textCommandEntrance?.timingFunction,
+                    FluentMotion.commandBarFlyoutOpen.curve.timingFunction
+                ),
+            "TextCommandBarFlyout uses the shared coordinator for the source 83ms linear whole-presenter entrance"
+        )
+        let commandTitles = Set(
+            (commandPresenter.accessibilityChildren() ?? []).compactMap {
+                ($0 as? NSView)?.accessibilityTitle()
+            }
+        )
+        require(
+            commandTitles.contains("Cut")
+                && commandTitles.contains("Copy")
+                && commandTitles.contains("Select All")
+                && !commandTitles.contains("More"),
+            "mouse TextCommandBarFlyout places available editing commands in the secondary row presenter"
+        )
+        let commandRows = (commandPresenter.accessibilityChildren() ?? []).compactMap { $0 as? NSView }
+        require(
+            commandPresenter.identifier?.rawValue == "FluentKit.TextCommandBarFlyout"
+                && commandRows.allSatisfy {
+                    abs($0.frame.height - 32) < 0.001
+                        && abs($0.frame.minX - 4) < 0.001
+                        && abs($0.frame.maxX - (commandPresenter.bounds.maxX - 4)) < 0.001
+                },
+            "mouse TextCommandBarFlyout uses source secondary-command row geometry (panel: \(commandPanel.frame), children: \(commandRows.map { ($0.accessibilityTitle() ?? "", $0.frame) }))"
+        )
+        require(
+            commandPanel.frame.width < searchField.bounds.width,
+            "text command flyout uses CommandBarFlyout content width instead of matching the TextBox host"
+        )
+        let commandDarkTheme = theme.with(colorScheme: .dark)
+        searchAppearanceCoordinator.updateTheme(commandDarkTheme)
+        drainMainQueue()
+        require(
+            commandPanel.contentView.flatMap(firstMaterialView) === commandSurface
+                && commandSurface?.fluentTheme == commandDarkTheme
+                && colorMatches(
+                    firstLayer(named: "FluentKit.Material.OpaqueFallback", in: commandSurface ?? NSView())?.backgroundColor,
+                    commandDarkTheme.flyoutSurfaceFill
+                )
+                && commandPanel.contentView?.layer?.animation(
+                    forKey: "fluent.popup.textCommandBar.open.opacity"
+                ) == nil,
+            "TextCommandBarFlyout updates in place and settles its entrance during a window appearance change"
+        )
+        searchAppearanceCoordinator.updateTheme(theme.with(colorScheme: .light))
+        drainMainQueue()
+        commandPresenter.keyDown(with: sliderKeyEvent(53, in: commandPresenter, eventNumber: 92))
+    } else {
+        fatalError("SearchBox text command flyout did not expose a custom presenter")
+    }
+    require(
+        waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.isEmpty != false },
+        "text command flyout dismisses through the shared Fluent keyboard path"
+    )
+
+    searchField.rightMouseDown(
+        with: toggleMouseEvent(
+            .leftMouseDown,
+            at: NSPoint(x: expectedTextRect.minX + 12, y: expectedTextRect.midY),
+            in: searchField,
+            eventNumber: 95
+        )
+    )
+    require(
+        waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
+        "TextCommandBarFlyout supports an input-device-preferred primary command composition"
+    )
+    if let primaryPanel = searchEditingWindow.childWindows?.first,
+       let primaryPresenter = primaryPanel.contentView.flatMap({
+           firstView(withAccessibilityRole: .menu, in: $0)
+       }) {
+        let primaryChildren = (primaryPresenter.accessibilityChildren() ?? []).compactMap { $0 as? NSView }
+        let primaryTitles = Set(primaryChildren.compactMap { $0.accessibilityTitle() })
+        require(
+            primaryTitles.contains("Cut")
+                && primaryTitles.contains("Copy")
+                && primaryTitles.contains("More")
+                && !primaryTitles.contains("Select All")
+                && primaryChildren.allSatisfy {
+                    abs($0.frame.width - 40) < 0.001 && abs($0.frame.height - 40) < 0.001
+                },
+            "TextCommandBarFlyout renders direct editing commands and More in source 40pt primary slots"
+        )
+        let collapsedHeight = primaryPanel.frame.height
+        let moreButton = primaryChildren.first { $0.accessibilityTitle() == "More" }
+        require(moreButton?.accessibilityPerformPress() == true, "TextCommandBarFlyout More expands secondary commands")
+        let expansionClip = primaryPanel.contentView.flatMap {
+            firstLayer(named: "FluentKit.TextCommandBarFlyout.ExpansionClip", in: $0)
+        }
+        let expansionAnimation = expansionClip?.animation(
+            forKey: "fluent.popup.textCommandBar.expand.clip"
+        ) as? CABasicAnimation
+        require(
+            expansionAnimation?.keyPath == "path"
+                && abs((expansionAnimation?.duration ?? 0) - FluentMotion.controlNormal.duration) < 0.0001
+                && timingFunctionMatches(
+                    expansionAnimation?.timingFunction,
+                    FluentMotion.controlNormal.curve.timingFunction
+                ),
+            "TextCommandBarFlyout More uses the source 250ms collapsed-to-expanded clip timeline"
+        )
+        require(
+            waitUntil(timeout: 0.30) {
+                let titles = Set(
+                    (primaryPresenter.accessibilityChildren() ?? []).compactMap {
+                        ($0 as? NSView)?.accessibilityTitle()
+                    }
+                )
+                return titles.contains("Select All") && primaryPanel.frame.height > collapsedHeight
+            },
+            "TextCommandBarFlyout expansion adds secondary rows and grows the complete panel"
+        )
+        primaryPresenter.keyDown(with: sliderKeyEvent(53, in: primaryPresenter, eventNumber: 96))
+    } else {
+        fatalError("TextCommandBarFlyout did not expose its primary command composition")
+    }
+    require(
+        waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.isEmpty != false },
+        "expanded TextCommandBarFlyout dismisses immediately"
+    )
+
+    if let secureField {
+        secureView.frame = NSRect(x: 20, y: 20, width: 280, height: 32)
+        searchEditingWindow.contentView = secureView
+        _ = searchEditingWindow.makeFirstResponder(secureField)
+        secureField.selectText(nil)
+        drainMainQueue()
+        if let secureEditor = secureField.currentEditor() as? NSTextView {
+            secureEditor.setSelectedRange(NSRange(location: 0, length: secureEditor.string.utf16.count))
+        }
+        secureField.rightMouseDown(
+            with: toggleMouseEvent(
+                .rightMouseDown,
+                at: NSPoint(x: 24, y: secureField.bounds.midY),
+                in: secureField,
+                eventNumber: 93
+            )
+        )
+        require(
+            waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
+            "PasswordBox presents its restricted text command flyout"
+        )
+        if let securePresenter = searchEditingWindow.childWindows?.first?.contentView.flatMap({
+            firstView(withAccessibilityRole: .menu, in: $0)
+        }) {
+            let secureTitles = Set(
+                (securePresenter.accessibilityChildren() ?? []).compactMap {
+                    ($0 as? NSView)?.accessibilityTitle()
+                }
+            )
+            require(
+                !secureTitles.contains("Cut")
+                    && !secureTitles.contains("Copy")
+                    && secureTitles.contains("Select All"),
+                "PasswordBox follows WinUI by withholding Cut and Copy while retaining Select All"
+            )
+            securePresenter.keyDown(with: sliderKeyEvent(53, in: securePresenter, eventNumber: 94))
+        } else {
+            fatalError("PasswordBox text command flyout did not expose a custom presenter")
+        }
+    }
+    searchEditingWindow.orderOut(nil)
+}
 
 enum ValidationOption: String, Hashable { case first, second, third }
 let comboSelection = FluentState<ValidationOption?>(wrappedValue: .second)
@@ -1786,9 +3546,51 @@ let comboFlyoutWindow = NSWindow(
 )
 comboView.frame = NSRect(x: 20, y: 40, width: 220, height: 34)
 comboFlyoutWindow.contentView = comboView
+let comboAppearanceTheme = theme.with(colorScheme: .light)
+let comboAppearanceCoordinator = FluentAppearanceCoordinator(theme: comboAppearanceTheme)
+comboAppearanceCoordinator.attach(to: comboFlyoutWindow)
 comboFlyoutWindow.center()
 comboFlyoutWindow.makeKeyAndOrderFront(nil)
 comboView.layoutSubtreeIfNeeded()
+guard let comboElevationBorder = firstLayer(
+    named: "FluentKit.ComboBox.ElevationBorder",
+    in: comboView
+) as? CAGradientLayer,
+      let comboElevationMask = comboElevationBorder.mask as? CAShapeLayer,
+      let comboElevationPath = comboElevationMask.path else {
+    fatalError("ComboBox elevation border did not mount")
+}
+let comboElevationBounds = comboElevationPath.boundingBox
+require(
+    comboElevationMask.fillRule == .evenOdd
+        && pathBoundsUseContainedAntialiasing(
+            comboElevationBounds,
+            in: comboView.bounds,
+            backingScale: comboElevationBorder.contentsScale
+        ),
+    "ComboBox keeps its elevation antialiasing inside every host edge"
+)
+require(
+    comboElevationBorder.locations?.map(\.doubleValue) == [0.33, 1],
+    "ComboBox uses the shared Button ControlElevationBorderBrush stop positions"
+)
+require(
+    elevationGradientMatchesVisualEdge(
+        comboElevationBorder,
+        edge: .bottom,
+        hostView: comboView
+    ),
+    "ComboBox uses the source three-point extent at its visual elevation edge"
+)
+let coldComboChevron = firstLayer(
+    named: "FluentKit.ComboBox.Chevron",
+    in: comboView
+) as? CAShapeLayer
+let coldComboChevronPoints = pathVertices(coldComboChevron?.path)
+require(
+    chevronPointsVisuallyDown(coldComboChevronPoints, in: coldComboChevron),
+    "ComboBox points its cold-start chevron visually down before hover"
+)
 guard let comboFocusPill = firstLayer(named: "FluentKit.ComboBox.FocusPill", in: comboView) else {
     fatalError("ComboBox focus Pill did not mount")
 }
@@ -1796,23 +3598,89 @@ guard let comboFocusHighlight = firstLayer(named: "FluentKit.ComboBox.FocusHighl
     fatalError("ComboBox focus Highlight did not mount")
 }
 guard let nativeComboBox else { fatalError("ComboBox native control did not mount") }
-nativeComboBox.performClick(nil)
 require(
-    comboFocusPill.opacity == 1
-        && comboFocusPill.frame.size == CGSize(width: 3, height: 16),
-    "focused ComboBox exposes the source-derived 3 x 16 leading Pill"
+    nativeComboBox.usesSingleLineMode
+        && nativeComboBox.maximumNumberOfLines == 1
+        && nativeComboBox.cell?.wraps == false
+        && nativeComboBox.cell?.isScrollable == true,
+    "selection ComboBox uses the shared one-line scrolling cell protocol"
+)
+nativeComboBox.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: nativeComboBox.bounds.midX, y: nativeComboBox.bounds.midY),
+        in: nativeComboBox,
+        eventNumber: 69
+    )
 )
 require(
-    comboFocusHighlight.opacity == 1
+    translationMovesVisuallyDown(
+        coldComboChevron?.value(forKeyPath: "transform.translation.y") as? CGFloat ?? 0,
+        in: coldComboChevron
+    ),
+    "ComboBox press moves the shared chevron along the stable visual-down axis"
+)
+require(
+    comboFlyoutWindow.childWindows?.isEmpty != false,
+    "pointer-down only enters the ComboBox pressed state without presenting its popup"
+)
+require(
+    comboFocusPill.opacity == 0
+        && comboFocusPill.frame.size == CGSize(width: 3, height: 16),
+    "pointer-focused ComboBox keeps the source-derived Pill hidden"
+)
+require(
+    comboFocusHighlight.opacity == 0
         && comboFocusHighlight.frame == comboView.bounds.insetBy(dx: -4, dy: -4)
         && comboFocusHighlight.borderWidth == 2
         && comboFocusHighlight.cornerRadius == 7,
-    "focused ComboBox exposes the source-derived -4 margin, 2pt, 7pt focus highlight"
+    "pointer-focused ComboBox preserves keyboard-highlight geometry without displaying it"
+)
+nativeComboBox.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: nativeComboBox.bounds.midX, y: nativeComboBox.bounds.midY),
+        in: nativeComboBox,
+        eventNumber: 70
+    )
 )
 drainMainQueue()
 require(comboFlyoutWindow.childWindows?.count == 1, "combo box opens an application-owned flyout panel")
 if let comboPanelContent = comboFlyoutWindow.childWindows?.first?.contentView {
-    require(firstView(withAccessibilityRole: .menu, in: comboPanelContent) != nil, "combo box popup uses the Fluent menu presenter")
+    comboPanelContent.layoutSubtreeIfNeeded()
+    require(firstView(withAccessibilityRole: .menu, in: comboPanelContent) != nil, "combo box popup exposes its dedicated menu semantics")
+    require(
+        firstMaterialView(in: comboPanelContent)?.materialStyle == .liquidGlass
+            && firstMaterialView(in: comboPanelContent)?.isMaterialEnabled == true,
+        "ComboBox popup uses the global Liquid Glass transient surface"
+    )
+    require(
+        comboFlyoutWindow.childWindows?.first?.hasShadow == false,
+        "ComboBox popup does not stack a native black panel shadow around its opaque surface"
+    )
+    require(
+        comboPanelContent.layer?.borderWidth == 0,
+        "ComboBox popup keeps one opaque edge owner without a second CALayer stroke"
+    )
+    let comboBorderLayer = firstLayer(named: "FluentKit.ComboBoxPopup.PopupBorder", in: comboPanelContent)
+    let comboPresenterLayer = firstLayer(named: "FluentKit.ComboBoxPopup.Presenter", in: comboPanelContent)
+    let comboClipLayer = firstLayer(named: "FluentKit.ComboBoxPopup.RevealClip", in: comboPanelContent)
+    let comboBorderEntrance = comboBorderLayer?.animation(forKey: "fluent.popup.border.open") as? CABasicAnimation
+    let comboPresenterEntrance = comboPresenterLayer?.animation(forKey: "fluent.popup.presenter.open") as? CABasicAnimation
+    let comboMaskBoundsEntrance = comboClipLayer?.animation(forKey: "fluent.popup.reveal.bounds") as? CABasicAnimation
+    let comboMaskPositionEntrance = comboClipLayer?.animation(forKey: "fluent.popup.reveal.position") as? CABasicAnimation
+    let comboClosedMaskBounds = (comboMaskBoundsEntrance?.fromValue as? NSValue)?.rectValue
+    let comboClosedMaskPosition = (comboMaskPositionEntrance?.fromValue as? NSValue)?.pointValue
+    let comboOpenMaskBounds = (comboMaskBoundsEntrance?.toValue as? NSValue)?.rectValue
+    let comboOpenMaskPosition = (comboMaskPositionEntrance?.toValue as? NSValue)?.pointValue
+    require(
+        comboBorderEntrance == nil
+            && comboPresenterEntrance == nil
+            && comboMaskBoundsEntrance?.keyPath == "bounds"
+            && comboMaskPositionEntrance?.keyPath == "position"
+            && abs((comboMaskBoundsEntrance?.duration ?? 0) - FluentMotion.comboBoxOpen.duration) < 0.0001,
+        "ComboBox popup runs SplitOpen on the popup clip without MenuFlyout presenter translation"
+    )
     guard let selectedRow = firstView(withAccessibilityTitle: "Third", in: comboPanelContent),
           let selectionPill = firstLayer(named: "FluentKit.ComboBoxItem.SelectionPill", in: comboPanelContent) else {
         fatalError("ComboBox selected-item Pill did not mount")
@@ -1821,25 +3689,358 @@ if let comboPanelContent = comboFlyoutWindow.childWindows?.first?.contentView {
         selectionPill.frame.size == CGSize(width: 3, height: 16),
         "selected ComboBoxItem exposes the source-derived 3 x 16 leading Pill"
     )
+    require(
+        selectedRow.isAccessibilitySelected(),
+        "opening ComboBox highlights its current bound selection"
+    )
+    let selectedRowInPopup = selectedRow.convert(selectedRow.bounds, to: comboPanelContent)
+    let popupHeight = comboPanelContent.bounds.height
+    let baseClosedHeight = popupHeight * 0.5
+    let selectedOffsetFromCenter = abs(selectedRowInPopup.midY - popupHeight / 2)
+    let maximumClosedOffset = popupHeight * 0.25
+    let expectedClosedHeight = selectedOffsetFromCenter > maximumClosedOffset
+        ? baseClosedHeight + 2 * (baseClosedHeight / 2 - (popupHeight / 2 - selectedOffsetFromCenter))
+        : baseClosedHeight
+    require(
+        abs((comboClosedMaskPosition?.y ?? -CGFloat.infinity) - selectedRowInPopup.midY) < 0.001
+            && comboOpenMaskPosition == comboClosedMaskPosition
+            && abs((comboClosedMaskBounds?.height ?? 0) - expectedClosedHeight) < 0.001
+            && abs((comboOpenMaskBounds?.height ?? 0) - (popupHeight + selectedOffsetFromCenter * 2)) < 0.001,
+        "ComboBox SplitOpen keeps its source-derived clip centered on the original selected item"
+    )
+    if let unselectedRow = firstView(withAccessibilityTitle: "First", in: comboPanelContent) {
+        unselectedRow.updateTrackingAreas()
+        unselectedRow.updateTrackingAreas()
+        require(
+            unselectedRow.trackingAreas.count == 1,
+            "ComboBoxItem keeps exactly one tracking area across repeated layout updates"
+        )
+        unselectedRow.mouseEntered(
+            with: toggleMouseEvent(
+                .mouseMoved,
+                at: NSPoint(x: 20, y: 16),
+                in: unselectedRow,
+                eventNumber: 70
+            )
+        )
+        require(
+            comboSelection.wrappedValue == .third
+                && selectedRow.isAccessibilitySelected()
+                && !unselectedRow.isAccessibilitySelected(),
+            "pointer-over does not move ComboBox selection or its Pill before commit"
+        )
+        if let secondRow = firstView(withAccessibilityTitle: "Second", in: comboPanelContent),
+           let firstBackground = firstLayer(named: "FluentKit.ComboBoxItem.Background", in: unselectedRow),
+           let secondBackground = firstLayer(named: "FluentKit.ComboBoxItem.Background", in: secondRow) {
+            secondRow.mouseEntered(
+                with: toggleMouseEvent(
+                    .mouseMoved,
+                    at: NSPoint(x: 20, y: 16),
+                    in: secondRow,
+                    eventNumber: 71
+                )
+            )
+            require(
+                colorMatches(firstBackground.backgroundColor, .clear)
+                    && colorMatches(secondBackground.backgroundColor, comboAppearanceTheme.subtleFillSecondary),
+                "ComboBox popup owns one PointerOver row and clears the previous row immediately"
+            )
+            secondRow.mouseExited(
+                with: toggleMouseEvent(
+                    .mouseMoved,
+                    at: NSPoint(x: -1, y: -1),
+                    in: secondRow,
+                    eventNumber: 72
+                )
+            )
+        }
+        unselectedRow.mouseExited(
+            with: toggleMouseEvent(
+                .mouseMoved,
+                at: NSPoint(x: -1, y: -1),
+                in: unselectedRow,
+                eventNumber: 71
+            )
+        )
+    }
+    if let selectedRowWindow = selectedRow.window {
+        let comboScreenRect = comboFlyoutWindow.convertToScreen(comboView.convert(comboView.bounds, to: nil))
+        let selectedScreenRect = selectedRowWindow.convertToScreen(selectedRow.convert(selectedRow.bounds, to: nil))
+        require(
+            abs(comboScreenRect.midY - selectedScreenRect.midY) < 1,
+            "ComboBox popup centers its current selection over the closed control"
+        )
+    }
+    let comboPopupDarkTheme = theme.with(colorScheme: .dark)
+    comboAppearanceCoordinator.updateTheme(comboPopupDarkTheme)
+    drainMainQueue()
+    let updatedComboMaterial = firstMaterialView(in: comboPanelContent)
+    require(
+        updatedComboMaterial?.fluentTheme == comboPopupDarkTheme
+            && colorMatches(comboBorderLayer?.borderColor, comboPopupDarkTheme.surfaceStrokeFlyout)
+            && comboClipLayer?.animationKeys()?.isEmpty != false
+            && comboBorderLayer?.animationKeys()?.isEmpty != false,
+        "ComboBox popup updates its material and rows after settling the shared entrance timeline"
+    )
+    comboAppearanceCoordinator.updateTheme(theme.with(colorScheme: .light))
+    drainMainQueue()
     selectedRow.mouseDown(
-        with: toggleMouseEvent(.leftMouseDown, at: NSPoint(x: 20, y: 16), in: selectedRow, eventNumber: 70)
+        with: toggleMouseEvent(.leftMouseDown, at: NSPoint(x: 20, y: 16), in: selectedRow, eventNumber: 72)
     )
     let pillPressAnimation = selectionPill.animation(forKey: "fluent.combobox.pill.frame") as? CABasicAnimation
     require(
         selectionPill.frame.height == 10
             && abs((pillPressAnimation?.duration ?? 0) - 0.167) < 0.0001,
-        "pressed ComboBoxItem compresses its Pill to 62.5% over 167ms"
+        "pressed ComboBoxItem compresses its Pill to 62.5% over 167ms (row: \(String(describing: type(of: selectedRow))), height: \(selectionPill.frame.height), animation: \(String(describing: pillPressAnimation?.duration)))"
+    )
+    selectedRow.mouseUp(
+        with: toggleMouseEvent(.leftMouseUp, at: NSPoint(x: 20, y: 16), in: selectedRow, eventNumber: 73)
+    )
+    require(
+        comboPanelContent.layer?.animation(forKey: "fluent.combobox.popup.surface.close") == nil
+            && comboFlyoutWindow.childWindows?.isEmpty != false,
+        "ComboBox item commit removes the popup immediately without exit animation"
     )
 }
+nativeComboBox.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: nativeComboBox.bounds.midX, y: nativeComboBox.bounds.midY),
+        in: nativeComboBox,
+        eventNumber: 74
+    )
+)
+nativeComboBox.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: nativeComboBox.bounds.midX, y: nativeComboBox.bounds.midY),
+        in: nativeComboBox,
+        eventNumber: 75
+    )
+)
+drainMainQueue()
+require(comboFlyoutWindow.childWindows?.count == 1, "ComboBox reopens for Escape dismissal validation")
 if let escapeEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\u{1b}", charactersIgnoringModifiers: "\u{1b}", isARepeat: false, keyCode: 53) {
     if let panel = comboFlyoutWindow.childWindows?.first,
        let presenter = panel.contentView.flatMap({ firstView(withAccessibilityRole: .menu, in: $0) }) {
         presenter.keyDown(with: escapeEvent)
     }
 }
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.24))
-require(comboFlyoutWindow.childWindows?.isEmpty != false, "combo box flyout dismisses through the shared Escape path")
+require(
+    comboFlyoutWindow.childWindows?.isEmpty != false,
+    "ComboBox Escape dismissal removes the popup immediately"
+)
 comboFlyoutWindow.orderOut(nil)
+
+let editableComboText = FluentState(wrappedValue: "Second")
+let editableComboSelection = FluentState<ValidationOption?>(wrappedValue: .second)
+let editableComboView = FluentComboBox(
+    options: [.first, .second, .third],
+    selection: editableComboSelection.projectedValue,
+    mode: .editable,
+    text: editableComboText.projectedValue,
+    title: { $0.rawValue.capitalized }
+)._mount(in: FluentRenderContext())
+editableComboView.frame = NSRect(x: 20, y: 40, width: 220, height: 34)
+let editableComboWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+editableComboWindow.contentView = editableComboView
+editableComboWindow.center()
+editableComboWindow.makeKeyAndOrderFront(nil)
+editableComboView.layoutSubtreeIfNeeded()
+guard let editableNativeCombo = firstComboBox(in: editableComboView) else {
+    fatalError("Editable ComboBox did not mount")
+}
+let editableFaceplate = editableComboView.subviews.first { view in
+    guard let field = view as? NSTextField else { return false }
+    return field.isEditable && field !== editableNativeCombo
+}
+require(
+    editableNativeCombo.isEditable
+        && editableNativeCombo.alphaValue == 0
+        && (editableFaceplate as? NSTextField)?.isEditable == true,
+    "editable ComboBox exposes a native text editor without the NSComboBox button chrome"
+)
+guard let editableTextField = editableFaceplate as? NSTextField else {
+    fatalError("Editable ComboBox text faceplate did not mount")
+}
+require(
+    editableTextField.usesSingleLineMode
+        && editableTextField.maximumNumberOfLines == 1
+        && editableTextField.cell?.wraps == false
+        && editableTextField.cell?.isScrollable == true,
+    "editable ComboBox input uses the shared one-line scrolling cell protocol"
+)
+guard let editableElevationBorder = firstLayer(
+    named: "FluentKit.ComboBox.ElevationBorder",
+    in: editableComboView
+) else {
+    fatalError("Editable ComboBox Button elevation did not mount")
+}
+_ = editableComboWindow.makeFirstResponder(nil)
+editableTextField.delegate?.controlTextDidEndEditing?(
+    Notification(name: NSControl.textDidEndEditingNotification, object: editableTextField)
+)
+require(
+    !editableElevationBorder.isHidden,
+    "unfocused editable ComboBox starts with Button-like elevation chrome"
+)
+editableTextField.delegate?.controlTextDidBeginEditing?(
+    Notification(name: NSControl.textDidBeginEditingNotification, object: editableTextField)
+)
+require(
+    editableElevationBorder.isHidden,
+    "editing an editable ComboBox replaces Button elevation with TextControl chrome"
+)
+editableTextField.delegate?.controlTextDidEndEditing?(
+    Notification(name: NSControl.textDidEndEditingNotification, object: editableTextField)
+)
+require(
+    !editableElevationBorder.isHidden,
+    "ending editable ComboBox text editing restores Button-like elevation chrome"
+)
+editableTextField.stringValue = "Custom"
+editableTextField.delegate?.controlTextDidChange?(Notification(name: NSControl.textDidChangeNotification, object: editableTextField))
+drainMainQueue()
+require(
+    waitUntil(timeout: 0.20) {
+        editableComboText.wrappedValue == "Custom" && editableComboSelection.wrappedValue == nil
+    },
+    "editable ComboBox writes arbitrary text without selecting an option "
+        + "(text: \(editableComboText.wrappedValue), selection: \(String(describing: editableComboSelection.wrappedValue)))"
+)
+editableTextField.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: editableTextField.bounds.maxX - 8, y: editableTextField.bounds.midY),
+        in: editableTextField,
+        eventNumber: 75
+    )
+)
+require(
+    editableComboWindow.childWindows?.isEmpty != false,
+    "editable ComboBox glyph pointer-down does not present before release"
+)
+editableTextField.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: editableTextField.bounds.maxX - 8, y: editableTextField.bounds.midY),
+        in: editableTextField,
+        eventNumber: 76
+    )
+)
+drainMainQueue()
+require(editableComboWindow.childWindows?.count == 1, "editable ComboBox opens from its dedicated glyph column")
+require(
+    editableElevationBorder.isHidden,
+    "an open editable ComboBox uses the TextControl faceplate instead of stale Button elevation"
+)
+if let editablePanel = editableComboWindow.childWindows?.first,
+   let editablePanelContent = editablePanel.contentView {
+    let anchorRect = editableComboWindow.convertToScreen(editableComboView.convert(editableComboView.bounds, to: nil))
+    require(editablePanel.frame.maxY <= anchorRect.minY + 1, "editable ComboBox popup opens below the text field")
+    require(
+        {
+            let clip = firstLayer(named: "FluentKit.ComboBoxPopup.RevealClip", in: editablePanelContent)
+            let boundsAnimation = clip?.animation(forKey: "fluent.popup.reveal.bounds") as? CABasicAnimation
+            let positionAnimation = clip?.animation(forKey: "fluent.popup.reveal.position") as? CABasicAnimation
+            let closedPosition = (positionAnimation?.fromValue as? NSValue)?.pointValue
+            let openPosition = (positionAnimation?.toValue as? NSValue)?.pointValue
+            return boundsAnimation != nil
+                && closedPosition == openPosition
+                && (closedPosition?.y ?? 0) > editablePanelContent.bounds.maxY
+        }(),
+        "editable ComboBox reveals from the external TextBox faceplate baseline"
+    )
+}
+guard let firstEditableRow = editableComboWindow.childWindows?.first?.contentView.flatMap({ firstView(withAccessibilityTitle: "First", in: $0) }) else {
+    fatalError("Editable ComboBox first row did not mount")
+}
+require(firstEditableRow.accessibilityPerformPress(), "editable ComboBox item exposes a press action")
+require(
+    editableComboText.wrappedValue == "First" && editableComboSelection.wrappedValue == .first,
+    "editable ComboBox commits an option into both text and selection (text=\(editableComboText.wrappedValue), selection=\(String(describing: editableComboSelection.wrappedValue)))"
+)
+require(editableComboWindow.childWindows?.isEmpty != false, "editable ComboBox dismisses immediately after item commit")
+editableComboWindow.orderOut(nil)
+
+let reducedMotionComboSelection = FluentState<ValidationOption?>(wrappedValue: .first)
+let reducedMotionComboView = FluentComboBox(
+    options: [.first, .second, .third],
+    selection: reducedMotionComboSelection.projectedValue,
+    title: { $0.rawValue.capitalized }
+)._mount(in: FluentRenderContext(reduceMotion: true))
+let reducedMotionComboWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+reducedMotionComboView.frame = NSRect(x: 20, y: 40, width: 220, height: 34)
+reducedMotionComboWindow.contentView = reducedMotionComboView
+reducedMotionComboWindow.center()
+reducedMotionComboWindow.makeKeyAndOrderFront(nil)
+reducedMotionComboView.layoutSubtreeIfNeeded()
+guard let reducedMotionNativeCombo = firstComboBox(in: reducedMotionComboView) else {
+    fatalError("Reduce Motion ComboBox did not mount")
+}
+reducedMotionNativeCombo.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: reducedMotionNativeCombo.bounds.midX, y: reducedMotionNativeCombo.bounds.midY),
+        in: reducedMotionNativeCombo,
+        eventNumber: 74
+    )
+)
+reducedMotionNativeCombo.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: reducedMotionNativeCombo.bounds.midX, y: reducedMotionNativeCombo.bounds.midY),
+        in: reducedMotionNativeCombo,
+        eventNumber: 75
+    )
+)
+drainMainQueue()
+guard waitUntil(timeout: 0.25, {
+    reducedMotionComboWindow.childWindows?.first?.contentView != nil
+}), let reducedMotionComboPanelContent = reducedMotionComboWindow.childWindows?.first?.contentView else {
+    fatalError("Reduce Motion ComboBox popup did not present")
+}
+require(
+        firstLayer(named: "FluentKit.ComboBoxPopup.PopupBorder", in: reducedMotionComboPanelContent)?
+        .animation(forKey: "fluent.popup.border.open") == nil
+        && firstLayer(named: "FluentKit.ComboBoxPopup.Presenter", in: reducedMotionComboPanelContent)?
+            .animation(forKey: "fluent.popup.presenter.open") == nil
+        && firstLayer(named: "FluentKit.ComboBoxPopup.RevealClip", in: reducedMotionComboPanelContent)?
+            .animation(forKey: "fluent.popup.reveal.bounds") == nil
+        && firstLayer(named: "FluentKit.ComboBoxPopup.RevealClip", in: reducedMotionComboPanelContent)?
+            .animation(forKey: "fluent.popup.reveal.position") == nil,
+    "ComboBox Reduce Motion reaches final popup geometry without entrance animation"
+)
+if let escapeEvent = NSEvent.keyEvent(
+    with: .keyDown,
+    location: .zero,
+    modifierFlags: [],
+    timestamp: 0,
+    windowNumber: 0,
+    context: nil,
+    characters: "\u{1b}",
+    charactersIgnoringModifiers: "\u{1b}",
+    isARepeat: false,
+    keyCode: 53
+), let presenter = firstView(withAccessibilityRole: .menu, in: reducedMotionComboPanelContent) {
+    presenter.keyDown(with: escapeEvent)
+}
+require(
+    reducedMotionComboWindow.childWindows?.isEmpty != false,
+    "ComboBox dismissal remains immediate under Reduce Motion"
+)
+reducedMotionComboWindow.orderOut(nil)
+
 let reducedCombo = FluentComboBox(
     options: [.first, .second],
     selection: comboSelection.projectedValue,
@@ -1859,6 +4060,12 @@ let nativeStepper = firstStepper(in: stepperView)
 let stepperField = firstFluentTextField(in: stepperView)
 let stepperLabel = firstLabel(in: stepperView)
 require(nativeStepper?.doubleValue == 2, "stepper reads its initial integer binding")
+require(
+    stepperField?.usesSingleLineMode == true
+        && stepperField?.maximumNumberOfLines == 1
+        && stepperField?.cell?.wraps == false,
+    "Stepper value editor inherits the shared single-line TextBox protocol"
+)
 require(stepperField?.fluentStyle is ValidationTextFieldStyle, "stepper applies its nested field style")
 require(stepperLabel?.font?.pointSize == 17, "stepper style applies semantic label metrics")
 quantity.wrappedValue = 99
@@ -1875,6 +4082,186 @@ if let nativeStepper, let action = nativeStepper.action {
     require(NSApp.sendAction(action, to: nativeStepper.target, from: nativeStepper), "stepper sends its native increment action")
 }
 require(quantity.wrappedValue == 4, "stepper writes native changes through an integer binding")
+
+let numberBoxQuantity = FluentState(wrappedValue: 3)
+let numberBoxView = FluentNumberBox(
+    "Items",
+    value: numberBoxQuantity.projectedValue,
+    in: 1...12,
+    spinButtonPlacement: .inline
+)._mount(in: FluentRenderContext(theme: sourceLightTheme))
+guard let mountedNumberBox = firstNumberBox(in: numberBoxView) else {
+    fatalError("declarative NumberBox did not mount")
+}
+require(
+    mountedNumberBox.textField.usesSingleLineMode
+        && mountedNumberBox.textField.maximumNumberOfLines == 1
+        && mountedNumberBox.textField.cell?.wraps == false,
+    "NumberBox editor inherits the shared single-line TextBox protocol"
+)
+let numberBoxWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 96),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+numberBoxView.frame = NSRect(
+    x: 20,
+    y: 20,
+    width: 280,
+    height: mountedNumberBox.intrinsicContentSize.height
+)
+numberBoxWindow.contentView = numberBoxView
+numberBoxWindow.makeKeyAndOrderFront(nil)
+numberBoxView.layoutSubtreeIfNeeded()
+require(
+    abs(mountedNumberBox.textField.frame.width - (mountedNumberBox.bounds.width - 72)) < 0.001
+        && mountedNumberBox.incrementButton.frame.size == CGSize(width: 32, height: 24)
+        && mountedNumberBox.decrementButton.frame.size == CGSize(width: 32, height: 24)
+        && mountedNumberBox.decrementButton.frame.maxX == mountedNumberBox.incrementButton.frame.minX
+        && mountedNumberBox.decrementButton.systemImageName == "chevron.down"
+        && mountedNumberBox.incrementButton.systemImageName == "chevron.up",
+    "NumberBox Inline uses the source 72pt column with visual decrement-left/increment-right buttons "
+        + "(host: \(numberBoxView.frame), control: \(mountedNumberBox.frame), text: \(mountedNumberBox.textField.frame), "
+        + "up: \(mountedNumberBox.incrementButton.frame), down: \(mountedNumberBox.decrementButton.frame))"
+)
+require(
+    mountedNumberBox.incrementButton.systemImagePointSize == 12
+        && mountedNumberBox.incrementButton.accessibilityPerformPress()
+        && numberBoxQuantity.wrappedValue == 4,
+    "NumberBox inline increment commits through its declarative integer binding"
+)
+require(
+    mountedNumberBox.decrementButton.accessibilityPerformPress()
+        && numberBoxQuantity.wrappedValue == 3,
+    "NumberBox inline decrement commits through its declarative integer binding"
+)
+numberBoxQuantity.wrappedValue = 99
+drainMainQueue()
+require(
+    numberBoxQuantity.wrappedValue == 12
+        && mountedNumberBox.value == 12
+        && !mountedNumberBox.incrementButton.isEnabled,
+    "NumberBox normalizes an external binding and disables the increment button at Maximum"
+)
+mountedNumberBox.fluentLayoutDirection = .rightToLeft
+mountedNumberBox.layoutSubtreeIfNeeded()
+require(
+    mountedNumberBox.decrementButton.frame.minX > mountedNumberBox.incrementButton.frame.minX
+        && mountedNumberBox.textField.frame.minX == 72,
+    "NumberBox mirrors the inline spin column and text content in RTL"
+)
+numberBoxWindow.orderOut(nil)
+
+let floatingNumberBox = FluentNumberBoxControl(
+    value: 2,
+    range: 0...5,
+    spinButtonPlacement: .hidden
+)
+floatingNumberBox.textField.stringValue = ""
+floatingNumberBox.commitEditing()
+require(
+    floatingNumberBox.value.isNaN && floatingNumberBox.textField.stringValue.isEmpty,
+    "NumberBox maps an empty TextBox to NaN like ValidateInput"
+)
+floatingNumberBox.value = 2
+floatingNumberBox.textField.stringValue = "not-a-number"
+floatingNumberBox.commitEditing()
+require(
+    floatingNumberBox.value == 2 && floatingNumberBox.textField.stringValue == "2",
+    "InvalidInputOverwritten restores the formatted current NumberBox value"
+)
+floatingNumberBox.validationMode = .disabled
+floatingNumberBox.textField.stringValue = "9"
+floatingNumberBox.commitEditing()
+require(
+    floatingNumberBox.value == 9
+        && floatingNumberBox.incrementButton.isEnabled
+        && floatingNumberBox.decrementButton.isEnabled,
+    "NumberBox ValidationMode disabled retains out-of-range values and both step directions"
+)
+floatingNumberBox.validationMode = .invalidInputOverwritten
+floatingNumberBox.isWrapEnabled = true
+floatingNumberBox.value = 5
+require(
+    floatingNumberBox.accessibilityPerformIncrement() && floatingNumberBox.value == 0,
+    "NumberBox wraps Maximum to Minimum when IsWrapEnabled"
+)
+
+let compactNumberBox = FluentNumberBoxControl(
+    value: 2,
+    range: 0...5,
+    spinButtonPlacement: .compact
+)
+compactNumberBox.theme = sourceDarkTheme
+compactNumberBox.frame = NSRect(x: 20, y: 20, width: 220, height: 32)
+let compactNumberBoxWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 280, height: 72),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+compactNumberBoxWindow.contentView = compactNumberBox
+compactNumberBoxWindow.makeKeyAndOrderFront(nil)
+compactNumberBox.layoutSubtreeIfNeeded()
+let compactPopupIndicator = firstView(
+    identifier: "FluentKit.NumberBox.PopupIndicator",
+    in: compactNumberBox
+)
+require(
+    compactNumberBox.incrementButton.isHidden
+        && compactNumberBox.decrementButton.isHidden
+        && compactPopupIndicator?.isHidden == false
+        && compactNumberBox.textField.frame.width == compactNumberBox.bounds.width - 32,
+    "NumberBox Compact reserves one 32pt indicator column and hides inline RepeatButtons "
+        + "(control: \(compactNumberBox.frame), text: \(compactNumberBox.textField.frame), "
+        + "upHidden: \(compactNumberBox.incrementButton.isHidden), downHidden: \(compactNumberBox.decrementButton.isHidden), "
+        + "indicator: \(String(describing: compactPopupIndicator?.frame)))"
+)
+_ = compactNumberBoxWindow.makeFirstResponder(compactNumberBox.textField)
+compactNumberBox.textField.selectText(nil)
+compactNumberBox.controlTextDidBeginEditing(
+    Notification(name: NSControl.textDidBeginEditingNotification, object: compactNumberBox.textField)
+)
+require(
+    waitUntil(timeout: 0.20) { compactNumberBoxWindow.childWindows?.count == 1 },
+    "NumberBox Compact opens its spin-button popup when the InputBox receives focus"
+)
+guard let compactPanel = compactNumberBoxWindow.childWindows?.first,
+      let compactPopupContent = compactPanel.contentView,
+      let compactIncrement = firstView(
+        identifier: "FluentKit.NumberBox.PopupIncrement",
+        in: compactPopupContent
+      ) as? FluentRepeatButton,
+      let compactDecrement = firstView(
+        identifier: "FluentKit.NumberBox.PopupDecrement",
+        in: compactPopupContent
+      ) as? FluentRepeatButton else {
+    fatalError("NumberBox Compact popup hierarchy did not mount")
+}
+require(
+    compactPanel.frame.size == CGSize(width: 48, height: 88)
+        && !compactPanel.hasShadow
+        && compactPopupContent.layer?.borderWidth == 1
+        && compactIncrement.frame == NSRect(x: 6, y: 6, width: 36, height: 36)
+        && compactDecrement.frame == NSRect(x: 6, y: 46, width: 36, height: 36)
+        && compactIncrement.systemImagePointSize == 16,
+    "NumberBox Compact popup uses the source 6pt padding, 36pt buttons, 4pt gap, and one opaque edge "
+        + "(panel: \(compactPanel.frame), border: \(String(describing: compactPopupContent.layer?.borderWidth)), "
+        + "up: \(compactIncrement.frame), down: \(compactDecrement.frame), icon: \(String(describing: compactIncrement.systemImagePointSize)))"
+)
+require(
+    compactIncrement.accessibilityPerformPress() && compactNumberBox.value == 3,
+    "NumberBox Compact popup RepeatButton increments without moving text focus"
+)
+compactNumberBox.controlTextDidEndEditing(
+    Notification(name: NSControl.textDidEndEditingNotification, object: compactNumberBox.textField)
+)
+require(
+    compactNumberBoxWindow.childWindows?.isEmpty != false,
+    "NumberBox Compact removes its popup immediately when editing focus ends"
+)
+compactNumberBoxWindow.orderOut(nil)
 
 let smallButton = FluentButtonView("Small", role: .primary).controlSize(.small)._mount(in: FluentRenderContext())
 let largeButton = FluentButtonView("Large", role: .destructive).controlSize(.large)._mount(in: FluentRenderContext())
@@ -1956,6 +4343,50 @@ require(
     } == true,
     "single-selection list indicator aligns with the selected row geometry"
 )
+if let firstHoverRow = listCollection?.item(at: IndexPath(item: 1, section: 0))?.view,
+   let secondHoverRow = listCollection?.item(at: IndexPath(item: 2, section: 0))?.view {
+    firstHoverRow.updateTrackingAreas()
+    firstHoverRow.updateTrackingAreas()
+    secondHoverRow.updateTrackingAreas()
+    secondHoverRow.updateTrackingAreas()
+    require(
+        firstHoverRow.trackingAreas.count == 1 && secondHoverRow.trackingAreas.count == 1,
+        "FluentList rows keep one visible-rect tracking area across repeated layout updates"
+    )
+    let firstRestingAlpha = renderedBackgroundAlpha(in: firstHoverRow)
+    let secondRestingAlpha = renderedBackgroundAlpha(in: secondHoverRow)
+    firstHoverRow.mouseEntered(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: 12, y: firstHoverRow.bounds.midY),
+            in: firstHoverRow,
+            eventNumber: 85
+        )
+    )
+    let firstHoverAlpha = renderedBackgroundAlpha(in: firstHoverRow)
+    secondHoverRow.mouseEntered(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: 12, y: secondHoverRow.bounds.midY),
+            in: secondHoverRow,
+            eventNumber: 86
+        )
+    )
+    require(
+        firstHoverAlpha > firstRestingAlpha + 0.01
+            && abs(renderedBackgroundAlpha(in: firstHoverRow) - firstRestingAlpha) < 0.01
+            && renderedBackgroundAlpha(in: secondHoverRow) > secondRestingAlpha + 0.01,
+        "FluentList owns one PointerOver row and clears the previous reusable row immediately"
+    )
+    secondHoverRow.mouseExited(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: -1, y: -1),
+            in: secondHoverRow,
+            eventNumber: 87
+        )
+    )
+}
 let rtlListHost = FluentViewHost(
     FluentList(rows: listRows, id: { $0.value }, selectionID: selectedID.projectedValue),
     context: FluentRenderContext(layoutDirection: .rightToLeft)
@@ -2021,33 +4452,35 @@ drainMainQueue()
 let downwardIncomingGroup = listSelectionIndicator?.animation(
     forKey: "fluent.navigation.selection"
 ) as? CAAnimationGroup
-let downwardOutgoingGroup = previousListSelectionIndicator?.animation(
-    forKey: "fluent.navigation.selection.outgoing"
-) as? CAAnimationGroup
 require(
-    downwardIncomingGroup != nil && downwardOutgoingGroup != nil,
-    "stable-ID list selection animates incoming and outgoing navigation indicators (incoming: \(downwardIncomingGroup != nil), outgoing: \(downwardOutgoingGroup != nil))"
+    downwardIncomingGroup != nil
+        && previousListSelectionIndicator?.animation(forKey: "fluent.navigation.selection.outgoing") == nil,
+    "stable-ID list selection animates one continuous navigation indicator"
 )
 require(
     downwardIncomingGroup?.duration == FluentMotion.navigationIndicator.duration,
     "navigation indicator uses the 600ms motion token"
 )
 let downwardPosition = keyframeAnimation(for: "position", in: downwardIncomingGroup)
-let downwardScale = keyframeAnimation(for: "transform.scale.y", in: downwardIncomingGroup)
-let downwardOpacity = keyframeAnimation(for: "opacity", in: downwardOutgoingGroup)
+let downwardBounds = keyframeAnimation(for: "bounds.size", in: downwardIncomingGroup)
 let downwardStart = (downwardPosition?.values?.first as? NSValue)?.pointValue.y
+let downwardConnected = (downwardPosition?.values?[1] as? NSValue)?.pointValue.y
 let downwardEnd = (downwardPosition?.values?.last as? NSValue)?.pointValue.y
 require(
-    downwardStart.map { start in downwardEnd.map { start < $0 } == true } == true,
-    "navigation indicator keyframes preserve downward selection direction (start: \(String(describing: downwardStart)), end: \(String(describing: downwardEnd)))"
+    downwardPosition?.values?.count == 3
+        && downwardPosition?.keyTimes == [0, NSNumber(value: 1.0 / 3.0), 1]
+        && downwardStart.map { start in
+            downwardConnected.map { connected in
+                downwardEnd.map { start < connected && connected < $0 } == true
+            } == true
+        } == true,
+    "navigation indicator moves continuously through the connected midpoint"
 )
 require(
-    ((downwardScale?.values?[1] as? NSNumber)?.doubleValue ?? 0) > 1,
-    "navigation indicator stretches across rows at the one-third keyframe"
-)
-require(
-    downwardOpacity?.values?.count == 3,
-    "outgoing navigation indicator remains visible through one third before fading"
+    downwardBounds?.values?.count == 3
+        && ((downwardBounds?.values?[1] as? NSValue)?.sizeValue.height ?? 0)
+            > ((downwardBounds?.values?.last as? NSValue)?.sizeValue.height ?? 0),
+    "navigation indicator stretches and settles on the same moving layer"
 )
 selectedID.wrappedValue = "General"
 drainMainQueue()
@@ -2056,10 +4489,16 @@ let upwardIncomingGroup = listSelectionIndicator?.animation(
 ) as? CAAnimationGroup
 let upwardPosition = keyframeAnimation(for: "position", in: upwardIncomingGroup)
 let upwardStart = (upwardPosition?.values?.first as? NSValue)?.pointValue.y
+let upwardConnected = (upwardPosition?.values?[1] as? NSValue)?.pointValue.y
 let upwardEnd = (upwardPosition?.values?.last as? NSValue)?.pointValue.y
 require(
-    upwardStart.map { start in upwardEnd.map { start > $0 } == true } == true,
-    "navigation indicator keyframes preserve upward selection direction"
+    upwardPosition?.values?.count == 3
+        && upwardStart.map { start in
+            upwardConnected.map { connected in
+                upwardEnd.map { start > connected && connected > $0 } == true
+            } == true
+        } == true,
+    "upward navigation indicator follows the same continuous midpoint path"
 )
 
 selectedID.wrappedValue = "Privacy"
@@ -2075,7 +4514,9 @@ let rapidEnd = (rapidPosition?.values?.last as? NSValue)?.pointValue.y
 let currentRapidCollection = currentRapidIndicator?.superlayer?.delegate as? NSCollectionView
 let aboutRow = currentRapidCollection?.item(at: IndexPath(item: 2, section: 0))?.view
 require(
-    rapidEnd.map { end in aboutRow.map { abs(end - $0.frame.midY) < 0.5 } == true } == true,
+    rapidEnd.map { end in
+        aboutRow.map { abs(end - $0.frame.midY) < 0.5 } == true
+    } == true,
     "rapid navigation changes restart toward the latest requested row (end: \(String(describing: rapidEnd)), row: \(String(describing: aboutRow?.frame.midY)), values: \(String(describing: rapidPosition?.values)), indicator: \(String(describing: currentRapidIndicator?.frame)))"
 )
 selectedID.wrappedValue = "General"
@@ -2289,6 +4730,74 @@ let reducedOutline = FluentOutline(nodes: reducedOutlineNodes, selectionID: outl
 require(reducedOutline._update(validationOutlineView, in: FluentRenderContext()), "outline accepts stable node deletion in place")
 require(outlineSelection.wrappedValue == nil, "outline clears selection when the selected node is deleted")
 
+let collectionItemStyle = FluentAutomaticCollectionItemStyle()
+let collectionTheme = FluentTheme.custom(colorScheme: .light)
+let listNormalAppearance = collectionItemStyle.appearance(
+    for: FluentCollectionItemStyleConfiguration(
+        layoutKind: .list,
+        theme: collectionTheme
+    )
+)
+let listSelectedAppearance = collectionItemStyle.appearance(
+    for: FluentCollectionItemStyleConfiguration(
+        layoutKind: .list,
+        isSelected: true,
+        theme: collectionTheme
+    )
+)
+let listSelectedPressedAppearance = collectionItemStyle.appearance(
+    for: FluentCollectionItemStyleConfiguration(
+        layoutKind: .list,
+        controlState: .pressed,
+        isSelected: true,
+        theme: collectionTheme
+    )
+)
+let gridSelectedAppearance = collectionItemStyle.appearance(
+    for: FluentCollectionItemStyleConfiguration(
+        layoutKind: .adaptiveGrid,
+        isSelected: true,
+        theme: collectionTheme
+    )
+)
+let disabledListAppearance = collectionItemStyle.appearance(
+    for: FluentCollectionItemStyleConfiguration(
+        layoutKind: .list,
+        isEnabled: false,
+        theme: collectionTheme
+    )
+)
+require(
+    colorMatches(listNormalAppearance.backgroundColor.cgColor, .clear)
+        && listNormalAppearance.contentInsets.left == 16
+        && listNormalAppearance.contentInsets.right == 12
+        && listNormalAppearance.cornerRadius == 4,
+    "ListViewItem style maps transparent normal fill, 16/12 padding, and 4pt corners"
+)
+require(
+    colorMatches(listSelectedAppearance.backgroundColor.cgColor, collectionTheme.subtleFillSecondary)
+        && listSelectedAppearance.selectionIndicatorSize == NSSize(width: 3, height: 16)
+        && listSelectedAppearance.selectionIndicatorLeadingMargin == 4,
+    "ListViewItem selected state maps its subtle fill and 3x16 leading indicator"
+)
+require(
+    colorMatches(listSelectedPressedAppearance.backgroundColor.cgColor, collectionTheme.subtleFillSecondary)
+        && abs(listSelectedPressedAppearance.selectionIndicatorPressedScale - 0.625) < 0.001,
+    "ListViewItem pressed-selected state compresses the indicator from 16pt to 10pt"
+)
+require(
+    colorMatches(gridSelectedAppearance.backgroundColor.cgColor, collectionTheme.subtleFillTertiary)
+        && gridSelectedAppearance.outerBorderWidth == 2
+        && gridSelectedAppearance.innerBorderWidth == 1
+        && colorMatches(gridSelectedAppearance.outerBorderColor.cgColor, collectionTheme.accentFillDefault)
+        && colorMatches(gridSelectedAppearance.innerBorderColor.cgColor, collectionTheme.controlSolidFill),
+    "GridViewItem selected state uses a 2pt accent edge and 1pt solid inner edge"
+)
+require(
+    disabledListAppearance.contentOpacity == 0.3,
+    "collection item disabled content uses the source 0.3 opacity"
+)
+
 var sectionedSnapshot = FluentCollectionSnapshot<String, Int>()
 sectionedSnapshot.appendSections(["active", "recent"])
 sectionedSnapshot.appendItems([1, 2, 3], toSection: "active")
@@ -2297,13 +4806,14 @@ let collectionSelections = FluentState(wrappedValue: Set([2, 5]))
 let sectionedCollection = FluentCollection(
     snapshot: sectionedSnapshot,
     layout: .adaptiveGrid(minimumItemWidth: 120, itemHeight: 72, spacing: 8),
-    selectionIDs: collectionSelections.projectedValue
+    selectionIDs: collectionSelections.projectedValue,
+    isEnabled: { $0 != 4 }
 ) { item in
     FluentText("Item \(item)")
 } header: { section in
     FluentText(section.capitalized, weight: .semibold)
 }
-let sectionedCollectionView = sectionedCollection._mount(in: FluentRenderContext())
+let sectionedCollectionView = sectionedCollection._mount(in: FluentRenderContext(theme: collectionTheme))
 sectionedCollectionView.frame = NSRect(x: 0, y: 0, width: 420, height: 260)
 sectionedCollectionView.layoutSubtreeIfNeeded()
 drainMainQueue()
@@ -2311,9 +4821,110 @@ let nativeSectionedCollection = firstCollectionView(in: sectionedCollectionView)
 require(nativeSectionedCollection?.numberOfSections == 2, "sectioned collection mounts every snapshot section")
 require(nativeSectionedCollection?.numberOfItems(inSection: 0) == 3, "sectioned collection mounts items in their declared section")
 require(nativeSectionedCollection?.selectionIndexPaths.count == 2, "sectioned collection applies stable multi-selection")
+require(
+    nativeSectionedCollection?.focusRingType == NSFocusRingType.none,
+    "collection suppresses duplicate AppKit focus chrome"
+)
 let sectionedFlowLayout = nativeSectionedCollection?.collectionViewLayout as? NSCollectionViewFlowLayout
 require(sectionedFlowLayout?.headerReferenceSize.height == 34, "sectioned collection reserves native supplementary header space")
 require((sectionedFlowLayout?.itemSize.width ?? 0) >= 120, "adaptive grid resolves a usable native item width")
+require(
+    abs((sectionedFlowLayout?.headerReferenceSize.width ?? 0) - 416) <= 1,
+    "collection supplementary headers resolve against the current viewport width"
+)
+let visibleSectionedLabels = nativeSectionedCollection?.visibleItems().flatMap { labels(in: $0.view) } ?? []
+require(
+    visibleSectionedLabels.contains { $0.stringValue == "Item 1" },
+    "sectioned collection mounts declarative content in visible cells"
+)
+require(
+    visibleSectionedLabels.allSatisfy { $0.frame.width > 0 && $0.frame.height > 0 },
+    "sectioned collection lays out visible declarative cell content"
+)
+if let selectedGridItem = nativeSectionedCollection?.item(at: IndexPath(item: 1, section: 0)),
+   let gridSurface = firstLayer(named: "FluentKit.CollectionItem.Surface", in: selectedGridItem.view),
+   let gridOuterBorder = firstLayer(named: "FluentKit.CollectionItem.GridOuterBorder", in: selectedGridItem.view) as? CAShapeLayer,
+   let gridInnerBorder = firstLayer(named: "FluentKit.CollectionItem.GridInnerBorder", in: selectedGridItem.view) as? CAShapeLayer,
+   let gridIndicator = firstLayer(named: "FluentKit.CollectionItem.SelectionIndicator", in: selectedGridItem.view) {
+    require(
+        colorMatches(gridSurface.backgroundColor, collectionTheme.subtleFillTertiary)
+            && !gridOuterBorder.isHidden
+            && !gridInnerBorder.isHidden
+            && gridIndicator.isHidden
+            && gridSurface.zPosition < 0
+            && gridOuterBorder.zPosition > 0
+            && gridInnerBorder.zPosition > gridOuterBorder.zPosition,
+        "adaptive-grid cells keep selected GridViewItem chrome above content without a ListView pill"
+    )
+} else {
+    fatalError("selected GridViewItem chrome did not mount")
+}
+
+var sizingSnapshot = FluentCollectionSnapshot<String, Int>()
+sizingSnapshot.appendSections(["sizing"])
+sizingSnapshot.appendItems(Array(0..<8), toSection: "sizing")
+let sizingCollection = FluentCollection(
+    snapshot: sizingSnapshot,
+    layout: .adaptiveGrid(minimumItemWidth: 120, itemHeight: 112, spacing: 8)
+) { item in
+    FluentText("Sizing \(item)").frame(height: 96)
+}
+let sizingCollectionView = sizingCollection._mount(in: FluentRenderContext(theme: collectionTheme))
+sizingCollectionView.frame = NSRect(x: 0, y: 0, width: 420, height: 300)
+sizingCollectionView.layoutSubtreeIfNeeded()
+drainMainQueue()
+guard let nativeSizingCollection = firstCollectionView(in: sizingCollectionView),
+      let narrowFirstAttributes = nativeSizingCollection.collectionViewLayout?.layoutAttributesForItem(
+        at: IndexPath(item: 0, section: 0)
+      ),
+      let narrowFourthAttributes = nativeSizingCollection.collectionViewLayout?.layoutAttributesForItem(
+        at: IndexPath(item: 3, section: 0)
+      ),
+      let sizingItem = nativeSizingCollection.item(at: IndexPath(item: 0, section: 0)) else {
+    fatalError("collection sizing validation did not resolve native layout attributes")
+}
+func descendantConstraints(in view: NSView) -> [NSLayoutConstraint] {
+    view.constraints + view.subviews.flatMap(descendantConstraints)
+}
+let idealHeightConstraints = descendantConstraints(in: sizingItem.view).filter {
+    $0.identifier == "FluentKit.IdealHeight"
+}
+require(
+    abs(sizingItem.view.frame.height - 112) <= 0.5
+        && idealHeightConstraints.contains {
+            abs($0.constant - 96) <= 0.001 && $0.priority == .defaultHigh
+        }
+        && !idealHeightConstraints.contains { $0.priority == .required },
+    "collection cell owns the 112pt item height while nested frame heights remain overridable ideals"
+)
+require(
+    abs(narrowFirstAttributes.frame.minY - narrowFourthAttributes.frame.minY) > 1,
+    "adaptive collection uses multiple rows at the narrow viewport"
+)
+sizingCollectionView.setFrameSize(NSSize(width: 720, height: 300))
+sizingCollectionView.layoutSubtreeIfNeeded()
+drainMainQueue()
+guard let wideFirstAttributes = nativeSizingCollection.collectionViewLayout?.layoutAttributesForItem(
+        at: IndexPath(item: 0, section: 0)
+      ),
+      let wideFourthAttributes = nativeSizingCollection.collectionViewLayout?.layoutAttributesForItem(
+        at: IndexPath(item: 3, section: 0)
+      ),
+      let sizingFlowLayout = nativeSizingCollection.collectionViewLayout as? NSCollectionViewFlowLayout else {
+    fatalError("resized collection did not produce updated layout attributes")
+}
+require(
+    abs(wideFirstAttributes.frame.minY - wideFourthAttributes.frame.minY) <= 0.5
+        && sizingFlowLayout.itemSize.width >= 120,
+    "adaptive collection recomputes columns and item frames from the resized viewport"
+)
+if let disabledGridItem = nativeSectionedCollection?.item(at: IndexPath(item: 0, section: 1)) {
+    require(
+        disabledGridItem.view.isAccessibilityEnabled() == false
+            && abs((disabledGridItem.view.subviews.first?.alphaValue ?? 1) - 0.3) < 0.001,
+        "disabled collection items retain native accessibility state and source content opacity"
+    )
+}
 
 var reducedSectionedSnapshot = sectionedSnapshot
 reducedSectionedSnapshot.moveSection("recent", before: "active")
@@ -2334,6 +4945,202 @@ require(
 drainMainQueue()
 require(collectionSelections.wrappedValue == Set([5]), "sectioned collection trims deleted IDs from multi-selection")
 require(nativeSectionedCollection?.numberOfItems(inSection: 0) == 2, "section moves preserve each section's item membership")
+
+var visualListSnapshot = FluentCollectionSnapshot<String, Int>()
+visualListSnapshot.appendSections(["rows"])
+visualListSnapshot.appendItems([10, 11, 12], toSection: "rows")
+let visualListSelection = FluentState<Int?>(wrappedValue: 11)
+let visualList = FluentCollection(
+    snapshot: visualListSnapshot,
+    layout: .list(),
+    selectionID: visualListSelection.projectedValue,
+    isEnabled: { $0 != 12 }
+) { item in
+    FluentText("Visual row \(item)")
+}
+let visualListHost = visualList._mount(in: FluentRenderContext(theme: collectionTheme))
+let visualListWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+visualListWindow.contentView = visualListHost
+visualListHost.frame = visualListWindow.contentView?.bounds ?? NSRect(x: 0, y: 0, width: 320, height: 160)
+visualListWindow.makeKeyAndOrderFront(nil)
+visualListHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+guard let nativeVisualList = firstCollectionView(in: visualListHost),
+      let selectedListItem = nativeVisualList.item(at: IndexPath(item: 1, section: 0)),
+      let selectedListSurface = firstLayer(named: "FluentKit.CollectionItem.Surface", in: selectedListItem.view),
+      let selectedListIndicator = firstLayer(named: "FluentKit.CollectionItem.SelectionIndicator", in: selectedListItem.view),
+      let listGridBorder = firstLayer(named: "FluentKit.CollectionItem.GridOuterBorder", in: selectedListItem.view) else {
+    fatalError("selected ListViewItem chrome did not mount")
+}
+let visualListFlow = nativeVisualList.collectionViewLayout as? NSCollectionViewFlowLayout
+selectedListItem.view.layoutSubtreeIfNeeded()
+require(
+    visualListFlow?.itemSize.height == 40
+        && visualListFlow?.minimumLineSpacing == 0
+        && colorMatches(selectedListSurface.backgroundColor, collectionTheme.subtleFillSecondary),
+    "ListViewItem uses the source 40pt row and selected subtle surface"
+)
+require(
+    abs(selectedListIndicator.frame.width - 3) < 0.001
+        && abs(selectedListIndicator.frame.height - 16) < 0.001
+        && abs(selectedListIndicator.frame.minX - 4) < 0.001
+        && selectedListIndicator.opacity == 1
+        && listGridBorder.isHidden,
+    "ListViewItem owns a 3x16 leading pill and does not reuse GridView selection borders"
+)
+let selectedListContentAlignmentRect = selectedListItem.view.subviews.first.map {
+    $0.alignmentRect(forFrame: $0.frame)
+}
+require(
+    abs((selectedListContentAlignmentRect?.minX ?? 0) - 16) < 0.5,
+    "ListViewItem content alignment rect begins at the source 16pt leading inset"
+)
+if let disabledListItem = nativeVisualList.item(at: IndexPath(item: 2, section: 0)) {
+    require(
+        disabledListItem.view.isAccessibilityEnabled() == false
+            && abs((disabledListItem.view.subviews.first?.alphaValue ?? 1) - 0.3) < 0.001,
+        "ListViewItem exposes disabled state without accepting pointer selection"
+    )
+}
+visualListSelection.wrappedValue = 10
+var capturedListOpacityAnimation: CABasicAnimation?
+var capturedListScaleAnimation: CABasicAnimation?
+var capturedListBackgroundAnimation: CABasicAnimation?
+require(
+    waitUntil(timeout: 0.12, pollInterval: 0.001) {
+        guard let newlySelectedItem = nativeVisualList.item(at: IndexPath(item: 0, section: 0)),
+              let animatedSurface = firstLayer(
+                  named: "FluentKit.CollectionItem.Surface",
+                  in: newlySelectedItem.view
+              ),
+              let animatedIndicator = firstLayer(
+                  named: "FluentKit.CollectionItem.SelectionIndicator",
+                  in: newlySelectedItem.view
+              ) else { return false }
+        capturedListBackgroundAnimation = animatedSurface.animation(
+            forKey: "fluent.collectionItem.background"
+        ) as? CABasicAnimation
+        capturedListOpacityAnimation = animatedIndicator.animation(
+            forKey: "fluent.collectionItem.indicator.opacity"
+        ) as? CABasicAnimation
+        capturedListScaleAnimation = animatedIndicator.animation(
+            forKey: "fluent.collectionItem.indicator.scale"
+        ) as? CABasicAnimation
+        return capturedListBackgroundAnimation != nil
+            && capturedListOpacityAnimation != nil
+            && capturedListScaleAnimation != nil
+    },
+    "ListViewItem creates selection-indicator opacity and scale animations"
+)
+if let newlySelectedItem = nativeVisualList.item(at: IndexPath(item: 0, section: 0)),
+   firstLayer(
+       named: "FluentKit.CollectionItem.SelectionIndicator",
+       in: newlySelectedItem.view
+   ) != nil {
+    require(
+        capturedListOpacityAnimation?.duration == FluentMotion.controlFaster.duration
+            && capturedListScaleAnimation?.duration == FluentMotion.collectionSelectionReveal.duration
+            && capturedListBackgroundAnimation?.duration == FluentMotion.controlFaster.duration,
+        "ListViewItem selection uses coordinated background, 83ms opacity, and 167ms scale animations"
+    )
+}
+visualListSelection.wrappedValue = 11
+drainMainQueue()
+visualListSelection.wrappedValue = 10
+drainMainQueue()
+visualListSelection.wrappedValue = 11
+drainMainQueue()
+guard let interruptedSelectedItem = nativeVisualList.item(at: IndexPath(item: 1, section: 0)),
+      let interruptedIndicator = firstLayer(
+          named: "FluentKit.CollectionItem.SelectionIndicator",
+          in: interruptedSelectedItem.view
+      ) else {
+    fatalError("interrupted ListViewItem selection did not retain its native cell")
+}
+require(
+    interruptedIndicator.animation(forKey: "fluent.collectionItem.indicator.scale") != nil
+        && nativeVisualList.selectionIndexPaths == Set([IndexPath(item: 1, section: 0)]),
+    "ListViewItem selection interruption keeps one presentation-sampled scale animation and final target"
+)
+require(
+    waitUntil(timeout: 0.50) {
+        interruptedIndicator.animationKeys()?.isEmpty != false
+            && interruptedIndicator.opacity == 1
+    },
+    "ListViewItem selection interruption commits the final pill state after the shared timeline"
+)
+visualListWindow.orderOut(nil)
+
+let rtlVisualListSelection = FluentState<Int?>(wrappedValue: 10)
+let rtlVisualList = FluentCollection(
+    snapshot: visualListSnapshot,
+    layout: .list(),
+    selectionID: rtlVisualListSelection.projectedValue
+) { item in
+    FluentText("RTL row \(item)")
+}
+let rtlVisualListHost = rtlVisualList._mount(
+    in: FluentRenderContext(theme: collectionTheme, layoutDirection: .rightToLeft)
+)
+rtlVisualListHost.frame = NSRect(x: 0, y: 0, width: 320, height: 160)
+rtlVisualListHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+if let rtlCollection = firstCollectionView(in: rtlVisualListHost),
+   let rtlItem = rtlCollection.item(at: IndexPath(item: 0, section: 0)),
+   let rtlIndicator = firstLayer(named: "FluentKit.CollectionItem.SelectionIndicator", in: rtlItem.view) {
+    require(
+        abs(rtlIndicator.frame.maxX - (rtlItem.view.bounds.maxX - 4)) < 0.001,
+        "RTL ListViewItem mirrors its selection indicator to the leading edge"
+    )
+}
+
+let reducedCollectionSelection = FluentState<Int?>(wrappedValue: 10)
+let reducedCollection = FluentCollection(
+    snapshot: visualListSnapshot,
+    layout: .list(),
+    selectionID: reducedCollectionSelection.projectedValue
+) { item in
+    FluentText("Reduced row \(item)")
+}
+let reducedCollectionHost = reducedCollection._mount(
+    in: FluentRenderContext(theme: collectionTheme, reduceMotion: true)
+)
+let reducedCollectionWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 160),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+reducedCollectionWindow.contentView = reducedCollectionHost
+reducedCollectionHost.frame = reducedCollectionWindow.contentView?.bounds
+    ?? NSRect(x: 0, y: 0, width: 320, height: 160)
+reducedCollectionWindow.makeKeyAndOrderFront(nil)
+reducedCollectionHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+reducedCollectionSelection.wrappedValue = 11
+drainMainQueue()
+if let reducedNativeCollection = firstCollectionView(in: reducedCollectionHost),
+   let reducedItem = reducedNativeCollection.item(at: IndexPath(item: 1, section: 0)),
+   let reducedIndicator = firstLayer(
+       named: "FluentKit.CollectionItem.SelectionIndicator",
+       in: reducedItem.view
+   ) {
+    require(
+        reducedIndicator.opacity == 1
+            && reducedIndicator.animation(forKey: "fluent.collectionItem.indicator.opacity") == nil
+            && reducedIndicator.animation(forKey: "fluent.collectionItem.indicator.scale") == nil
+            && reducedItem.view.layer?.sublayers?.first(where: {
+                $0.name == "FluentKit.CollectionItem.Surface"
+            })?.animation(forKey: "fluent.collectionItem.background") == nil,
+        "ListViewItem Reduce Motion snaps selection without allocating indicator animations"
+    )
+}
+reducedCollectionWindow.orderOut(nil)
 
 var largeSnapshot = FluentCollectionSnapshot<String, Int>()
 largeSnapshot.appendSections(["large"])
@@ -2609,6 +5416,153 @@ let duplicateB = NSView(frame: .zero)
 }
 require(FluentAccessibilityAudit.run(on: duplicateAccessibilityRoot).contains { $0.message.contains("duplicates") }, "accessibility audit reports duplicate identifiers")
 
+var commandBarInvocationCount = 0
+var commandBarToggleValue = true
+let commandBarFlyout = FluentCommandBarFlyout(
+    theme: theme,
+    reduceMotion: false,
+    primaryCommands: {
+        FluentCommandBarItem("Favorite", systemImageName: "star") {}
+        FluentCommandBarItem.separator
+        FluentCommandBarItem.toggle(
+            "Bold",
+            systemImageName: "bold",
+            isOn: true
+        ) { commandBarToggleValue = $0 }
+    },
+    secondaryCommands: {
+        FluentCommandBarItem(
+            "Archive",
+            systemImageName: "archivebox",
+            keyEquivalent: "a",
+            keyModifiers: [.command, .shift]
+        ) { commandBarInvocationCount += 1 }
+        FluentCommandBarItem.separator
+        FluentCommandBarItem("Disabled", isEnabled: false) {}
+    }
+)
+require(
+    commandBarFlyout.primaryCommands.count == 3
+        && commandBarFlyout.secondaryCommands.count == 3
+        && commandBarFlyout.primaryCommands[1].kind == .separator
+        && commandBarFlyout.primaryCommands[2].kind == .toggle(isOn: true)
+        && commandBarFlyout.secondaryCommands[0].accelerator == "⇧⌘A",
+    "CommandBarFlyout exposes WinUI-style PrimaryCommands, SecondaryCommands, toggle, separator, and accelerator models"
+)
+let commandBarWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let commandBarAnchor = NSButton(frame: NSRect(x: 20, y: 80, width: 140, height: 32))
+commandBarWindow.contentView = commandBarAnchor
+commandBarWindow.center()
+commandBarWindow.orderFront(nil)
+commandBarFlyout.present(relativeTo: commandBarAnchor)
+let commandBarPanel = commandBarWindow.childWindows?.first
+let commandBarContent = commandBarPanel?.contentView
+let commandBarPresenter = commandBarContent.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
+let collapsedCommandBarHeight = commandBarPanel?.frame.height ?? 0
+let collapsedCommandBarChildren = (commandBarPresenter?.accessibilityChildren() ?? []).compactMap { $0 as? NSView }
+require(
+    commandBarFlyout.isPresented
+        && commandBarPresenter?.identifier?.rawValue == "FluentKit.CommandBarFlyout"
+        && firstMaterialView(in: commandBarContent ?? NSView())?.materialStyle == .liquidGlass
+        && Set(collapsedCommandBarChildren.compactMap { $0.accessibilityTitle() }) == Set(["Favorite", "Bold", "More"])
+        && collapsedCommandBarChildren.allSatisfy { abs($0.frame.width - 40) < 0.001 },
+    "CommandBarFlyout opens its compact primary bar on the shared Liquid Glass presenter"
+)
+require(
+    collapsedCommandBarChildren.first { $0.accessibilityTitle() == "Bold" }?.accessibilityValue() as? String == "On"
+        && views(identifier: "FluentKit.CommandBarFlyout.Separator", in: commandBarPresenter ?? NSView()).count == 1,
+    "CommandBarFlyout exposes checked toggle semantics and the source vertical AppBarSeparator"
+)
+let commandBarMoreButton = collapsedCommandBarChildren.first { $0.accessibilityTitle() == "More" }
+require(commandBarMoreButton?.accessibilityPerformPress() == true, "CommandBarFlyout More expands SecondaryCommands")
+let commandBarExpansionClip = commandBarContent.flatMap {
+    firstLayer(named: "FluentKit.TextCommandBarFlyout.ExpansionClip", in: $0)
+}
+let commandBarExpansionAnimation = commandBarExpansionClip?.animation(
+    forKey: "fluent.popup.textCommandBar.expand.clip"
+) as? CABasicAnimation
+require(
+    commandBarExpansionAnimation?.keyPath == "path"
+        && abs((commandBarExpansionAnimation?.duration ?? 0) - FluentMotion.controlNormal.duration) < 0.0001
+        && timingFunctionMatches(
+            commandBarExpansionAnimation?.timingFunction,
+            FluentMotion.controlNormal.curve.timingFunction
+        ),
+    "CommandBarFlyout reuses the source 250ms collapsed-to-expanded clip timeline"
+)
+require(
+    waitUntil(timeout: 0.30) {
+        (commandBarPanel?.frame.height ?? 0) > collapsedCommandBarHeight
+            && firstView(withAccessibilityTitle: "Archive", in: commandBarPresenter ?? NSView()) != nil
+            && views(identifier: "FluentKit.CommandBarFlyout.Separator", in: commandBarPresenter ?? NSView()).count == 2
+    },
+    "CommandBarFlyout expansion commits secondary rows and the horizontal overflow separator"
+)
+let archiveCommandBarRow = firstView(withAccessibilityTitle: "Archive", in: commandBarPresenter ?? NSView())
+require(archiveCommandBarRow?.accessibilityPerformPress() == true, "CommandBarFlyout secondary command is invokable")
+require(
+    commandBarInvocationCount == 1
+        && !commandBarFlyout.isPresented
+        && commandBarWindow.childWindows?.isEmpty != false,
+    "CommandBarFlyout command execution dismisses the complete panel immediately"
+)
+
+let alwaysExpandedCommandBar = FluentCommandBarFlyout(
+    primaryCommands: [FluentCommandBarItem("Copy", systemImageName: "doc.on.doc") {}],
+    secondaryCommands: [FluentCommandBarItem("Select all") {}],
+    alwaysExpanded: true,
+    theme: theme,
+    reduceMotion: true
+)
+alwaysExpandedCommandBar.present(relativeTo: commandBarAnchor)
+let alwaysExpandedPresenter = commandBarWindow.childWindows?.first?.contentView.flatMap {
+    firstView(withAccessibilityRole: .menu, in: $0)
+}
+let alwaysExpandedTitles = Set(
+    (alwaysExpandedPresenter?.accessibilityChildren() ?? []).compactMap { ($0 as? NSView)?.accessibilityTitle() }
+)
+require(
+    alwaysExpandedTitles == Set(["Copy", "Select all"])
+        && !alwaysExpandedTitles.contains("More"),
+    "CommandBarFlyout AlwaysExpanded opens PrimaryCommands and SecondaryCommands without a More button"
+)
+alwaysExpandedCommandBar.dismiss()
+require(commandBarToggleValue, "constructing a checked CommandBarFlyout toggle does not mutate external state")
+
+let attachedCommandBarButtonView = FluentButtonView("Attached command bar")
+    .commandBarFlyout {
+        FluentCommandBarItem("Copy", systemImageName: "doc.on.doc") {}
+    } secondaryCommands: {
+        FluentCommandBarItem("Select all") {}
+    }
+guard let attachedCommandBarButton = attachedCommandBarButtonView._mount(
+    in: FluentRenderContext(theme: theme, reduceMotion: true)
+) as? FluentButton else {
+    fatalError("attached CommandBarFlyout did not mount a FluentButton")
+}
+attachedCommandBarButton.frame = NSRect(x: 20, y: 80, width: 160, height: 32)
+commandBarWindow.contentView = attachedCommandBarButton
+attachedCommandBarButton.performClick(nil)
+drainMainQueue()
+require(
+    commandBarWindow.childWindows?.count == 1
+        && attachedCommandBarButton.accessibilityRole() == .popUpButton
+        && attachedCommandBarButton.accessibilityValue() as? String == "Open",
+    "FluentButtonView attaches and publishes a public CommandBarFlyout without Gallery-owned presentation code"
+)
+attachedCommandBarButton.performClick(nil)
+require(
+    commandBarWindow.childWindows?.isEmpty != false
+        && attachedCommandBarButton.accessibilityValue() as? String == "Closed",
+    "clicking the attached CommandBarFlyout Button again dismisses the existing presenter immediately"
+)
+commandBarWindow.orderOut(nil)
+
 let menuWrapped = FluentButtonView("Contextual").contextMenu {
     FluentMenuItem("Open") {}
     FluentMenuItem.separator
@@ -2642,6 +5596,276 @@ if let contextPresenter = contextMenuWindow.childWindows?.first?.contentView.fla
 drainMainQueue()
 contextMenuWindow.orderOut(nil)
 
+let leftClickMenuWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let leftClickMenuButton = FluentDropDownButton(
+    title: "Open menu",
+    items: [FluentMenuItem("First") {}, FluentMenuItem("Second") {}]
+)
+leftClickMenuButton.frame = NSRect(x: 20, y: 20, width: 140, height: 32)
+leftClickMenuWindow.contentView = leftClickMenuButton
+leftClickMenuWindow.center()
+leftClickMenuWindow.makeKeyAndOrderFront(nil)
+leftClickMenuButton.layoutSubtreeIfNeeded()
+guard let dropDownElevationBorder = firstLayer(
+    named: "FluentKit.DropDownButton.ElevationBorder",
+    in: leftClickMenuButton
+) as? CAGradientLayer, let dropDownElevationMask = dropDownElevationBorder.mask as? CAShapeLayer,
+   let dropDownElevationPath = dropDownElevationMask.path else {
+    fatalError("DropDownButton elevation border did not mount")
+}
+let dropDownElevationBounds = dropDownElevationPath.boundingBox
+require(
+    dropDownElevationMask.fillRule == .evenOdd
+        && pathBoundsUseContainedAntialiasing(
+            dropDownElevationBounds,
+            in: leftClickMenuButton.bounds,
+            backingScale: dropDownElevationBorder.contentsScale
+        ),
+    "DropDownButton keeps its elevation antialiasing inside every host edge"
+)
+require(
+    dropDownElevationBorder.locations?.map(\.doubleValue) == [0.33, 1],
+    "DropDownButton reuses the Button ControlElevationBorderBrush stop positions"
+)
+require(
+    elevationGradientMatchesVisualEdge(
+        dropDownElevationBorder,
+        edge: .bottom,
+        hostView: leftClickMenuButton
+    ),
+    "DropDownButton reuses the source ControlElevationBorderBrush absolute three-point extent"
+)
+let coldDropDownChevron = firstLayer(
+    named: "FluentKit.DropDownButton.Chevron",
+    in: leftClickMenuButton
+) as? CAShapeLayer
+let coldDropDownChevronPoints = pathVertices(coldDropDownChevron?.path)
+require(
+    chevronPointsVisuallyDown(coldDropDownChevronPoints, in: coldDropDownChevron),
+    "DropDownButton points its cold-start chevron visually down before hover"
+)
+leftClickMenuButton.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 82
+    )
+)
+require(
+    translationMovesVisuallyDown(
+        coldDropDownChevron?.value(forKeyPath: "transform.translation.y") as? CGFloat ?? 0,
+        in: coldDropDownChevron
+    ),
+    "DropDownButton press moves the shared chevron along the stable visual-down axis"
+)
+require(
+    leftClickMenuWindow.childWindows?.isEmpty != false,
+    "DropDownButton pointer-down only enters Pressed and moves its chevron"
+)
+let pressedDropDownChevron = firstLayer(named: "FluentKit.DropDownButton.Chevron", in: leftClickMenuButton)
+require(
+    abs((pressedDropDownChevron?.value(forKeyPath: "transform.translation.y") as? CGFloat ?? 0)) > 1,
+    "DropDownButton pointer-down moves the animated chevron toward the visual bottom"
+)
+let pressedChevronAnimation = pressedDropDownChevron?.animation(forKey: "fluent.chevron.press")
+let sameDropDownTheme = leftClickMenuButton.theme
+leftClickMenuButton.theme = sameDropDownTheme
+require(
+    pressedChevronAnimation != nil
+        && pressedDropDownChevron?.animation(forKey: "fluent.chevron.press") != nil,
+    "DropDownButton ignores an equal theme update while its chevron press animation is active"
+)
+leftClickMenuButton.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 83
+    )
+)
+drainMainQueue()
+require(
+    leftClickMenuWindow.childWindows?.count == 1,
+    "DropDownButton opens its flyout only after pointer release inside"
+)
+require(
+    leftClickMenuButton.isFlyoutPresented
+        && leftClickMenuButton.accessibilityValue() as? String == "Open",
+    "DropDownButton publishes its open state after the attached MenuFlyout presents"
+)
+require(
+    abs((pressedDropDownChevron?.value(forKeyPath: "transform.translation.y") as? CGFloat ?? 0)) < 0.001,
+    "DropDownButton restores its chevron before presenting the flyout"
+)
+if let menuPanel = leftClickMenuWindow.childWindows?.first {
+    let buttonScreenRect = leftClickMenuWindow.convertToScreen(
+        leftClickMenuButton.convert(leftClickMenuButton.bounds, to: nil)
+    )
+    require(
+        menuPanel.frame.maxY <= buttonScreenRect.minY - 1,
+        "FluentDropDownButton places its flyout below the button without overlap"
+    )
+    require(
+        menuPanel.frame.width >= leftClickMenuButton.bounds.width,
+        "DropDownButton flyout is never narrower than its owner"
+    )
+}
+let firstDropDownPanel = leftClickMenuWindow.childWindows?.first
+leftClickMenuButton.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 84
+    )
+)
+require(
+    leftClickMenuWindow.childWindows?.isEmpty != false
+        && firstDropDownPanel?.contentView?.layer?.animation(forKey: "fluent.menu.surface.close") == nil,
+    "clicking an open DropDownButton removes the flyout immediately without exit animation"
+)
+require(
+    !leftClickMenuButton.isFlyoutPresented
+        && leftClickMenuButton.accessibilityValue() as? String == "Closed",
+    "DropDownButton clears its open state when toggling the attached MenuFlyout closed"
+)
+leftClickMenuButton.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 85
+    )
+)
+drainMainQueue()
+require(
+    leftClickMenuWindow.childWindows?.isEmpty != false,
+    "the release completing an open-trigger dismissal does not recreate the flyout"
+)
+leftClickMenuButton.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 86
+    )
+)
+leftClickMenuButton.mouseDragged(
+    with: toggleMouseEvent(
+        .leftMouseDragged,
+        at: NSPoint(x: -20, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 87
+    )
+)
+leftClickMenuButton.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: -20, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 88
+    )
+)
+drainMainQueue()
+require(
+    leftClickMenuWindow.childWindows?.isEmpty != false,
+    "dragging a DropDownButton press outside cancels presentation"
+)
+leftClickMenuButton.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 89
+    )
+)
+leftClickMenuButton.mouseUp(
+    with: toggleMouseEvent(
+        .leftMouseUp,
+        at: NSPoint(x: leftClickMenuButton.bounds.midX, y: leftClickMenuButton.bounds.midY),
+        in: leftClickMenuButton,
+        eventNumber: 90
+    )
+)
+drainMainQueue()
+require(leftClickMenuButton.isFlyoutPresented, "DropDownButton can reopen after a canceled press")
+leftClickMenuButton.isEnabled = false
+require(
+    leftClickMenuWindow.childWindows?.isEmpty != false
+        && !leftClickMenuButton.isFlyoutPresented,
+    "disabling DropDownButton immediately closes its attached MenuFlyout"
+)
+leftClickMenuButton.isEnabled = true
+leftClickMenuWindow.orderOut(nil)
+
+let attachedFlyoutWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+var attachedButtonInvocations = 0
+let attachedFlyoutView = FluentButtonView("Attached flyout") {
+    attachedButtonInvocations += 1
+}.flyout {
+    FluentMenuItem("Attached item") {}
+}
+guard let attachedFlyoutButton = attachedFlyoutView._mount(in: FluentRenderContext()) as? FluentButton else {
+    fatalError("button-owned flyout did not mount as FluentButton")
+}
+attachedFlyoutButton.frame = NSRect(x: 20, y: 20, width: 150, height: 32)
+attachedFlyoutWindow.contentView = attachedFlyoutButton
+attachedFlyoutWindow.center()
+attachedFlyoutWindow.makeKeyAndOrderFront(nil)
+attachedFlyoutButton.performClick(nil)
+drainMainQueue()
+require(attachedButtonInvocations == 1, "Button.Flyout preserves the button's primary action")
+require(
+    attachedFlyoutWindow.childWindows?.count == 1,
+    "declarative Button.Flyout opens an application-owned menu from the button"
+)
+require(
+    attachedFlyoutButton.controlState != .pressed,
+    "Button.Flyout releases its owner after the opening click instead of latching Pressed"
+)
+let firstAttachedPanel = attachedFlyoutWindow.childWindows?.first
+attachedFlyoutButton.performClick(nil)
+drainMainQueue()
+require(
+    attachedButtonInvocations == 2
+        && attachedFlyoutWindow.childWindows?.isEmpty != false
+        && firstAttachedPanel?.contentView?.layer?.animation(forKey: "fluent.menu.surface.close") == nil,
+    "clicking an open Button.Flyout closes it immediately without recreating the presenter"
+)
+attachedFlyoutButton.performClick(nil)
+drainMainQueue()
+require(
+    attachedButtonInvocations == 3
+        && attachedFlyoutWindow.childWindows?.count == 1
+        && attachedFlyoutButton.controlState != .pressed,
+    "Button.Flyout can reopen on a later click while the owner remains released"
+)
+if let attachedPresenter = attachedFlyoutWindow.childWindows?.first?.contentView.flatMap({
+    firstView(withAccessibilityRole: .menu, in: $0)
+}) {
+    attachedPresenter.keyDown(with: sliderKeyEvent(53, in: attachedPresenter, eventNumber: 84))
+}
+require(
+    waitUntil(timeout: 0.20) { attachedFlyoutWindow.childWindows?.isEmpty != false },
+    "Button.Flyout dismisses through the shared MenuFlyout keyboard path"
+)
+require(
+    attachedFlyoutButton.controlState != .pressed,
+    "Button.Flyout clears the owner's open visual state after dismissal"
+)
+attachedFlyoutWindow.orderOut(nil)
+
 let menuFlyoutWindow = NSWindow(
     contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
     styleMask: [.titled],
@@ -2653,16 +5877,21 @@ menuFlyoutWindow.contentView = menuFlyoutAnchor
 menuFlyoutWindow.center()
 menuFlyoutWindow.orderFront(nil)
 var nestedMenuInvocations = 0
-let nestedMenuItem = FluentMenuItem.submenu("More") {
-    FluentMenuItem("Rename") { nestedMenuInvocations += 1 }
-    FluentMenuItem("Manage access") {}
+let nestedMenuItem = FluentMenuItem.submenu("More", systemImageName: "ellipsis.circle") {
+    FluentMenuItem("Rename", systemImageName: "pencil") { nestedMenuInvocations += 1 }
+    FluentMenuItem("Manage access", systemImageName: "person.2") {}
 }
-require(nestedMenuItem.hasSubmenu && nestedMenuItem.submenu.count == 2, "menu model preserves nested declarative items")
+require(
+    nestedMenuItem.hasSubmenu
+        && nestedMenuItem.submenu.count == 2
+        && nestedMenuItem.systemImageName == "ellipsis.circle",
+    "menu model preserves nested declarative items and their system-icon slot"
+)
 let menuFlyout = FluentMenuFlyout(items: [
-    FluentMenuItem("Open") {},
+    FluentMenuItem("Open", systemImageName: "doc", keyEquivalent: "o") {},
     nestedMenuItem,
     .separator,
-    FluentMenuItem("Checked", state: .on) {},
+    FluentMenuItem("Checked", systemImageName: "checkmark.circle", state: .on) {},
     FluentMenuItem("Zebra") {},
     FluentMenuItem("Disabled", isEnabled: false) {}
 ], reduceMotion: false)
@@ -2670,18 +5899,81 @@ menuFlyout.present(relativeTo: menuFlyoutAnchor)
 require(menuFlyout.isPresented, "application menu flyout presents its custom panel")
 require(menuFlyoutWindow.childWindows?.count == 1, "application menu flyout attaches its panel to the owning window")
 let rootMenuPanel = menuFlyoutWindow.childWindows?.first
-let rootMenuReveal = rootMenuPanel?.contentView?.layer?.mask?
-    .animation(forKey: "fluent.menu.reveal") as? CABasicAnimation
-let rootRevealStart = (rootMenuReveal?.fromValue as? NSValue)?.rectValue.height
-let rootRevealEnd = (rootMenuReveal?.toValue as? NSValue)?.rectValue.height
 require(
-    rootMenuReveal?.keyPath == "bounds"
-        && abs((rootMenuReveal?.duration ?? 0) - FluentMotion.menuOpen.duration) < 0.0001
-        && rootRevealStart.map { abs($0 - (rootRevealEnd ?? 0) * 0.5) < 0.001 } == true,
-    "root MenuFlyout reveals from 50% height over the source-derived 250ms motion"
+    rootMenuPanel?.hasShadow == false,
+    "MenuFlyout does not stack a native black panel shadow around its opaque surface"
+)
+if let rootMenuContent = rootMenuPanel?.contentView {
+    require(
+        firstMaterialView(in: rootMenuContent)?.materialStyle == .liquidGlass
+            && firstMaterialView(in: rootMenuContent)?.isMaterialEnabled == true,
+        "MenuFlyout uses the global Liquid Glass transient surface"
+    )
+}
+require(
+    rootMenuPanel?.contentView?.layer?.borderWidth == 0,
+    "MenuFlyout keeps one opaque edge owner without a second CALayer stroke"
+)
+let rootMenuAnimationRootLayer = rootMenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.AnimationRoot", in: $0)
+}
+let rootMenuBorderLayer = rootMenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.PopupBorder", in: $0)
+}
+let rootMenuPresenterLayer = rootMenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.Presenter", in: $0)
+}
+let rootMenuClipLayer = rootMenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.RevealClip", in: $0)
+}
+let rootMenuBorderEntrance = rootMenuBorderLayer?.animation(forKey: "fluent.popup.border.open") as? CABasicAnimation
+let rootMenuAnimationRootEntrance = rootMenuAnimationRootLayer?.animation(forKey: "fluent.popup.animationRoot.open") as? CABasicAnimation
+let rootMenuClosedAnimationRoot = (rootMenuAnimationRootEntrance?.fromValue as? NSValue)?.caTransform3DValue
+let rootMenuClipEntrance = rootMenuClipLayer?.animation(forKey: "fluent.popup.clip.open") as? CABasicAnimation
+let rootMenuClosedClip = (rootMenuClipEntrance?.fromValue as? NSValue)?.caTransform3DValue
+let rootMenuClosedBorder = (rootMenuBorderEntrance?.fromValue as? NSValue)?.caTransform3DValue
+let rootMenuHeight = rootMenuPanel?.contentView?.bounds.height ?? 0
+require(
+    rootMenuBorderEntrance?.keyPath == "transform"
+        && rootMenuAnimationRootEntrance?.keyPath == "transform"
+        && rootMenuPresenterLayer?.animation(forKey: "fluent.popup.presenter.open") == nil
+        && rootMenuClipEntrance?.keyPath == "transform"
+        && abs((rootMenuBorderEntrance?.duration ?? 0) - FluentMotion.menuOpen.duration) < 0.0001
+        && abs((rootMenuAnimationRootEntrance?.duration ?? 0) - FluentMotion.menuOpen.duration) < 0.0001
+        && abs((rootMenuClipEntrance?.duration ?? 0) - FluentMotion.menuOpen.duration) < 0.0001
+        && timingFunctionMatches(rootMenuBorderEntrance?.timingFunction, FluentMotion.menuOpen.curve.timingFunction)
+        && timingFunctionMatches(rootMenuAnimationRootEntrance?.timingFunction, FluentMotion.menuOpen.curve.timingFunction)
+        && timingFunctionMatches(rootMenuClipEntrance?.timingFunction, FluentMotion.menuOpen.curve.timingFunction),
+    "root MenuFlyout submits border, complete presenter root, and inverse clip on one timeline"
+)
+require(
+    abs((rootMenuClosedAnimationRoot?.m42 ?? 0) - rootMenuHeight * 0.5) < 0.0001
+        && abs((rootMenuClosedClip?.m42 ?? 0) + rootMenuHeight * 0.5) < 0.0001
+        && abs((rootMenuClosedAnimationRoot?.m42 ?? 0) + (rootMenuClosedClip?.m42 ?? 0)) < 0.0001
+        && abs((rootMenuClosedBorder?.m22 ?? 0) - 0.5) < 0.0001
+        && rootMenuClipLayer?.superlayer === rootMenuAnimationRootLayer,
+    "below-anchor MenuFlyout starts with lower rows visible and moves the whole presenter downward"
 )
 let rootMenuPresenter = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
 require(rootMenuPresenter?.accessibilityChildren()?.count == 5, "menu accessibility tree excludes separators and includes every actionable row")
+rootMenuPresenter?.layoutSubtreeIfNeeded()
+let rootMenuIcons = rootMenuPanel?.contentView.map {
+    views(identifier: "FluentKit.Menu.Item.Icon", in: $0)
+} ?? []
+require(
+    rootMenuIcons.count == 3
+        && rootMenuIcons.allSatisfy {
+            abs($0.frame.minX - 39) < 0.001
+                && abs($0.frame.width - 16) < 0.001
+                && abs($0.frame.height - 16) < 0.001
+        },
+    "MenuFlyout applies source 28pt check/icon placeholders and a stable 16pt icon slot"
+)
+let openMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Open", in: $0) }
+require(
+    openMenuRow?.accessibilityHelp() == "Keyboard shortcut ⌘O",
+    "MenuFlyout exposes the rendered accelerator through native accessibility"
+)
 let moreMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "More", in: $0) }
 let checkedMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Checked", in: $0) }
 let disabledMenuRow = rootMenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Disabled", in: $0) }
@@ -2690,6 +5982,49 @@ require(moreMenuRow?.accessibilityValue() as? String == "Submenu", "submenu row 
 require(moreMenuRow?.accessibilityHelp() == "Opens a submenu", "submenu row exposes an accessibility hint")
 require(checkedMenuRow?.accessibilityValue() as? String == "Selected", "checked menu row exposes its selected state")
 require(disabledMenuRow?.isAccessibilityEnabled() == false, "disabled menu row exposes disabled semantics")
+if let openMenuRow, let checkedMenuRow {
+    openMenuRow.updateTrackingAreas()
+    openMenuRow.updateTrackingAreas()
+    checkedMenuRow.updateTrackingAreas()
+    checkedMenuRow.updateTrackingAreas()
+    require(
+        openMenuRow.trackingAreas.count == 1 && checkedMenuRow.trackingAreas.count == 1,
+        "MenuFlyout rows keep one visible-rect tracking area across repeated layout updates"
+    )
+    let openRestingAlpha = renderedBackgroundAlpha(in: openMenuRow)
+    let checkedRestingAlpha = renderedBackgroundAlpha(in: checkedMenuRow)
+    openMenuRow.mouseEntered(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: 12, y: openMenuRow.bounds.midY),
+            in: openMenuRow,
+            eventNumber: 91
+        )
+    )
+    let openHoverAlpha = renderedBackgroundAlpha(in: openMenuRow)
+    checkedMenuRow.mouseEntered(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: 12, y: checkedMenuRow.bounds.midY),
+            in: checkedMenuRow,
+            eventNumber: 92
+        )
+    )
+    require(
+        openHoverAlpha > openRestingAlpha + 0.01
+            && abs(renderedBackgroundAlpha(in: openMenuRow) - openRestingAlpha) < 0.01
+            && renderedBackgroundAlpha(in: checkedMenuRow) > checkedRestingAlpha + 0.01,
+        "MenuFlyout owns one transient PointerOver row without a persistent selected fill"
+    )
+    checkedMenuRow.mouseExited(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: -1, y: -1),
+            in: checkedMenuRow,
+            eventNumber: 93
+        )
+    )
+}
 if let typeaheadEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "z", charactersIgnoringModifiers: "z", isARepeat: false, keyCode: 6) {
     rootMenuPresenter?.keyDown(with: typeaheadEvent)
 }
@@ -2698,32 +6033,69 @@ require(zebraMenuRow?.isAccessibilitySelected() == true, "menu type-ahead select
 if let hoverEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "", charactersIgnoringModifiers: "", isARepeat: false, keyCode: 0), let moreMenuRow {
     moreMenuRow.mouseEntered(with: hoverEvent)
 }
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.10))
-require(rootMenuPanel?.childWindows?.isEmpty != false, "submenu hover waits for the presentation delay")
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.12))
-require(rootMenuPanel?.childWindows?.count == 1, "submenu opens after the Fluent hover delay")
-let submenuPanel = rootMenuPanel?.childWindows?.first
-let submenuReveal = submenuPanel?.contentView?.layer?.mask?
-    .animation(forKey: "fluent.menu.reveal") as? CABasicAnimation
-let submenuRevealStart = (submenuReveal?.fromValue as? NSValue)?.rectValue.height
-let submenuRevealEnd = (submenuReveal?.toValue as? NSValue)?.rectValue.height
+require(rootMenuPanel?.childWindows?.isEmpty != false, "submenu hover is deferred rather than opening synchronously")
 require(
-    submenuReveal?.keyPath == "bounds"
-        && abs((submenuReveal?.duration ?? 0) - FluentMotion.submenuOpen.duration) < 0.0001
-        && submenuRevealStart.map { abs($0 - (submenuRevealEnd ?? 0) * 0.33) < 0.001 } == true,
-    "submenu reveals from 33% height over the source-derived 250ms motion"
+    waitUntil(timeout: 0.30) { rootMenuPanel?.childWindows?.count == 1 },
+    "submenu opens after the Fluent hover delay"
+)
+let submenuPanel = rootMenuPanel?.childWindows?.first
+let submenuAnimationRootLayer = submenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.AnimationRoot", in: $0)
+}
+let submenuBorderLayer = submenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.PopupBorder", in: $0)
+}
+let submenuPresenterLayer = submenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.Presenter", in: $0)
+}
+let submenuClipLayer = submenuPanel?.contentView.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.RevealClip", in: $0)
+}
+let submenuBorderEntrance = submenuBorderLayer?.animation(forKey: "fluent.popup.border.open") as? CABasicAnimation
+let submenuAnimationRootEntrance = submenuAnimationRootLayer?.animation(forKey: "fluent.popup.animationRoot.open") as? CABasicAnimation
+let submenuClosedAnimationRoot = (submenuAnimationRootEntrance?.fromValue as? NSValue)?.caTransform3DValue
+let submenuClipEntrance = submenuClipLayer?.animation(forKey: "fluent.popup.clip.open") as? CABasicAnimation
+let submenuClosedClip = (submenuClipEntrance?.fromValue as? NSValue)?.caTransform3DValue
+let submenuClosedBorder = (submenuBorderEntrance?.fromValue as? NSValue)?.caTransform3DValue
+let submenuHeight = submenuPanel?.contentView?.bounds.height ?? 0
+if let submenuPanel, let moreMenuRow, let rowWindow = moreMenuRow.window {
+    let rowScreenRect = rowWindow.convertToScreen(moreMenuRow.convert(moreMenuRow.bounds, to: nil))
+    require(
+        submenuPanel.frame.minX >= rowScreenRect.maxX - 3,
+        "LTR submenu opens from the trailing side of its source row"
+    )
+}
+require(
+    submenuBorderEntrance?.keyPath == "transform"
+        && submenuAnimationRootEntrance?.keyPath == "transform"
+        && submenuPresenterLayer?.animation(forKey: "fluent.popup.presenter.open") == nil
+        && submenuClipEntrance?.keyPath == "transform"
+        && abs((submenuBorderEntrance?.duration ?? 0) - FluentMotion.submenuOpen.duration) < 0.0001
+        && abs((submenuAnimationRootEntrance?.duration ?? 0) - FluentMotion.submenuOpen.duration) < 0.0001
+        && abs((submenuClipEntrance?.duration ?? 0) - FluentMotion.submenuOpen.duration) < 0.0001
+        && timingFunctionMatches(submenuBorderEntrance?.timingFunction, FluentMotion.submenuOpen.curve.timingFunction)
+        && timingFunctionMatches(submenuAnimationRootEntrance?.timingFunction, FluentMotion.submenuOpen.curve.timingFunction)
+        && timingFunctionMatches(submenuClipEntrance?.timingFunction, FluentMotion.submenuOpen.curve.timingFunction),
+    "submenu submits border, complete presenter root, and inverse clip on one timeline"
+)
+require(
+    abs((submenuClosedAnimationRoot?.m42 ?? 0) - submenuHeight * 0.67) < 0.0001
+        && abs((submenuClosedClip?.m42 ?? 0) + submenuHeight * 0.67) < 0.0001
+        && abs((submenuClosedAnimationRoot?.m42 ?? 0) + (submenuClosedClip?.m42 ?? 0)) < 0.0001
+        && abs((submenuClosedBorder?.m22 ?? 0) - 0.33) < 0.0001
+        && submenuClipLayer?.superlayer === submenuAnimationRootLayer,
+    "submenu preserves the source 67% translation and 33% initially visible border"
 )
 let submenuPresenter = submenuPanel?.contentView.flatMap { firstView(withAccessibilityRole: .menu, in: $0) }
 require(submenuPresenter?.accessibilityChildren()?.count == 2, "submenu exposes its own menu accessibility tree")
 let renameMenuRow = submenuPanel?.contentView.flatMap { firstView(withAccessibilityTitle: "Rename", in: $0) }
 require(renameMenuRow?.accessibilityPerformPress() == true, "submenu item supports the accessibility press action")
 require(nestedMenuInvocations == 1, "submenu action invokes its declarative closure exactly once")
-let menuCloseAnimation = rootMenuPanel?.contentView?.layer?
-    .animation(forKey: "fluent.menu.close") as? CABasicAnimation
 require(
-    menuCloseAnimation?.keyPath == "opacity"
-        && abs((menuCloseAnimation?.duration ?? 0) - FluentMotion.menuClose.duration) < 0.0001,
-    "MenuFlyout closes with the source-derived 83ms linear opacity motion"
+    rootMenuPanel?.contentView?.layer?.animation(forKey: "fluent.menu.surface.close") == nil
+        && menuFlyoutWindow.childWindows?.isEmpty != false
+        && !menuFlyout.isPresented,
+    "MenuFlyout item commit removes the complete hierarchy immediately without exit animation"
 )
 menuFlyout.dismiss(animated: false)
 require(menuFlyoutWindow.childWindows?.isEmpty != false, "dismissing a menu removes its complete submenu hierarchy")
@@ -2732,8 +6104,46 @@ menuFlyoutAnchor.userInterfaceLayoutDirection = .rightToLeft
 let rtlMenuFlyout = FluentMenuFlyout(items: [nestedMenuItem])
 rtlMenuFlyout.present(relativeTo: menuFlyoutAnchor)
 let rtlAnchorRect = menuFlyoutWindow.convertToScreen(menuFlyoutAnchor.convert(menuFlyoutAnchor.bounds, to: nil))
-if let rtlPanel = menuFlyoutWindow.childWindows?.first {
+    if let rtlPanel = menuFlyoutWindow.childWindows?.first {
     require(abs(rtlPanel.frame.maxX - rtlAnchorRect.maxX) < 2, "RTL root menu aligns its trailing edge to the anchor")
+    if let rtlMoreRow = rtlPanel.contentView.flatMap({ firstView(withAccessibilityTitle: "More", in: $0) }) {
+        rtlMoreRow.layoutSubtreeIfNeeded()
+        let rtlIcon = views(identifier: "FluentKit.Menu.Item.Icon", in: rtlMoreRow).first
+        require(
+            rtlIcon.map { abs($0.frame.maxX - (rtlMoreRow.bounds.maxX - 11)) < 0.001 } == true,
+            "RTL MenuFlyout moves the icon placeholder to logical leading without mirroring the icon"
+        )
+        rtlMoreRow.mouseEntered(
+            with: toggleMouseEvent(
+                .mouseMoved,
+                at: NSPoint(x: rtlMoreRow.bounds.midX, y: rtlMoreRow.bounds.midY),
+                in: rtlMoreRow,
+                eventNumber: 86
+            )
+        )
+        require(
+            waitUntil(timeout: 0.30) { rtlPanel.childWindows?.count == 1 },
+            "RTL submenu opens after the shared hover delay"
+        )
+        if let rtlSubmenuPanel = rtlPanel.childWindows?.first, let rowWindow = rtlMoreRow.window {
+            let rtlRowScreenRect = rowWindow.convertToScreen(rtlMoreRow.convert(rtlMoreRow.bounds, to: nil))
+            let rtlRootTransform = rtlSubmenuPanel.contentView.flatMap {
+                firstLayer(named: "FluentKit.MenuFlyout.AnimationRoot", in: $0)
+            }?.animation(forKey: "fluent.popup.animationRoot.open") as? CABasicAnimation
+            let rtlClipTransform = rtlSubmenuPanel.contentView.flatMap {
+                firstLayer(named: "FluentKit.MenuFlyout.RevealClip", in: $0)
+            }?.animation(forKey: "fluent.popup.clip.open") as? CABasicAnimation
+            let rtlRootFrom = (rtlRootTransform?.fromValue as? NSValue)?.caTransform3DValue
+            let rtlClipFrom = (rtlClipTransform?.fromValue as? NSValue)?.caTransform3DValue
+            require(
+                rtlSubmenuPanel.frame.maxX <= rtlRowScreenRect.minX + 3
+                    && abs((rtlRootFrom?.m42 ?? 0) + (rtlClipFrom?.m42 ?? 0)) < 0.0001,
+                "RTL submenu opens from the leading side with inverse root/clip motion "
+                    + "(submenu=\(rtlSubmenuPanel.frame), row=\(rtlRowScreenRect), "
+                    + "root=\(rtlRootFrom?.m42 ?? .nan), clip=\(rtlClipFrom?.m42 ?? .nan))"
+            )
+        }
+    }
 }
 rtlMenuFlyout.dismiss(animated: false)
 menuFlyoutAnchor.userInterfaceLayoutDirection = .leftToRight
@@ -2746,15 +6156,118 @@ let reducedMenuFlyout = FluentMenuFlyout(
 reducedMenuFlyout.present(relativeTo: menuFlyoutAnchor)
 let reducedMenuPanel = menuFlyoutWindow.childWindows?.first
 require(
-    reducedMenuPanel?.contentView?.layer?.mask == nil,
-    "MenuFlyout Reduce Motion reaches final reveal geometry without a mask animation"
+    reducedMenuPanel?.contentView.flatMap {
+        firstLayer(named: "FluentKit.MenuFlyout.PopupBorder", in: $0)
+    }?.animation(forKey: "fluent.popup.border.open") == nil
+        && reducedMenuPanel?.contentView.flatMap {
+            firstLayer(named: "FluentKit.MenuFlyout.AnimationRoot", in: $0)
+        }?.animation(forKey: "fluent.popup.animationRoot.open") == nil,
+    "MenuFlyout Reduce Motion reaches final surface geometry without entrance animation"
 )
 reducedMenuFlyout.dismiss(animated: true)
 require(
     menuFlyoutWindow.childWindows?.isEmpty != false,
-    "MenuFlyout Reduce Motion dismisses without allocating close motion"
+    "MenuFlyout dismissal remains immediate under Reduce Motion"
 )
+
+// Force the presenter above its anchor so the reverse MenuPopupThemeTransition path is exercised.
+// The normal fixture opens below the anchor and therefore only covered the positive-y branch.
+let menuVisibleFrame = menuFlyoutWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+menuFlyoutWindow.setFrameOrigin(
+    NSPoint(x: menuVisibleFrame.midX - menuFlyoutWindow.frame.width / 2, y: menuVisibleFrame.minY + 4)
+)
+menuFlyoutWindow.orderFront(nil)
+let aboveMenuFlyout = FluentMenuFlyout(
+    items: [FluentMenuItem("Above") {}, FluentMenuItem("Another item") {}],
+    reduceMotion: false
+)
+aboveMenuFlyout.present(relativeTo: menuFlyoutAnchor)
+let aboveMenuPanel = menuFlyoutWindow.childWindows?.first
+let aboveMenuContent = aboveMenuPanel?.contentView
+let aboveMenuAnchorRect = menuFlyoutWindow.convertToScreen(menuFlyoutAnchor.convert(menuFlyoutAnchor.bounds, to: nil))
+let aboveMenuBorder = aboveMenuContent.flatMap { firstLayer(named: "FluentKit.MenuFlyout.PopupBorder", in: $0) }
+let aboveMenuRoot = aboveMenuContent.flatMap { firstLayer(named: "FluentKit.MenuFlyout.AnimationRoot", in: $0) }
+let aboveMenuClip = aboveMenuContent.flatMap { firstLayer(named: "FluentKit.MenuFlyout.RevealClip", in: $0) }
+let aboveMenuBorderAnimation = aboveMenuBorder?.animation(forKey: "fluent.popup.border.open") as? CABasicAnimation
+let aboveMenuRootAnimation = aboveMenuRoot?.animation(forKey: "fluent.popup.animationRoot.open") as? CABasicAnimation
+let aboveMenuClipAnimation = aboveMenuClip?.animation(forKey: "fluent.popup.clip.open") as? CABasicAnimation
+let aboveMenuBorderFrom = (aboveMenuBorderAnimation?.fromValue as? NSValue)?.caTransform3DValue
+let aboveMenuRootFrom = (aboveMenuRootAnimation?.fromValue as? NSValue)?.caTransform3DValue
+let aboveMenuClipFrom = (aboveMenuClipAnimation?.fromValue as? NSValue)?.caTransform3DValue
+let aboveMenuHeight = aboveMenuContent?.bounds.height ?? 0
+require(
+    aboveMenuPanel != nil
+        && (aboveMenuPanel?.frame.minY ?? -CGFloat.infinity) >= aboveMenuAnchorRect.maxY - 1
+        && aboveMenuRootAnimation?.keyPath == "transform"
+        && aboveMenuBorderAnimation?.keyPath == "transform"
+        && aboveMenuClipAnimation?.keyPath == "transform"
+        && timingFunctionMatches(aboveMenuBorderAnimation?.timingFunction, FluentMotion.menuOpen.curve.timingFunction)
+        && timingFunctionMatches(aboveMenuRootAnimation?.timingFunction, FluentMotion.menuOpen.curve.timingFunction)
+        && timingFunctionMatches(aboveMenuClipAnimation?.timingFunction, FluentMotion.menuOpen.curve.timingFunction)
+        && abs((aboveMenuRootFrom?.m42 ?? 0) + aboveMenuHeight * 0.5) < 0.0001
+        && abs((aboveMenuClipFrom?.m42 ?? 0) - aboveMenuHeight * 0.5) < 0.0001
+        && abs((aboveMenuRootFrom?.m42 ?? 0) + (aboveMenuClipFrom?.m42 ?? 0)) < 0.0001
+        && abs((aboveMenuBorderFrom?.m22 ?? 0) - 0.5) < 0.0001,
+    "MenuFlyout mirrors the complete root and inverse clip geometry above its anchor "
+        + "(panel=\(String(describing: aboveMenuPanel?.frame)), anchor=\(aboveMenuAnchorRect), "
+        + "root=\(aboveMenuRootFrom?.m42 ?? .nan), clip=\(aboveMenuClipFrom?.m42 ?? .nan), "
+        + "borderScale=\(aboveMenuBorderFrom?.m22 ?? .nan))"
+)
+aboveMenuFlyout.dismiss(animated: false)
+require(menuFlyoutWindow.childWindows?.isEmpty != false, "above-anchor MenuFlyout dismisses immediately")
 menuFlyoutWindow.orderOut(nil)
+
+let highContrastMenuWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let highContrastMenuAnchor = NSButton(frame: NSRect(x: 20, y: 120, width: 140, height: 32))
+highContrastMenuWindow.contentView = highContrastMenuAnchor
+highContrastMenuWindow.center()
+highContrastMenuWindow.orderFront(nil)
+let highContrastMenuTheme = FluentTheme.custom(contrast: .high, colorScheme: .light)
+let highContrastMenu = FluentMenuFlyout(
+    items: [
+        FluentMenuItem("Highlight", systemImageName: "star", keyEquivalent: "h") {},
+        FluentMenuItem("Unavailable", isEnabled: false) {}
+    ],
+    theme: highContrastMenuTheme,
+    reduceMotion: true
+)
+highContrastMenu.present(relativeTo: highContrastMenuAnchor)
+let highContrastMenuPanel = highContrastMenuWindow.childWindows?.first
+let highContrastMenuContent = highContrastMenuPanel?.contentView
+let highContrastMenuRow = highContrastMenuContent.flatMap {
+    firstView(withAccessibilityTitle: "Highlight", in: $0)
+}
+highContrastMenuRow?.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: 6, y: 16),
+        in: highContrastMenuRow ?? highContrastMenuAnchor,
+        eventNumber: 87
+    )
+)
+highContrastMenuRow?.displayIfNeeded()
+let highContrastMenuIcon = highContrastMenuRow.flatMap {
+    views(identifier: "FluentKit.Menu.Item.Icon", in: $0).first as? NSImageView
+}
+let highContrastMenuBorder = highContrastMenuContent.flatMap {
+    firstLayer(named: "FluentKit.MenuFlyout.PopupBorder", in: $0)
+}
+require(
+    highContrastMenuBorder?.borderWidth == 2
+        && colorMatches(highContrastMenuBorder?.borderColor, highContrastMenuTheme.controlStrokeStrong),
+    "High Contrast MenuFlyout owns the source 2pt SystemColorWindowText presenter border"
+)
+require(
+    colorMatches(highContrastMenuIcon?.contentTintColor?.cgColor, .selectedMenuItemTextColor),
+    "High Contrast MenuFlyout applies HighlightText to its hovered icon slot"
+)
+highContrastMenu.dismiss(animated: false)
+highContrastMenuWindow.orderOut(nil)
 
 let teachingTipPresented = FluentState(wrappedValue: false)
 var teachingTipDismissals = 0
@@ -2789,6 +6302,13 @@ require(
     teachingTipWindow.childWindows?.first?.contentView?.accessibilityLabel() == "Teaching tip",
     "teaching tip exposes a semantic presentation group"
 )
+let reduceMotionTeachingTipChrome = teachingTipWindow.childWindows?.first?.contentView
+require(
+    teachingTipWindow.childWindows?.first?.alphaValue == 1
+        && reduceMotionTeachingTipChrome?.layer?.opacity == 1
+        && reduceMotionTeachingTipChrome?.layer?.animationKeys()?.isEmpty != false,
+    "Reduce Motion TeachingTip resolves one chrome-layer transition without a panel opacity animator"
+)
 let updatedTeachingTip = FluentButtonView("Teaching tip anchor")
     .teachingTip(
         isPresented: teachingTipPresented.projectedValue,
@@ -2813,6 +6333,204 @@ require(teachingTipWindow.childWindows?.isEmpty != false, "teaching tip removes 
 require(teachingTipDismissals == 1, "teaching tip reports completed dismissal once")
 teachingTipWindow.orderOut(nil)
 
+let animatedTeachingTipPresented = FluentState(wrappedValue: false)
+var animatedTeachingTipDismissals = 0
+let animatedTeachingTipHost = FluentButtonView("Animated teaching tip anchor")
+    .teachingTip(
+        isPresented: animatedTeachingTipPresented.projectedValue,
+        placement: .top,
+        size: NSSize(width: 280, height: 120),
+        onDismiss: { animatedTeachingTipDismissals += 1 }
+    ) {
+        FluentText("Animated teaching tip")
+    }
+    ._mount(in: FluentRenderContext(reduceMotion: false))
+let animatedTeachingTipWindow = NSWindow(
+    contentRect: NSRect(x: 120, y: 120, width: 360, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+animatedTeachingTipWindow.contentView = animatedTeachingTipHost
+animatedTeachingTipWindow.orderFront(nil)
+animatedTeachingTipPresented.wrappedValue = true
+drainMainQueue()
+guard let animatedTeachingTipPanel = animatedTeachingTipWindow.childWindows?.first,
+      let animatedTeachingTipChrome = animatedTeachingTipPanel.contentView,
+      let animatedTeachingTipLayer = animatedTeachingTipChrome.layer,
+      let teachingTipOpacity = animatedTeachingTipLayer.animation(
+        forKey: "fluent.teachingTip.opacity"
+      ) as? CABasicAnimation,
+      let teachingTipTransform = animatedTeachingTipLayer.animation(
+        forKey: "fluent.teachingTip.transform"
+      ) as? CABasicAnimation,
+      let teachingTipShadow = animatedTeachingTipLayer.animation(
+        forKey: "fluent.teachingTip.shadow"
+      ) as? CABasicAnimation else {
+    require(false, "animated TeachingTip submits opacity, transform, and shadow as one layer batch")
+    fatalError("unreachable")
+}
+require(
+    animatedTeachingTipPanel.alphaValue == 1
+        && teachingTipOpacity.duration == FluentMotion.teachingTipOpen.duration
+        && teachingTipTransform.duration == FluentMotion.teachingTipOpen.duration
+        && teachingTipShadow.duration == FluentMotion.teachingTipOpen.duration
+        && timingFunctionMatches(teachingTipOpacity.timingFunction, FluentMotion.teachingTipOpen.curve.timingFunction)
+        && timingFunctionMatches(teachingTipTransform.timingFunction, FluentMotion.teachingTipOpen.curve.timingFunction)
+        && timingFunctionMatches(teachingTipShadow.timingFunction, FluentMotion.teachingTipOpen.curve.timingFunction),
+    "TeachingTip coordinates chrome opacity, transform, and shadow on one motion timeline"
+)
+require(
+    animatedTeachingTipChrome.identifier?.rawValue == "FluentKit.TeachingTip.Chrome",
+    "TeachingTip keeps its tail in the independently drawn chrome surface"
+)
+if let compactValue = teachingTipTransform.fromValue as? NSValue {
+    let compact = compactValue.caTransform3DValue
+    let bounds = animatedTeachingTipLayer.bounds
+    let anchor = CGPoint(
+        x: bounds.minX + bounds.width * animatedTeachingTipLayer.anchorPoint.x,
+        y: bounds.minY + bounds.height * animatedTeachingTipLayer.anchorPoint.y
+    )
+    let center = CGPoint(x: bounds.midX, y: bounds.midY)
+    let transformedCenter = CGPoint(
+        x: anchor.x + (center.x - anchor.x) * compact.m11 + compact.m41,
+        y: anchor.y + (center.y - anchor.y) * compact.m22 + compact.m42
+    )
+    require(
+        abs(compact.m11 - FluentMotion.teachingTipOpen.scale) <= 0.001
+            && abs(transformedCenter.x - center.x) <= 0.001
+            && abs((transformedCenter.y - center.y) + FluentMotion.teachingTipOpen.distance) <= 0.001,
+        "TeachingTip compensates AppKit's panel-content anchor and scales around the chrome center"
+    )
+} else {
+    require(false, "TeachingTip exposes its compact transform for center-geometry validation")
+}
+let teachingTipFrameDuringOpen = animatedTeachingTipPanel.frame
+animatedTeachingTipHost.needsLayout = true
+animatedTeachingTipHost.layoutSubtreeIfNeeded()
+require(
+    animatedTeachingTipPanel.frame == teachingTipFrameDuringOpen,
+    "TeachingTip host layout does not reposition the child panel during its coordinated transition"
+)
+animatedTeachingTipPresented.wrappedValue = false
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.04))
+animatedTeachingTipPresented.wrappedValue = true
+require(
+    waitUntil(timeout: 0.40) {
+        animatedTeachingTipWindow.childWindows?.first === animatedTeachingTipPanel
+            && animatedTeachingTipLayer.opacity == 1
+    },
+    "TeachingTip reverses a closing transition from its presentation state without replacing the panel"
+)
+require(
+    animatedTeachingTipDismissals == 0,
+    "a cancelled TeachingTip close completion cannot dismiss the newly reopened presentation"
+)
+animatedTeachingTipPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.30) { animatedTeachingTipWindow.childWindows?.isEmpty != false },
+    "TeachingTip removes the panel only after the active coordinated close completes"
+)
+require(animatedTeachingTipDismissals == 1, "TeachingTip invokes onDismiss once for the completed close generation")
+animatedTeachingTipWindow.orderOut(nil)
+
+let popoverPresented = FluentState(wrappedValue: false)
+var popoverDismissals = 0
+let popoverAnchor = FluentButtonView("Popover anchor")
+    .popover(
+        isPresented: popoverPresented.projectedValue,
+        placement: .bottom,
+        size: NSSize(width: 280, height: 180),
+        onDismiss: { popoverDismissals += 1 }
+    ) {
+        FluentText("Initial popover content")
+    }
+let popoverHost = popoverAnchor._mount(in: FluentRenderContext(reduceMotion: true))
+let popoverWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 420, height: 260),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+popoverWindow.contentView = popoverHost
+popoverWindow.makeKeyAndOrderFront(nil)
+popoverPresented.wrappedValue = true
+drainMainQueue()
+guard let popoverMaterial = NSApp.windows.lazy.compactMap({ firstView(identifier: "FluentKit.Popover.Content", in: $0.contentView ?? NSView()) as? FluentMaterialView }).first else {
+    require(false, "declarative popover presents a Liquid Glass content host")
+    fatalError("unreachable")
+}
+let popoverContentWindow = popoverMaterial.window
+require(popoverContentWindow != nil && popoverContentWindow !== popoverWindow, "popover content is hosted in a native NSPopover window")
+require(popoverMaterial.isMaterialEnabled, "popover content enables the theme material surface")
+require(
+    waitUntil(timeout: 0.5) {
+        popoverMaterial.window?.contentView?.frame.size == NSSize(width: 280, height: 180)
+    },
+    "popover honors its initial requested content size (window: \(popoverMaterial.window?.contentView?.frame.size ?? .zero), material: \(popoverMaterial.frame.size), parent: \(popoverMaterial.superview?.frame.size ?? .zero), fitting: \(popoverMaterial.superview?.fittingSize ?? .zero))"
+)
+let popoverMaterialIdentity = popoverMaterial
+let updatedPopover = FluentButtonView("Popover anchor")
+    .popover(
+        isPresented: popoverPresented.projectedValue,
+        placement: .trailing,
+        size: NSSize(width: 280, height: 180),
+        onDismiss: { popoverDismissals += 1 }
+    ) {
+        FluentText("Updated popover content")
+    }
+require(
+    updatedPopover._update(popoverHost, in: FluentRenderContext(theme: .current.with(materialEffectsEnabled: false), reduceMotion: true)),
+    "popover updates its compatible anchor and content in place"
+)
+drainMainQueue()
+guard let updatedPopoverMaterial = NSApp.windows.lazy.compactMap({ firstView(identifier: "FluentKit.Popover.Content", in: $0.contentView ?? NSView()) as? FluentMaterialView }).first else {
+    require(false, "popover keeps its content host during update")
+    fatalError("unreachable")
+}
+require(updatedPopoverMaterial === popoverMaterialIdentity, "popover preserves its native content identity during updates")
+require(!updatedPopoverMaterial.isMaterialEnabled, "popover updates the global material switch in place")
+require(
+    firstLabel(in: updatedPopoverMaterial.window?.contentView ?? NSView())?.stringValue == "Updated popover content",
+    "popover refreshes declarative content in place (labels: \(labels(in: updatedPopoverMaterial.window?.contentView ?? NSView()).map(\.stringValue)))"
+)
+require(
+    waitUntil(timeout: 0.5) {
+        updatedPopoverMaterial.window?.contentView?.frame.size == NSSize(width: 280, height: 180)
+    },
+    "popover preserves its content size during same-geometry updates (actual: \(updatedPopoverMaterial.window?.contentView?.frame.size ?? .zero), contentMin: \(updatedPopoverMaterial.window?.contentMinSize ?? .zero), min: \(updatedPopoverMaterial.window?.minSize ?? .zero))"
+)
+let resizedPopover = FluentButtonView("Popover anchor")
+    .popover(
+        isPresented: popoverPresented.projectedValue,
+        placement: .trailing,
+        size: NSSize(width: 320, height: 200),
+        onDismiss: { popoverDismissals += 1 }
+    ) {
+        FluentText("Resized popover content")
+    }
+require(resizedPopover._update(popoverHost, in: FluentRenderContext(theme: .current.with(materialEffectsEnabled: false), reduceMotion: true)), "popover accepts a geometry update")
+require(
+    waitUntil(timeout: 0.5) {
+        NSApp.windows.contains { window in
+            guard let material = firstView(identifier: "FluentKit.Popover.Content", in: window.contentView ?? NSView()) as? FluentMaterialView else { return false }
+            return material !== popoverMaterialIdentity && material.window?.contentView?.frame.size == NSSize(width: 320, height: 200)
+        }
+    },
+    "popover replaces its native presenter when AppKit cannot resize a live content controller"
+)
+popoverPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.5) {
+        popoverDismissals == 1 && NSApp.windows.allSatisfy {
+            !$0.isVisible || firstView(identifier: "FluentKit.Popover.Content", in: $0.contentView ?? NSView()) == nil
+        }
+    },
+    "popover closes its native window when the binding becomes false"
+)
+require(popoverDismissals == 1, "popover invokes onDismiss exactly once (actual: \(popoverDismissals))")
+popoverWindow.orderOut(nil)
+
 let dialogPresented = FluentState(wrappedValue: false)
 let dialog = FluentText("Dialog host").confirmationDialog("Confirm", isPresented: dialogPresented.projectedValue) {
     FluentDialogAction("OK")
@@ -2835,6 +6553,690 @@ require(updatedSheet._update(sheetView, in: FluentRenderContext()), "sheet updat
 require(sheetView.subviews.first === sheetContentIdentity, "sheet preserves the presenting native host during updates")
 require(sheetPresented.wrappedValue == false, "sheet does not present until its binding is enabled")
 
+let sheetDismissals = FluentState(wrappedValue: false)
+var sheetDismissalCount = 0
+let coordinatedSheet = FluentButtonView("Sheet focus anchor")
+    .sheet(
+        isPresented: sheetDismissals.projectedValue,
+        title: "Coordinated editor",
+        size: NSSize(width: 420, height: 280),
+        onDismiss: { sheetDismissalCount += 1 }
+    ) {
+        FluentText("Coordinated sheet content")
+    }
+let coordinatedSheetView = coordinatedSheet._mount(in: FluentRenderContext())
+let coordinatedSheetWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 360, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+coordinatedSheetWindow.contentView = coordinatedSheetView
+coordinatedSheetWindow.makeKeyAndOrderFront(nil)
+sheetDismissals.wrappedValue = true
+drainMainQueue()
+guard let attachedSheet = coordinatedSheetWindow.attachedSheet else {
+    require(false, "sheet coordinator attaches the native sheet after binding presentation")
+    fatalError("unreachable")
+}
+require(attachedSheet.title == "Coordinated editor", "sheet coordinator applies its title on presentation")
+require(
+    attachedSheet.contentRect(forFrameRect: attachedSheet.frame).size == NSSize(width: 420, height: 280),
+    "sheet coordinator applies its requested content size (actual: \(attachedSheet.contentRect(forFrameRect: attachedSheet.frame).size))"
+)
+let updatedCoordinatedSheet = FluentButtonView("Sheet focus anchor")
+    .sheet(
+        isPresented: sheetDismissals.projectedValue,
+        title: "Updated coordinated editor",
+        size: NSSize(width: 460, height: 300)
+    ) {
+        FluentText("Updated coordinated sheet content")
+    }
+require(
+    updatedCoordinatedSheet._update(coordinatedSheetView, in: FluentRenderContext(theme: .current.with(materialEffectsEnabled: false))),
+    "sheet coordinator updates a presented sheet in place"
+)
+drainMainQueue()
+require(coordinatedSheetWindow.attachedSheet === attachedSheet, "sheet updates preserve the attached native window")
+require(attachedSheet.title == "Updated coordinated editor", "sheet updates refresh its title in place")
+require(
+    attachedSheet.contentRect(forFrameRect: attachedSheet.frame).size == NSSize(width: 460, height: 300),
+    "sheet updates refresh its content size in place (actual: \(attachedSheet.contentRect(forFrameRect: attachedSheet.frame).size))"
+)
+require(
+    firstMaterialView(in: attachedSheet.contentView ?? NSView())?.isMaterialEnabled == false,
+    "sheet updates propagate the global material switch"
+)
+sheetDismissals.wrappedValue = false
+drainMainQueue()
+require(coordinatedSheetWindow.attachedSheet == nil, "sheet coordinator dismisses the native sheet from its binding")
+require(sheetDismissalCount == 1, "sheet coordinator invokes onDismiss once for a completed dismissal")
+coordinatedSheetWindow.orderOut(nil)
+
+let queuedSheetPresented = FluentState(wrappedValue: false)
+let queuedConfirmationPresented = FluentState(wrappedValue: false)
+let mixedPresentationHost = FluentButtonView("Mixed presentation anchor")
+    .sheet(isPresented: queuedSheetPresented.projectedValue, title: "Queued sheet", size: NSSize(width: 360, height: 220)) {
+        FluentText("First presentation")
+    }
+    .confirmationDialog(
+        "Queued confirmation",
+        isPresented: queuedConfirmationPresented.projectedValue,
+        message: "Second presentation"
+    ) {
+        FluentDialogAction("OK")
+    }
+    ._mount(in: FluentRenderContext())
+let mixedPresentationWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 360, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+mixedPresentationWindow.contentView = mixedPresentationHost
+mixedPresentationWindow.orderFront(nil)
+queuedSheetPresented.wrappedValue = true
+queuedConfirmationPresented.wrappedValue = true
+drainMainQueue()
+let firstMixedSheet = mixedPresentationWindow.attachedSheet
+require(firstMixedSheet?.title == "Queued sheet", "custom Sheet wins the first requested window presentation slot")
+queuedSheetPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.5) {
+        guard let attached = mixedPresentationWindow.attachedSheet else { return false }
+        return attached !== firstMixedSheet
+    },
+    "ConfirmationDialog waits until the custom Sheet releases the window"
+)
+let secondMixedSheet = mixedPresentationWindow.attachedSheet
+require(
+    labels(in: secondMixedSheet?.contentView ?? NSView()).contains { $0.stringValue == "Queued confirmation" },
+    "queued ConfirmationDialog preserves its native NSAlert content"
+)
+queuedConfirmationPresented.wrappedValue = false
+drainMainQueue()
+require(mixedPresentationWindow.attachedSheet == nil, "mixed presentation queue dismisses its current native sheet")
+mixedPresentationWindow.orderOut(nil)
+
+let contentDialogPresented = FluentState(wrappedValue: false)
+let contentDialogLightTheme = FluentTheme.current.with(colorScheme: .light)
+let contentDialogDarkTheme = FluentTheme.current.with(colorScheme: .dark)
+let contentDialogAppearanceCoordinator = FluentAppearanceCoordinator(theme: contentDialogLightTheme)
+
+do {
+    let previousApplicationAppearance = NSApp.appearance
+    let systemAppearanceWindow = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 240, height: 120),
+        styleMask: [.borderless],
+        backing: .buffered,
+        defer: false
+    )
+    let systemAppearanceCoordinator = FluentAppearanceCoordinator(theme: FluentTheme())
+    systemAppearanceCoordinator.attach(to: systemAppearanceWindow)
+    let systemThemeStore = FluentThemeStore(FluentTheme())
+    systemAppearanceCoordinator.bind(to: systemThemeStore)
+    let systemThemeHost = FluentViewHost(
+        FluentText("System appearance probe").fluentTheme(systemThemeStore),
+        context: FluentRenderContext(
+            theme: systemAppearanceCoordinator.theme,
+            appearanceCoordinator: systemAppearanceCoordinator
+        )
+    )
+    systemAppearanceWindow.contentView = systemThemeHost
+    var resolvedThemes: [FluentTheme] = []
+    let registration = systemAppearanceCoordinator.register(owner: systemAppearanceWindow) {
+        resolvedThemes.append($0)
+    }
+    systemAppearanceWindow.makeKeyAndOrderFront(nil)
+    NSApp.appearance = NSAppearance(named: .darkAqua)
+    let resolvedDark = waitUntil(timeout: 0.35) {
+        systemAppearanceCoordinator.theme.colorScheme == .dark
+    }
+    NSApp.appearance = NSAppearance(named: .aqua)
+    let resolvedLight = waitUntil(timeout: 0.35) {
+        systemAppearanceCoordinator.theme.colorScheme == .light
+    }
+    require(
+        resolvedDark && resolvedLight
+            && resolvedThemes.contains(where: { $0.colorScheme == .dark })
+            && resolvedThemes.contains(where: { $0.colorScheme == .light })
+            && firstLabel(in: systemThemeHost)?.textColor?.isEqual(systemAppearanceCoordinator.theme.textPrimary) == true,
+        "system appearance coordinator resolves and broadcasts automatic Light/Dark changes without rebinding recursion"
+    )
+    systemAppearanceCoordinator.unregister(registration)
+    systemAppearanceWindow.orderOut(nil)
+    NSApp.appearance = previousApplicationAppearance
+    drainMainQueue()
+}
+
+do {
+    let manualThemeWindow = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 240, height: 120),
+        styleMask: [.borderless],
+        backing: .buffered,
+        defer: false
+    )
+    let manualCoordinator = FluentAppearanceCoordinator(theme: FluentTheme())
+    manualCoordinator.attach(to: manualThemeWindow)
+    let manualStore = FluentThemeStore(
+        preference: .system,
+        resolvedTheme: manualCoordinator.resolvedTheme
+    )
+    manualCoordinator.bind(to: manualStore)
+    let initialGeneration = manualCoordinator.themeGeneration
+    manualStore.preference = .dark
+    require(
+        manualCoordinator.preference == .dark
+            && manualCoordinator.resolvedTheme.colorScheme == .dark
+            && manualCoordinator.themeGeneration > initialGeneration,
+        "manual Dark preference uses the same coordinator transaction and advances theme generation"
+    )
+    manualStore.preference = .light
+    require(
+        manualCoordinator.preference == .light
+            && manualCoordinator.resolvedTheme.colorScheme == .light,
+        "manual Light preference updates the resolved window theme"
+    )
+    manualStore.preference = .system
+    require(
+        manualCoordinator.preference == .system
+            && manualCoordinator.resolvedTheme.colorScheme != .system,
+        "returning to System preserves the requested preference without leaking it into controls"
+    )
+    manualThemeWindow.orderOut(nil)
+}
+
+do {
+    let transactionWindow = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 360, height: 180),
+        styleMask: [.borderless],
+        backing: .buffered,
+        defer: false
+    )
+    let transactionRoot = NSView(frame: NSRect(x: 0, y: 0, width: 360, height: 180))
+    let directButton = FluentButton(title: "Direct")
+    directButton.frame = NSRect(x: 20, y: 100, width: 120, height: 32)
+    let directMaterial = FluentMaterialView(material: .mica)
+    directMaterial.frame = NSRect(x: 160, y: 20, width: 160, height: 120)
+    transactionRoot.addSubview(directButton)
+    transactionRoot.addSubview(directMaterial)
+    transactionWindow.contentView = transactionRoot
+
+    let transactionCoordinator = FluentAppearanceCoordinator(theme: FluentTheme.current.with(colorScheme: .light))
+    transactionCoordinator.attach(to: transactionWindow)
+    var transactionEvents: [String] = []
+    let firstOwner = NSObject()
+    let secondOwner = NSObject()
+    let lateOwner = NSObject()
+    var secondRegistration: UUID?
+    _ = transactionCoordinator.register(
+        owner: firstOwner,
+        updateImmediately: false,
+        prepareForAppearanceChange: { transactionEvents.append("prepare-first") }
+    ) { _ in
+        transactionEvents.append("apply-first")
+        if let secondRegistration { transactionCoordinator.unregister(secondRegistration) }
+        _ = transactionCoordinator.register(owner: lateOwner, updateImmediately: false) { _ in
+            transactionEvents.append("apply-late")
+        }
+    }
+    secondRegistration = transactionCoordinator.register(
+        owner: secondOwner,
+        updateImmediately: false,
+        prepareForAppearanceChange: { transactionEvents.append("prepare-second") }
+    ) { _ in
+        transactionEvents.append("apply-second")
+    }
+    let lightEventCount = transactionEvents.count
+    transactionCoordinator.updateTheme(FluentTheme.current.with(colorScheme: .dark))
+    drainMainQueue()
+    require(
+        transactionEvents == ["prepare-first", "prepare-second", "apply-first", "apply-second"],
+        "appearance changes use a stable registration snapshot and prepare every participant before apply"
+    )
+    transactionCoordinator.updateTheme(FluentTheme.current.with(colorScheme: .dark))
+    drainMainQueue()
+    require(
+        transactionEvents.count == lightEventCount + 4,
+        "a resolved theme that did not change does not broadcast a second appearance transaction"
+    )
+    let darkButtonAppearance = FluentAutomaticButtonStyle().appearance(
+        for: FluentButtonStyleConfiguration(
+            title: directButton.title,
+            role: directButton.role,
+            controlState: .normal,
+            isEnabled: true,
+            theme: transactionCoordinator.theme
+        )
+    )
+    require(
+        directButton.theme == transactionCoordinator.theme
+            && colorMatches(directButton.layer?.backgroundColor, darkButtonAppearance.backgroundColor)
+            && directMaterial.fluentTheme == transactionCoordinator.theme
+            && directMaterial.fallbackColor.isEqual(transactionCoordinator.theme.windowBackground),
+        "direct AppKit Fluent controls and material layers receive the coordinator theme in place"
+    )
+    transactionWindow.orderOut(nil)
+}
+
+var contentDialogClosingCount = 0
+var contentDialogCancelNextClose = true
+var contentDialogDeferNextClose = false
+var contentDialogDeferral: FluentContentDialogClosingDeferral?
+var contentDialogClosedResults: [FluentContentDialogResult] = []
+let contentDialogHost = FluentButtonView("Content dialog focus anchor")
+    .contentDialog(
+        "Save changes?",
+        isPresented: contentDialogPresented.projectedValue,
+        primaryButtonText: "Save",
+        secondaryButtonText: "Don't save",
+        closeButtonText: "Cancel",
+        defaultButton: .primary,
+        onClosing: { args in
+            contentDialogClosingCount += 1
+            if contentDialogCancelNextClose {
+                contentDialogCancelNextClose = false
+                args.isCancelled = true
+            } else if contentDialogDeferNextClose {
+                contentDialogDeferNextClose = false
+                contentDialogDeferral = args.getDeferral()
+            }
+        },
+        onClosed: { contentDialogClosedResults.append($0) }
+    ) {
+        FluentText("The document has unsaved changes.")
+    }
+    ._mount(in: FluentRenderContext(
+        theme: contentDialogLightTheme,
+        reduceMotion: false,
+        appearanceCoordinator: contentDialogAppearanceCoordinator
+    ))
+let contentDialogWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 720, height: 520),
+    styleMask: [.titled, .closable],
+    backing: .buffered,
+    defer: false
+)
+contentDialogWindow.contentView = contentDialogHost
+contentDialogAppearanceCoordinator.attach(to: contentDialogWindow)
+contentDialogWindow.makeKeyAndOrderFront(nil)
+guard let contentDialogFocusAnchor = firstButton(in: contentDialogHost) else {
+    require(false, "ContentDialog preserves its presenting button")
+    fatalError("unreachable")
+}
+contentDialogWindow.makeFirstResponder(contentDialogFocusAnchor)
+contentDialogPresented.wrappedValue = true
+require(
+    waitUntil(timeout: 0.30) {
+        firstView(identifier: "FluentKit.ContentDialog.Overlay", in: contentDialogWindow.contentView ?? NSView()) != nil
+    },
+    "ContentDialog presents an in-window modal overlay from its binding"
+)
+guard let contentDialogOverlay = firstView(
+    identifier: "FluentKit.ContentDialog.Overlay",
+    in: contentDialogWindow.contentView ?? NSView()
+), let contentDialogSurface = firstView(
+    identifier: "FluentKit.ContentDialog.Surface",
+    in: contentDialogOverlay
+), let contentDialogDimming = firstView(
+    identifier: "FluentKit.ContentDialog.DimmingLayer",
+    in: contentDialogOverlay
+), let contentDialogMaterial = firstMaterialView(in: contentDialogSurface),
+      let contentDialogContentSurface = firstView(
+        identifier: "FluentKit.ContentDialog.ContentSurface",
+        in: contentDialogSurface
+      ),
+      let contentDialogCommandSurface = firstView(
+        identifier: "FluentKit.ContentDialog.CommandSurface",
+        in: contentDialogSurface
+      ),
+      let contentDialogCommandSeparator = firstView(
+        identifier: "FluentKit.ContentDialog.CommandSeparator",
+        in: contentDialogSurface
+      ),
+      let contentDialogPrimary = firstView(
+        identifier: "FluentKit.ContentDialog.primary",
+        in: contentDialogSurface
+      ) as? FluentButton else {
+    require(false, "ContentDialog builds its dimming, material, and action surfaces")
+    fatalError("unreachable")
+}
+let contentDialogSecondary = firstView(withAccessibilityTitle: "Don't save", in: contentDialogSurface)
+let contentDialogClose = firstView(withAccessibilityTitle: "Cancel", in: contentDialogSurface)
+contentDialogWindow.contentView?.layoutSubtreeIfNeeded()
+require(
+    contentDialogSurface.frame.width >= 446 && contentDialogSurface.frame.width <= 548
+        && contentDialogSurface.frame.height >= 184 && contentDialogSurface.frame.height <= 756,
+    "ContentDialog applies the WinUI min/max geometry (actual: \(contentDialogSurface.frame))"
+)
+let contentDialogSurfaceBounds = contentDialogSurface.bounds.insetBy(dx: 0.5, dy: 0.5)
+let contentDialogActionViews = [contentDialogPrimary, contentDialogSecondary, contentDialogClose].compactMap { $0 }
+let contentDialogOpeningFrame = contentDialogSurface.frame
+let contentDialogOpeningLayerFrame = contentDialogSurface.layer?.frame ?? .zero
+let contentDialogOpeningPresentationFrame = contentDialogSurface.layer?.presentation()?.frame
+    ?? contentDialogOpeningLayerFrame
+let contentDialogInitialScaleAnimation = contentDialogSurface.layer?.animation(
+    forKey: "fluent.contentDialog.scale"
+) as? CABasicAnimation
+require(
+    contentDialogActionViews.count == 3
+        && contentDialogActionViews.allSatisfy {
+            contentDialogSurfaceBounds.contains($0.convert($0.bounds, to: contentDialogSurface))
+        },
+    "ContentDialog keeps every command button fully inside its clipped surface"
+)
+require(
+    contentDialogSurface.layer?.anchorPoint == CGPoint(x: 0.5, y: 0.5)
+        && abs(contentDialogOpeningLayerFrame.minX - contentDialogOpeningFrame.minX) < 0.001
+        && abs(contentDialogOpeningLayerFrame.minY - contentDialogOpeningFrame.minY) < 0.001
+        && abs(contentDialogOpeningLayerFrame.width - contentDialogOpeningFrame.width) < 0.001
+        && abs(contentDialogOpeningLayerFrame.height - contentDialogOpeningFrame.height) < 0.001
+        && abs(contentDialogOpeningPresentationFrame.midX - contentDialogOpeningFrame.midX) < 0.001
+        && abs(contentDialogOpeningPresentationFrame.midY - contentDialogOpeningFrame.midY) < 0.001
+        && abs((contentDialogInitialScaleAnimation?.duration ?? 0) - FluentMotion.contentDialogOpen.duration) < 0.001
+        && abs(((contentDialogInitialScaleAnimation?.fromValue as? NSNumber)?.doubleValue ?? 0) - 1.05) < 0.001,
+    "ContentDialog preserves its model frame and visual center while installing the 1.05 opening scale"
+)
+require(
+    contentDialogMaterial.materialStyle == .liquidGlass
+        && contentDialogMaterial.isMaterialEnabled
+        && contentDialogMaterial.layer?.cornerRadius == 0
+        && contentDialogSurface.layer?.cornerRadius == 8
+        && contentDialogSurface.layer?.masksToBounds == true
+        && colorMatches(
+            contentDialogContentSurface.layer?.backgroundColor,
+            contentDialogLightTheme.contentDialogContentFill
+        )
+        && colorMatches(
+            contentDialogCommandSurface.layer?.backgroundColor,
+            contentDialogLightTheme.contentDialogCommandFill
+        )
+        && colorMatches(
+            contentDialogCommandSeparator.layer?.backgroundColor,
+            contentDialogLightTheme.divider
+        )
+        && colorMatches(
+            contentDialogDimming.layer?.backgroundColor,
+            contentDialogLightTheme.contentDialogSmokeFill
+        ),
+    "ContentDialog uses one 8pt outer clip, black smoke, and separate content/command surfaces"
+)
+contentDialogAppearanceCoordinator.updateTheme(contentDialogDarkTheme)
+drainMainQueue()
+require(
+    firstView(
+        identifier: "FluentKit.ContentDialog.Overlay",
+        in: contentDialogWindow.contentView ?? NSView()
+    ) === contentDialogOverlay
+        && colorMatches(
+            contentDialogContentSurface.layer?.backgroundColor,
+            contentDialogDarkTheme.contentDialogContentFill
+        )
+        && colorMatches(
+            contentDialogCommandSurface.layer?.backgroundColor,
+            contentDialogDarkTheme.contentDialogCommandFill
+        )
+        && colorMatches(
+            contentDialogDimming.layer?.backgroundColor,
+            contentDialogDarkTheme.contentDialogSmokeFill
+        ),
+    "ContentDialog updates its presented surfaces in place with the window appearance coordinator"
+)
+require(
+    labels(in: contentDialogSurface).first(where: { $0.stringValue == "Save changes?" })?.font?.pointSize == 20,
+    "ContentDialog uses WinUI's 20pt title typography"
+)
+require(
+    contentDialogPrimary.role == .primary
+        && contentDialogPrimary.keyEquivalent == "\r",
+    "ContentDialog applies the configured default button"
+)
+let contentDialogScaleAnimation = contentDialogSurface.layer?.animation(
+    forKey: "fluent.contentDialog.scale"
+) as? CABasicAnimation
+let contentDialogOpacityAnimation = contentDialogSurface.layer?.animation(
+    forKey: "fluent.contentDialog.opacity"
+) as? CABasicAnimation
+let contentDialogDimmingAnimation = contentDialogDimming.layer?.animation(
+    forKey: "fluent.contentDialog.dimming"
+) as? CABasicAnimation
+require(
+    contentDialogScaleAnimation == nil
+        && contentDialogOpacityAnimation == nil
+        && contentDialogDimmingAnimation == nil
+        && abs(((contentDialogSurface.layer?.presentation()?.value(forKeyPath: "transform.scale") as? NSNumber)?.doubleValue ?? 1) - 1) < 0.001
+        && contentDialogSurface.layer?.opacity == 1
+        && contentDialogDimming.layer?.opacity == 1,
+    "ContentDialog settles its opening timeline before applying a new appearance"
+)
+require(
+    contentDialogSurface.layer?.animationKeys()?.isEmpty != false
+        && contentDialogDimming.layer?.animationKeys()?.isEmpty != false,
+    "ContentDialog leaves no stale opacity or dimming animation after an appearance change"
+)
+require(
+    waitUntil(timeout: 0.35) { contentDialogWindow.firstResponder === contentDialogPrimary },
+    "ContentDialog moves focus to the default button after its opening transition"
+)
+contentDialogWindow.contentView?.layoutSubtreeIfNeeded()
+require(
+    contentDialogSurface.frame == contentDialogOpeningFrame
+        && contentDialogActionViews.allSatisfy {
+            contentDialogSurfaceBounds.contains($0.convert($0.bounds, to: contentDialogSurface))
+        },
+    "ContentDialog commits its complete command layout before motion and does not resize when opening ends"
+)
+
+contentDialogPrimary.performClick(nil)
+drainMainQueue()
+require(
+    contentDialogClosingCount == 1
+        && contentDialogPresented.wrappedValue
+        && firstView(identifier: "FluentKit.ContentDialog.Overlay", in: contentDialogWindow.contentView ?? NSView()) === contentDialogOverlay
+        && contentDialogPrimary.isEnabled
+        && contentDialogClosedResults.isEmpty,
+    "ContentDialog closing validation can cancel a button dismissal without replacing the presenter"
+)
+
+contentDialogDeferNextClose = true
+contentDialogPrimary.performClick(nil)
+drainMainQueue()
+require(
+    contentDialogClosingCount == 2
+        && contentDialogDeferral != nil
+        && contentDialogPresented.wrappedValue
+        && !contentDialogPrimary.isEnabled,
+    "ContentDialog keeps its overlay open and disables actions while a closing deferral is pending"
+)
+contentDialogDeferral?.complete()
+contentDialogDeferral = nil
+require(!contentDialogPresented.wrappedValue, "ContentDialog commits its binding only after the closing deferral completes")
+let contentDialogCloseScale = contentDialogSurface.layer?.animation(
+    forKey: "fluent.contentDialog.scale"
+) as? CABasicAnimation
+require(
+    abs((contentDialogCloseScale?.duration ?? 0) - FluentMotion.contentDialogClose.duration) < 0.001,
+    "ContentDialog closing scale uses WinUI's 167ms transition and replaces the opening timeline"
+)
+require(
+    waitUntil(timeout: 0.40) {
+        firstView(identifier: "FluentKit.ContentDialog.Overlay", in: contentDialogWindow.contentView ?? NSView()) == nil
+    },
+    "ContentDialog removes its overlay after the coordinated closing transition"
+)
+require(
+    contentDialogClosedResults == [.primary]
+        && contentDialogWindow.firstResponder === contentDialogFocusAnchor,
+    "ContentDialog reports its result once and restores the pre-dialog focus"
+)
+
+contentDialogPresented.wrappedValue = true
+require(
+    waitUntil(timeout: 0.30) {
+        firstView(identifier: "FluentKit.ContentDialog.Overlay", in: contentDialogWindow.contentView ?? NSView()) != nil
+    },
+    "ContentDialog can be presented again after its coordinator slot is released"
+)
+guard let interruptedContentDialogOverlay = firstView(
+    identifier: "FluentKit.ContentDialog.Overlay",
+    in: contentDialogWindow.contentView ?? NSView()
+), let interruptedContentDialogSurface = firstView(
+    identifier: "FluentKit.ContentDialog.Surface",
+    in: interruptedContentDialogOverlay
+) else {
+    require(false, "reopened ContentDialog exposes its transition surface")
+    fatalError("unreachable")
+}
+contentDialogPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.15) {
+        guard let animation = interruptedContentDialogSurface.layer?.animation(
+            forKey: "fluent.contentDialog.scale"
+        ) as? CABasicAnimation else { return false }
+        return abs(((animation.toValue as? NSNumber)?.doubleValue ?? 0) - 1.05) < 0.001
+    },
+    "ContentDialog replaces an in-flight opening scale with its closing scale"
+)
+contentDialogPresented.wrappedValue = true
+require(
+    waitUntil(timeout: 0.70) {
+        guard let current = firstView(
+            identifier: "FluentKit.ContentDialog.Overlay",
+            in: contentDialogWindow.contentView ?? NSView()
+        ) else { return false }
+        return current !== interruptedContentDialogOverlay
+    },
+    "ContentDialog reopens with a new generation after an interrupted presentation closes"
+)
+contentDialogPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.40) {
+        firstView(identifier: "FluentKit.ContentDialog.Overlay", in: contentDialogWindow.contentView ?? NSView()) == nil
+    },
+    "ContentDialog stale opening completions cannot retain or restore an older overlay"
+)
+require(
+    contentDialogClosedResults == [.primary, .none, .none],
+    "ContentDialog reports each completed rapid dismissal exactly once"
+)
+contentDialogWindow.orderOut(nil)
+
+let reducedContentDialogPresented = FluentState(wrappedValue: true)
+var reducedContentDialogResult: FluentContentDialogResult?
+let reducedContentDialogHost = FluentText("Reduced dialog host")
+    .contentDialog(
+        "",
+        isPresented: reducedContentDialogPresented.projectedValue,
+        onClosed: { reducedContentDialogResult = $0 }
+    ) {
+        FluentText("No transition should be allocated.")
+    }
+    ._mount(in: FluentRenderContext(
+        theme: FluentTheme.current.with(materialEffectsEnabled: false),
+        reduceMotion: true
+    ))
+let reducedContentDialogWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 560, height: 420),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+reducedContentDialogWindow.contentView = reducedContentDialogHost
+reducedContentDialogWindow.orderFront(nil)
+guard waitUntil(timeout: 0.30, {
+    firstView(identifier: "FluentKit.ContentDialog.Overlay", in: reducedContentDialogWindow.contentView ?? NSView()) != nil
+}), let reducedContentDialogOverlay = firstView(
+    identifier: "FluentKit.ContentDialog.Overlay",
+    in: reducedContentDialogWindow.contentView ?? NSView()
+), let reducedContentDialogSurface = firstView(
+    identifier: "FluentKit.ContentDialog.Surface",
+    in: reducedContentDialogOverlay
+) else {
+    require(false, "reduced-motion ContentDialog presents its final state")
+    fatalError("unreachable")
+}
+require(
+    reducedContentDialogSurface.layer?.animationKeys()?.isEmpty != false
+        && firstMaterialView(in: reducedContentDialogSurface)?.resolvedBackend == .opaque
+        && firstButton(in: reducedContentDialogSurface) == nil,
+    "ContentDialog honors Reduce Motion, the opaque fallback, and the no-command layout state"
+)
+reducedContentDialogPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.20) {
+        firstView(identifier: "FluentKit.ContentDialog.Overlay", in: reducedContentDialogWindow.contentView ?? NSView()) == nil
+    },
+    "reduced-motion ContentDialog dismisses without allocating a transition"
+)
+require(
+    reducedContentDialogResult == FluentContentDialogResult.none,
+    "programmatic ContentDialog dismissal reports the WinUI none result"
+)
+reducedContentDialogWindow.orderOut(nil)
+
+let serializedSheetPresented = FluentState(wrappedValue: false)
+let serializedContentDialogPresented = FluentState(wrappedValue: false)
+let serializedPresentationHost = FluentText("Serialized presentation host")
+    .sheet(
+        isPresented: serializedSheetPresented.projectedValue,
+        title: "First sheet",
+        size: NSSize(width: 380, height: 240)
+    ) {
+        FluentText("Sheet owns the first coordinator slot")
+    }
+    .contentDialog(
+        "Queued ContentDialog",
+        isPresented: serializedContentDialogPresented.projectedValue,
+        closeButtonText: "Close"
+    ) {
+        FluentText("This appears after the native sheet closes.")
+    }
+    ._mount(in: FluentRenderContext(reduceMotion: true))
+let serializedPresentationWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 560, height: 420),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+serializedPresentationWindow.contentView = serializedPresentationHost
+serializedPresentationWindow.orderFront(nil)
+serializedSheetPresented.wrappedValue = true
+require(
+    waitUntil(timeout: 0.30) { serializedPresentationWindow.attachedSheet != nil },
+    "native Sheet acquires the first shared presentation slot"
+)
+serializedContentDialogPresented.wrappedValue = true
+drainMainQueue()
+require(
+    firstView(
+        identifier: "FluentKit.ContentDialog.Overlay",
+        in: serializedPresentationWindow.contentView ?? NSView()
+    ) == nil,
+    "ContentDialog remains queued while a native Sheet owns the window presentation slot"
+)
+serializedSheetPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.50) {
+        serializedPresentationWindow.attachedSheet == nil
+            && firstView(
+                identifier: "FluentKit.ContentDialog.Overlay",
+                in: serializedPresentationWindow.contentView ?? NSView()
+            ) != nil
+    },
+    "ContentDialog presents after the native Sheet releases the shared coordinator slot"
+)
+serializedContentDialogPresented.wrappedValue = false
+require(
+    waitUntil(timeout: 0.20) {
+        firstView(
+            identifier: "FluentKit.ContentDialog.Overlay",
+            in: serializedPresentationWindow.contentView ?? NSView()
+        ) == nil
+    },
+    "serialized ContentDialog releases the shared coordinator after dismissal"
+)
+serializedPresentationWindow.orderOut(nil)
+
 let expanded = FluentState(wrappedValue: true)
 let disclosure = FluentDisclosureGroup("Advanced", isExpanded: expanded.projectedValue) {
     FluentText("Advanced content")
@@ -2842,6 +7244,366 @@ let disclosure = FluentDisclosureGroup("Advanced", isExpanded: expanded.projecte
 let disclosureView = disclosure._mount(in: FluentRenderContext())
 require(disclosureView.subviews.count == 1, "disclosure group mounts a native host")
 require(expanded.wrappedValue, "disclosure binding starts expanded")
+
+let settingsToggleState = FluentState(wrappedValue: true)
+var settingsNavigationInvocations = 0
+let settingsSection = FluentSettingsSection("General", description: "Application defaults") {
+    FluentSettingsCard(
+        "Launch at login",
+        description: "Start FluentKit when you sign in",
+        systemImageName: "arrow.up.right.square"
+    ) {
+        FluentToggleView("Launch at login", isOn: settingsToggleState.projectedValue)
+    }
+    FluentSettingsCard(
+        "Keyboard shortcuts",
+        description: "Customize commands",
+        systemImageName: "command",
+        onActivate: { settingsNavigationInvocations += 1 }
+    )
+}
+let settingsSectionView = settingsSection._mount(in: FluentRenderContext())
+require(
+    firstView(identifier: "FluentKit.Settings.Section", in: settingsSectionView) === settingsSectionView,
+    "SettingsSection mounts one shared settings surface"
+)
+require(
+    firstToggle(in: settingsSectionView) != nil
+        && firstView(identifier: "FluentKit.Settings.Card", in: settingsSectionView) != nil,
+    "SettingsCard keeps an arbitrary trailing Fluent control mounted in the row"
+)
+let settingsWidthStack = (FluentVStack(spacing: 8) {
+    FluentAnyView(settingsSection)
+}._mount(in: FluentRenderContext()) as? NSStackView)!
+settingsWidthStack.frame = NSRect(x: 0, y: 0, width: 460, height: 600)
+settingsWidthStack.layoutSubtreeIfNeeded()
+let settingsWidthSection = settingsWidthStack.arrangedSubviews.first
+let settingsWidthCard = settingsWidthSection.flatMap {
+    firstView(identifier: "FluentKit.Settings.Card", in: $0)
+}
+let settingsWidthCards = settingsWidthSection.map {
+    views(identifier: "FluentKit.Settings.Card", in: $0)
+} ?? []
+require(
+    settingsWidthSection?.frame.width == settingsWidthStack.bounds.width
+        && settingsWidthCard?.frame.width == settingsWidthSection?.frame.width
+        && settingsWidthCards.count == 2
+        && settingsWidthCards.allSatisfy {
+            abs($0.frame.width - (settingsWidthSection?.frame.width ?? 0)) <= 0.5
+        },
+    "SettingsSection and SettingsCard fill the parent column without Gallery width patches"
+)
+let paddedSettingsStack = (FluentVStack(spacing: 8) {
+    FluentAnyView(FluentAnyView(settingsSection).padding(12))
+}._mount(in: FluentRenderContext()) as? NSStackView)!
+paddedSettingsStack.frame = NSRect(x: 0, y: 0, width: 520, height: 600)
+paddedSettingsStack.layoutSubtreeIfNeeded()
+let paddedSettingsWrapper = paddedSettingsStack.arrangedSubviews.first
+let paddedSettingsSection = paddedSettingsWrapper.flatMap {
+    firstView(identifier: "FluentKit.Settings.Section", in: $0)
+}
+require(
+    abs((paddedSettingsWrapper?.frame.width ?? 0) - paddedSettingsStack.bounds.width) <= 0.5
+        && abs((paddedSettingsSection?.frame.width ?? 0) - (paddedSettingsStack.bounds.width - 24)) <= 0.5,
+    "Settings fill-width propagates through Padding without a fixed page width"
+)
+let scrollingSettingsStack = (FluentVStack(spacing: 8) {
+    FluentAnyView(FluentScrollView(.vertical) {
+        FluentAnyView(settingsSection)
+    }.frame(height: 180))
+}._mount(in: FluentRenderContext()) as? NSStackView)!
+scrollingSettingsStack.frame = NSRect(x: 0, y: 0, width: 560, height: 180)
+scrollingSettingsStack.layoutSubtreeIfNeeded()
+let scrollingSettingsHost = scrollingSettingsStack.arrangedSubviews.first
+let scrollingSettingsScroll = scrollingSettingsHost?.subviews.first as? NSScrollView
+let scrollingSettingsSection = scrollingSettingsScroll?.documentView.flatMap {
+    firstView(identifier: "FluentKit.Settings.Section", in: $0)
+}
+require(
+    abs((scrollingSettingsHost?.frame.width ?? 0) - scrollingSettingsStack.bounds.width) <= 0.5
+        && abs((scrollingSettingsScroll?.frame.width ?? 0) - scrollingSettingsStack.bounds.width) <= 0.5
+        && abs((scrollingSettingsSection?.frame.width ?? 0) - (scrollingSettingsScroll?.contentView.bounds.width ?? 0)) <= 0.5,
+    "Settings fill-width propagates through vertical ScrollView and its viewport"
+)
+let settingsComboSelection = FluentState<ValidationOption?>(wrappedValue: .first)
+let mappedSettingsComboSelection = settingsComboSelection.projectedValue.map({ $0 }, { $0 })
+var settingsComboCardActivations = 0
+let settingsComboSection = FluentSettingsSection("Selection", description: "Nested control geometry") {
+    FluentSettingsCard(
+        "Preferred option",
+        description: "The trailing control owns its pointer interaction",
+        systemImageName: "list.bullet",
+        onActivate: { settingsComboCardActivations += 1 }
+    ) {
+        FluentComboBox(
+            options: [ValidationOption.first, .second, .third],
+            selection: mappedSettingsComboSelection,
+            title: { $0.rawValue.capitalized }
+        )
+        .frame(width: 160)
+    }
+}
+let settingsComboContext = FluentRenderContext(theme: theme.with(colorScheme: .light))
+let settingsComboSectionView = settingsComboSection._mount(in: settingsComboContext)
+let settingsComboWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 560, height: 220),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+let settingsComboRoot = NSView(frame: settingsComboWindow.contentView?.bounds ?? .zero)
+settingsComboWindow.contentView = settingsComboRoot
+settingsComboRoot.addSubview(settingsComboSectionView)
+settingsComboSectionView.translatesAutoresizingMaskIntoConstraints = false
+NSLayoutConstraint.activate([
+    settingsComboSectionView.leadingAnchor.constraint(equalTo: settingsComboRoot.leadingAnchor, constant: 20),
+    settingsComboSectionView.trailingAnchor.constraint(equalTo: settingsComboRoot.trailingAnchor, constant: -20),
+    settingsComboSectionView.topAnchor.constraint(equalTo: settingsComboRoot.topAnchor, constant: 20),
+    settingsComboSectionView.bottomAnchor.constraint(lessThanOrEqualTo: settingsComboRoot.bottomAnchor, constant: -20)
+])
+settingsComboWindow.makeKeyAndOrderFront(nil)
+settingsComboRoot.layoutSubtreeIfNeeded()
+guard let settingsComboCard = firstView(identifier: "FluentKit.Settings.Card", in: settingsComboSectionView),
+      let settingsActionContainer = firstView(
+          identifier: "FluentKit.Settings.ActionContainer",
+          in: settingsComboCard
+      ),
+      let settingsComboLayout = firstView(identifier: "FluentKit.LayoutContainer", in: settingsActionContainer),
+      let settingsComboHost = firstView(identifier: "FluentKit.ComboBox.Host", in: settingsComboLayout),
+      let settingsNativeCombo = firstView(
+          identifier: "FluentKit.ComboBox.NativeBridge",
+          in: settingsComboHost
+      ) as? NSComboBox else {
+    fatalError("SettingsCard ComboBox validation tree did not mount")
+}
+require(
+    abs(settingsComboLayout.intrinsicContentSize.width - 160) <= 0.5
+        && abs(settingsComboLayout.intrinsicContentSize.height - theme.controlHeight) <= 0.5,
+    "width-only FluentLayoutContainer forwards the ComboBox natural control height"
+)
+require(
+    settingsActionContainer.bounds.insetBy(dx: -0.5, dy: -0.5).contains(settingsComboLayout.frame)
+        && settingsComboLayout.bounds.insetBy(dx: -0.5, dy: -0.5).contains(settingsComboHost.frame)
+        && settingsComboHost.bounds.insetBy(dx: -0.5, dy: -0.5).contains(settingsNativeCombo.frame)
+        && settingsActionContainer.frame.height + 0.5 >= settingsComboLayout.fittingSize.height,
+    "SettingsCard action slot, LayoutContainer, ComboBoxHost, and native bridge share one vertical extent "
+        + "(action: \(settingsActionContainer.bounds), layout: \(settingsComboLayout.frame)/\(settingsComboLayout.fittingSize), "
+        + "host: \(settingsComboHost.frame), native: \(settingsNativeCombo.frame))"
+)
+let settingsComboPoint = NSPoint(x: settingsComboHost.bounds.midX, y: settingsComboHost.bounds.midY)
+let settingsComboPointInCard = settingsComboCard.convert(
+    settingsComboHost.convert(settingsComboPoint, to: nil),
+    from: nil
+)
+require(
+    settingsComboCard.hitTest(settingsComboPointInCard) === settingsComboHost,
+    "SettingsCard preserves AppKit hit-testing for the nested ComboBox action subtree"
+)
+settingsComboHost.updateTrackingAreas()
+settingsComboHost.updateTrackingAreas()
+require(settingsComboHost.trackingAreas.count == 1, "selection ComboBoxHost owns one stable tracking area")
+settingsComboHost.mouseDown(with:
+    toggleMouseEvent(.leftMouseDown, at: settingsComboPoint, in: settingsComboHost, eventNumber: 743)
+)
+require(
+    settingsComboWindow.childWindows?.isEmpty != false,
+    "SettingsCard ComboBox mouse-down enters pressed state without opening early"
+)
+let settingsComboOutsidePoint = NSPoint(x: settingsComboHost.bounds.maxX + 12, y: settingsComboPoint.y)
+settingsComboHost.mouseDragged(with:
+    toggleMouseEvent(
+        .leftMouseDragged,
+        at: settingsComboOutsidePoint,
+        in: settingsComboHost,
+        eventNumber: 744
+    )
+)
+settingsComboHost.mouseUp(with:
+    toggleMouseEvent(.leftMouseUp, at: settingsComboOutsidePoint, in: settingsComboHost, eventNumber: 745)
+)
+require(
+    settingsComboWindow.childWindows?.isEmpty != false,
+    "selection ComboBoxHost cancels a press released outside its closed faceplate"
+)
+settingsComboHost.mouseDown(with:
+    toggleMouseEvent(.leftMouseDown, at: settingsComboPoint, in: settingsComboHost, eventNumber: 746)
+)
+settingsComboHost.mouseUp(with:
+    toggleMouseEvent(.leftMouseUp, at: settingsComboPoint, in: settingsComboHost, eventNumber: 747)
+)
+drainMainQueue()
+require(
+    settingsComboWindow.childWindows?.count == 1 && settingsComboCardActivations == 0,
+    "selection ComboBoxHost opens its popup without activating the containing SettingsCard "
+        + "(children: \(settingsComboWindow.childWindows?.count ?? -1), card activations: \(settingsComboCardActivations))"
+)
+let darkSettingsComboContext = FluentRenderContext(theme: theme.with(colorScheme: .dark))
+require(
+    settingsComboSection._update(settingsComboSectionView, in: darkSettingsComboContext)
+        && settingsComboWindow.childWindows?.count == 1,
+    "an equivalent mapped binding and theme update preserve an already-open ComboBox popup"
+)
+guard let settingsSecondRow = settingsComboWindow.childWindows?.first?.contentView.flatMap({
+    firstView(withAccessibilityTitle: "Second", in: $0)
+}) else {
+    fatalError("SettingsCard ComboBox popup row did not mount")
+}
+let settingsSecondPoint = NSPoint(x: settingsSecondRow.bounds.midX, y: settingsSecondRow.bounds.midY)
+settingsSecondRow.mouseDown(with:
+    toggleMouseEvent(.leftMouseDown, at: settingsSecondPoint, in: settingsSecondRow, eventNumber: 745)
+)
+settingsSecondRow.mouseUp(with:
+    toggleMouseEvent(.leftMouseUp, at: settingsSecondPoint, in: settingsSecondRow, eventNumber: 746)
+)
+drainMainQueue()
+require(
+    settingsComboSelection.wrappedValue == .second
+        && settingsNativeCombo.stringValue == "Second"
+        && settingsComboWindow.childWindows?.isEmpty != false,
+    "a real popup-row click updates the binding and closed ComboBox faceplate before dismissal"
+)
+settingsComboWindow.setContentSize(NSSize(width: 720, height: 240))
+settingsComboRoot.layoutSubtreeIfNeeded()
+require(
+    abs(settingsComboSectionView.frame.width - (settingsComboRoot.bounds.width - 40)) <= 0.5
+        && abs(settingsComboCard.frame.width - settingsComboSectionView.frame.width) <= 0.5
+        && settingsActionContainer.bounds.insetBy(dx: -0.5, dy: -0.5).contains(settingsComboLayout.frame)
+        && settingsComboLayout.bounds.insetBy(dx: -0.5, dy: -0.5).contains(settingsComboHost.frame),
+    "SettingsSection remains full-width and preserves nested ComboBox geometry after window resize"
+)
+let resizedSettingsComboPoint = NSPoint(x: settingsComboHost.bounds.midX, y: settingsComboHost.bounds.midY)
+settingsComboHost.mouseDown(with:
+    toggleMouseEvent(.leftMouseDown, at: resizedSettingsComboPoint, in: settingsComboHost, eventNumber: 747)
+)
+settingsComboHost.mouseUp(with:
+    toggleMouseEvent(.leftMouseUp, at: resizedSettingsComboPoint, in: settingsComboHost, eventNumber: 748)
+)
+drainMainQueue()
+require(
+    settingsComboWindow.childWindows?.count == 1,
+    "SettingsCard ComboBox remains clickable after resize"
+)
+if let settingsThirdRow = settingsComboWindow.childWindows?.first?.contentView.flatMap({
+    firstView(withAccessibilityTitle: "Third", in: $0)
+}) {
+    let point = NSPoint(x: settingsThirdRow.bounds.midX, y: settingsThirdRow.bounds.midY)
+    settingsThirdRow.mouseDown(with:
+        toggleMouseEvent(.leftMouseDown, at: point, in: settingsThirdRow, eventNumber: 749)
+    )
+    settingsThirdRow.mouseUp(with:
+        toggleMouseEvent(.leftMouseUp, at: point, in: settingsThirdRow, eventNumber: 750)
+    )
+}
+drainMainQueue()
+require(
+    settingsComboSelection.wrappedValue == .third
+        && settingsComboWindow.childWindows?.isEmpty != false,
+    "SettingsCard ComboBox commits through the same Host-owned path after resize"
+)
+settingsComboWindow.orderOut(nil)
+let settingsExpanderState = FluentState(wrappedValue: false)
+let settingsExpander = FluentSettingsExpander(
+    "Advanced",
+    description: "Additional options",
+    systemImageName: "slider.horizontal.3",
+    isExpanded: settingsExpanderState.projectedValue
+) {
+    FluentSettingsSection {
+        FluentSettingsCard("Diagnostics", description: "Verbose logging")
+    }
+}
+let settingsExpanderView = settingsExpander._mount(in: FluentRenderContext())
+settingsExpanderView.layoutSubtreeIfNeeded()
+let collapsedSettingsHeight = settingsExpanderView.fittingSize.height
+settingsExpanderState.wrappedValue = true
+drainMainQueue()
+settingsExpanderView.layoutSubtreeIfNeeded()
+let expandedSettingsHeight = settingsExpanderView.fittingSize.height
+let hasSettingsExpanderHeader = firstView(
+    identifier: "FluentKit.Settings.Expander.Header",
+    in: settingsExpanderView
+) != nil
+require(
+    hasSettingsExpanderHeader && expandedSettingsHeight > collapsedSettingsHeight,
+    "SettingsExpander exposes an accessible header and expands its child content "
+        + "(header: \(hasSettingsExpanderHeader), collapsed: \(collapsedSettingsHeight), "
+        + "expanded: \(expandedSettingsHeight))"
+)
+let settingsExpanderHeader = firstView(
+    identifier: "FluentKit.Settings.Expander.Header",
+    in: settingsExpanderView
+)
+if let settingsExpanderHeader,
+   let settingsChevron = firstLayer(named: "FluentKit.Settings.Chevron", in: settingsExpanderHeader) {
+    let expectedChevronCenterX = settingsExpanderHeader.userInterfaceLayoutDirection == .rightToLeft
+        ? settingsExpanderHeader.bounds.minX + 20
+        : settingsExpanderHeader.bounds.maxX - 20
+    require(
+        settingsChevron.bounds.size == NSSize(width: 12, height: 12)
+            && abs(settingsChevron.position.x - expectedChevronCenterX) <= 0.5
+            && abs(settingsChevron.position.y - settingsExpanderHeader.bounds.midY) <= 0.5,
+        "SettingsExpander centers the WinUI 12pt chevron in its 40pt trailing alignment slot "
+            + "(bounds: \(settingsChevron.bounds), position: \(settingsChevron.position), "
+            + "header: \(settingsExpanderHeader.bounds), expectedX: \(expectedChevronCenterX))"
+    )
+} else {
+    require(false, "SettingsExpander exposes its shared semantic chevron primitive")
+}
+require(
+    settingsExpanderHeader?.accessibilityPerformPress() == true
+        && !settingsExpanderState.wrappedValue,
+    "SettingsExpander header press writes the collapsed state through its binding"
+)
+settingsExpanderView.layoutSubtreeIfNeeded()
+require(
+    settingsExpanderView.fittingSize.height <= collapsedSettingsHeight + 1,
+    "detached SettingsExpander collapses its clipped viewport from the real header interaction"
+)
+require(
+    settingsExpanderHeader?.accessibilityPerformPress() == true
+        && settingsExpanderState.wrappedValue,
+    "SettingsExpander header press can expand again without a second local state path"
+)
+let settingsExpanderWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 460, height: 220),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+settingsExpanderWindow.contentView = settingsExpanderView
+settingsExpanderWindow.makeKeyAndOrderFront(nil)
+settingsExpanderView.frame = NSRect(x: 0, y: 0, width: 460, height: 220)
+settingsExpanderState.wrappedValue = false
+drainMainQueue()
+if let settingsExpanderHeader {
+    let clickPoint = NSPoint(x: settingsExpanderHeader.bounds.midX, y: settingsExpanderHeader.bounds.midY)
+    settingsExpanderHeader.mouseDown(
+        with: toggleMouseEvent(.leftMouseDown, at: clickPoint, in: settingsExpanderHeader, eventNumber: 741)
+    )
+    settingsExpanderHeader.mouseUp(
+        with: toggleMouseEvent(.leftMouseUp, at: clickPoint, in: settingsExpanderHeader, eventNumber: 742)
+    )
+    require(
+        settingsExpanderState.wrappedValue,
+        "SettingsExpander toggles through a real mouse-down/mouse-up row click"
+    )
+    settingsExpanderState.wrappedValue = false
+    drainMainQueue()
+}
+settingsExpanderState.wrappedValue = true
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.06))
+let reversingExpanderHeight = settingsExpanderView.fittingSize.height
+settingsExpanderState.wrappedValue = false
+require(
+    waitUntil(timeout: 0.35) { settingsExpanderView.fittingSize.height <= collapsedSettingsHeight + 1 },
+    "SettingsExpander reverses from its current presentation height without leaving content visible"
+)
+require(
+    reversingExpanderHeight > collapsedSettingsHeight,
+    "SettingsExpander exposes a measurable viewport while its height animation is active"
+)
+settingsExpanderWindow.orderOut(nil)
+require(settingsToggleState.wrappedValue, "SettingsCard action state remains owned by its child control")
 
 let mode = FluentState(wrappedValue: 1)
 let segmented = FluentSegmentedControl(["One", "Two", "Three"], selection: mode.projectedValue)
@@ -2887,11 +7649,30 @@ let applicationCommands = [
 ]
 let mainMenuCoordinator = FluentMainMenuCoordinator(applicationName: "Validation App", groups: applicationCommands)
 require(mainMenuCoordinator.menu.title == "Validation App", "main menu preserves application title")
-require(mainMenuCoordinator.menu.items.count == 3, "main menu contains app item and declarative command groups")
+require(
+    mainMenuCoordinator.menu.items.map { $0.submenu?.title ?? "" }
+        == ["Validation App", "File", "Edit", "View", "Window", "Help"],
+    "main menu owns the standard App, File, Edit, View, Window, and Help structure"
+)
 let fileMenu = mainMenuCoordinator.menu.items[1].submenu
 require(fileMenu?.title == "File", "main menu preserves command group title")
-require(fileMenu?.items.count == 1, "main menu renders one item per command")
-let exportItem = fileMenu?.items.first
+require(
+    fileMenu?.items.contains { $0.action == #selector(NSDocumentController.newDocument(_:)) } == true
+        && fileMenu?.items.contains { $0.action == #selector(NSDocumentController.openDocument(_:)) } == true
+        && fileMenu?.items.contains { $0.action == #selector(NSWindow.performClose(_:)) } == true,
+    "File menu keeps New, Open, and Close on the native responder chain"
+)
+let editMenu = mainMenuCoordinator.menu.items[2].submenu
+require(
+    editMenu?.items.contains { $0.action.map(NSStringFromSelector) == "undo:" } == true
+        && editMenu?.items.contains { $0.action.map(NSStringFromSelector) == "redo:" } == true
+        && editMenu?.items.contains { $0.action == #selector(NSText.cut(_:)) } == true
+        && editMenu?.items.contains { $0.action == #selector(NSText.copy(_:)) } == true
+        && editMenu?.items.contains { $0.action == #selector(NSText.paste(_:)) } == true
+        && editMenu?.items.contains { $0.action == #selector(NSText.selectAll(_:)) } == true,
+    "Edit menu routes Undo, clipboard, and selection commands through AppKit responders"
+)
+let exportItem = fileMenu?.items.first { $0.title == "Export" }
 require(exportItem?.keyEquivalent == "e", "main menu preserves command key equivalent")
 require(exportItem?.keyEquivalentModifierMask == [.command, .shift], "main menu preserves command modifiers")
 require(exportItem.map(mainMenuCoordinator.perform) == true, "main menu performs an enabled command")
@@ -2901,15 +7682,115 @@ mainMenuCoordinator.menuNeedsUpdate(mainMenuCoordinator.menu)
 require(exportItem?.isEnabled == false, "main menu refreshes dynamic enabled state")
 require(exportItem.map(mainMenuCoordinator.perform) == false, "main menu refuses to perform a disabled command")
 mainMenuCoordinator.update(groups: [])
-require(mainMenuCoordinator.menu.items.count == 1, "main menu update removes stale declarative groups")
+require(
+    mainMenuCoordinator.menu.items.count == 6
+        && mainMenuCoordinator.menu.items[1].submenu?.items.contains { $0.title == "Export" } == false,
+    "main menu update removes stale declarative commands while preserving standard menus"
+)
 
 let pickedDate = FluentState(wrappedValue: Date(timeIntervalSince1970: 1_700_000_000))
 let datePicker = FluentDatePicker(selection: pickedDate.projectedValue)
 let styledDatePicker = datePicker.textFieldStyle(ValidationTextFieldStyle())
-let dateView = styledDatePicker._mount(in: FluentRenderContext())
+let dateTheme = FluentTheme.custom(colorScheme: .light)
+let dateView = styledDatePicker._mount(in: FluentRenderContext(theme: dateTheme))
 require(dateView is NSDatePicker, "date picker mounts native AppKit control")
 require((dateView as? NSDatePicker)?.dateValue == pickedDate.wrappedValue, "date picker reads selection binding")
 require((dateView as? NSDatePicker)?.font?.pointSize == 17, "date picker receives the shared semantic field font")
+if let nativeDatePicker = dateView as? NSDatePicker {
+    require(nativeDatePicker.datePickerStyle == .textField, "calendar date picker keeps native text-field interaction")
+    require(nativeDatePicker.datePickerMode == .single, "calendar date picker keeps a single native date selection")
+    require(!nativeDatePicker.isBordered && !nativeDatePicker.drawsBackground, "calendar date picker removes native AppKit chrome")
+    if #available(macOS 10.15.4, *) {
+        require(!nativeDatePicker.presentsCalendarOverlay, "calendar date picker does not depend on AppKit's private overlay hit region")
+    }
+}
+let datePickerWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 80),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+dateView.frame = NSRect(x: 20, y: 24, width: 220, height: 32)
+datePickerWindow.contentView = dateView
+datePickerWindow.makeKeyAndOrderFront(nil)
+dateView.layoutSubtreeIfNeeded()
+guard let dateElevationBorder = firstLayer(
+    named: "FluentKit.CalendarDatePicker.ElevationBorder",
+    in: dateView
+) as? CAGradientLayer,
+      let dateElevationMask = dateElevationBorder.mask as? CAShapeLayer,
+      let dateElevationPath = dateElevationMask.path else {
+    fatalError("CalendarDatePicker elevation border did not mount")
+}
+let dateElevationBounds = dateElevationPath.boundingBox
+require(
+    dateElevationMask.fillRule == .evenOdd
+        && pathBoundsUseContainedAntialiasing(
+            dateElevationBounds,
+            in: dateView.bounds,
+            backingScale: dateElevationBorder.contentsScale
+        ),
+    "CalendarDatePicker keeps its elevation antialiasing inside every host edge"
+)
+require(
+    dateElevationBorder.locations?.map(\.doubleValue) == [0.33, 1]
+        && elevationGradientMatchesVisualEdge(
+            dateElevationBorder,
+            edge: .bottom,
+            hostView: dateView
+        ),
+    "CalendarDatePicker uses the source three-point brush at its visual elevation edge"
+)
+require(
+    dateElevationBorder.contentsScale == datePickerWindow.backingScaleFactor
+        && dateElevationMask.contentsScale == datePickerWindow.backingScaleFactor,
+    "CalendarDatePicker resolves its elevation edge on the window backing scale"
+)
+dateView.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: dateView.bounds.midX, y: dateView.bounds.midY),
+        in: dateView,
+        eventNumber: 97
+    )
+)
+require(
+    colorMatches(dateView.layer?.backgroundColor, dateTheme.buttonBackground(for: .pointerOver)),
+    "CalendarDatePicker maps pointer-over to the source secondary control fill"
+)
+require(
+    dateView.layer?.animationKeys()?.isEmpty != false
+        && dateElevationBorder.animationKeys()?.isEmpty != false,
+    "CalendarDatePicker applies its source discrete visual-state setters without invented motion"
+)
+dateView.mouseDown(
+    with: toggleMouseEvent(
+        .leftMouseDown,
+        at: NSPoint(x: dateView.bounds.midX, y: dateView.bounds.midY),
+        in: dateView,
+        eventNumber: 98
+    )
+)
+drainMainQueue()
+require(
+    datePickerWindow.childWindows?.first?.contentView?.identifier?.rawValue
+        == "FluentKit.CalendarDatePicker.Popover",
+    "CalendarDatePicker opens a native calendar popover from a primary click anywhere on its surface"
+)
+require(
+    datePickerWindow.childWindows?.first?.contentView?.subviews.contains { $0 is NSDatePicker } == true,
+    "CalendarDatePicker popover keeps native clock-and-calendar selection behavior"
+)
+datePickerWindow.childWindows?.first?.performClose(nil)
+drainMainQueue()
+if let nativeDatePicker = dateView as? NSDatePicker {
+    nativeDatePicker.isEnabled = false
+    require(
+        colorMatches(dateView.layer?.backgroundColor, dateTheme.buttonBackground(for: .disabled)),
+        "CalendarDatePicker maps disabled state to the source disabled control fill"
+    )
+}
+datePickerWindow.orderOut(nil)
 
 let pickedColor = FluentState(wrappedValue: NSColor.systemBlue)
 let colorPicker = FluentColorPicker(selection: pickedColor.projectedValue, label: "Accent color")
@@ -3017,6 +7898,28 @@ let navigationViewItems = [
 let navigationViewFooterItems = [
     FluentNavigationItem(id: "settings", title: "Settings", systemImageName: "gearshape")
 ]
+
+struct NavigationPageProbe: FluentView {
+    let selection: FluentState<String?>
+    let transition: FluentNavigationTransitionMode
+
+    var body: FluentNavigationView<String> {
+        let page = selection.wrappedValue ?? "none"
+        return FluentNavigationView(
+            [
+                FluentNavigationItem(id: "home", title: "Home", systemImageName: "house"),
+                FluentNavigationItem(id: "library", title: "Library", systemImageName: "books.vertical"),
+                FluentNavigationItem(id: "controls", title: "Controls", systemImageName: "slider.horizontal.3")
+            ],
+            selection: selection.projectedValue,
+            paneDisplayMode: .top,
+            contentTransition: transition
+        ) {
+            FluentText("Navigation page \(page)")
+        }
+    }
+}
+
 let navigationViewSelection = FluentState<String?>(wrappedValue: "home")
 let navigationViewPaneOpen = FluentState(wrappedValue: true)
 let reusableNavigation = FluentNavigationView(
@@ -3048,29 +7951,102 @@ drainMainQueue()
 reusableNavigationHost.layoutSubtreeIfNeeded()
 let reusablePane = firstView(identifier: "FluentKit.NavigationView.Pane", in: reusableNavigationHost)
 let reusableContent = firstView(identifier: "FluentKit.NavigationView.Content", in: reusableNavigationHost)
+let reusableSectionHeader = firstView(identifier: "FluentKit.NavigationView.SectionHeader", in: reusableNavigationHost)
 let reusableToggle = firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: reusableNavigationHost) as? NSButton
 let reusableIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: reusableNavigationHost)
+require(
+    reusablePane.flatMap(firstMaterialView)?.materialStyle == .mica
+        && reusablePane.flatMap(firstMaterialView)?.isMaterialEnabled == true,
+    "standalone NavigationView pane uses the global persistent Mica surface"
+)
 let reusablePreviousIndicator = firstLayer(named: "FluentKit.NavigationView.PreviousSelectionIndicator", in: reusableNavigationHost)
 require(
     abs((reusablePane?.frame.width ?? 0) - 280) < 0.5
         && abs((reusableContent?.frame.minX ?? 0) - 280) < 0.5,
     "NavigationView left mode reserves the configured open pane length"
 )
+if let reusablePane, let paneMaterial = firstMaterialView(in: reusablePane) {
+    require(
+        paneMaterial.frame == reusablePane.bounds,
+        "NavigationView standalone Mica surface fills the pane coordinate space"
+    )
+}
 require(
     reusableIndicator?.frame.size == NSSize(width: 3, height: 16)
         && reusablePreviousIndicator?.opacity == 0,
-    "NavigationView exposes the shared vertical two-indicator geometry"
+    "NavigationView exposes the shared vertical indicator geometry"
+)
+if let reusablePane,
+   let homeButton = firstView(withAccessibilityTitle: "Home", in: reusableNavigationHost),
+   let reusableIndicator {
+    let homeFrame = homeButton.convert(homeButton.bounds, to: reusablePane)
+    require(
+        abs(reusableIndicator.frame.midY - homeFrame.midY) < 0.5
+            && abs(reusableIndicator.frame.minX - (homeFrame.minX + 2)) < 0.5,
+        "NavigationView commits the first item frame and indicator frame in one layout pass"
+    )
+}
+let navigationItemButtons = views(identifier: "FluentKit.NavigationView.Item", in: reusableNavigationHost)
+navigationItemButtons.forEach {
+    $0.updateTrackingAreas()
+    $0.updateTrackingAreas()
+}
+require(
+    navigationItemButtons.allSatisfy { $0.trackingAreas.count == 1 },
+    "NavigationView items keep one visible-rect tracking area across repeated layout updates"
+)
+if let libraryButton = firstView(withAccessibilityTitle: "Library", in: reusableNavigationHost),
+   let settingsButton = firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost) {
+    let libraryRestingAlpha = renderedBackgroundAlpha(in: libraryButton)
+    let settingsRestingAlpha = renderedBackgroundAlpha(in: settingsButton)
+    libraryButton.mouseEntered(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: 12, y: libraryButton.bounds.midY),
+            in: libraryButton,
+            eventNumber: 88
+        )
+    )
+    let libraryHoverAlpha = renderedBackgroundAlpha(in: libraryButton)
+    settingsButton.mouseEntered(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: 12, y: settingsButton.bounds.midY),
+            in: settingsButton,
+            eventNumber: 89
+        )
+    )
+    require(
+        libraryHoverAlpha > libraryRestingAlpha + 0.01
+            && abs(renderedBackgroundAlpha(in: libraryButton) - libraryRestingAlpha) < 0.01
+            && renderedBackgroundAlpha(in: settingsButton) > settingsRestingAlpha + 0.01,
+        "NavigationView owns one PointerOver destination across primary and footer presenters"
+    )
+    settingsButton.mouseExited(
+        with: toggleMouseEvent(
+            .mouseMoved,
+            at: NSPoint(x: -1, y: -1),
+            in: settingsButton,
+            eventNumber: 90
+        )
+    )
+}
+require(
+    navigationItemButtons.count == 4,
+    "NavigationView mounts primary and footer items through one presenter"
 )
 require(
-    views(identifier: "FluentKit.NavigationView.Item", in: reusableNavigationHost).count == 4,
-    "NavigationView mounts primary and footer items through one presenter"
+    reusableSectionHeader?.frame.height == 40
+        && reusableSectionHeader?.layer?.masksToBounds == true
+        && reusableSectionHeader?.isHidden == false,
+    "NavigationView section text is hosted in a clipped 40pt WinUI header region"
 )
 navigationViewSelection.wrappedValue = "settings"
 drainMainQueue()
 let footerIncoming = reusableIndicator?.animation(forKey: "fluent.navigation.selection") as? CAAnimationGroup
-let footerOutgoing = reusablePreviousIndicator?.animation(forKey: "fluent.navigation.selection.outgoing") as? CAAnimationGroup
 require(
-    footerIncoming != nil && footerOutgoing != nil,
+    footerIncoming != nil
+        && reusablePreviousIndicator?.animation(forKey: "fluent.navigation.selection.outgoing") == nil,
     "NavigationView animates one shared indicator between primary and footer destinations"
 )
 if let reusablePane,
@@ -3099,6 +8075,14 @@ require(
     "NavigationView disabled destinations cannot change selection"
 )
 reusableToggle?.performClick(nil)
+let paneCloseAnimation = reusablePane?.layer?.animation(forKey: "fluent.navigation.pane.frame")
+let sectionRepositionAnimation = firstView(
+    identifier: "FluentKit.NavigationView.PrimaryScroll",
+    in: reusableNavigationHost
+)?.layer?.animation(forKey: "fluent.navigation.header.frame") as? CAAnimationGroup
+let sectionHeaderAnimation = reusablePane.flatMap { pane in
+    labels(in: pane).first { $0.stringValue == "Explore" }
+}?.layer?.animation(forKey: "fluent.navigation.header.opacity")
 drainMainQueue()
 require(
     navigationViewPaneOpen.wrappedValue == false
@@ -3107,19 +8091,113 @@ require(
     "NavigationView left mode closes to the 48pt compact rail"
 )
 require(
-    reusablePane?.layer?.animation(forKey: "fluent.navigation.pane.frame") != nil,
+    paneCloseAnimation != nil,
     "NavigationView pane close uses explicit completion-trackable frame motion"
 )
 require(
-    reusablePane.flatMap { pane in labels(in: pane).first { $0.stringValue == "Explore" } }?.isHidden == true,
-    "NavigationView hides section text before compact-pane motion can clip or jump it"
+    sectionHeaderAnimation != nil,
+    "NavigationView fades its section text through the header transition"
 )
+require(
+    sectionRepositionAnimation?.animations?.compactMap { ($0 as? CAPropertyAnimation)?.keyPath }
+        == ["position", "bounds.size"]
+        && abs((sectionRepositionAnimation?.duration ?? 0) - FluentMotion.navigationHeaderOpen.duration) < 0.0001,
+    "NavigationView repositions items through the source-derived 200ms header transition"
+)
+require(
+    reusableSectionHeader?.isHidden == true
+        && reusableSectionHeader?.frame.height == 0
+        && reusablePane.flatMap { pane in labels(in: pane).first { $0.stringValue == "Explore" } }?.isHidden == true,
+    "NavigationView removes the header region before the compact pane can clip its text"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: FluentMotion.navigationHeaderOpen.duration + 0.03))
+require(
+    reusablePane.flatMap { pane in labels(in: pane).first { $0.stringValue == "Explore" } }?.isHidden == true,
+    "NavigationView collapses section text after the header fade completes"
+)
+require(
+    (firstView(withAccessibilityTitle: "Home", in: reusableNavigationHost) as? NSButton)?.toolTip == "Home"
+        && (firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost) as? NSButton)?.toolTip == "Settings",
+    "NavigationView keeps compact item presenters after a manually closed left pane settles"
+)
+if let reusablePane,
+   let settingsButton = firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost),
+   let reusableIndicator {
+    let settingsFrame = settingsButton.convert(settingsButton.bounds, to: reusablePane)
+    require(
+        abs(reusableIndicator.frame.midY - settingsFrame.midY) < 0.5,
+        "NavigationView keeps the selected footer indicator aligned while collapsed"
+    )
+}
 reusableToggle?.performClick(nil)
 drainMainQueue()
+let sectionHeaderOpenAnimation = reusablePane.flatMap { pane in
+    labels(in: pane).first { $0.stringValue == "Explore" }
+}?.layer?.animation(forKey: "fluent.navigation.header.opacity") as? CAKeyframeAnimation
 require(
     navigationViewPaneOpen.wrappedValue == true && abs((reusablePane?.frame.width ?? 0) - 280) < 0.5,
     "rapid NavigationView pane reversal settles on the latest requested state"
 )
+require(
+    sectionHeaderOpenAnimation?.values?.count == 3
+        && sectionHeaderOpenAnimation?.keyTimes == [0, 0.5, 1]
+        && sectionHeaderOpenAnimation?.timingFunctions?.count == 2
+        && sectionHeaderOpenAnimation?.timingFunction == nil,
+    "NavigationView header opens with the source-derived delayed 200ms opacity sequence"
+)
+if let reusablePane,
+   let settingsButton = firstView(withAccessibilityTitle: "Settings", in: reusableNavigationHost),
+   let reusableIndicator {
+    let settingsFrame = settingsButton.convert(settingsButton.bounds, to: reusablePane)
+    require(
+        abs(reusableIndicator.frame.midY - settingsFrame.midY) < 0.5,
+        "NavigationView recomputes the selected indicator after pane reopen"
+    )
+}
+
+let scrollingItems = (0..<12).map {
+    FluentNavigationItem(id: "row-\($0)", title: "Row \($0)", systemImageName: "circle")
+}
+let scrollingSelection = FluentState<String?>(wrappedValue: "row-0")
+let scrollingNavigation = FluentNavigationView(
+    scrollingItems,
+    selection: scrollingSelection.projectedValue,
+    paneDisplayMode: .left,
+    openPaneLength: 220,
+    paneSectionTitle: nil
+) {
+    FluentText("Scrolling content")
+}
+let scrollingHost = FluentViewHost(scrollingNavigation)
+let scrollingWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 640, height: 220),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+scrollingWindow.contentView = scrollingHost
+scrollingHost.frame = NSRect(x: 0, y: 0, width: 640, height: 220)
+scrollingWindow.orderFront(nil)
+scrollingHost.layoutSubtreeIfNeeded()
+let primaryScroll = firstView(identifier: "FluentKit.NavigationView.PrimaryScroll", in: scrollingHost) as? NSScrollView
+let scrollingIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: scrollingHost)
+scrollingSelection.wrappedValue = "row-5"
+drainMainQueue()
+if let primaryScroll,
+   let rowButton = firstView(withAccessibilityTitle: "Row 5", in: scrollingHost) as? NSButton,
+   let scrollingIndicator {
+    primaryScroll.contentView.scroll(to: NSPoint(x: 0, y: max(rowButton.frame.minY - 12, 0)))
+    primaryScroll.reflectScrolledClipView(primaryScroll.contentView)
+    drainMainQueue()
+    if let pane = firstView(identifier: "FluentKit.NavigationView.Pane", in: scrollingHost) {
+        let rowFrame = rowButton.convert(rowButton.bounds, to: pane)
+        require(
+            abs(scrollingIndicator.frame.midY - rowFrame.midY) < 0.5,
+            "NavigationView refreshes the indicator from stable document coordinates after scrolling"
+        )
+    }
+}
+scrollingWindow.orderOut(nil)
 
 let automaticSelection = FluentState<String?>(wrappedValue: "home")
 let automaticPaneOpen = FluentState(wrappedValue: true)
@@ -3146,11 +8224,20 @@ automaticWindow.orderFront(nil)
 automaticHost.layoutSubtreeIfNeeded()
 let automaticPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: automaticHost)
 let automaticContent = firstView(identifier: "FluentKit.NavigationView.Content", in: automaticHost)
+let automaticPaneMaterial = firstView(
+    identifier: "FluentKit.NavigationView.PaneMaterial",
+    in: automaticHost
+) as? FluentMaterialView
 require(
     automaticDisplayModes.last == .compact
         && automaticPaneOpen.wrappedValue == false
         && abs((automaticPane?.frame.width ?? 0) - 48) < 0.5,
     "NavigationView Auto resolves 800pt to closed Compact mode"
+)
+require(
+    automaticPaneMaterial?.materialStyle == .mica
+        && automaticPane.map(materialViews(in:))?.count == 1,
+    "a standalone NavigationView automatically owns one persistent Mica pane surface"
 )
 automaticHost.frame = NSRect(x: 0, y: 0, width: 1_200, height: 420)
 automaticHost.layoutSubtreeIfNeeded()
@@ -3222,9 +8309,14 @@ require(
 topSelection.wrappedValue = "library"
 drainMainQueue()
 let topIndicatorGroup = topIndicator?.animation(forKey: "fluent.navigation.selection") as? CAAnimationGroup
+let topPosition = keyframeAnimation(for: "position", in: topIndicatorGroup)
+let topBounds = keyframeAnimation(for: "bounds.size", in: topIndicatorGroup)
 require(
-    keyframeAnimation(for: "transform.scale.x", in: topIndicatorGroup) != nil,
-    "Top NavigationView uses horizontal two-indicator scaling"
+    topPosition?.values?.count == 3
+        && topBounds?.values?.count == 3
+        && ((topBounds?.values?[1] as? NSValue)?.sizeValue.width ?? 0)
+            > ((topBounds?.values?.last as? NSValue)?.sizeValue.width ?? 0),
+    "Top NavigationView uses horizontal connected bounds motion"
 )
 
 let overflowItems = [
@@ -3310,7 +8402,8 @@ let reducedNavigationView = FluentNavigationView(
     navigationViewItems,
     selection: FluentState<String?>(wrappedValue: "home").projectedValue,
     isPaneOpen: reducedPaneOpen.projectedValue,
-    paneDisplayMode: .leftCompact
+    paneDisplayMode: .leftCompact,
+    paneSectionTitle: "Explore"
 ) {
     FluentText("Reduced motion content")
 }
@@ -3329,13 +8422,268 @@ reducedNavigationViewHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
 reducedNavigationWindow.orderFront(nil)
 reducedNavigationViewHost.layoutSubtreeIfNeeded()
 let reducedPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: reducedNavigationViewHost)
+let reducedSectionHeader = firstView(identifier: "FluentKit.NavigationView.SectionHeader", in: reducedNavigationViewHost)
 (firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: reducedNavigationViewHost) as? NSButton)?.performClick(nil)
 drainMainQueue()
 require(
     reducedPaneOpen.wrappedValue == true
-        && reducedPane?.layer?.animation(forKey: "fluent.navigation.pane.frame") == nil,
+        && reducedPane?.layer?.animation(forKey: "fluent.navigation.pane.frame") == nil
+        && reducedSectionHeader?.layer?.animation(forKey: "fluent.navigation.header.opacity") == nil
+        && reducedSectionHeader?.isHidden == false
+        && reducedSectionHeader?.frame.height == 40,
     "NavigationView Reduce Motion snaps pane geometry without allocating frame animation"
 )
+
+let rtlCompactSelection = FluentState<String?>(wrappedValue: "home")
+let rtlCompactNavigation = FluentNavigationView(
+    navigationViewItems,
+    selection: rtlCompactSelection.projectedValue,
+    isPaneOpen: FluentState(wrappedValue: false).projectedValue,
+    paneDisplayMode: .leftCompact,
+    paneSectionTitle: "Explore"
+) {
+    FluentText("RTL compact content")
+}
+let rtlCompactHost = FluentViewHost(
+    rtlCompactNavigation,
+    context: FluentRenderContext(
+        theme: FluentTheme.custom(contrast: .high, colorScheme: .light),
+        reduceMotion: true,
+        layoutDirection: .rightToLeft
+    )
+)
+let rtlCompactWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+rtlCompactWindow.contentView = rtlCompactHost
+rtlCompactHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
+rtlCompactWindow.orderFront(nil)
+rtlCompactHost.layoutSubtreeIfNeeded()
+let rtlCompactPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: rtlCompactHost)
+let rtlCompactHome = firstView(withAccessibilityTitle: "Home", in: rtlCompactHost)
+let rtlCompactIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: rtlCompactHost)
+let rtlCompactHeader = firstView(identifier: "FluentKit.NavigationView.SectionHeader", in: rtlCompactHost)
+if let rtlCompactPane, let rtlCompactHome, let rtlCompactIndicator {
+    let itemFrame = rtlCompactHome.convert(rtlCompactHome.bounds, to: rtlCompactPane)
+    require(
+        abs(rtlCompactPane.frame.minX - 712) < 0.5
+            && abs(rtlCompactHome.frame.minX - 4) < 0.5
+            && abs(rtlCompactHome.frame.width - 40) < 0.5
+            && abs(rtlCompactIndicator.frame.maxX - (itemFrame.maxX - 2)) < 0.5
+            && rtlCompactHeader?.isHidden == true,
+        "RTL compact NavigationView keeps the 48pt rail, right-edge indicator, and hidden header aligned"
+    )
+}
+
+let pageTransitionSelection = FluentState<String?>(wrappedValue: "home")
+let pageTransitionHost = FluentViewHost(
+    NavigationPageProbe(selection: pageTransitionSelection, transition: .slide)
+)
+let pageTransitionWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+pageTransitionWindow.contentView = pageTransitionHost
+pageTransitionHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
+pageTransitionWindow.orderFront(nil)
+pageTransitionHost.layoutSubtreeIfNeeded()
+pageTransitionSelection.wrappedValue = "library"
+drainMainQueue()
+let pagePresenter = firstView(identifier: "FluentKit.NavigationView.Content", in: pageTransitionHost)
+let forwardEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: pageTransitionHost)
+let forwardOutgoing = forwardEntries.first
+let forwardIncoming = forwardEntries.last
+let pageIndicator = firstLayer(named: "FluentKit.NavigationView.SelectionIndicator", in: pageTransitionHost)
+require(
+    forwardEntries.count == 2,
+    "NavigationView retains outgoing and incoming pages while its owned transition is active"
+)
+require(
+    forwardOutgoing?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil
+        && forwardOutgoing?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
+        && forwardIncoming?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil
+        && forwardIncoming?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil,
+    "NavigationView page transitions use explicit coordinated opacity and transform animations"
+)
+let forwardTransform = forwardIncoming?.layer?
+    .animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation
+let forwardOffset = (forwardTransform?.fromValue as? NSValue)?.caTransform3DValue.m41
+require(
+    forwardOffset.map { $0 > 0 } == true,
+    "forward Top navigation enters from the source-recommended trailing direction"
+)
+require(
+    pageIndicator?.animation(forKey: "fluent.navigation.selection") != nil
+        && pagePresenter?.layer?.animation(forKey: "fluent.navigation.page.cleanup") != nil,
+    "NavigationView selection-indicator and page-transition coordinators run without overwriting each other"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.20))
+let entrancePhaseEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: pageTransitionHost)
+require(
+    entrancePhaseEntries.count == 1
+        && entrancePhaseEntries[0].layer?.animation(forKey: "fluent.navigation.page.transform") != nil,
+    "NavigationView removes the outgoing page after 150ms while the incoming 300ms phase continues"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.30))
+require(
+    views(identifier: "FluentKit.NavigationView.ContentEntry", in: pageTransitionHost).count == 1
+        && labels(in: pageTransitionHost).contains { $0.stringValue == "Navigation page library" },
+    "NavigationView completion removes the outgoing page and keeps the selected destination"
+)
+
+pageTransitionSelection.wrappedValue = "home"
+drainMainQueue()
+let backwardEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: pageTransitionHost)
+let backwardOutgoingTransform = backwardEntries.first?.layer?
+    .animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation
+let backwardOffset = (backwardOutgoingTransform?.toValue as? NSValue)?.caTransform3DValue.m41
+require(
+    backwardOffset.map { $0 > 0 } == true,
+    "backward Top navigation reverses the outgoing Slide direction"
+)
+pageTransitionSelection.wrappedValue = "library"
+drainMainQueue()
+pageTransitionSelection.wrappedValue = "controls"
+drainMainQueue()
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.55))
+require(
+    views(identifier: "FluentKit.NavigationView.ContentEntry", in: pageTransitionHost).count == 1
+        && labels(in: pageTransitionHost).contains { $0.stringValue == "Navigation page controls" },
+    "rapid NavigationView selection changes settle on one final page without stale entries"
+)
+
+let entranceSelection = FluentState<String?>(wrappedValue: "home")
+let entranceHost = FluentViewHost(
+    NavigationPageProbe(selection: entranceSelection, transition: .entrance)
+)
+let entranceWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+entranceWindow.contentView = entranceHost
+entranceHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
+entranceWindow.orderFront(nil)
+entranceHost.layoutSubtreeIfNeeded()
+entranceSelection.wrappedValue = "library"
+drainMainQueue()
+let entranceForwardEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: entranceHost)
+let entranceForwardOutgoing = entranceForwardEntries.first
+let entranceForwardIncoming = entranceForwardEntries.last
+let entranceForwardTransform = entranceForwardIncoming?.layer?
+    .animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation
+let entranceForwardOffset = (entranceForwardTransform?.fromValue as? NSValue)?.caTransform3DValue.m42
+require(
+    entranceForwardOutgoing?.layer?.animation(forKey: "fluent.navigation.page.transform") == nil
+        && entranceForwardOutgoing?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil
+        && entranceForwardOffset.map { $0 < 0 } == true,
+    "Entrance forward follows WinUI: outgoing fades while incoming starts below the page"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
+entranceSelection.wrappedValue = "home"
+drainMainQueue()
+let entranceBackwardEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: entranceHost)
+let entranceBackwardOutgoing = entranceBackwardEntries.first
+let entranceBackwardIncoming = entranceBackwardEntries.last
+let entranceBackwardTransform = entranceBackwardOutgoing?.layer?
+    .animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation
+let entranceBackwardOffset = (entranceBackwardTransform?.toValue as? NSValue)?.caTransform3DValue.m42
+require(
+    entranceBackwardOffset.map { $0 < 0 } == true
+        && entranceBackwardIncoming?.layer?.animation(forKey: "fluent.navigation.page.transform") == nil
+        && entranceBackwardIncoming?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil,
+    "Entrance backward follows WinUI: outgoing moves below while incoming only fades in"
+)
+entranceWindow.orderOut(nil)
+
+let reducedPageSelection = FluentState<String?>(wrappedValue: "home")
+let reducedPageHost = FluentViewHost(
+    NavigationPageProbe(selection: reducedPageSelection, transition: .slide),
+    context: FluentRenderContext(reduceMotion: true)
+)
+reducedPageSelection.wrappedValue = "library"
+drainMainQueue()
+let reducedPageEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: reducedPageHost)
+require(
+    reducedPageEntries.count == 1
+        && reducedPageEntries[0].layer?.animationKeys()?.isEmpty != false,
+    "NavigationView Reduce Motion replaces page content without allocating transition animations"
+)
+
+let suppressedPageSelection = FluentState<String?>(wrappedValue: "home")
+let suppressedPageHost = FluentViewHost(
+    NavigationPageProbe(selection: suppressedPageSelection, transition: .suppress)
+)
+suppressedPageSelection.wrappedValue = "library"
+drainMainQueue()
+let suppressedPageEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: suppressedPageHost)
+require(
+    suppressedPageEntries.count == 1
+        && suppressedPageEntries[0].layer?.animationKeys()?.isEmpty != false,
+    "NavigationView suppress mode uses an empty structural transition"
+)
+pageTransitionWindow.orderOut(nil)
+
+let bottomUpSelection = FluentState<String?>(wrappedValue: "home")
+let bottomUpHost = FluentViewHost(
+    NavigationPageProbe(selection: bottomUpSelection, transition: .bottomUp)
+)
+let bottomUpWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 420),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+bottomUpWindow.contentView = bottomUpHost
+bottomUpHost.frame = NSRect(x: 0, y: 0, width: 760, height: 420)
+bottomUpWindow.orderFront(nil)
+bottomUpHost.layoutSubtreeIfNeeded()
+bottomUpSelection.wrappedValue = "library"
+drainMainQueue()
+let bottomUpEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: bottomUpHost)
+let bottomUpIncoming = bottomUpEntries.last
+let bottomUpOutgoing = bottomUpEntries.first
+let bottomUpIncomingFrom = (bottomUpIncoming?.layer?.animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation)
+    .flatMap { ($0.fromValue as? NSValue)?.caTransform3DValue.m42 }
+let bottomUpOutgoingTo = (bottomUpOutgoing?.layer?.animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation)
+    .flatMap { ($0.toValue as? NSValue)?.caTransform3DValue.m42 }
+require(
+    (bottomUpIncomingFrom ?? 0) < 0
+        && (bottomUpOutgoingTo ?? 0) > 0,
+    "Gallery-style bottomUp navigation always brings the incoming page from below"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.45))
+bottomUpSelection.wrappedValue = "home"
+drainMainQueue()
+let bottomUpBackwardEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: bottomUpHost)
+let bottomUpBackwardIncoming = bottomUpBackwardEntries.last
+let bottomUpBackwardFrom = (bottomUpBackwardIncoming?.layer?.animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation)
+    .flatMap { ($0.fromValue as? NSValue)?.caTransform3DValue.m42 }
+require(
+    (bottomUpBackwardFrom ?? 0) < 0,
+    "Gallery-style bottomUp keeps its lower-edge entrance when navigating backward"
+)
+let transitionThemeScheme: FluentThemeColorScheme = bottomUpHost.context.theme.isDark ? .light : .dark
+bottomUpHost.context = FluentRenderContext(
+    theme: bottomUpHost.context.theme.with(colorScheme: transitionThemeScheme)
+)
+drainMainQueue()
+let bottomUpEntriesAfterThemeChange = views(
+    identifier: "FluentKit.NavigationView.ContentEntry",
+    in: bottomUpHost
+)
+require(
+    bottomUpEntriesAfterThemeChange.count == 1
+        && bottomUpEntriesAfterThemeChange[0].layer?.animationKeys()?.isEmpty != false,
+    "NavigationView settles an active page transition before applying a new window theme"
+)
+bottomUpWindow.orderOut(nil)
 
 let invalidNavigation = FluentNavigationView(
     Array(navigationViewItems.prefix(1)),
@@ -3353,6 +8701,7 @@ require(
 
 let titleBarPaneOpen = FluentState(wrappedValue: true)
 var titleBarBackInvocations = 0
+var titleBarForwardInvocations = 0
 var titleBarPaneInvocations = 0
 let compactTitleBar = FluentTitleBar(
     title: "Workspace",
@@ -3360,9 +8709,12 @@ let compactTitleBar = FluentTitleBar(
     heightMode: .compact,
     isBackButtonVisible: true,
     isBackButtonEnabled: true,
+    isForwardButtonVisible: true,
+    isForwardButtonEnabled: true,
     isPaneToggleButtonVisible: true,
     isPaneOpen: titleBarPaneOpen.projectedValue,
     onBack: { titleBarBackInvocations += 1 },
+    onForward: { titleBarForwardInvocations += 1 },
     onPaneToggle: { titleBarPaneInvocations += 1 }
 )
 let compactTitleBarView = compactTitleBar._mount(in: FluentRenderContext())
@@ -3384,6 +8736,7 @@ titleBarWindow.orderFront(nil)
 compactTitleBarView.layoutSubtreeIfNeeded()
 drainMainQueue()
 let titleBarBackButton = firstView(identifier: "FluentKit.TitleBar.Back", in: compactTitleBarView) as? NSButton
+let titleBarForwardButton = firstView(identifier: "FluentKit.TitleBar.Forward", in: compactTitleBarView) as? NSButton
 let titleBarPaneButton = firstView(identifier: "FluentKit.TitleBar.PaneToggle", in: compactTitleBarView) as? NSButton
 let titleBarTitleLabel = firstView(identifier: "FluentKit.TitleBar.Title", in: compactTitleBarView) as? NSTextField
 require(
@@ -3407,9 +8760,11 @@ require(
     "TitleBar uses inactive-window foreground semantics"
 )
 titleBarBackButton?.performClick(nil)
+titleBarForwardButton?.performClick(nil)
 titleBarPaneButton?.performClick(nil)
 drainMainQueue()
 require(titleBarBackInvocations == 1, "TitleBar back button routes its declarative action")
+require(titleBarForwardInvocations == 1, "TitleBar forward button routes its declarative action")
 require(
     !titleBarPaneOpen.wrappedValue
         && titleBarPaneInvocations == 1
@@ -3483,6 +8838,455 @@ require(
 )
 titleBarWindow.orderOut(nil)
 
+let shellSelection = FluentState<String?>(wrappedValue: "home")
+let shellPaneOpen = FluentState(wrappedValue: true)
+let shellSearch = FluentState(wrappedValue: "")
+var shellBackInvocations = 0
+let settingsShellConfiguration = FluentWindowConfiguration(
+    layout: .settings,
+    paneTogglePlacement: .titleBar,
+    searchPlacement: .titleBar,
+    contentTransition: .bottomUp
+)
+let settingsShell = FluentWindowShell<String>(
+    configuration: settingsShellConfiguration,
+    title: "Shell gallery",
+    systemImageName: "square.grid.2x2",
+    isBackButtonVisible: true,
+    onBack: { shellBackInvocations += 1 },
+    items: [
+        FluentNavigationItem(id: "home", title: "Home", systemImageName: "house"),
+        FluentNavigationItem(id: "library", title: "Library", systemImageName: "books.vertical")
+    ],
+    selection: shellSelection.projectedValue,
+    isPaneOpen: shellPaneOpen.projectedValue,
+    openPaneLength: 240,
+    paneSectionTitle: "Explore",
+    titleBarContent: {
+        FluentSearchField(shellSearch.projectedValue, placeholder: "Search controls")
+            .frame(width: 360, height: 32)
+    },
+    paneHeader: { FluentText("Workspace") },
+    header: { FluentText("Page heading") },
+    content: { FluentText("Page content") }
+)
+let settingsShellHost = FluentViewHost(settingsShell)
+let settingsShellWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 900, height: 560),
+    styleMask: [.titled, .resizable],
+    backing: .buffered,
+    defer: false
+)
+settingsShellWindow.isOpaque = false
+settingsShellWindow.backgroundColor = .clear
+settingsShellWindow.contentView = settingsShellHost
+settingsShellHost.frame = NSRect(x: 0, y: 0, width: 900, height: 560)
+settingsShellWindow.makeKeyAndOrderFront(nil)
+settingsShellHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+settingsShellHost.layoutSubtreeIfNeeded()
+let shellTitleBar = firstView(identifier: "FluentKit.TitleBar", in: settingsShellHost)
+let shellBackButton = firstView(identifier: "FluentKit.TitleBar.Back", in: settingsShellHost)
+let shellTitleBarToggle = firstView(identifier: "FluentKit.TitleBar.PaneToggle", in: settingsShellHost)
+let shellPaneToggle = firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: settingsShellHost)
+let shellPane = firstView(identifier: "FluentKit.NavigationView.Pane", in: settingsShellHost)
+let shellContentSurfaces = views(identifier: "FluentKit.WindowShell.ContentSurface", in: settingsShellHost)
+let shellHeaderSurface = shellContentSurfaces.first {
+    labels(in: $0).contains { $0.stringValue == "Page heading" }
+}
+let shellContentSurface = shellContentSurfaces.first {
+    labels(in: $0).contains { $0.stringValue == "Page content" }
+}
+require(
+    settingsShellConfiguration.titleBarStyle == .extended
+        && settingsShellConfiguration.navigationPlacement == .left
+        && settingsShellConfiguration.searchPlacement == .titleBar
+        && settingsShellConfiguration.contentCornerStyle == .topLeading,
+    "Settings WindowShell preset resolves independent title-bar, navigation, search, and content axes"
+)
+require(
+    shellTitleBar != nil
+        && firstSearchField(in: settingsShellHost) != nil
+        && shellBackButton?.isHidden == false
+        && shellTitleBarToggle?.isHidden == false
+        && shellTitleBarToggle?.frame.width == 40
+        && shellPaneToggle?.isHidden == true,
+    "WindowShell places optional search and the pane toggle in the extended title bar"
+)
+require(
+    shellPane.map(labels(in:))?.contains { $0.stringValue == "Workspace" } == true,
+    "WindowShell exposes NavigationView pane-header content through its public initializer"
+)
+require(
+    shellBackButton?.accessibilityPerformPress() == true && shellBackInvocations == 1,
+    "WindowShell forwards its public Back state and accessibility action into the extended title bar"
+)
+require(
+    shellTitleBarToggle?.accessibilityPerformPress() == true && !shellPaneOpen.wrappedValue,
+    "WindowShell title-bar pane toggle updates the shared pane binding through accessibility"
+)
+shellPaneOpen.wrappedValue = true
+drainMainQueue()
+let shellNavigationContent = firstView(identifier: "FluentKit.NavigationView.Content", in: settingsShellHost)
+let shellMaterials = materialViews(in: settingsShellHost)
+let shellMaterial = firstView(identifier: "FluentKit.WindowShell.Mica", in: settingsShellHost) as? FluentMaterialView
+let shellPaneMaterials = shellPane.map(materialViews(in:)) ?? []
+require(
+    shellPane?.frame.width == 240
+        && (shellContentSurface?.layer?.mask as? CAShapeLayer)?.path != nil
+        && shellContentSurface?.layer?.cornerRadius == 0
+        && shellContentSurface?.layer?.backgroundColor != nil
+        && shellNavigationContent?.layer?.backgroundColor == nil
+        && settingsShellConfiguration.backdrop == .mica
+        && shellMaterials.count == 1
+        && shellPaneMaterials.isEmpty
+        && shellMaterial?.materialStyle == .mica
+        && shellMaterial?.resolvedBackend == expectedLiquidGlassBackend
+        && shellMaterial?.state == .followsWindowActiveState
+        && shellMaterial?.tintColor?.isEqual(FluentTheme.current.micaTint) == true
+        && firstLayer(named: "FluentKit.Material.MicaTint", in: shellMaterial ?? NSView()) != nil
+        && firstLayer(named: "FluentKit.WindowShell.SharedChromeTint", in: settingsShellHost) != nil,
+    "WindowShell owns one tinted Mica while ContentSurface solely owns its fill and top-leading clip"
+)
+require(
+    shellTitleBar?.layer?.backgroundColor == nil
+        && shellPane?.layer?.backgroundColor == nil
+        && firstView(identifier: "FluentKit.NavigationView.PaneMaterial", in: settingsShellHost) == nil,
+    "WindowShell title bar and navigation pane inherit one continuous backdrop without a second sampler"
+)
+if let chromeHost = firstView(identifier: "FluentKit.WindowShell.SharedChromeHost", in: settingsShellHost),
+   let shellTitleBar,
+   let shellContentSurface,
+   let chromeTint = firstLayer(named: "FluentKit.WindowShell.SharedChromeTint", in: settingsShellHost),
+   let chromeMask = chromeTint.mask as? CAShapeLayer,
+   let chromePath = chromeMask.path {
+    let titleRect = chromeHost.convert(shellTitleBar.bounds, from: shellTitleBar)
+    let contentRect = chromeHost.convert(shellContentSurface.bounds, from: shellContentSurface)
+    require(
+        chromePath.contains(
+            NSPoint(x: titleRect.midX, y: titleRect.midY),
+            using: .evenOdd
+        )
+            && !chromePath.contains(
+                NSPoint(x: contentRect.midX, y: contentRect.midY),
+                using: .evenOdd
+            ),
+        "SharedChromeTint covers title and pane chrome while excluding the ContentSurface"
+    )
+} else {
+    require(false, "WindowShell exposes one geometry-masked SharedChromeTint layer")
+}
+if let sharedChromeTint = firstLayer(named: "FluentKit.WindowShell.SharedChromeTint", in: settingsShellHost) {
+    NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: settingsShellWindow)
+    drainMainQueue()
+    let activeOpacity = sharedChromeTint.opacity
+    NotificationCenter.default.post(name: NSWindow.didResignKeyNotification, object: settingsShellWindow)
+    drainMainQueue()
+    let inactiveOpacity = sharedChromeTint.opacity
+    require(
+        activeOpacity == 1 && inactiveOpacity < activeOpacity,
+        "WindowShell updates its one SharedChromeTint together with the active-state Mica backdrop"
+    )
+    NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: settingsShellWindow)
+    drainMainQueue()
+}
+require(
+    shellHeaderSurface.map(labels(in:))?.contains { $0.stringValue == "Page heading" } == true
+        && shellContentSurface.map(labels(in:))?.contains { $0.stringValue == "Page content" } == true
+        && shellHeaderSurface !== shellContentSurface,
+    "WindowShell keeps the page header fixed above an independently clipped ContentSurface viewport"
+)
+shellSelection.wrappedValue = "library"
+drainMainQueue()
+let shellTransitionEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: settingsShellHost)
+require(
+    shellTransitionEntries.count == 2
+        && shellTransitionEntries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
+        && shellHeaderSurface?.layer?.animationKeys()?.isEmpty != false,
+    "WindowShell limits bottomUp page motion to the viewport while keeping its header stationary"
+)
+shellSelection.wrappedValue = "home"
+drainMainQueue()
+settingsShellWindow.setContentSize(NSSize(width: 560, height: 560))
+settingsShellHost.frame = NSRect(x: 0, y: 0, width: 560, height: 560)
+settingsShellHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+settingsShellHost.layoutSubtreeIfNeeded()
+if let shellTitleBar, let shellSearchField = firstSearchField(in: settingsShellHost) {
+    let searchFrame = shellSearchField.convert(shellSearchField.bounds, to: shellTitleBar)
+    let titleBarAppearance = (shellSearchField as? FluentSearchTextField).map { field in
+        field.fluentStyle.appearance(
+            for: FluentTextFieldStyleConfiguration(
+                isEnabled: field.isEnabled,
+                isFocused: false,
+                isPointerOver: false,
+                controlSize: field.fluentControlSize,
+                theme: field.theme
+            )
+        )
+    }
+    require(
+        searchFrame.minX >= shellTitleBar.bounds.minX - 0.5
+            && searchFrame.maxX <= shellTitleBar.bounds.maxX + 0.5,
+        "WindowShell keeps a 360pt title-bar SearchBox inside a 560pt window"
+    )
+    require(
+        titleBarAppearance.map { titleBar in
+            ordinarySearchAppearance.map { ordinary in
+                abs(titleBar.cornerRadius - ordinary.cornerRadius) < 0.001
+                    && abs(titleBar.cornerRadius - 4) < 0.001
+            } ?? false
+        } == true,
+        "title-bar and ordinary SearchBox share the same WinUI 4pt ControlCornerRadius without shell overrides"
+    )
+} else {
+    require(false, "WindowShell exposes the title bar and SearchBox for narrow-layout validation")
+}
+settingsShellWindow.orderOut(nil)
+
+let paneToggleShellConfiguration = FluentWindowConfiguration(
+    layout: .settings,
+    paneTogglePlacement: .navigationPane,
+    searchPlacement: FluentWindowSearchPlacement.none
+)
+let paneToggleShell = FluentWindowShell<String>(
+    configuration: paneToggleShellConfiguration,
+    title: "Pane toggle shell",
+    isBackButtonVisible: true,
+    items: [FluentNavigationItem(id: "home", title: "Home", systemImageName: "house")],
+    selection: shellSelection.projectedValue,
+    isPaneOpen: shellPaneOpen.projectedValue,
+    paneHeader: { FluentText("Navigation header") },
+    header: { FluentText("Pane heading") },
+    content: { FluentText("Pane content") }
+)
+let shellModeHost = FluentViewHost(paneToggleShell)
+let shellModeWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 760, height: 520),
+    styleMask: [.titled, .resizable],
+    backing: .buffered,
+    defer: false
+)
+let originalShellModeStyleMask = shellModeWindow.styleMask
+shellModeWindow.contentView = shellModeHost
+shellModeHost.frame = NSRect(x: 0, y: 0, width: 760, height: 520)
+shellModeWindow.orderFront(nil)
+shellModeHost.layoutSubtreeIfNeeded()
+drainMainQueue()
+shellModeHost.layoutSubtreeIfNeeded()
+let extendedPaneToggle = firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: shellModeHost)
+require(
+    paneToggleShellConfiguration.titleBarStyle == .extended
+        && paneToggleShellConfiguration.searchPlacement == .none
+        && firstView(identifier: "FluentKit.TitleBar", in: shellModeHost) != nil
+        && firstSearchField(in: shellModeHost) == nil,
+    "WindowShell supports an extended title bar without optional search content"
+)
+let hiddenExtendedTitleToggle = firstView(identifier: "FluentKit.TitleBar.PaneToggle", in: shellModeHost)
+require(
+    hiddenExtendedTitleToggle?.isHidden == true && extendedPaneToggle?.isHidden == false,
+    "WindowShell keeps the toggle in vertical navigation when requested "
+        + "(titleHidden=\(String(describing: hiddenExtendedTitleToggle?.isHidden)), "
+        + "paneHidden=\(String(describing: extendedPaneToggle?.isHidden)), "
+        + "paneFrame=\(String(describing: extendedPaneToggle?.frame)))"
+)
+require(
+    extendedPaneToggle?.accessibilityPerformPress() == true && !shellPaneOpen.wrappedValue,
+    "WindowShell navigation-pane toggle owns the same pane binding as the title-bar variant"
+)
+shellPaneOpen.wrappedValue = true
+drainMainQueue()
+
+let nativeNavigationConfiguration = FluentWindowConfiguration(
+    layout: .settings,
+    titleBarStyle: .native,
+    navigationPlacement: .left,
+    paneTogglePlacement: .titleBar,
+    searchPlacement: .titleBar
+)
+require(
+    nativeNavigationConfiguration.titleBarStyle == .native
+        && nativeNavigationConfiguration.paneTogglePlacement == .navigationPane
+        && nativeNavigationConfiguration.searchPlacement == .none,
+    "WindowShell normalizes unsupported native title-bar content without dropping the pane action"
+)
+let nativeNavigationShell = FluentWindowShell<String>(
+    configuration: nativeNavigationConfiguration,
+    title: "Native navigation shell",
+    items: [FluentNavigationItem(id: "home", title: "Home", systemImageName: "house")],
+    selection: shellSelection.projectedValue,
+    isPaneOpen: shellPaneOpen.projectedValue,
+    titleBarContent: {
+        FluentSearchField(shellSearch.projectedValue, placeholder: "Ignored native search")
+    },
+    paneHeader: { FluentText("Native pane header") },
+    header: { FluentText("Native heading") },
+    content: { FluentText("Native content") }
+)
+shellModeHost.update(nativeNavigationShell)
+drainMainQueue()
+shellModeHost.layoutSubtreeIfNeeded()
+require(
+    firstView(identifier: "FluentKit.TitleBar", in: shellModeHost) == nil
+        && firstSearchField(in: shellModeHost) == nil
+        && firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: shellModeHost)?.isHidden == false
+        && !shellModeWindow.styleMask.contains(.fullSizeContentView)
+        && shellModeWindow.styleMask == originalShellModeStyleMask
+        && shellModeWindow.titleVisibility == .visible,
+    "WindowShell switches to native AppKit chrome and preserves a usable navigation-pane toggle"
+)
+shellModeHost.update(paneToggleShell)
+drainMainQueue()
+shellModeHost.layoutSubtreeIfNeeded()
+require(
+    firstView(identifier: "FluentKit.TitleBar", in: shellModeHost) != nil
+        && shellModeWindow.styleMask.contains(.fullSizeContentView)
+        && shellModeWindow.titleVisibility == .hidden,
+    "WindowShell can re-enter extended chrome after a native-title-bar state"
+)
+shellModeWindow.orderOut(nil)
+
+let topShellConfiguration = FluentWindowConfiguration(layout: .topNavigation)
+let topShell = FluentWindowShell<String>(
+    configuration: topShellConfiguration,
+    title: "Top shell",
+    items: [FluentNavigationItem(id: "home", title: "Home", systemImageName: "house")],
+    selection: shellSelection.projectedValue,
+    isPaneOpen: shellPaneOpen.projectedValue,
+    header: { FluentEmptyView() },
+    content: { FluentText("Top content") }
+)
+let topShellHost = FluentViewHost(topShell)
+topShellHost.frame = NSRect(x: 0, y: 0, width: 900, height: 560)
+topShellHost.layoutSubtreeIfNeeded()
+require(
+    topShellConfiguration.navigationPlacement == .top
+        && topShellConfiguration.backdrop == .mica
+        && firstView(identifier: "FluentKit.NavigationView.Pane", in: topShellHost)?.frame.height == 48
+        && firstView(identifier: "FluentKit.TitleBar.PaneToggle", in: topShellHost)?.isHidden == true
+        && firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: topShellHost)?.isHidden == true
+        && materialViews(in: topShellHost).count == 1
+        && firstView(identifier: "FluentKit.NavigationView.PaneMaterial", in: topShellHost) == nil,
+    "WindowShell supports Top Navigation without changing or duplicating its Mica surface"
+)
+
+for layout in [FluentWindowLayout.compactNavigation, .minimalNavigation] {
+    let configuration = FluentWindowConfiguration(layout: layout)
+    let shell = FluentWindowShell<String>(
+        configuration: configuration,
+        title: "\(layout.rawValue) shell",
+        items: [FluentNavigationItem(id: "home", title: "Home", systemImageName: "house")],
+        selection: shellSelection.projectedValue,
+        isPaneOpen: shellPaneOpen.projectedValue,
+        header: { FluentEmptyView() },
+        content: { FluentText("Mode content") }
+    )
+    let host = FluentViewHost(shell)
+    host.frame = NSRect(x: 0, y: 0, width: 900, height: 560)
+    host.layoutSubtreeIfNeeded()
+    require(
+        configuration.backdrop == .mica
+            && materialViews(in: host).count == 1
+            && firstView(identifier: "FluentKit.WindowShell.Mica", in: host) != nil
+            && firstView(identifier: "FluentKit.NavigationView.PaneMaterial", in: host) == nil,
+        "\(layout.rawValue) WindowShell inherits the same single Mica without a mode-specific sampler"
+    )
+}
+
+let opaqueShellTheme = FluentTheme.current.with(materialEffectsEnabled: false)
+let opaqueShellHost = FluentViewHost(
+    settingsShell,
+    context: FluentRenderContext(theme: opaqueShellTheme)
+)
+opaqueShellHost.frame = NSRect(x: 0, y: 0, width: 900, height: 560)
+opaqueShellHost.layoutSubtreeIfNeeded()
+let opaqueShellMaterial = firstView(
+    identifier: "FluentKit.WindowShell.Mica",
+    in: opaqueShellHost
+) as? FluentMaterialView
+require(
+    materialViews(in: opaqueShellHost).count == 1
+        && opaqueShellMaterial?.resolvedBackend == .opaque
+        && firstLayer(
+            named: "FluentKit.Material.MicaTint",
+            in: opaqueShellMaterial ?? NSView()
+        )?.isHidden == true
+        && firstLayer(
+            named: "FluentKit.WindowShell.SharedChromeTint",
+            in: opaqueShellHost
+        )?.isHidden == true,
+    "WindowShell's material switch replaces the whole backdrop with one opaque surface"
+)
+
+for colorScheme in [FluentThemeColorScheme.light, .dark] {
+    let schemeTheme = FluentTheme.custom(colorScheme: colorScheme)
+    let schemeHost = FluentViewHost(
+        settingsShell,
+        context: FluentRenderContext(theme: schemeTheme)
+    )
+    schemeHost.frame = NSRect(x: 0, y: 0, width: 900, height: 560)
+    schemeHost.layoutSubtreeIfNeeded()
+    let schemeMaterial = firstView(
+        identifier: "FluentKit.WindowShell.Mica",
+        in: schemeHost
+    ) as? FluentMaterialView
+    let schemeChromeTint = firstLayer(
+        named: "FluentKit.WindowShell.SharedChromeTint",
+        in: schemeHost
+    )
+    require(
+        materialViews(in: schemeHost).count == 1
+            && schemeMaterial?.tintColor?.isEqual(schemeTheme.micaTint) == true
+            && colorMatches(schemeChromeTint?.backgroundColor, schemeTheme.windowChromeTint)
+            && schemeTheme.windowChromeTint.alphaComponent > 0.22,
+        "\(colorScheme) WindowShell keeps one Mica and one visible shared chrome tint"
+    )
+}
+
+let solidShellConfiguration = FluentWindowConfiguration(layout: .settings, backdrop: .solid)
+let solidShell = FluentWindowShell<String>(
+    configuration: solidShellConfiguration,
+    title: "Solid shell",
+    items: [FluentNavigationItem(id: "home", title: "Home", systemImageName: "house")],
+    selection: shellSelection.projectedValue,
+    isPaneOpen: shellPaneOpen.projectedValue,
+    header: { FluentEmptyView() },
+    content: { FluentText("Solid content") }
+)
+let solidShellTheme = FluentTheme.custom(colorScheme: .dark)
+let solidShellHost = FluentViewHost(
+    solidShell,
+    context: FluentRenderContext(theme: solidShellTheme)
+)
+solidShellHost.frame = NSRect(x: 0, y: 0, width: 900, height: 560)
+solidShellHost.layoutSubtreeIfNeeded()
+require(
+    materialViews(in: solidShellHost).isEmpty
+        && colorMatches(
+            firstView(identifier: "FluentKit.WindowShell.SolidSurface", in: solidShellHost)?.layer?.backgroundColor,
+            solidShellTheme.windowBackground
+        )
+        && firstView(identifier: "FluentKit.NavigationView.PaneMaterial", in: solidShellHost) == nil,
+    "solid WindowShell owns one root fill while its title bar and pane remain inherited"
+)
+
+let nativeShellConfiguration = FluentWindowConfiguration(layout: .document)
+let nativeShell = FluentWindowShell<String>(
+    configuration: nativeShellConfiguration,
+    title: "Document",
+    selection: shellSelection.projectedValue,
+    header: { FluentEmptyView() },
+    content: { FluentText("Document content") }
+)
+let nativeShellView = nativeShell._mount(in: FluentRenderContext())
+require(
+    nativeShellConfiguration.titleBarStyle == .native
+        && nativeShellConfiguration.navigationPlacement == .none
+        && firstView(identifier: "FluentKit.TitleBar", in: nativeShellView) == nil
+        && firstView(identifier: "FluentKit.NavigationView.Pane", in: nativeShellView) == nil,
+    "WindowShell preserves the native-title-bar, navigation-free document composition"
+)
+
 let navigation = FluentNavigationStack(
     path: navigationPath.projectedValue,
     root: { FluentText("Root screen") },
@@ -3490,10 +9294,52 @@ let navigation = FluentNavigationStack(
     destination: { route in FluentAnyView(FluentText("Route: \(route)")) }
 )
 let navigationView = navigation._mount(in: FluentRenderContext())
+let navigationWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 640, height: 360),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+navigationWindow.contentView = navigationView
+navigationView.frame = NSRect(x: 0, y: 0, width: 640, height: 360)
+navigationWindow.orderFront(nil)
+navigationView.layoutSubtreeIfNeeded()
 require(navigationView.subviews.count == 1, "navigation stack mounts a native host")
 navigationPath.wrappedValue = [AnyHashable("detail")]
 drainMainQueue()
 require(navigationPath.wrappedValue == [AnyHashable("detail")], "navigation path binding accepts pushed routes")
+let navigationPushEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
+require(
+    navigationPushEntries.count == 2
+        && navigationPushEntries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
+        && navigationPushEntries.last?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil,
+    "NavigationStack push uses the shared coordinated page presenter"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
+navigationPath.wrappedValue = []
+drainMainQueue()
+let navigationPopEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
+let navigationPopOutgoing = navigationPopEntries.first?.layer?
+    .animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation
+require(
+    navigationPopEntries.count == 2
+        && navigationPopOutgoing != nil
+        && navigationPopEntries.last?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil,
+    "NavigationStack pop preserves outgoing and incoming pages while reversing the shared transition"
+)
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
+navigationPath.wrappedValue = [AnyHashable("detail")]
+drainMainQueue()
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
+navigationPath.wrappedValue = [AnyHashable("detail"), AnyHashable("detail")]
+drainMainQueue()
+let duplicateRouteEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
+require(
+    duplicateRouteEntries.count == 2
+        && duplicateRouteEntries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil,
+    "NavigationStack treats duplicate route values at different depths as distinct pages"
+)
+navigationWindow.orderOut(nil)
 
 let linkPath = FluentState<[AnyHashable]>(wrappedValue: [])
 let link = FluentNavigationLink("settings", path: linkPath.projectedValue) {
@@ -3703,9 +9549,180 @@ require(abs(linearCurve.progress(at: 0.5) - 0.5) < 0.001, "animation transaction
 let directMotion = FluentAnimationCurve.cubicBezier(.direct)
 let directMidpoint = directMotion.progress(at: 0.5)
 require(directMidpoint > 0.5 && directMidpoint < 1, "custom cubic-bezier curves expose deterministic progress sampling")
+require(
+    FluentVisualState.forControlState(.pointerOver) == [.normal, .pointerOver]
+        && FluentVisualState.forControlState(.pressed).primaryControlState == .pressed
+        && FluentVisualState.forControlState(.disabled).primaryControlState == .disabled,
+    "shared visual-state mapping preserves common-state combinations and precedence"
+)
+let visualStateCoordinator = FluentVisualStateCoordinator(state: .normal, reduceMotion: false)
+var recordedVisualTransition: FluentVisualStateTransition?
+visualStateCoordinator.transition(to: [.normal, .pointerOver], animated: true, motion: FluentMotion.controlFaster) {
+    recordedVisualTransition = $0
+}
+require(
+    recordedVisualTransition?.changed == true
+        && recordedVisualTransition?.isAnimated == true
+        && recordedVisualTransition?.to.primaryControlState == .pointerOver,
+    "shared visual-state coordinator emits an animated named-state transition"
+)
+visualStateCoordinator.transition(to: [.normal, .pointerOver], animated: true, motion: FluentMotion.controlFaster) {
+    recordedVisualTransition = $0
+}
+require(
+    recordedVisualTransition?.changed == false && recordedVisualTransition?.isAnimated == false,
+    "shared visual-state coordinator does not animate an unchanged state"
+)
+visualStateCoordinator.reduceMotion = true
+visualStateCoordinator.transition(to: [.normal, .pressed], animated: true, motion: FluentMotion.controlFaster) {
+    recordedVisualTransition = $0
+}
+require(
+    recordedVisualTransition?.changed == true && recordedVisualTransition?.isAnimated == false,
+    "shared visual-state coordinator suppresses motion under Reduce Motion"
+)
+
+let stateButtonTheme = FluentTheme.custom(colorScheme: .light)
+let subtlePointerOverAppearance = FluentBorderlessButtonStyle().appearance(
+    for: FluentButtonStyleConfiguration(
+        title: "Subtle",
+        role: .standard,
+        controlState: .pointerOver,
+        isEnabled: true,
+        theme: stateButtonTheme
+    )
+)
+let outlinePointerOverAppearance = FluentOutlineButtonStyle().appearance(
+    for: FluentButtonStyleConfiguration(
+        title: "Outline",
+        role: .standard,
+        controlState: .pointerOver,
+        isEnabled: true,
+        theme: stateButtonTheme
+    )
+)
+require(
+    colorMatches(subtlePointerOverAppearance.backgroundColor.cgColor, stateButtonTheme.subtleFillSecondary),
+    "Borderless Button PointerOver uses the WinUI SubtleFillColorSecondary brush"
+)
+require(
+    colorMatches(outlinePointerOverAppearance.backgroundColor.cgColor, stateButtonTheme.subtleFillSecondary),
+    "Outline Button PointerOver uses the WinUI SubtleFillColorSecondary brush"
+)
+
+let subtleButtonView = FluentButtonView("Subtle")
+    .buttonStyle(FluentBorderlessButtonStyle())
+let subtleButtonHost = subtleButtonView._mount(
+    in: FluentRenderContext(theme: stateButtonTheme, reduceMotion: true)
+)
+guard let subtleButton = subtleButtonHost as? FluentButton else {
+    fatalError("Borderless Button did not mount as FluentButton")
+}
+subtleButton.frame = NSRect(x: 0, y: 0, width: 120, height: 32)
+let subtleButtonPoint = NSPoint(x: subtleButton.bounds.midX, y: subtleButton.bounds.midY)
+subtleButton.mouseEntered(
+    with: toggleMouseEvent(.mouseMoved, at: subtleButtonPoint, in: subtleButton, eventNumber: 210)
+)
+require(
+    subtleButton.controlState == .pointerOver
+        && colorMatches(subtleButton.layer?.backgroundColor, stateButtonTheme.subtleFillSecondary),
+    "mounted Borderless Button renders PointerOver instead of remaining transparent"
+)
+require(
+    subtleButtonView._update(subtleButton, in: FluentRenderContext(theme: stateButtonTheme, reduceMotion: true))
+        && subtleButton.controlState == .pointerOver
+        && colorMatches(subtleButton.layer?.backgroundColor, stateButtonTheme.subtleFillSecondary),
+    "declarative Button updates preserve an active Borderless PointerOver state"
+)
+
+let outlineButton = FluentButton(title: "Outline")
+outlineButton.theme = stateButtonTheme
+outlineButton.reduceMotion = true
+outlineButton.fluentStyle = FluentOutlineButtonStyle()
+outlineButton.frame = NSRect(x: 0, y: 0, width: 120, height: 32)
+outlineButton.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: outlineButton.bounds.midX, y: outlineButton.bounds.midY),
+        in: outlineButton,
+        eventNumber: 211
+    )
+)
+require(
+    outlineButton.controlState == .pointerOver
+        && colorMatches(outlineButton.layer?.backgroundColor, stateButtonTheme.subtleFillSecondary),
+    "mounted Outline Button renders PointerOver while retaining its outline"
+)
+
+let stateButton = FluentButton(title: "State probe")
+stateButton.theme = stateButtonTheme
+stateButton.frame = NSRect(x: 0, y: 0, width: 140, height: 32)
+let stateButtonWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 180, height: 72),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+stateButtonWindow.contentView?.addSubview(stateButton)
+stateButtonWindow.orderFront(nil)
+stateButton.layoutSubtreeIfNeeded()
+guard let initialElevation = firstLayer(
+    named: "FluentKit.Button.ElevationBorder",
+    in: stateButton
+) as? CAGradientLayer else {
+    fatalError("FluentButton elevation layer did not mount")
+}
+require(
+    !initialElevation.isHidden
+        && (initialElevation.mask as? CAShapeLayer)?.path != nil
+        && elevationGradientMatchesVisualEdge(initialElevation, edge: .bottom, hostView: stateButton),
+    "FluentButton resolves the light-theme bottom elevation geometry before its first pointer event"
+)
+let initialElevationStart = initialElevation.startPoint
+let initialElevationEnd = initialElevation.endPoint
+stateButton.controlState = .pointerOver
+require(
+    colorMatches(stateButton.layer?.backgroundColor, stateButtonTheme.buttonBackground(for: .pointerOver))
+        && initialElevation.startPoint == initialElevationStart
+        && initialElevation.endPoint == initialElevationEnd,
+    "FluentButton maps PointerOver through the shared visual-state coordinator"
+)
+stateButton.controlState = .pressed
+require(
+    colorMatches(stateButton.layer?.backgroundColor, stateButtonTheme.buttonBackground(for: .pressed)),
+    "FluentButton maps Pressed through the shared visual-state coordinator"
+)
+stateButton.layer?.removeAllAnimations()
+stateButton.controlState = .pressed
+require(
+    stateButton.layer?.animationKeys()?.isEmpty != false,
+    "FluentButton does not allocate a transition when its state is unchanged"
+)
+stateButton.reduceMotion = true
+stateButton.controlState = .normal
+stateButton.controlState = .pointerOver
+require(
+    stateButton.layer?.animationKeys()?.isEmpty != false
+        && firstLayer(named: "FluentKit.Button.ElevationBorder", in: stateButton)?.animationKeys()?.isEmpty != false,
+    "FluentButton clears background and elevation motion under Reduce Motion"
+)
+let reducedButtonHost = FluentButtonView("Reduced", action: {})
+    ._mount(in: FluentRenderContext(reduceMotion: true))
+require(
+    (reducedButtonHost as? FluentButton)?.reduceMotion == true,
+    "declarative FluentButtonView forwards Reduce Motion to its native button"
+)
+stateButtonWindow.orderOut(nil)
 require(abs(FluentMotion.controlFaster.duration - 0.083) < 0.0001, "control-faster motion preserves its exact duration")
 require(abs(FluentMotion.controlFast.duration - 0.167) < 0.0001, "control-fast motion preserves its exact duration")
 require(abs(FluentMotion.controlNormal.duration - 0.250) < 0.0001, "control-normal motion preserves its exact duration")
+require(
+    FluentMotion.collectionSelectionOpacity.duration == FluentMotion.controlFaster.duration
+        && FluentMotion.collectionSelectionOpacity.curve == .linear
+        && FluentMotion.collectionSelectionReveal.duration == FluentMotion.controlFast.duration
+        && FluentMotion.collectionSelectionPress.duration == FluentMotion.controlFast.duration,
+    "collection selection motion tokens preserve separate opacity, reveal, and press timelines"
+)
 require(
     abs(FluentMotion.menuOpen.duration - 0.250) < 0.0001
         && FluentMotion.menuOpen.curve == .controlFastOutSlowIn
@@ -3716,11 +9733,6 @@ require(
     abs(FluentMotion.submenuOpen.duration - 0.250) < 0.0001
         && FluentMotion.submenuOpen.scale == 0.33,
     "submenu motion preserves its 250ms and 33% closed geometry"
-)
-require(
-    abs(FluentMotion.menuClose.duration - 0.083) < 0.0001
-        && FluentMotion.menuClose.curve == .linear,
-    "menu-close motion preserves its 83ms linear fade"
 )
 require(abs(FluentMotion.connectedDefault.duration - 0.300) < 0.0001, "connected motion preserves its exact duration")
 require(abs(FluentMotion.navigationIndicator.duration - 0.600) < 0.0001, "navigation indicator preserves its exact duration")
@@ -3779,13 +9791,16 @@ let animatedScalar = FluentAnimatedValue<CGFloat>(0)
 var animatedSamples: [CGFloat] = []
 let animatedObserver = animatedScalar.observable.observe({ animatedSamples.append($0) }, notifyImmediately: false)
 var scalarAnimationCompleted = false
-animatedScalar.set(1, animation: FluentAnimationTransaction(duration: 0.06, curve: .linear), reduceMotion: false) {
+animatedScalar.set(1, animation: FluentAnimationTransaction(duration: 0.30, curve: .linear), reduceMotion: false) {
     scalarAnimationCompleted = true
 }
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.035))
-require(animatedScalar.isAnimating, "animated value reports an active display-driven animation")
-require(animatedScalar.value > 0 && animatedScalar.value < 1, "animated value publishes intermediate samples")
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.06))
+require(
+    waitUntil(timeout: 0.18) {
+        animatedScalar.isAnimating && animatedScalar.value > 0 && animatedScalar.value < 1
+    },
+    "animated value reports an active display-driven intermediate sample"
+)
+require(waitUntil(timeout: 0.80) { !animatedScalar.isAnimating }, "animated value finishes within its motion window")
 require(abs(animatedScalar.value - 1) < 0.0001, "animated value lands exactly on its target")
 require(!animatedScalar.isAnimating && scalarAnimationCompleted, "animated value completes and releases its timer")
 require(animatedSamples.count >= 2, "animated value observers receive multiple sampled values")
@@ -3798,8 +9813,10 @@ struct AnimatedScalarLabel: FluentView {
 let trackedAnimatedValue = FluentAnimatedValue<CGFloat>(0)
 let trackedAnimatedHost = FluentViewHost(AnimatedScalarLabel(value: trackedAnimatedValue))
 trackedAnimatedValue.set(1, animation: FluentAnimationTransaction(duration: 0.04, curve: .linear), reduceMotion: false)
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.07))
-require(firstLabel(in: trackedAnimatedHost)?.stringValue == "Animated: 100", "animated values participate in declarative dependency tracking")
+require(
+    waitUntil(timeout: 0.50) { firstLabel(in: trackedAnimatedHost)?.stringValue == "Animated: 100" },
+    "animated values participate in declarative dependency tracking"
+)
 
 struct TransformDependencyProbe: FluentView {
     let progress: FluentObservable<CGFloat>
@@ -3823,8 +9840,10 @@ var springCompleted = false
 let spring = FluentSpringAnimation(stiffness: 220, damping: 22)
 require(spring.settlingDuration >= 0.12 && spring.settlingDuration <= 3, "spring exposes a bounded settling duration")
 springValue.set(1, spring: spring, reduceMotion: false) { springCompleted = true }
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.035))
-require(springValue.isAnimating && springValue.value != 0, "spring animation publishes a moving value")
+require(
+    waitUntil(timeout: 0.18) { springValue.isAnimating && springValue.value != 0 },
+    "spring animation publishes a moving value"
+)
 springValue.finish()
 require(abs(springValue.value - 1) < 0.0001 && springCompleted, "finishing a spring writes its exact target and completion")
 let overshootingSpringValue = FluentAnimatedValue<CGFloat>(0)
@@ -3834,16 +9853,96 @@ let overshootingSpringObserver = overshootingSpringValue.observable.observe(
     notifyImmediately: false
 )
 overshootingSpringValue.set(1, spring: FluentSpringAnimation(stiffness: 240, damping: 4), reduceMotion: false)
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.35))
+require(
+    waitUntil(timeout: 0.55) { overshootingSpringSamples.contains { $0 > 1.01 } },
+    "underdamped springs publish overshooting value samples"
+)
 overshootingSpringValue.stop()
 overshootingSpringValue.observable.removeObserver(overshootingSpringObserver)
-require(overshootingSpringSamples.contains { $0 > 1.01 }, "underdamped springs publish overshooting value samples")
 
 let reducedKeyframeValue = FluentAnimatedValue<CGFloat>(0)
 var reducedKeyframesCompleted = false
 reducedKeyframeValue.animate(using: keyframeTimeline, reduceMotion: true) { reducedKeyframesCompleted = true }
 require(abs(reducedKeyframeValue.value - 0.25) < 0.0001, "reduced motion resolves keyframes to their final value immediately")
 require(!reducedKeyframeValue.isAnimating && reducedKeyframesCompleted, "reduced keyframes complete without allocating a timer")
+
+final class ValidationTransitionCoordinateView: NSView {
+    private let usesFlippedCoordinates: Bool
+
+    override var isFlipped: Bool { usesFlippedCoordinates }
+
+    init(flipped: Bool, page: Int) {
+        usesFlippedCoordinates = flipped
+        super.init(frame: NSRect(x: 0, y: 0, width: 120, height: 40))
+        identifier = NSUserInterfaceItemIdentifier("Validation.TransitionCoordinate.\(page)")
+        wantsLayer = true
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+struct LogicalEdgeTransitionLeaf: FluentPrimitiveView {
+    let page: Int
+    let flipped: Bool
+
+    var body: NeverFluentView { NeverFluentView() }
+
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        ValidationTransitionCoordinateView(flipped: flipped, page: page)
+    }
+}
+
+struct LogicalEdgeTransitionProbe: FluentView {
+    let page: FluentObservable<Int>
+    let flipped: Bool
+    let edge: FluentTransitionEdge
+
+    var body: FluentTransitionView<LogicalEdgeTransitionLeaf> {
+        LogicalEdgeTransitionLeaf(page: page.value, flipped: flipped)
+            .transition(
+                .move(edge: edge),
+                animation: FluentAnimationTransaction(duration: 0.30, curve: .linear)
+            )
+    }
+}
+
+func logicalEdgeEntranceOffset(flipped: Bool, edge: FluentTransitionEdge) -> CGFloat {
+    let page = FluentObservable(0)
+    let host = FluentViewHost(LogicalEdgeTransitionProbe(page: page, flipped: flipped, edge: edge))
+    let window = NSWindow(
+        contentRect: NSRect(x: 0, y: 0, width: 180, height: 80),
+        styleMask: [.borderless],
+        backing: .buffered,
+        defer: false
+    )
+    window.contentView = host
+    host.frame = window.contentView?.bounds ?? NSRect(x: 0, y: 0, width: 180, height: 80)
+    window.orderFront(nil)
+    host.layoutSubtreeIfNeeded()
+    let transitionContainer = host.subviews.first
+    page.value = 1
+    _ = waitUntil(timeout: 0.15, pollInterval: 0.001) {
+        transitionContainer?.subviews.last?.layer?
+            .animation(forKey: "fluent.transition.incoming.transform") != nil
+    }
+    let transformAnimation = transitionContainer?.subviews.last?.layer?
+        .animation(forKey: "fluent.transition.incoming.transform") as? CABasicAnimation
+    let offset = (transformAnimation?.fromValue as? NSValue)?.caTransform3DValue.m42 ?? .nan
+    window.orderOut(nil)
+    return offset
+}
+
+let nonFlippedTopOffset = logicalEdgeEntranceOffset(flipped: false, edge: .top)
+let flippedTopOffset = logicalEdgeEntranceOffset(flipped: true, edge: .top)
+let nonFlippedBottomOffset = logicalEdgeEntranceOffset(flipped: false, edge: .bottom)
+let flippedBottomOffset = logicalEdgeEntranceOffset(flipped: true, edge: .bottom)
+require(
+    abs(nonFlippedTopOffset - 24) < 0.0001
+        && abs(flippedTopOffset + 24) < 0.0001
+        && abs(nonFlippedBottomOffset + 24) < 0.0001
+        && abs(flippedBottomOffset - 24) < 0.0001,
+    "logical top/bottom move edges map into flipped and non-flipped host coordinates"
+)
 
 let transitionFlag = FluentObservable(true)
 struct TransitionProbe: FluentView {
@@ -3859,22 +9958,61 @@ struct TransitionProbe: FluentView {
                     insertion: .move(edge: .trailing).combined(with: .crossFade),
                     removal: .scale.combined(with: .crossFade)
                 ),
-                animation: FluentAnimationTransaction(duration: 0.06, curve: .easeOut)
+                animation: FluentAnimationTransaction(duration: 0.50, curve: .easeOut)
             )
     }
 }
 let transitionHost = FluentViewHost(TransitionProbe(flag: transitionFlag))
+let transitionWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 320, height: 120),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+transitionWindow.contentView = transitionHost
+transitionHost.frame = transitionWindow.contentView?.bounds
+    ?? NSRect(x: 0, y: 0, width: 320, height: 120)
+transitionWindow.orderFront(nil)
+transitionHost.layoutSubtreeIfNeeded()
 let nativeTransitionContainer = transitionHost.subviews.first
 transitionFlag.value = false
-drainMainQueue()
+require(
+    waitUntil(timeout: 0.20, pollInterval: 0.001) {
+        guard let outgoingEntry = nativeTransitionContainer?.subviews.first,
+              let incomingEntry = nativeTransitionContainer?.subviews.last,
+              outgoingEntry !== incomingEntry else { return false }
+        return outgoingEntry.layer?.animation(forKey: "fluent.transition.outgoing.opacity") != nil
+            && outgoingEntry.layer?.animation(forKey: "fluent.transition.outgoing.transform") != nil
+            && incomingEntry.layer?.animation(forKey: "fluent.transition.incoming.opacity") != nil
+            && incomingEntry.layer?.animation(forKey: "fluent.transition.incoming.transform") != nil
+    },
+    "transition host creates explicit incoming and outgoing opacity/transform animations (host: \(nativeTransitionContainer?.layer != nil), entries: \(nativeTransitionContainer?.subviews.map { ($0.layer != nil, $0.layer?.animationKeys() ?? []) } ?? []))"
+)
 require(transitionHost.subviews.count == 1, "transition wrapper keeps a stable host during branch replacement")
 require(transitionHost.subviews.first === nativeTransitionContainer, "composed transitions preserve their native host identity")
-RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.1))
+if let outgoingEntry = nativeTransitionContainer?.subviews.first,
+   let incomingEntry = nativeTransitionContainer?.subviews.last,
+   outgoingEntry !== incomingEntry {
+    require(
+        outgoingEntry.layer?.animation(forKey: "fluent.transition.outgoing.opacity") != nil
+            && outgoingEntry.layer?.animation(forKey: "fluent.transition.outgoing.transform") != nil
+            && incomingEntry.layer?.animation(forKey: "fluent.transition.incoming.opacity") != nil
+            && incomingEntry.layer?.animation(forKey: "fluent.transition.incoming.transform") != nil,
+        "transition host runs incoming and outgoing opacity/transform through explicit Core Animation (outgoing: \(outgoingEntry.layer?.animationKeys() ?? []), incoming: \(incomingEntry.layer?.animationKeys() ?? []))"
+    )
+} else {
+    fatalError("transition host did not retain both entries during explicit motion")
+}
+RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.60))
 require(nativeTransitionContainer?.subviews.count == 1, "transition completion removes the outgoing native entry")
 let contentTransformPreserved = abs(
     (nativeTransitionContainer?.subviews.first?.subviews.first?.layer?.affineTransform().tx ?? 0) - 7
 ) < 0.0001
-require(contentTransformPreserved, "transition entry animation does not overwrite a content transform")
+require(
+    contentTransformPreserved,
+    "transition entry animation does not overwrite a content transform (actual: \(nativeTransitionContainer?.subviews.first?.subviews.first?.layer?.affineTransform().tx ?? 0), hierarchy: \(nativeTransitionContainer?.subviews.map { $0.subviews.count } ?? []))"
+)
+transitionWindow.orderOut(nil)
 
 let rapidTransitionPage = FluentObservable(0)
 struct RapidTransitionProbe: FluentView {
@@ -4309,6 +10447,116 @@ require(fileDialogPresenter.exportCancellations == 1, "file exporter cancels its
 require(exporterCompletions == 1, "programmatic exporter dismissal does not report user cancellation")
 exporterWindow.orderOut(nil)
 
+let serialPresenter = ValidationFileDialogPresenter()
+let serialImporterPresented = FluentState(wrappedValue: false)
+let serialExporterPresented = FluentState(wrappedValue: false)
+let serialDialogHost = FluentButtonView("Serial file dialogs")
+    .fileImporter(
+        isPresented: serialImporterPresented.projectedValue,
+        configuration: importConfiguration,
+        presenter: serialPresenter
+    ) { _ in }
+    .fileExporter(
+        isPresented: serialExporterPresented.projectedValue,
+        configuration: exportConfiguration,
+        presenter: serialPresenter
+    ) { _ in }
+    ._mount(in: FluentRenderContext())
+let serialDialogWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 100),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+serialDialogWindow.contentView = serialDialogHost
+serialDialogWindow.orderFront(nil)
+serialImporterPresented.wrappedValue = true
+serialExporterPresented.wrappedValue = true
+drainMainQueue()
+require(
+    serialPresenter.importPresentations == 1 && serialPresenter.exportPresentations == 0,
+    "window presentation coordinator starts only the first document-modal request"
+)
+serialPresenter.completeImport(.success([validationImportURL]))
+drainMainQueue()
+require(
+    serialPresenter.exportPresentations == 1,
+    "window presentation coordinator advances to the next queued request after completion"
+)
+serialPresenter.completeExport(.success(validationExportURL))
+drainMainQueue()
+require(!serialImporterPresented.wrappedValue && !serialExporterPresented.wrappedValue, "serialized file dialogs clear their own bindings")
+serialDialogWindow.orderOut(nil)
+
+final class DeferredValidationFileDialogPresenter: FluentFileDialogPresenting {
+    var importPresentations = 0
+    var importCancellations = 0
+    private var importCompletions: [(Result<[URL], Error>) -> Void] = []
+
+    func presentImport(
+        configuration: FluentFileImportConfiguration,
+        for window: NSWindow,
+        completion: @escaping (Result<[URL], Error>) -> Void
+    ) -> any FluentFileDialogSession {
+        importPresentations += 1
+        importCompletions.append(completion)
+        return ValidationFileDialogSession { [weak self] in self?.importCancellations += 1 }
+    }
+
+    func presentExport(
+        configuration: FluentFileExportConfiguration,
+        for window: NSWindow,
+        completion: @escaping (Result<URL, Error>) -> Void
+    ) -> any FluentFileDialogSession {
+        ValidationFileDialogSession {}
+    }
+
+    func completeOldestImport(_ result: Result<[URL], Error>) {
+        guard !importCompletions.isEmpty else { return }
+        importCompletions.removeFirst()(result)
+    }
+}
+
+let deferredPresenter = DeferredValidationFileDialogPresenter()
+let rapidImporterPresented = FluentState(wrappedValue: false)
+var rapidImporterCompletions = 0
+let rapidImporterHost = FluentButtonView("Rapid importer")
+    .fileImporter(
+        isPresented: rapidImporterPresented.projectedValue,
+        configuration: importConfiguration,
+        presenter: deferredPresenter
+    ) { _ in rapidImporterCompletions += 1 }
+    ._mount(in: FluentRenderContext())
+let rapidImporterWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 260, height: 100),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+rapidImporterWindow.contentView = rapidImporterHost
+rapidImporterWindow.orderFront(nil)
+rapidImporterPresented.wrappedValue = true
+drainMainQueue()
+require(deferredPresenter.importPresentations == 1, "rapid importer begins its initial request")
+rapidImporterPresented.wrappedValue = false
+drainMainQueue()
+rapidImporterPresented.wrappedValue = true
+drainMainQueue()
+require(
+    deferredPresenter.importCancellations == 1 && deferredPresenter.importPresentations == 1,
+    "rapid importer waits for native cancellation completion before reopening"
+)
+deferredPresenter.completeOldestImport(.failure(FluentFileDialogError.cancelled))
+drainMainQueue()
+require(rapidImporterPresented.wrappedValue, "an old file-dialog completion cannot clear a reopened binding")
+require(deferredPresenter.importPresentations == 2, "rapid importer reopens after the old request releases the window")
+require(rapidImporterCompletions == 0, "programmatic dismissal does not leak a stale file-dialog completion")
+deferredPresenter.completeOldestImport(.success([validationImportURL]))
+drainMainQueue()
+require(!rapidImporterPresented.wrappedValue, "the current file-dialog completion clears its binding")
+require(rapidImporterCompletions == 1, "the current file-dialog completion is delivered exactly once")
+rapidImporterWindow.orderOut(nil)
+
 final class ValidationPrintSession: FluentPrintSession {
     private var cancellation: (() -> Void)?
 
@@ -4482,6 +10730,170 @@ require(settingsDescription.restoration == .disabled, "settings scene avoids res
 require(settingsDescription.tabbing == .disallowed, "settings scene opts out of document tabs")
 require(!settingsDescription.initiallyVisible, "settings scene opens on demand")
 
+let windowRestorationDefaults = UserDefaults(suiteName: "FluentKitWindowRestorationValidation.\(UUID().uuidString)")!
+let restoredMainDescription = FluentWindowDescription(
+    id: "restored-main",
+    title: "Restored Main",
+    size: NSSize(width: 420, height: 280),
+    minimumSize: NSSize(width: 240, height: 160),
+    styleMask: [.titled, .closable],
+    material: nil,
+    restoration: .automatic,
+    initiallyVisible: true,
+    content: FluentAnyView(FluentText("Restored main"))
+)
+let restoredUtilityDescription = FluentWindowDescription(
+    id: "restored-utility",
+    title: "Restored Utility",
+    size: NSSize(width: 260, height: 200),
+    minimumSize: NSSize(width: 180, height: 140),
+    styleMask: [.titled, .closable],
+    material: nil,
+    restoration: .automatic,
+    initiallyVisible: false,
+    content: FluentAnyView(FluentText("Restored utility"))
+)
+let nonRestoredDescription = FluentWindowDescription(
+    id: "non-restored",
+    title: "Non Restored",
+    size: NSSize(width: 220, height: 160),
+    minimumSize: NSSize(width: 160, height: 120),
+    styleMask: [.titled, .closable],
+    material: nil,
+    restoration: .disabled,
+    initiallyVisible: false,
+    content: FluentAnyView(FluentText("Non restored"))
+)
+let restorationDescriptions = [restoredMainDescription, restoredUtilityDescription, nonRestoredDescription]
+let makeRestorationWindow: (FluentWindowDescription) -> NSWindow = { description in
+    let window = NSWindow(
+        contentRect: NSRect(origin: .zero, size: description.size),
+        styleMask: description.styleMask,
+        backing: .buffered,
+        defer: false
+    )
+    window.title = description.title
+    window.contentView = description.content._mount(in: description.context)
+    window.isReleasedWhenClosed = false
+    return window
+}
+let firstRestorationCoordinator = FluentWindowCoordinator(
+    descriptions: restorationDescriptions,
+    makeWindow: makeRestorationWindow,
+    positionWindow: { _, _, _ in },
+    defaults: windowRestorationDefaults
+)
+let firstRestoredMain = firstRestorationCoordinator.open(id: "restored-main")
+let firstRestoredUtility = firstRestorationCoordinator.open(id: "restored-utility")
+firstRestoredMain?.setFrame(NSRect(x: 120, y: 120, width: 420, height: 280), display: false)
+firstRestoredUtility?.setFrame(NSRect(x: 180, y: 180, width: 260, height: 200), display: false)
+firstRestorationCoordinator.open(id: "non-restored")
+firstRestorationCoordinator.focus(id: "restored-utility")
+firstRestorationCoordinator.saveRestorationState()
+require(
+    windowRestorationDefaults.array(forKey: "FluentKit.windows.openIDs") as? [String] == ["restored-main", "restored-utility", "non-restored"],
+    "window coordinator persists the declaration-ordered open window set"
+)
+require(
+    windowRestorationDefaults.string(forKey: "FluentKit.windows.activeID") == "restored-utility",
+    "window coordinator persists the active window ID"
+)
+let secondRestorationCoordinator = FluentWindowCoordinator(
+    descriptions: restorationDescriptions,
+    makeWindow: makeRestorationWindow,
+    positionWindow: { _, _, _ in },
+    defaults: windowRestorationDefaults
+)
+secondRestorationCoordinator.openInitiallyVisibleWindows()
+let secondRestoredMainFrame = secondRestorationCoordinator.window(for: "restored-main")?.frame ?? .zero
+let secondRestoredUtilityFrame = secondRestorationCoordinator.window(for: "restored-utility")?.frame ?? .zero
+let firstRestoredMainFrame = firstRestoredMain?.frame ?? .zero
+let firstRestoredUtilityFrame = firstRestoredUtility?.frame ?? .zero
+require(
+    secondRestorationCoordinator.openWindowIDs == ["restored-main", "restored-utility"],
+    "window restoration reopens automatic utility windows but excludes disabled restoration scenes"
+)
+require(
+    secondRestoredMainFrame == firstRestoredMainFrame
+        && secondRestoredUtilityFrame == firstRestoredUtilityFrame,
+    "window restoration keeps independent frames for multiple stable IDs (main: \(secondRestoredMainFrame) vs \(firstRestoredMainFrame), utility: \(secondRestoredUtilityFrame) vs \(firstRestoredUtilityFrame))"
+)
+let restoredUtilityWindow = secondRestorationCoordinator.window(for: "restored-utility")
+let restoredMainWindow = secondRestorationCoordinator.window(for: "restored-main")
+require(
+    secondRestorationCoordinator.activeWindowID == "restored-utility"
+        && restoredUtilityWindow?.isVisible == true
+        && restoredMainWindow?.isVisible == true,
+    "window restoration restores the active stable ID and reopens both windows"
+)
+let edgeRestorationDefaults = UserDefaults(suiteName: "FluentKitWindowRestorationEdgeValidation.\(UUID().uuidString)")!
+edgeRestorationDefaults.set(["restored-main", "restored-utility"], forKey: "FluentKit.windows.openIDs")
+edgeRestorationDefaults.set("restored-main", forKey: "FluentKit.windows.activeID")
+if let visibleFrame = NSScreen.main?.visibleFrame {
+    edgeRestorationDefaults.set(
+        [visibleFrame.maxX - 12, visibleFrame.minY + 40, 420, 280],
+        forKey: "FluentKit.window.restored-main.frame"
+    )
+}
+let edgeRestorationCoordinator = FluentWindowCoordinator(
+    descriptions: restorationDescriptions,
+    makeWindow: makeRestorationWindow,
+    positionWindow: { _, _, _ in },
+    defaults: edgeRestorationDefaults
+)
+edgeRestorationCoordinator.openInitiallyVisibleWindows()
+let edgeRestoredMainWindow = edgeRestorationCoordinator.window(for: "restored-main")
+require(
+    edgeRestorationCoordinator.activeWindowID == "restored-main",
+    "window restoration preserves an active ID that is not the last declared window"
+)
+if let visibleFrame = NSScreen.main?.visibleFrame, let edgeRestoredMainWindow {
+    require(
+        edgeRestoredMainWindow.frame.minX >= visibleFrame.minX - 1
+            && edgeRestoredMainWindow.frame.maxX <= visibleFrame.maxX + 1
+            && edgeRestoredMainWindow.frame.minY >= visibleFrame.minY - 1
+            && edgeRestoredMainWindow.frame.maxY <= visibleFrame.maxY + 1,
+        "window restoration constrains a partially off-screen frame to the visible screen"
+    )
+}
+let invalidFrameDefaults = UserDefaults(suiteName: "FluentKitWindowRestorationInvalidValidation.\(UUID().uuidString)")!
+invalidFrameDefaults.set(["restored-main"], forKey: "FluentKit.windows.openIDs")
+invalidFrameDefaults.set("restored-main", forKey: "FluentKit.windows.activeID")
+invalidFrameDefaults.set(
+    [Double.nan, Double.infinity, 420, 280],
+    forKey: "FluentKit.window.restored-main.frame"
+)
+let invalidFrameCoordinator = FluentWindowCoordinator(
+    descriptions: restorationDescriptions,
+    makeWindow: makeRestorationWindow,
+    positionWindow: { _, _, _ in },
+    defaults: invalidFrameDefaults
+)
+invalidFrameCoordinator.openInitiallyVisibleWindows()
+let invalidRestoredFrame = invalidFrameCoordinator.window(for: "restored-main")?.frame ?? .zero
+require(
+    invalidRestoredFrame.origin.x.isFinite
+        && invalidRestoredFrame.origin.y.isFinite
+        && invalidRestoredFrame.width >= restoredMainDescription.minimumSize.width
+        && invalidRestoredFrame.height >= restoredMainDescription.minimumSize.height,
+    "window restoration ignores non-finite saved frame coordinates"
+)
+secondRestorationCoordinator.close(id: "restored-utility")
+drainMainQueue()
+secondRestorationCoordinator.saveRestorationState()
+let thirdRestorationCoordinator = FluentWindowCoordinator(
+    descriptions: restorationDescriptions,
+    makeWindow: makeRestorationWindow,
+    positionWindow: { _, _, _ in },
+    defaults: windowRestorationDefaults
+)
+thirdRestorationCoordinator.openInitiallyVisibleWindows()
+require(
+    thirdRestorationCoordinator.openWindowIDs == ["restored-main"],
+    "closing a restored utility window updates the next launch open set"
+)
+[firstRestoredMain, firstRestoredUtility, secondRestorationCoordinator.window(for: "restored-main"), secondRestorationCoordinator.window(for: "restored-utility"), thirdRestorationCoordinator.window(for: "restored-main"), edgeRestorationCoordinator.window(for: "restored-main"), edgeRestorationCoordinator.window(for: "restored-utility"), invalidFrameCoordinator.window(for: "restored-main")].compactMap { $0 }.forEach { $0.orderOut(nil) }
+
 let preferredTabScene = FluentWindowScene(
     id: "tabbed-document",
     title: "Tabbed",
@@ -4636,6 +11048,124 @@ require(
 )
 serviceWindows.window(for: "z-service-main")?.orderOut(nil)
 
+let routeHistory = FluentNavigationCoordinator(initial: "home")
+require(routeHistory.push("controls"), "NavigationCoordinator pushes a distinct route")
+require(routeHistory.push("button"), "NavigationCoordinator appends a second forward route")
+require(
+    routeHistory.goBack() == "controls"
+        && routeHistory.direction == .backward
+        && routeHistory.canGoForward,
+    "NavigationCoordinator exposes browser-style Back state independently from UndoManager"
+)
+require(
+    routeHistory.goForward() == "button" && routeHistory.direction == .forward,
+    "NavigationCoordinator restores the forward route"
+)
+_ = routeHistory.goBack()
+require(
+    routeHistory.push("textbox")
+        && !routeHistory.canGoForward
+        && routeHistory.entries == ["home", "controls", "textbox"],
+    "a new navigation push truncates the forward stack"
+)
+require(!routeHistory.push("textbox"), "NavigationCoordinator ignores a duplicate current route")
+
+let hierarchySelection = FluentState<String?>(wrappedValue: "standalone")
+let hierarchyPaneOpen = FluentState(wrappedValue: true)
+let hierarchyHost = FluentViewHost(
+    FluentNavigationView(
+        [
+            FluentNavigationItem(
+                id: "parent",
+                title: "Parent",
+                systemImageName: "folder",
+                children: [
+                    FluentNavigationItem(id: "child", title: "Child", systemImageName: "doc")
+                ],
+                selectsOnInvoked: false
+            ),
+            FluentNavigationItem(id: "standalone", title: "Standalone", systemImageName: "star")
+        ],
+        selection: hierarchySelection.projectedValue,
+        isPaneOpen: hierarchyPaneOpen.projectedValue,
+        paneDisplayMode: .left,
+        contentTransition: .none
+    ) {
+        FluentText("Hierarchy content")
+    }
+)
+hierarchyHost.frame = NSRect(x: 0, y: 0, width: 720, height: 420)
+hierarchyHost.layoutSubtreeIfNeeded()
+let initialHierarchyButtons = views(identifier: "FluentKit.NavigationView.Item", in: hierarchyHost)
+let hierarchyParent = initialHierarchyButtons.first { $0.accessibilityTitle() == "Parent" } as? NSButton
+let hierarchyStandalone = initialHierarchyButtons.first { $0.accessibilityTitle() == "Standalone" }
+require(initialHierarchyButtons.count == 2, "collapsed hierarchical NavigationView hides descendant rows")
+require(
+    firstLayer(named: "FluentKit.NavigationView.ItemChevron", in: hierarchyParent ?? NSView())?.isHidden == false
+        && firstLayer(named: "FluentKit.NavigationView.ItemChevron", in: hierarchyStandalone ?? NSView())?.isHidden != false,
+    "NavigationView shows a Chevron only for items with children"
+)
+hierarchyParent?.performClick(nil)
+hierarchyHost.layoutSubtreeIfNeeded()
+require(
+    views(identifier: "FluentKit.NavigationView.Item", in: hierarchyHost).contains {
+        $0.accessibilityTitle() == "Child"
+    },
+    "hierarchical NavigationView expands child rows from the public item model"
+)
+hierarchyParent?.performClick(nil)
+require(
+    waitUntil(timeout: 0.35) {
+        views(identifier: "FluentKit.NavigationView.Item", in: hierarchyHost).count == 2
+    },
+    "hierarchical NavigationView collapses descendants through the shared animation coordinator"
+)
+
+let navigationQuery = FluentState(wrappedValue: "but")
+let navigationPaneOpen = FluentState(wrappedValue: false)
+var submittedNavigationSuggestion: FluentNavigationSearchSuggestion?
+let navigationSearchHost = FluentViewHost(
+    FluentNavigationSearch(
+        navigationQuery.projectedValue,
+        isPaneOpen: navigationPaneOpen.projectedValue,
+        suggestions: { query in
+            query.isEmpty ? [] : [FluentNavigationSearchSuggestion(id: "button", title: "Button")]
+        },
+        onSubmit: { _, suggestion in submittedNavigationSuggestion = suggestion }
+    )
+)
+navigationSearchHost.frame = NSRect(x: 0, y: 0, width: 240, height: 96)
+navigationSearchHost.layoutSubtreeIfNeeded()
+let navigationSearchField = firstView(
+    identifier: "FluentKit.NavigationView.Search.Field",
+    in: navigationSearchHost
+)
+let navigationSuggestion = firstView(
+    identifier: "FluentKit.NavigationView.Search.Suggestion",
+    in: navigationSearchHost
+) as? NSButton
+require(
+    navigationSearchField?.isHidden == false && navigationSuggestion != nil,
+    "NavigationSearch displays its field and suggestions in the expanded pane"
+)
+navigationSuggestion?.performClick(nil)
+require(
+    submittedNavigationSuggestion?.id == AnyHashable("button"),
+    "NavigationSearch submits a selected suggestion through its public callback"
+)
+navigationSearchHost.frame = NSRect(x: 0, y: 0, width: 48, height: 40)
+navigationSearchHost.layoutSubtreeIfNeeded()
+let compactSearchButton = firstView(
+    identifier: "FluentKit.NavigationView.Search.CompactButton",
+    in: navigationSearchHost
+) as? NSButton
+require(
+    navigationSearchField?.isHidden == true && compactSearchButton?.isHidden == false,
+    "NavigationSearch replaces the field with a compact search button"
+)
+compactSearchButton?.performClick(nil)
+require(navigationPaneOpen.wrappedValue, "compact NavigationSearch requests the pane to expand")
+
 let packageRoot = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent()
     .deletingLastPathComponent()
@@ -4648,8 +11178,17 @@ let snapshotBaselines: [(filename: String, width: Int, height: Int)] = [
     ("application-dark.png", 980, 680),
     ("controls-light.png", 980, 680),
     ("controls-dark.png", 980, 680),
+    ("collections-light.png", 980, 680),
+    ("collections-dark.png", 980, 680),
     ("inputs-light.png", 980, 680),
     ("inputs-dark.png", 980, 680),
+    ("window-shell-extended-light.png", 980, 680),
+    ("window-shell-native-light.png", 980, 680),
+    ("command-bar-flyout-light.png", 141, 133),
+    ("command-bar-flyout-dark.png", 141, 133),
+    ("menu-flyout-light.png", 194, 121),
+    ("menu-flyout-dark.png", 194, 121),
+    ("menu-flyout-high-contrast.png", 194, 121),
     ("navigation-minimal-light.png", 560, 680),
     ("navigation-minimal-dark.png", 560, 680),
     ("navigation-top-light.png", 980, 680),

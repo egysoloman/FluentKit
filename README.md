@@ -22,6 +22,8 @@ let host = FluentViewHost(SettingsView())
 
 The included `FluentGallery` executable is a visual sandbox for the components. Build it with `swift build`, then run `.build/debug/FluentGallery`.
 
+For the full native application catalog, open `FluentKitGallery/FluentKitGallery.xcodeproj` in Xcode. The app consumes the local `FluentKit` package and provides searchable component coverage, navigation history, appearance controls, and focused samples for the production Gallery surface.
+
 Long pages use the same declarative composition and stay inside a native scrolling viewport. `FluentTextEditor` provides multiline binding, placeholder, undo, focus styling, and native text-area accessibility:
 
 ```swift
@@ -65,7 +67,7 @@ struct WorkspaceApp: FluentApp {
 }
 ```
 
-Use `FluentWindowPlacement` when a scene needs a predictable initial position. `.automatic` centers the first scene and cascades later scenes; `.centered`, `.cascade`, corner placements, and `.origin(x:y:)` are also available. Positions are clamped to the visible screen frame. `FluentWindowRestoration.automatic` (the default) persists the last frame by scene ID and restores it on the next launch; use `.disabled` for transient windows.
+Use `FluentWindowPlacement` when a scene needs a predictable initial position. `.automatic` centers the first scene and cascades later scenes; `.centered`, `.cascade`, corner placements, and `.origin(x:y:)` are also available. Positions are clamped to the visible screen frame. `FluentWindowRestoration.automatic` (the default) persists the last frame, open-window set, and active window ID by scene ID and restores them on the next launch; use `.disabled` for transient windows. Embedded hosts can call `FluentWindowCoordinator.saveRestorationState()` during termination and `openInitiallyVisibleWindows()` when reconstructing a scene group.
 
 For application-scale window commands, conform the app to `FluentWindowLifecycle`. Its coordinator can open, close, focus, or toggle any scene by stable ID. Set `initiallyVisible: false` on utility scenes that should be created on demand; their presence keeps the application alive after the main window closes:
 
@@ -183,6 +185,46 @@ the validation executable keeps CI checks useful until a full Xcode toolchain is
 compatibility and versioning policy live in [COMPATIBILITY.md](COMPATIBILITY.md), and the current release
 is recorded in [VERSION](VERSION).
 
+Gallery popup snapshots can freeze the real Core Animation presentation tree at a repeatable time.
+This captures in-flight transforms and clipping instead of the final model layer:
+
+```bash
+FLUENTKIT_SNAPSHOT_PATH=/tmp/fluentkit-menu-125ms.png \
+FLUENTKIT_GALLERY_PAGE=controls \
+FLUENTKIT_GALLERY_OPEN_MENU=1 \
+FLUENTKIT_GALLERY_MENU_TITLE="Menu flyout" \
+FLUENTKIT_SNAPSHOT_CHILD_PANEL=1 \
+FLUENTKIT_SNAPSHOT_PRESENTATION_DELAY_MS=125 \
+FLUENTKIT_SNAPSHOT_CAPTURE_PRESENTATION=1 \
+swift run FluentGallery
+```
+
+MenuFlyout and ComboBox popup dismissal is immediate, so the harness captures entrance motion only.
+`FLUENTKIT_GALLERY_DIRECTION=rtl`, `FLUENTKIT_GALLERY_CONTRAST=high`, and
+`FLUENTKIT_GALLERY_REDUCE_MOTION=1` exercise the corresponding environment variants. Set
+`FLUENTKIT_SNAPSHOT_SCALE=2` for a Retina bitmap while preserving the same logical Gallery
+dimensions. `FLUENTKIT_GALLERY_OPEN_DATE_PICKER=1` opens the source-derived
+CalendarDatePicker so its native calendar popover can be captured with
+`FLUENTKIT_SNAPSHOT_CHILD_PANEL=1`.
+`FLUENTKIT_GALLERY_FOCUS_SEARCH=1` captures the real SearchBox field editor and
+`FLUENTKIT_GALLERY_OPEN_TEXT_COMMANDS=1` opens its application-owned text command presenter; combine
+the latter with `FLUENTKIT_SNAPSHOT_CHILD_PANEL=1` to capture only that surface. Add
+`FLUENTKIT_GALLERY_EXPAND_TEXT_COMMANDS=1` to expand the CommandBar overflow and capture its
+secondary Undo, Redo, and Select All rows.
+
+Navigation transitions use the same presentation capture path. `FLUENTKIT_GALLERY_NAV_SELECT`
+invokes a destination by accessibility title, while `FLUENTKIT_GALLERY_TOGGLE_PANE=1` opens or
+closes the current pane:
+
+```bash
+FLUENTKIT_SNAPSHOT_PATH=/tmp/fluentkit-navigation-150ms.png \
+FLUENTKIT_GALLERY_PAGE=inputs \
+FLUENTKIT_GALLERY_NAV_SELECT=Accessibility \
+FLUENTKIT_SNAPSHOT_PRESENTATION_DELAY_MS=150 \
+FLUENTKIT_SNAPSHOT_CAPTURE_PRESENTATION=1 \
+swift run FluentGallery
+```
+
 Application-wide commands can opt into a native macOS main menu by conforming the app to `FluentApplicationCommands`. Command groups are rebuilt declaratively, preserve key equivalents and modifier masks, and reevaluate `isEnabled` when the menu validates:
 
 ```swift
@@ -229,14 +271,14 @@ visual-state or presentation contracts and executable validation.
 16. Display-driven values, springs, keyframes, Reduce Motion, composable branch transitions, visual transforms, and namespace-scoped matched geometry.
 17. Observable application themes, semantic density, contrast, color schemes and typography, plus reusable button, toggle, slider, progress, text-field, and card styles.
 18. Scene-specific cubic-bezier motion tokens and Fluent control/presentation choreography.
-19. Acrylic application flyouts and context menus while preserving the native macOS main menu.
+19. Liquid Glass application flyouts and context menus while preserving the native macOS main menu.
 20. Accessibility and localization depth, including RTL behavior and automated semantic audits.
 21. Application services such as settings, open events, printing, sharing, and import/export.
 22. Production hardening, snapshot baselines, performance/leak tests, documentation, and compatibility policy.
 
 Milestone 13 adds a complete input and form layer: secure and search fields, stable-value combo boxes, range-clamped steppers, validation states, form sections, labeled content, semantic control sizing, and Return/Escape default and cancel actions. Every control is implemented as a native AppKit view and can be embedded directly or through `FluentNativeView`. See [ROADMAP.md](ROADMAP.md) for the staged path toward a complete application framework.
 
-The foundational Milestone 14 text-system slice adds `FluentRichTextEditor`, an attributed `NSTextView` editor with a two-way `NSAttributedString` binding, optional selection binding, native undo, bold/italic/underline, font size, color and alignment operations, formatting-state observation, case-insensitive find, and replace-all. Stable-ID text attachments can be inserted, enumerated, and removed without coupling application models to AppKit attachment identity. The editor remains a normal Fluent view, so it can live inside forms, scroll views, sheets, and navigation destinations.
+The foundational Milestone 14 text-system slice adds `FluentRichTextEditor`, an attributed `NSTextView` editor with a two-way `NSAttributedString` binding, optional selection binding, native undo, bold/italic/underline, font size, color and alignment operations, formatting-state observation, case-insensitive find, and replace-all. Stable-ID text attachments can be inserted, enumerated, and removed without coupling application models to AppKit attachment identity. Selection remains AppKit-owned while binding updates are de-duplicated and external ranges are coalesced, so drag selection cannot create a main-thread replay queue. The editor remains a normal Fluent view, so it can live inside forms, scroll views, sheets, and navigation destinations.
 
 The current foundation includes automatic dependency tracking for state read while evaluating a view, localized reconciliation for compatible branches, two-way bindings, single- and multiline text editing, native material surfaces, scrolling/list/navigation primitives, single- and multi-window app scenes, stable window commands and frame restoration, native window toolbars, a declarative native main menu coordinator, context menus, popovers, sheets, confirmation dialogs, native drag/drop wrappers, lifecycle callbacks, hover events, composable accessibility modifiers and semantic groups, two-way focus bindings, scoped keyboard command groups, collapsible disclosure groups, segmented selection controls, native date/color pickers, and a value-driven navigation stack. Result-builder composition is not capped at a fixed sibling count. Lists use an NSCollectionView backing store so only visible rows are mounted. Stable-ID lists preserve identity-based selection and move existing native rows during reordering, and support arrow, Home, End, Page Up, and Page Down navigation.
 
@@ -350,8 +392,8 @@ FluentVStack(spacing: 6) {
 }
 ```
 
-Buttons, toggles, sliders, progress bars, check boxes, radio buttons, segmented controls, and text
-fields accept reusable state-dependent styles while retaining their native identities and bindings.
+Buttons, repeat/toggle buttons, toggles, sliders, progress bars, check boxes, radio buttons,
+segmented controls, and text fields accept reusable state-dependent styles while retaining their native identities and bindings.
 The built-in styles cover common action and input emphasis:
 
 ```swift
@@ -359,7 +401,13 @@ FluentHStack(spacing: 8) {
     FluentButtonView("Save").buttonStyle(FluentAccentButtonStyle())
     FluentButtonView("Preview").buttonStyle(FluentOutlineButtonStyle())
     FluentButtonView("More").buttonStyle(FluentBorderlessButtonStyle())
+
+    FluentRepeatButtonView("Increase", delay: 0.5, interval: 0.033) {
+        quantity += 1
+    }
 }
+
+FluentToggleButtonView("Pin", isOn: $isPinned)
 
 FluentToggleView("Notifications", isOn: $notifications)
     .toggleStyle(FluentMonochromeToggleStyle())
@@ -379,6 +427,12 @@ FluentRadioButtonView("Primary", isSelected: $primary)
 FluentSegmentedControl(["One", "Two"], selection: $mode)
     .segmentedStyle(FluentNeutralSegmentedStyle())
 
+// Page and view switching uses the source-derived per-item SelectorBar pill.
+FluentSelectorBar([
+    FluentSelectorBarItem(value: 0, title: "Grid", systemImage: "square.grid.2x2"),
+    FluentSelectorBarItem(value: 1, title: "List", systemImage: "list.bullet")
+], selection: $layout)
+
 FluentTextFieldView(text: $query, placeholder: "Search")
     .textFieldStyle(FluentUnderlineTextFieldStyle())
 
@@ -396,12 +450,41 @@ FluentComboBox(
 )
 .textFieldStyle(FluentUnderlineTextFieldStyle())
 
+FluentComboBox(
+    options: accounts,
+    selection: $matchedAccount,
+    mode: .editable,
+    text: $accountQuery,
+    title: \.displayName
+)
+
 FluentDatePicker(selection: $dueDate, range: allowedDates)
     .textFieldStyle(FluentUnderlineTextFieldStyle())
 
-FluentStepper("Items", value: $quantity, in: 1...12)
-    .stepperStyle(FluentInlineStepperStyle())
+FluentNumberBox(
+    "Items",
+    value: $quantity,
+    in: 1...12,
+    spinButtonPlacement: .inline
+)
 ```
+
+`FluentNumberBox` is a dedicated NumberBox composition rather than an `NSStepper` skin. Its
+`spinButtonPlacement` supports `.hidden`, `.compact`, and `.inline`: Inline reserves the source
+72-point trailing column for adjacent RepeatButtons, while Compact presents the source-sized
+vertical spin-button popup only while the native text editor has focus. Empty input maps to `NaN`;
+validation, range clamping, wrapping, keyboard stepping, wheel stepping, and accessibility remain
+native AppKit behaviors routed through the Fluent control.
+
+`FluentRepeatButton` follows press-mode semantics: pointer-down or Space invokes immediately, the
+first repeat occurs after `delay`, and later repeats use `interval`. Its defaults match the source
+contract at 500ms and 33ms. Pointer exit, release, focus loss, disabling, Escape, and view removal
+cancel the timer; re-entering while pressed starts a fresh delay. Return and accessibility press
+remain single invocations.
+
+`FluentToggleButton` is distinct from ToggleSwitch: it keeps Button geometry while its bound state
+selects Unchecked, Checked, or optional Indeterminate resources. Pointer release, Space/Return,
+accessibility, external bindings, and Reduce Motion share the same native state path.
 
 The automatic ToggleSwitch style uses a 40 x 20 track with 12 x 12 normal, 14 x 14 hover, and
 17 x 14 pressed/dragging knob geometry. Pointer down changes only the visual state; the binding is
@@ -421,12 +504,14 @@ source AnimatedAccept 19-frame/four-frame curves. RadioButton uses a 20pt outer 
 12/14/10/14 dot states and a separate pressed-feedback dot for an unselected press. Both support
 RTL, keyboard focus, accessibility activation, external-binding cancellation, and Reduce Motion.
 
-Combo-box fields keep their native `NSComboBox` identity and accessibility role, while the visible
-host follows the WinUI 3 default filled template. The host owns the 32pt field geometry, trailing
-glyph column, focused outer highlight, leading focus Pill, and selected-item Pill; the option popup
-is an application-owned `FluentMenuFlyout` with keyboard navigation, type-ahead, Escape/outside-click
-dismissal, and RTL placement. The native AppKit combo-box popup is not used. Full flyout visual
-acceptance remains part of the long-tail input work.
+Combo-box fields keep a native `NSComboBox` option/accessibility bridge while FluentKit owns the
+visible 32pt host, trailing glyph column, focus visuals, popup, and item template. Selection mode
+centers the current item over the closed faceplate and reveals the popup around that row. Editable
+mode uses a native `NSTextField` for editing and IME behavior; only its glyph column opens the popup
+below the field (or above when space requires it). Arbitrary text updates the optional text binding,
+and exact option titles synchronize the stable selection. Both modes provide keyboard navigation,
+type-ahead, Escape/outside-click dismissal, RTL placement, and the source-derived partial-content
+entrance rather than the native AppKit combo-box popup.
 
 Progress bars use stable Fluent-owned track and indicator layers. Determinate values interpolate with
 the 250ms control-normal token; indeterminate mode uses a coordinated dual-layer loop, while paused
@@ -533,7 +618,8 @@ FluentNavigationView(
     )],
     selection: $selection,
     isPaneOpen: $isPaneOpen,
-    paneDisplayMode: .automatic
+    paneDisplayMode: .automatic,
+    contentTransition: .automatic
 ) {
     FluentText("FluentKit")
 } header: {
@@ -547,6 +633,13 @@ Pane opening uses separate 350ms/120ms open and close curves. Destination change
 two-indicator 600ms choreography in either vertical or horizontal orientation, with rapid-target and
 Reduce Motion handling. Arrow keys, Home/End, disabled destinations, accessibility selection, RTL
 ordering, overlay dismissal, and Top overflow all use the same stable selection model.
+
+`FluentNavigationView` also owns its page transition presenter. `.automatic` follows the WinUI
+recommendation by using a direction-aware Slide transition for ordered Top destinations and an
+Entrance transition elsewhere. `.crossFade`, `.slide`, `.drillIn`, `.entrance`, `.none`, and
+`.suppress` are available as explicit policies. The presenter keeps outgoing and incoming pages
+only for the required phase, resumes interruptions from presentation values, settles rapid changes
+on the newest destination, and replaces immediately under Reduce Motion.
 
 `FluentTitleBar` provides reusable custom window chrome without replacing macOS traffic lights or
 the native main menu. Compact and expanded modes use 32pt and 48pt geometry; the title bar can own a
@@ -572,6 +665,38 @@ FluentVStack(spacing: 0, alignment: .width) {
         PageContent(selection)
     }
 }
+```
+
+`FluentWindowShell` composes the same pieces into independent window states. Native AppKit chrome and
+extended Fluent chrome are explicit; extended chrome can include a centered search view or omit it,
+place the shared pane toggle in the title bar or the vertical NavigationView, and choose Left,
+Compact, Minimal, or Top navigation. It also owns the shared pane binding, optional Back action,
+Liquid Glass/Mica/Solid backdrop, and clipped ContentSurface. When native chrome is selected, a
+requested Fluent search is suppressed and a title-bar toggle is normalized to the vertical pane so
+the action is never silently lost.
+
+```swift
+FluentWindowShell(
+    configuration: FluentWindowConfiguration(
+        layout: .settings,
+        paneTogglePlacement: .titleBar,
+        searchPlacement: .titleBar,
+        backdrop: .liquidGlass
+    ),
+    title: "Workspace",
+    isBackButtonVisible: true,
+    onBack: { navigation.popLast() },
+    items: destinations,
+    selection: $selection,
+    isPaneOpen: $isPaneOpen,
+    titleBarContent: {
+        FluentSearchField($query, placeholder: "Search")
+            .frame(width: 360, height: 32)
+    },
+    paneHeader: { FluentText("Explore", style: .headline) },
+    header: { PageHeader(selection) },
+    content: { PageContent(selection) }
+)
 ```
 
 For route-specific metadata, return a `FluentNavigationDestination` so the title and content are resolved together. Route changes can use `.none`, `.crossFade`, or `.slide` transitions:
@@ -681,10 +806,16 @@ let connected = FluentMotion.connectedDefault
 panel.transition(.crossFade, animation: connected.transaction)
 ```
 
-Single-selection `FluentList` instances use one shared active selection indicator plus a transient
-outgoing indicator during movement between stable row identities. The Gallery navigation shell uses
-this same renderer and its directional 600ms choreography, so application navigation does not need a
-private indicator implementation.
+Execution is coordinated per control or presenter, not through one process-wide animation queue.
+`FluentAnimationCoordinator` separates visual-state selection from structural transitions, while
+its layer backend samples presentation values, performs keyed replacement, commits model values,
+suppresses stale completions, and applies Reduce Motion consistently.
+
+Single-selection `FluentList` instances use one shared active selection indicator. During movement
+between stable row identities, that layer follows the source-to-midpoint-to-destination path while
+its bounds stretch and settle on the target geometry. The Gallery navigation shell uses this same
+renderer and its directional 600ms choreography, so application navigation does not need a private
+indicator implementation.
 
 Animation duration and timing function can be supplied through the render environment. The same transaction is used by branch transitions, navigation route changes, and disclosure expansion:
 
@@ -881,9 +1012,18 @@ let shareSession = FluentNativeSharingPresenter.shared.presentSharing(
 
 ## Overlays
 
-Overlays use native macOS presentation hosts while keeping their content declarative. Use `FluentPopoverButton` for transient content, `FluentSheet` (or the `sheet(isPresented:title:size:)` modifier) for custom modal content, and `confirmationDialog` for native confirmation sheets. Sheets clamp their requested size to a usable minimum, update presented content in place, and synchronize dismissal back to the binding.
+Overlays use native macOS presentation hosts while keeping their content declarative. Use `FluentPopoverButton` for transient content, `FluentSheet` (or the `sheet(isPresented:title:size:)` modifier) for custom modal content, and `confirmationDialog` or `FluentAlert` for native confirmation sheets. A window-owned presentation coordinator serializes custom sheets, native alerts, and file panels because AppKit permits only one attached document-modal sheet at a time. Request tokens isolate stale native completion callbacks, preserve rapid close/reopen state, and restore the parent responder after dismissal. Sheets keep their native window while updating content, title, requested size, theme, and the global material-effects switch in place.
 
-`teachingTip` presents a directional, application-owned Acrylic child panel next to its anchor.
+For a binding-driven transient surface, attach `popover(isPresented:placement:size:behavior:)` to the anchor view. The anchor remains mounted, `automatic` placement chooses a fitting edge using the current screen and layout direction, same-size content updates preserve the native popover content identity, and a size change replaces the AppKit presenter without changing the binding state:
+
+```swift
+FluentButtonView("Details") { showingDetails = true }
+    .popover(isPresented: $showingDetails, placement: .bottom, size: NSSize(width: 280, height: 180)) {
+        FluentText("Details", style: .headline)
+    }
+```
+
+`teachingTip` presents a directional, application-owned Liquid Glass child panel next to its anchor.
 The panel preserves the anchor identity, provides a close command and accessibility group, dismisses
 on Escape or outside clicks, synchronizes its binding, and uses distinct entrance/exit motion while
 honoring Reduce Motion:
@@ -902,22 +1042,56 @@ FluentButtonView("Help")
     }
 ```
 
-The macOS application menu deliberately remains an `NSMenu`. In-application menu buttons and
-`contextMenu` use the custom `FluentMenuFlyout` Acrylic panel instead, so item spacing, state fills,
-checkmarks, separators, accelerators, keyboard navigation, and dismissal behavior are controlled by
-FluentKit rather than inherited from the system menu renderer. Menu items can declare nested flyouts
-without leaving the Swift API:
+The macOS application menu deliberately remains an `NSMenu`. In-application button flyouts,
+DropDownButtons, and `contextMenu` use the custom `FluentMenuFlyout` panel. Its transient surface uses
+the global Liquid Glass setting with one opaque fallback edge owner. Item spacing, state fills,
+checkmarks, system-icon placeholders, separators, accelerators, keyboard navigation, and dismissal
+remain controlled by FluentKit rather than the system menu renderer. Menu items can declare icons,
+shortcuts, and nested flyouts without leaving the Swift API:
 
 ```swift
-FluentMenuButton(title: "Options", items: [
-    FluentMenuItem("Focus search") { focusSearch() },
-    .separator,
-    .submenu("Account actions") {
-        FluentMenuItem("Rename") { renameAccount() }
-        FluentMenuItem("Manage access") { manageAccess() }
+FluentButtonView("Options")
+    .flyout {
+        FluentMenuItem(
+            "Focus search",
+            systemImageName: "magnifyingglass",
+            keyEquivalent: "f"
+        ) { focusSearch() }
+        FluentMenuItem.separator
+        FluentMenuItem.submenu("Account actions", systemImageName: "person.crop.circle") {
+            FluentMenuItem("Rename", systemImageName: "pencil") { renameAccount() }
+            FluentMenuItem("Manage access", systemImageName: "person.2") { manageAccess() }
+        }
     }
+
+FluentDropDownButton(title: "More", items: [
+    FluentMenuItem("Settings") { openSettings() }
 ])
 ```
+
+Use `FluentCommandBarFlyout` when commands need WinUI's compact primary icon bar and expandable
+secondary overflow rather than MenuFlyout rows. It supports action, toggle, and separator elements,
+`AlwaysExpanded`, direct `present(relativeTo:at:)`, and a declarative Button attachment:
+
+```swift
+FluentButtonView("Formatting")
+    .commandBarFlyout {
+        FluentCommandBarItem("Copy", systemImageName: "doc.on.doc") { copy() }
+        FluentCommandBarItem.separator
+        FluentCommandBarItem.toggle("Bold", systemImageName: "bold", isOn: isBold) {
+            isBold = $0
+        }
+    } secondaryCommands: {
+        FluentCommandBarItem("Archive", systemImageName: "archivebox") { archive() }
+        FluentCommandBarItem.separator
+        FluentCommandBarItem("Share", systemImageName: "square.and.arrow.up") { share() }
+    }
+```
+
+CommandBarFlyout and TextCommandBarFlyout share the source 40pt primary geometry and 250ms More
+clip, but TextBox-family controls keep their private, editor-derived secondary-only mouse command
+composition. Neither path is implemented as a MenuFlyout, and all three presenters dismiss
+immediately without an exit animation.
 
 Submenus open after a short pointer hover delay or immediately from keyboard/accessibility input.
 Arrow keys move between levels, printable keys perform type-ahead matching, and the presenter mirrors

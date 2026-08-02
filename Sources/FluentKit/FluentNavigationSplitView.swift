@@ -159,7 +159,7 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
     private var context: FluentRenderContext
 
     private let splitView = NSSplitView()
-    private let sidebarMaterial = FluentMaterialView(material: .sidebar)
+    private let sidebarMaterial = FluentMaterialView(material: .liquidGlass)
     private let sidebarHost: FluentViewHost<FluentAnyView>
     private let detailHost: FluentViewHost<FluentAnyView>
     private var observedSelection: FluentBinding<ID?>?
@@ -216,6 +216,10 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
         setAccessibilityLabel("Navigation split view")
         sidebarMaterial.setAccessibilityRole(.group)
         sidebarMaterial.setAccessibilityLabel("Navigation sidebar")
+        sidebarMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
+        sidebarMaterial.fluentTheme = context.theme
+        sidebarMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
+        sidebarMaterial.fallbackColor = context.theme.layerFill
         detailHost.setAccessibilityRole(.group)
         detailHost.setAccessibilityLabel("Navigation detail")
 
@@ -295,7 +299,10 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
         self.placeholder = placeholder
         self.context = context
         lastVisibleSidebarWidth = clampedSidebarWidth(lastVisibleSidebarWidth)
-        sidebarMaterial.materialStyle = .sidebar
+        sidebarMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
+        sidebarMaterial.fluentTheme = context.theme
+        sidebarMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
+        sidebarMaterial.fallbackColor = context.theme.layerFill
 
         sanitizeSelectionIfNeeded()
         sidebarHost.context = context

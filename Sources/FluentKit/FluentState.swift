@@ -102,19 +102,28 @@ public struct FluentBinding<Value> {
     public let set: (Value) -> Void
     let observe: ((@escaping (Value) -> Void) -> UUID)?
     let removeObserver: ((UUID) -> Void)?
+    let observationIdentity: ObjectIdentifier?
 
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
         self.get = get
         self.set = set
         observe = nil
         removeObserver = nil
+        observationIdentity = nil
     }
 
-    init(get: @escaping () -> Value, set: @escaping (Value) -> Void, observe: ((@escaping (Value) -> Void) -> UUID)?, removeObserver: ((UUID) -> Void)?) {
+    init(
+        get: @escaping () -> Value,
+        set: @escaping (Value) -> Void,
+        observe: ((@escaping (Value) -> Void) -> UUID)?,
+        removeObserver: ((UUID) -> Void)?,
+        observationIdentity: ObjectIdentifier? = nil
+    ) {
         self.get = get
         self.set = set
         self.observe = observe
         self.removeObserver = removeObserver
+        self.observationIdentity = observationIdentity
     }
 
     public var wrappedValue: Value {
@@ -138,7 +147,10 @@ public struct FluentBinding<Value> {
             get: { transform(self.get()) },
             set: { self.set(inverse($0)) },
             observe: self.observe.map { observe in { observer in observe { observer(transform($0)) } } },
-            removeObserver: self.removeObserver
+            removeObserver: self.removeObserver,
+            // A mapped observer captures its transform closure. Treat each mapped binding as a
+            // distinct subscription unless a future API supplies an explicit stable mapping ID.
+            observationIdentity: nil
         )
     }
 }
@@ -159,7 +171,8 @@ public final class FluentState<Value> {
             get: { self.observable.value },
             set: { self.observable.value = $0 },
             observe: { self.observable.observe($0, notifyImmediately: false) },
-            removeObserver: { self.observable.removeObserver($0) }
+            removeObserver: { self.observable.removeObserver($0) },
+            observationIdentity: ObjectIdentifier(observable)
         )
     }
 

@@ -70,7 +70,7 @@ private final class FluentInspectorHost: NSView, NSSplitViewDelegate {
 
     private let splitView = NSSplitView()
     private let contentHost: FluentViewHost<FluentAnyView>
-    private let inspectorMaterial = FluentMaterialView(material: .sidebar)
+    private let inspectorMaterial = FluentMaterialView(material: .liquidGlass)
     private let inspectorHost: FluentViewHost<FluentAnyView>
     private var observedPresentation: FluentBinding<Bool>?
     private var presentationObserverID: UUID?
@@ -103,6 +103,10 @@ private final class FluentInspectorHost: NSView, NSSplitViewDelegate {
         inspectorMaterial.blendingMode = .withinWindow
         inspectorMaterial.setAccessibilityRole(.group)
         inspectorMaterial.setAccessibilityLabel("Inspector")
+        inspectorMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
+        inspectorMaterial.fluentTheme = context.theme
+        inspectorMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
+        inspectorMaterial.fallbackColor = context.theme.layerFill
         inspectorHost.translatesAutoresizingMaskIntoConstraints = false
         inspectorMaterial.addSubview(inspectorHost)
         NSLayoutConstraint.activate([
@@ -175,7 +179,10 @@ private final class FluentInspectorHost: NSView, NSSplitViewDelegate {
         contentHost.update(content)
         inspectorHost.context = context
         inspectorHost.update(inspector)
-        inspectorMaterial.materialStyle = .sidebar
+        inspectorMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
+        inspectorMaterial.fluentTheme = context.theme
+        inspectorMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
+        inspectorMaterial.fallbackColor = context.theme.layerFill
         installObserver()
         applyVisibility()
     }

@@ -4,6 +4,7 @@ import AppKit
 public final class FluentSlider: NSControl {
     public var theme: FluentTheme = .current {
         didSet {
+            guard oldValue != theme else { return }
             refreshAppearance(animated: false)
             invalidateIntrinsicContentSize()
         }
@@ -17,7 +18,8 @@ public final class FluentSlider: NSControl {
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
         didSet {
             guard oldValue != reduceMotion else { return }
-            if reduceMotion { innerThumbLayer.removeAllAnimations() }
+            animationCoordinator.reduceMotion = reduceMotion
+            if reduceMotion { animationCoordinator.cancelAll(on: [innerThumbLayer]) }
             refreshAppearance(animated: false)
         }
     }
@@ -29,10 +31,16 @@ public final class FluentSlider: NSControl {
         }
     }
     public var minimumValue: Double {
-        didSet { normalizeRange() }
+        didSet {
+            guard oldValue != minimumValue else { return }
+            normalizeRange()
+        }
     }
     public var maximumValue: Double {
-        didSet { normalizeRange() }
+        didSet {
+            guard oldValue != maximumValue else { return }
+            normalizeRange()
+        }
     }
     public var value: Double = 0 {
         didSet { valueChanged(from: oldValue) }
@@ -54,8 +62,10 @@ public final class FluentSlider: NSControl {
     private let fillLayer = CALayer()
     private let outerThumbLayer = CALayer()
     private let innerThumbLayer = CALayer()
+    private let animationCoordinator = FluentAnimationCoordinator()
     private var lastLayoutSize = NSSize(width: -1, height: -1)
     private var lastLayoutDirection: NSUserInterfaceLayoutDirection?
+    private var declarativeStyleSignature: String?
 
     private var isRTL: Bool { userInterfaceLayoutDirection == .rightToLeft }
 
@@ -195,27 +205,36 @@ public final class FluentSlider: NSControl {
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
-        refreshAppearance(animated: false)
+        fluentNotifyAppearanceCoordinator(from: self)
+        needsDisplay = true
     }
 
     func applyDeclarativeConfiguration(from source: FluentSlider) {
-        minimumValue = source.minimumValue
-        maximumValue = source.maximumValue
-        fluentStyle = source.fluentStyle
-        fluentControlSize = source.fluentControlSize
+        if minimumValue != source.minimumValue { minimumValue = source.minimumValue }
+        if maximumValue != source.maximumValue { maximumValue = source.maximumValue }
+        applyDeclarativeStyle(source.fluentStyle)
+        if fluentControlSize != source.fluentControlSize { fluentControlSize = source.fluentControlSize }
         if value != source.value {
             setValueFromBinding(source.value)
         }
-        invalidateIntrinsicContentSize()
     }
 
-    func setValueFromBinding(_ newValue: Double) {
-        cancelInteraction(restoreValue: false, refresh: false)
+    func setValueFromBinding(_ newValue: Double, cancelInteraction: Bool = true) {
+        let wasDragging = isDragging
+        if cancelInteraction { self.cancelInteraction(restoreValue: false, refresh: false) }
         let callback = onValueChanged
         onValueChanged = nil
-        value = newValue
+        let clamped = min(max(newValue, minimumValue), maximumValue)
+        if value != clamped { value = clamped }
         onValueChanged = callback
-        refreshAppearance(animated: false)
+        if wasDragging && cancelInteraction { refreshAppearance(animated: false) }
+    }
+
+    func applyDeclarativeStyle(_ style: (any FluentSliderStyle)?) {
+        let signature = style.map { String(reflecting: $0) }
+        guard signature != declarativeStyleSignature else { return }
+        fluentStyle = style
+        declarativeStyleSignature = signature
     }
 
     private func updateValue(for x: CGFloat) {
@@ -261,6 +280,7 @@ public final class FluentSlider: NSControl {
         outerThumbLayer.name = "FluentKit.Slider.OuterThumb"
         innerThumbLayer.name = "FluentKit.Slider.InnerThumb"
         focusLayer.opacity = 0
+        animationCoordinator.reduceMotion = reduceMotion
         layer?.addSublayer(focusLayer)
         layer?.addSublayer(trackLayer)
         layer?.addSublayer(fillLayer)
@@ -279,31 +299,36 @@ public final class FluentSlider: NSControl {
 
     private func refreshAppearance(animated: Bool) {
         let appearance = resolvedAppearance()
-        let oldInner = innerThumbLayer.presentation() ?? innerThumbLayer
-        let oldBounds = oldInner.bounds
-        let oldCornerRadius = oldInner.cornerRadius
-        innerThumbLayer.removeAllAnimations()
-        applyModelAppearance(appearance, updateInnerGeometry: true)
+        applyModelAppearance(appearance, updateInnerGeometry: false)
+
+        let innerDiameter = min(appearance.knobDiameter, appearance.outerThumbDiameter)
+        let targetBounds = CGRect(x: 0, y: 0, width: innerDiameter, height: innerDiameter)
+        let targetCornerRadius = innerDiameter / 2
 
         let motion = isPointerOver && isEnabled || isDragging
             ? FluentMotion.controlNormal
             : FluentMotion.controlFast
-        if animated, !reduceMotion, motion.duration > 0 {
-            addThumbAnimation(
-                key: "fluent.slider.inner.bounds",
-                keyPath: "bounds",
-                from: NSValue(rect: oldBounds),
-                to: NSValue(rect: innerThumbLayer.bounds),
-                motion: motion
-            )
-            addThumbAnimation(
-                key: "fluent.slider.inner.cornerRadius",
-                keyPath: "cornerRadius",
-                from: oldCornerRadius,
-                to: innerThumbLayer.cornerRadius,
-                motion: motion
-            )
-        }
+        animationCoordinator.reduceMotion = reduceMotion
+        animationCoordinator.animateState(
+            [
+                FluentLayerAnimationChange(
+                    layer: innerThumbLayer,
+                    key: "fluent.slider.inner.bounds",
+                    keyPath: "bounds",
+                    toValue: NSValue(rect: targetBounds),
+                    applyModelValue: { [innerThumbLayer] in innerThumbLayer.bounds = targetBounds }
+                ),
+                FluentLayerAnimationChange(
+                    layer: innerThumbLayer,
+                    key: "fluent.slider.inner.cornerRadius",
+                    keyPath: "cornerRadius",
+                    toValue: targetCornerRadius,
+                    applyModelValue: { [innerThumbLayer] in innerThumbLayer.cornerRadius = targetCornerRadius }
+                )
+            ],
+            motion: motion,
+            animated: animated
+        )
         updateFocusRing()
     }
 
@@ -372,21 +397,6 @@ public final class FluentSlider: NSControl {
     private var valueFraction: CGFloat {
         guard maximumValue > minimumValue else { return 0 }
         return min(max(CGFloat((value - minimumValue) / (maximumValue - minimumValue)), 0), 1)
-    }
-
-    private func addThumbAnimation(
-        key: String,
-        keyPath: String,
-        from: Any,
-        to: Any,
-        motion: FluentMotionToken
-    ) {
-        let animation = CABasicAnimation(keyPath: keyPath)
-        animation.fromValue = from
-        animation.toValue = to
-        animation.duration = motion.duration
-        animation.timingFunction = motion.curve.timingFunction
-        innerThumbLayer.add(animation, forKey: key)
     }
 
     private func cancelInteraction(restoreValue: Bool, refresh: Bool = true) {

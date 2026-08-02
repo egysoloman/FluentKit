@@ -5,7 +5,11 @@ enum FluentSelectionIndicatorAxis {
     case vertical
 }
 
-/// Owns the two-layer NavigationView-style selection rail used by lists and navigation panes.
+/// Owns the single moving NavigationView-style selection rail used by lists and navigation panes.
+///
+/// The previous rail is retained as a hidden compatibility layer so callers can keep a stable
+/// layer tree, but transitions are rendered by one layer only. This prevents the outgoing and
+/// incoming rails from briefly diverging and producing a visible jump.
 final class FluentSelectionIndicatorAnimator {
     private var axis: FluentSelectionIndicatorAxis
     private let previousLayer = CALayer()
@@ -63,7 +67,11 @@ final class FluentSelectionIndicatorAnimator {
             return
         }
 
-        let previous = lastTarget
+        // When a new selection arrives during an active transition, continue from the rail's
+        // presented geometry instead of snapping back to the previous target first.
+        let previous = currentLayer.animation(forKey: currentAnimationKey) != nil
+            ? (currentLayer.presentation()?.frame ?? lastTarget)
+            : lastTarget
         removeAnimations()
         setModelFrames(source: previous, target: target)
 
@@ -109,77 +117,51 @@ final class FluentSelectionIndicatorAnimator {
     private func animate(from source: NSRect, to destination: NSRect) {
         let sourceCenter = NSPoint(x: source.midX, y: source.midY)
         let destinationCenter = NSPoint(x: destination.midX, y: destination.midY)
-        let sourcePosition = axis == .vertical ? sourceCenter.y : sourceCenter.x
-        let destinationPosition = axis == .vertical ? destinationCenter.y : destinationCenter.x
-        let dimension = max(axis == .vertical ? destination.height : destination.width, 1)
-        let connectedScale = 1 + abs(destinationPosition - sourcePosition) / dimension
+        let distance = axis == .vertical
+            ? abs(destinationCenter.y - sourceCenter.y)
+            : abs(destinationCenter.x - sourceCenter.x)
+        let connectedDimension = min(
+            max(axis == .vertical ? destination.height : destination.width, 1) + distance * 0.28,
+            56
+        )
+        let connectedCenter = NSPoint(
+            x: (sourceCenter.x + destinationCenter.x) / 2,
+            y: (sourceCenter.y + destinationCenter.y) / 2
+        )
+        let connectedSize = axis == .vertical
+            ? NSSize(width: destination.width, height: connectedDimension)
+            : NSSize(width: connectedDimension, height: destination.height)
         let keyTimes = [NSNumber(value: 0), NSNumber(value: 1.0 / 3.0), NSNumber(value: 1)]
         let timingFunctions = [
             FluentMotion.navigationIndicatorExit.curve.timingFunction,
             FluentMotion.navigationIndicator.curve.timingFunction
         ]
 
-        let outgoing = animationGroup(
-            sourceCenter: sourceCenter,
-            destinationCenter: destinationCenter,
-            connectedScale: connectedScale,
-            fadesOut: true,
-            keyTimes: keyTimes,
-            timingFunctions: timingFunctions
-        )
-        let incoming = animationGroup(
-            sourceCenter: sourceCenter,
-            destinationCenter: destinationCenter,
-            connectedScale: connectedScale,
-            fadesOut: false,
-            keyTimes: keyTimes,
-            timingFunctions: timingFunctions
-        )
-        previousLayer.add(outgoing, forKey: previousAnimationKey)
-        currentLayer.add(incoming, forKey: currentAnimationKey)
-    }
-
-    private func animationGroup(
-        sourceCenter: NSPoint,
-        destinationCenter: NSPoint,
-        connectedScale: CGFloat,
-        fadesOut: Bool,
-        keyTimes: [NSNumber],
-        timingFunctions: [CAMediaTimingFunction]
-    ) -> CAAnimationGroup {
+        // Keep position and bounds on one timeline. The rail follows the old-to-new midpoint,
+        // grows only enough to bridge the rows, and settles back to the normal 3 x 16 geometry.
         let position = CAKeyframeAnimation(keyPath: "position")
         position.values = [
             NSValue(point: sourceCenter),
+            NSValue(point: connectedCenter),
             NSValue(point: destinationCenter)
         ]
-        position.keyTimes = [keyTimes[0], keyTimes[1]]
-        position.timingFunctions = [timingFunctions[0]]
+        position.keyTimes = keyTimes
+        position.timingFunctions = timingFunctions
 
-        let scale = CAKeyframeAnimation(
-            keyPath: axis == .vertical ? "transform.scale.y" : "transform.scale.x"
-        )
-        scale.values = [1, connectedScale, 1]
-        scale.keyTimes = keyTimes
-        scale.timingFunctions = timingFunctions
-
-        // The first position keyframe reaches the destination at one third, matching the
-        // NavigationView composition path; the remaining two thirds are the scale settle.
-        var animations: [CAAnimation] = [position, scale]
-        if fadesOut {
-            let opacity = CAKeyframeAnimation(keyPath: "opacity")
-            opacity.values = [1, 1, 0]
-            opacity.keyTimes = keyTimes
-            opacity.timingFunctions = [
-                CAMediaTimingFunction(name: .linear),
-                FluentMotion.navigationIndicator.curve.timingFunction
-            ]
-            animations.append(opacity)
-        }
+        let bounds = CAKeyframeAnimation(keyPath: "bounds.size")
+        bounds.values = [
+            NSValue(size: source.size),
+            NSValue(size: connectedSize),
+            NSValue(size: destination.size)
+        ]
+        bounds.keyTimes = keyTimes
+        bounds.timingFunctions = timingFunctions
 
         let group = CAAnimationGroup()
-        group.animations = animations
+        group.animations = [position, bounds]
         group.duration = FluentMotion.navigationIndicator.duration
         group.isRemovedOnCompletion = true
-        return group
+        currentLayer.add(group, forKey: currentAnimationKey)
     }
+
 }

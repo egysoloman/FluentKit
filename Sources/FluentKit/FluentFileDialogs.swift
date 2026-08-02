@@ -352,7 +352,10 @@ private final class FluentFileImporterHost: NSView {
     private var completion: (Result<[URL], Error>) -> Void
     private var observerID: UUID?
     private var session: (any FluentFileDialogSession)?
-    private var isProgrammaticDismissal = false
+    private weak var presentationCoordinator: FluentPresentationCoordinator?
+    private var presentationToken: FluentPresentationCoordinator.Token?
+    private var sessionToken: FluentPresentationCoordinator.Token?
+    private var programmaticDismissalToken: FluentPresentationCoordinator.Token?
 
     init(
         content: NSView,
@@ -374,6 +377,10 @@ private final class FluentFileImporterHost: NSView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if window == nil {
+            cancelPresentation()
+            return
+        }
         DispatchQueue.main.async { [weak self] in self?.synchronizePresentation() }
     }
 
@@ -383,12 +390,14 @@ private final class FluentFileImporterHost: NSView {
         presenter: any FluentFileDialogPresenting,
         completion: @escaping (Result<[URL], Error>) -> Void
     ) {
-        removeObserver()
+        let reusesObservation = self.isPresented.observationIdentity != nil
+            && self.isPresented.observationIdentity == isPresented.observationIdentity
+        if !reusesObservation { removeObserver() }
         self.isPresented = isPresented
         self.configuration = configuration
         self.presenter = presenter
         self.completion = completion
-        installObserver()
+        if !reusesObservation { installObserver() }
         synchronizePresentation()
     }
 
@@ -415,25 +424,72 @@ private final class FluentFileImporterHost: NSView {
     }
 
     private func synchronizePresentation() {
-        guard let window else { return }
+        guard let window else {
+            cancelPresentation()
+            return
+        }
         if isPresented.get() {
-            guard session == nil else { return }
-            session = presenter.presentImport(configuration: configuration, for: window) { [weak self] result in
-                guard let self else { return }
-                let wasProgrammatic = self.isProgrammaticDismissal
-                self.isProgrammaticDismissal = false
-                self.session = nil
-                if self.isPresented.get() { self.isPresented.set(false) }
-                guard !wasProgrammatic else { return }
-                self.completion(result)
-            }
-        } else if let session {
-            isProgrammaticDismissal = true
-            session.cancel()
+            guard presentationToken == nil else { return }
+            let coordinator = FluentPresentationCoordinator.coordinator(for: window)
+            presentationCoordinator = coordinator
+            presentationToken = coordinator.enqueue(
+                owner: self,
+                present: { [weak self, weak window] in
+                    guard let self, let window else { return }
+                    self.beginPresentation(on: window)
+                },
+                cancel: { [weak self] in self?.endPresentationForCancellation() }
+            )
+        } else {
+            cancelPresentation()
         }
     }
 
-    deinit { removeObserver() }
+    private func beginPresentation(on window: NSWindow) {
+        guard let token = presentationToken else { return }
+        guard isPresented.get() else {
+            presentationCoordinator?.finish(token)
+            presentationToken = nil
+            return
+        }
+        sessionToken = token
+        let coordinator = presentationCoordinator
+        session = presenter.presentImport(configuration: configuration, for: window) { [weak self, coordinator] result in
+            coordinator?.finish(token)
+            guard let self else { return }
+            let wasProgrammatic = self.programmaticDismissalToken === token
+            if wasProgrammatic { self.programmaticDismissalToken = nil }
+            if self.sessionToken === token {
+                self.sessionToken = nil
+                self.session = nil
+            }
+            guard self.presentationToken === token else { return }
+            self.presentationToken = nil
+            if !wasProgrammatic, self.isPresented.get() { self.isPresented.set(false) }
+            if !wasProgrammatic { self.completion(result) }
+        }
+    }
+
+    private func cancelPresentation() {
+        guard let token = presentationToken else { return }
+        programmaticDismissalToken = token
+        presentationCoordinator?.cancel(token)
+        if presentationToken === token { presentationToken = nil }
+    }
+
+    private func endPresentationForCancellation() {
+        guard let token = presentationToken else { return }
+        if sessionToken === token, let session {
+            session.cancel()
+        } else {
+            presentationCoordinator?.finish(token)
+        }
+    }
+
+    deinit {
+        removeObserver()
+        if let token = presentationToken { presentationCoordinator?.cancel(token) }
+    }
 }
 
 private final class FluentFileExporterHost: NSView {
@@ -446,7 +502,10 @@ private final class FluentFileExporterHost: NSView {
     private var completion: (Result<URL, Error>) -> Void
     private var observerID: UUID?
     private var session: (any FluentFileDialogSession)?
-    private var isProgrammaticDismissal = false
+    private weak var presentationCoordinator: FluentPresentationCoordinator?
+    private var presentationToken: FluentPresentationCoordinator.Token?
+    private var sessionToken: FluentPresentationCoordinator.Token?
+    private var programmaticDismissalToken: FluentPresentationCoordinator.Token?
 
     init(
         content: NSView,
@@ -468,6 +527,10 @@ private final class FluentFileExporterHost: NSView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if window == nil {
+            cancelPresentation()
+            return
+        }
         DispatchQueue.main.async { [weak self] in self?.synchronizePresentation() }
     }
 
@@ -477,12 +540,14 @@ private final class FluentFileExporterHost: NSView {
         presenter: any FluentFileDialogPresenting,
         completion: @escaping (Result<URL, Error>) -> Void
     ) {
-        removeObserver()
+        let reusesObservation = self.isPresented.observationIdentity != nil
+            && self.isPresented.observationIdentity == isPresented.observationIdentity
+        if !reusesObservation { removeObserver() }
         self.isPresented = isPresented
         self.configuration = configuration
         self.presenter = presenter
         self.completion = completion
-        installObserver()
+        if !reusesObservation { installObserver() }
         synchronizePresentation()
     }
 
@@ -509,23 +574,70 @@ private final class FluentFileExporterHost: NSView {
     }
 
     private func synchronizePresentation() {
-        guard let window else { return }
+        guard let window else {
+            cancelPresentation()
+            return
+        }
         if isPresented.get() {
-            guard session == nil else { return }
-            session = presenter.presentExport(configuration: configuration, for: window) { [weak self] result in
-                guard let self else { return }
-                let wasProgrammatic = self.isProgrammaticDismissal
-                self.isProgrammaticDismissal = false
-                self.session = nil
-                if self.isPresented.get() { self.isPresented.set(false) }
-                guard !wasProgrammatic else { return }
-                self.completion(result)
-            }
-        } else if let session {
-            isProgrammaticDismissal = true
-            session.cancel()
+            guard presentationToken == nil else { return }
+            let coordinator = FluentPresentationCoordinator.coordinator(for: window)
+            presentationCoordinator = coordinator
+            presentationToken = coordinator.enqueue(
+                owner: self,
+                present: { [weak self, weak window] in
+                    guard let self, let window else { return }
+                    self.beginPresentation(on: window)
+                },
+                cancel: { [weak self] in self?.endPresentationForCancellation() }
+            )
+        } else {
+            cancelPresentation()
         }
     }
 
-    deinit { removeObserver() }
+    private func beginPresentation(on window: NSWindow) {
+        guard let token = presentationToken else { return }
+        guard isPresented.get() else {
+            presentationCoordinator?.finish(token)
+            presentationToken = nil
+            return
+        }
+        sessionToken = token
+        let coordinator = presentationCoordinator
+        session = presenter.presentExport(configuration: configuration, for: window) { [weak self, coordinator] result in
+            coordinator?.finish(token)
+            guard let self else { return }
+            let wasProgrammatic = self.programmaticDismissalToken === token
+            if wasProgrammatic { self.programmaticDismissalToken = nil }
+            if self.sessionToken === token {
+                self.sessionToken = nil
+                self.session = nil
+            }
+            guard self.presentationToken === token else { return }
+            self.presentationToken = nil
+            if !wasProgrammatic, self.isPresented.get() { self.isPresented.set(false) }
+            if !wasProgrammatic { self.completion(result) }
+        }
+    }
+
+    private func cancelPresentation() {
+        guard let token = presentationToken else { return }
+        programmaticDismissalToken = token
+        presentationCoordinator?.cancel(token)
+        if presentationToken === token { presentationToken = nil }
+    }
+
+    private func endPresentationForCancellation() {
+        guard let token = presentationToken else { return }
+        if sessionToken === token, let session {
+            session.cancel()
+        } else {
+            presentationCoordinator?.finish(token)
+        }
+    }
+
+    deinit {
+        removeObserver()
+        if let token = presentationToken { presentationCoordinator?.cancel(token) }
+    }
 }

@@ -216,7 +216,8 @@ public final class FluentCheckBox: NSControl {
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
-        refreshAppearance()
+        fluentNotifyAppearanceCoordinator(from: self)
+        needsDisplay = true
     }
 
     func setStateFromBinding(_ value: Bool) {
@@ -594,7 +595,8 @@ public final class FluentRadioButton: NSControl {
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
-        refreshAppearance(animated: false)
+        fluentNotifyAppearanceCoordinator(from: self)
+        needsDisplay = true
     }
 
     func setStateFromBinding(_ value: Bool) {
@@ -813,7 +815,7 @@ public final class FluentProgressRing: NSView {
         path.appendArc(withCenter: NSPoint(x: rect.midX, y: rect.midY), radius: rect.width / 2, startAngle: rotation, endAngle: rotation + 250, clockwise: false)
         path.lineWidth = 3
         path.lineCapStyle = .round
-        theme.accent.setStroke()
+        theme.accentFillDefault.setStroke()
         path.stroke()
     }
 

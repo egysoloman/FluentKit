@@ -63,7 +63,12 @@ public final class FluentCard: NSView {
 
     public override func draw(_ dirtyRect: NSRect) {
         let appearance = style.appearance(for: theme)
-        let path = NSBezierPath(roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5), xRadius: appearance.cornerRadius, yRadius: appearance.cornerRadius)
+        let strokeInset = max(appearance.strokeWidth / 2, fluentHalfPixelInset())
+        let path = NSBezierPath(
+            roundedRect: bounds.insetBy(dx: strokeInset, dy: strokeInset),
+            xRadius: max(appearance.cornerRadius - strokeInset, 0),
+            yRadius: max(appearance.cornerRadius - strokeInset, 0)
+        )
         appearance.fillColor.setFill()
         path.fill()
         if appearance.strokeWidth > 0 {

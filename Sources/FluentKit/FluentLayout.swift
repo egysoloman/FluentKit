@@ -50,6 +50,7 @@ public struct FluentPaddingView<Content: FluentView>: FluentUpdatablePrimitiveVi
         let container = FluentLayoutContainer()
         let child = content._mount(in: context)
         container.setChild(child, insets: insets)
+        container.inheritsFillWidthFromChild = true
         return container
     }
 
@@ -57,7 +58,9 @@ public struct FluentPaddingView<Content: FluentView>: FluentUpdatablePrimitiveVi
         guard let container = view as? FluentLayoutContainer,
               let child = container.subviews.first else { return false }
         container.updateInsets(insets)
-        return content._update(child, in: context)
+        let updated = content._update(child, in: context)
+        if updated { container.childContentDidUpdate() }
+        return updated
     }
 }
 
@@ -72,6 +75,7 @@ public struct FluentFrameView<Content: FluentView>: FluentUpdatablePrimitiveView
         let container = FluentLayoutContainer()
         let child = content._mount(in: context)
         container.setChild(child, insets: NSEdgeInsetsZero)
+        container.inheritsFillWidthFromChild = width == nil
         container.updateSize(width: width, height: height)
         return container
     }
@@ -79,8 +83,11 @@ public struct FluentFrameView<Content: FluentView>: FluentUpdatablePrimitiveView
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let container = view as? FluentLayoutContainer,
               let child = container.subviews.first else { return false }
+        container.inheritsFillWidthFromChild = width == nil
         container.updateSize(width: width, height: height)
-        return content._update(child, in: context)
+        let updated = content._update(child, in: context)
+        if updated { container.childContentDidUpdate() }
+        return updated
     }
 }
 
@@ -95,6 +102,7 @@ public struct FluentBackgroundView<Content: FluentView>: FluentUpdatablePrimitiv
         let container = FluentLayoutContainer()
         let child = content._mount(in: context)
         container.setChild(child, insets: NSEdgeInsetsZero)
+        container.inheritsFillWidthFromChild = true
         container.wantsLayer = true
         container.layer?.backgroundColor = color.cgColor
         container.layer?.cornerRadius = cornerRadius
@@ -106,7 +114,9 @@ public struct FluentBackgroundView<Content: FluentView>: FluentUpdatablePrimitiv
         guard let container = view as? FluentLayoutContainer,
               let child = container.subviews.first else { return false }
         container.updateBackground(color: color, cornerRadius: cornerRadius)
-        return content._update(child, in: context)
+        let updated = content._update(child, in: context)
+        if updated { container.childContentDidUpdate() }
+        return updated
     }
 }
 
@@ -119,6 +129,7 @@ public struct FluentOpacityView<Content: FluentView>: FluentUpdatablePrimitiveVi
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let container = FluentLayoutContainer()
         container.setChild(content._mount(in: context), insets: NSEdgeInsetsZero)
+        container.inheritsFillWidthFromChild = true
         container.updateOpacity(opacity)
         return container
     }
@@ -127,7 +138,9 @@ public struct FluentOpacityView<Content: FluentView>: FluentUpdatablePrimitiveVi
         guard let container = view as? FluentLayoutContainer,
               let child = container.subviews.first else { return false }
         container.updateOpacity(opacity)
-        return content._update(child, in: context)
+        let updated = content._update(child, in: context)
+        if updated { container.childContentDidUpdate() }
+        return updated
     }
 }
 
@@ -141,6 +154,7 @@ public struct FluentTransformView<Content: FluentView>: FluentUpdatablePrimitive
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let container = FluentTransformContainer()
         container.setChild(content._mount(in: context), insets: NSEdgeInsetsZero)
+        container.inheritsFillWidthFromChild = true
         container.updateTransform(transform)
         return container
     }
@@ -149,7 +163,9 @@ public struct FluentTransformView<Content: FluentView>: FluentUpdatablePrimitive
         guard let container = view as? FluentTransformContainer,
               let child = container.subviews.first else { return false }
         container.updateTransform(transform)
-        return content._update(child, in: context)
+        let updated = content._update(child, in: context)
+        if updated { container.childContentDidUpdate() }
+        return updated
     }
 }
 
@@ -162,6 +178,7 @@ public struct FluentDisabledView<Content: FluentView>: FluentUpdatablePrimitiveV
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let container = FluentDisabledContainer()
         container.setChild(content._mount(in: context), insets: NSEdgeInsetsZero)
+        container.inheritsFillWidthFromChild = true
         container.applyDisabled(disabled)
         return container
     }
@@ -171,22 +188,66 @@ public struct FluentDisabledView<Content: FluentView>: FluentUpdatablePrimitiveV
               let child = container.subviews.first else { return false }
         let updated = content._update(child, in: context)
         container.applyDisabled(disabled)
+        if updated { container.childContentDidUpdate() }
         return updated
     }
 }
 
-private class FluentLayoutContainer: NSView {
+private class FluentLayoutContainer: NSView, FluentFillWidthProviding {
     private var leading: NSLayoutConstraint?
     private var trailing: NSLayoutConstraint?
     private var top: NSLayoutConstraint?
     private var bottom: NSLayoutConstraint?
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
+    private var contentInsets = NSEdgeInsetsZero
+    var inheritsFillWidthFromChild = false
+
+    var fluentFillsAvailableWidth: Bool {
+        inheritsFillWidthFromChild
+            && subviews.first.map(fluentViewFillsAvailableWidth) == true
+    }
+
+    override var intrinsicContentSize: NSSize {
+        guard let child = subviews.first else {
+            return NSSize(
+                width: widthConstraint?.constant ?? NSView.noIntrinsicMetric,
+                height: heightConstraint?.constant ?? NSView.noIntrinsicMetric
+            )
+        }
+        let intrinsic = child.intrinsicContentSize
+        let fitting = child.fittingSize
+        return NSSize(
+            width: widthConstraint?.constant
+                ?? forwardedMetric(
+                    intrinsic.width,
+                    fitting: fitting.width,
+                    insets: contentInsets.left + contentInsets.right
+                ),
+            height: heightConstraint?.constant
+                ?? forwardedMetric(
+                    intrinsic.height,
+                    fitting: fitting.height,
+                    insets: contentInsets.top + contentInsets.bottom
+                )
+        )
+    }
 
     func setChild(_ child: NSView, insets: NSEdgeInsets) {
+        if identifier == nil {
+            identifier = NSUserInterfaceItemIdentifier("FluentKit.LayoutContainer")
+        }
         addSubview(child)
         child.translatesAutoresizingMaskIntoConstraints = false
+        for orientation in [NSLayoutConstraint.Orientation.horizontal, .vertical] {
+            setContentHuggingPriority(child.contentHuggingPriority(for: orientation), for: orientation)
+            setContentCompressionResistancePriority(
+                child.contentCompressionResistancePriority(for: orientation),
+                for: orientation
+            )
+        }
         updateInsets(insets)
+        invalidateIntrinsicContentSize()
     }
 
     func updateInsets(_ insets: NSEdgeInsets) {
@@ -194,12 +255,14 @@ private class FluentLayoutContainer: NSView {
         if let trailing { trailing.isActive = false }
         if let top { top.isActive = false }
         if let bottom { bottom.isActive = false }
+        contentInsets = insets
         guard let child = subviews.first else { return }
         leading = child.leadingAnchor.constraint(equalTo: leadingAnchor, constant: insets.left)
         trailing = child.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right)
         top = child.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
         bottom = child.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
         NSLayoutConstraint.activate([leading!, trailing!, top!, bottom!])
+        invalidateIntrinsicContentSize()
     }
 
     func updateBackground(color: NSColor, cornerRadius: CGFloat) {
@@ -218,16 +281,49 @@ private class FluentLayoutContainer: NSView {
         heightConstraint?.isActive = false
         widthConstraint = width.map { widthAnchor.constraint(equalToConstant: $0) }
         heightConstraint = height.map { heightAnchor.constraint(equalToConstant: $0) }
+        widthConstraint?.priority = .defaultHigh
+        heightConstraint?.priority = .defaultHigh
+        widthConstraint?.identifier = "FluentKit.IdealWidth"
+        heightConstraint?.identifier = "FluentKit.IdealHeight"
         if let widthConstraint { widthConstraint.isActive = true }
         if let heightConstraint { heightConstraint.isActive = true }
+        invalidateIntrinsicContentSize()
+    }
+
+    func childContentDidUpdate() {
+        invalidateIntrinsicContentSize()
+        needsLayout = true
+        superview?.needsLayout = true
+    }
+
+    private func forwardedMetric(_ intrinsic: CGFloat, fitting: CGFloat, insets: CGFloat) -> CGFloat {
+        if intrinsic != NSView.noIntrinsicMetric { return max(0, intrinsic) + insets }
+        return fitting > 0 ? fitting + insets : NSView.noIntrinsicMetric
     }
 }
 
 private final class FluentTransformContainer: FluentLayoutContainer {
+    private var modelTransform = CGAffineTransform.identity
+
     func updateTransform(_ transform: CGAffineTransform) {
+        modelTransform = transform
+        applyModelTransform()
+    }
+
+    override func layout() {
+        super.layout()
+        applyModelTransform()
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        applyModelTransform()
+    }
+
+    private func applyModelTransform() {
         wantsLayer = true
         layer?.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        layer?.setAffineTransform(transform)
+        layer?.setAffineTransform(modelTransform)
     }
 }
 

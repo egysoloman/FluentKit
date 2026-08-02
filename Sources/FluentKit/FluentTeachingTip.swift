@@ -87,6 +87,11 @@ public extension FluentView {
 }
 
 private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
+    private enum TransitionState: Equatable {
+        case opening
+        case closing
+    }
+
     var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var anchorContent: NSView { subviews[0] }
 
@@ -102,7 +107,10 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
     private var tipHost: FluentViewHost<TipContent>?
     private var localMonitor: Any?
     private var globalMonitor: Any?
-    private var isDismissing = false
+    private let animationCoordinator: FluentAnimationCoordinator
+    private var transitionState: TransitionState?
+    private var transitionGeneration: UInt64 = 0
+    private var needsDeferredPosition = false
 
     init(
         content: NSView,
@@ -119,6 +127,7 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         self.size = size
         self.onDismiss = onDismiss
         self.context = context
+        animationCoordinator = FluentAnimationCoordinator(reduceMotion: context.reduceMotion)
         super.init(frame: .zero)
         addSubview(content)
         content.translatesAutoresizingMaskIntoConstraints = false
@@ -141,7 +150,12 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
 
     override func layout() {
         super.layout()
-        if panel != nil { positionPanel() }
+        guard panel != nil else { return }
+        if transitionState == nil {
+            positionPanel()
+        } else {
+            needsDeferredPosition = true
+        }
     }
 
     func update(
@@ -159,13 +173,19 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         self.size = size
         self.onDismiss = onDismiss
         self.context = context
+        animationCoordinator.reduceMotion = context.reduceMotion
         tipHost?.context = context
         tipHost?.update(tipContent)
         chrome?.theme = context.theme
-        chrome?.surfaceSize = size
+        panel?.appearance = fluentAppKitAppearance(for: context.theme)
+        if transitionState == nil {
+            chrome?.surfaceSize = size
+        } else {
+            needsDeferredPosition = true
+        }
         installObserver()
         synchronizePresentation()
-        positionPanel()
+        if transitionState == nil { positionPanel() }
     }
 
     private func installObserver() {
@@ -177,10 +197,14 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
     private func synchronizePresentation() {
         guard window != nil else { return }
         if binding.get() {
-            guard panel == nil, !isDismissing else { return }
-            present()
-        } else if panel != nil, !isDismissing {
-            dismiss(animated: !context.reduceMotion)
+            if panel == nil {
+                present()
+            } else if transitionState == .closing, let panel, let chrome {
+                installOutsideClickMonitors(panel: panel)
+                animate(opening: true, panel: panel, chrome: chrome, placement: chrome.placement)
+            }
+        } else if panel != nil, transitionState != .closing {
+            dismiss(animated: true)
         }
     }
 
@@ -203,19 +227,27 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         )
         panel.isOpaque = false
         panel.backgroundColor = .clear
+        panel.appearance = fluentAppKitAppearance(for: context.theme)
         panel.hasShadow = false
         panel.level = .popUpMenu
         panel.collectionBehavior = [.transient, .fullScreenAuxiliary]
         panel.contentView = chrome
+        panel.alphaValue = 1
         parentWindow.addChildWindow(panel, ordered: .above)
         self.panel = panel
         self.chrome = chrome
         tipHost = host
-        positionPanel(resolvedPlacement: resolvedPlacement)
+        positionPanel(resolvedPlacement: resolvedPlacement, duringTransition: true)
         installOutsideClickMonitors(panel: panel)
         panel.makeKeyAndOrderFront(nil)
         panel.makeFirstResponder(chrome)
-        animate(opening: true, panel: panel, chrome: chrome, placement: resolvedPlacement)
+        animate(
+            opening: true,
+            panel: panel,
+            chrome: chrome,
+            placement: resolvedPlacement,
+            preparesInitialState: true
+        )
     }
 
     private func requestDismissal() {
@@ -228,24 +260,26 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
 
     private func dismiss(animated: Bool) {
         guard let panel, let chrome else { return }
-        isDismissing = true
         removeOutsideClickMonitors()
         let finish = { [weak self, weak panel] in
             guard let self, let panel else { return }
-            self.window?.removeChildWindow(panel)
+            panel.parent?.removeChildWindow(panel)
             panel.orderOut(nil)
             self.panel = nil
             self.chrome = nil
             self.tipHost = nil
-            self.isDismissing = false
+            self.needsDeferredPosition = false
             self.onDismiss()
             self.synchronizePresentation()
         }
-        guard animated else {
-            finish()
-            return
-        }
-        animate(opening: false, panel: panel, chrome: chrome, placement: chrome.placement, completion: finish)
+        animate(
+            opening: false,
+            panel: panel,
+            chrome: chrome,
+            placement: chrome.placement,
+            animated: animated,
+            completion: finish
+        )
     }
 
     private func resolvePlacement() -> FluentTeachingTipPlacement {
@@ -259,9 +293,17 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
             : .bottom
     }
 
-    private func positionPanel(resolvedPlacement: FluentTeachingTipPlacement? = nil) {
+    private func positionPanel(
+        resolvedPlacement: FluentTeachingTipPlacement? = nil,
+        duringTransition: Bool = false
+    ) {
         guard let parentWindow = window, let panel, let chrome else { return }
-        let resolved = resolvedPlacement ?? (chrome.placement == .automatic ? resolvePlacement() : chrome.placement)
+        guard transitionState == nil || duringTransition else {
+            needsDeferredPosition = true
+            return
+        }
+        let resolved = resolvedPlacement ?? resolvePlacement()
+        if chrome.surfaceSize != size { chrome.surfaceSize = size }
         chrome.placement = resolved
         let anchor = parentWindow.convertToScreen(convert(bounds, to: nil))
         let panelSize = chrome.panelSize
@@ -301,6 +343,7 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         case .leading, .trailing:
             chrome.tailOffset = anchor.midY - origin.y
         }
+        needsDeferredPosition = false
     }
 
     private func animate(
@@ -308,37 +351,84 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         panel: NSPanel,
         chrome: FluentTeachingTipChrome,
         placement: FluentTeachingTipPlacement,
+        preparesInitialState: Bool = false,
+        animated: Bool = true,
         completion: (() -> Void)? = nil
     ) {
-        guard !context.reduceMotion else {
-            panel.alphaValue = opening ? 1 : 0
-            chrome.layer?.setAffineTransform(.identity)
-            chrome.layer?.shadowOpacity = opening ? 0.24 : 0
+        guard let chromeLayer = chrome.layer else {
             completion?()
             return
         }
+        transitionGeneration &+= 1
+        let generation = transitionGeneration
+        transitionState = opening ? .opening : .closing
+        animationCoordinator.reduceMotion = context.reduceMotion
+        panel.alphaValue = 1
         let motion = opening ? FluentMotion.teachingTipOpen : FluentMotion.teachingTipClose
         let offset = Self.offset(for: placement, distance: motion.distance)
-        let compact = CGAffineTransform(translationX: offset.x, y: offset.y)
-            .scaledBy(x: motion.scale, y: motion.scale)
-        if opening {
-            panel.alphaValue = 0
-            chrome.layer?.setAffineTransform(compact)
-            chrome.layer?.shadowOpacity = 0
+        // NSPanel owns the content view's backing-layer anchor and can restore it after layout.
+        // Compensate the current anchor in the transform itself so scaling remains centered without
+        // fighting AppKit's root-layer geometry ownership.
+        let anchor = CGPoint(
+            x: chromeLayer.bounds.minX + chromeLayer.bounds.width * chromeLayer.anchorPoint.x,
+            y: chromeLayer.bounds.minY + chromeLayer.bounds.height * chromeLayer.anchorPoint.y
+        )
+        let center = CGPoint(x: chromeLayer.bounds.midX, y: chromeLayer.bounds.midY)
+        let compact = CGAffineTransform(
+            a: motion.scale,
+            b: 0,
+            c: 0,
+            d: motion.scale,
+            tx: offset.x + (center.x - anchor.x) * (1 - motion.scale),
+            ty: offset.y + (center.y - anchor.y) * (1 - motion.scale)
+        )
+        if preparesInitialState {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            chromeLayer.opacity = 0
+            chromeLayer.setAffineTransform(compact)
+            chromeLayer.shadowOpacity = 0
+            CATransaction.commit()
         }
-        NSAnimationContext.runAnimationGroup { animationContext in
-            animationContext.duration = motion.duration
-            animationContext.timingFunction = motion.curve.timingFunction
-            panel.animator().alphaValue = opening ? 1 : 0
-        } completionHandler: {
-            completion?()
-        }
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(motion.duration)
-        CATransaction.setAnimationTimingFunction(motion.curve.timingFunction)
-        chrome.layer?.setAffineTransform(opening ? .identity : compact)
-        chrome.layer?.shadowOpacity = opening ? 0.24 : 0
-        CATransaction.commit()
+        let targetTransform = opening ? CATransform3DIdentity : CATransform3DMakeAffineTransform(compact)
+        let targetOpacity: Float = opening ? 1 : 0
+        let targetShadow: Float = opening ? 0.24 : 0
+        animationCoordinator.animateTransition(
+            [
+                FluentLayerAnimationChange(
+                    layer: chromeLayer,
+                    key: "fluent.teachingTip.opacity",
+                    keyPath: "opacity",
+                    toValue: targetOpacity
+                ) { chromeLayer.opacity = targetOpacity },
+                FluentLayerAnimationChange(
+                    layer: chromeLayer,
+                    key: "fluent.teachingTip.transform",
+                    keyPath: "transform",
+                    toValue: NSValue(caTransform3D: targetTransform)
+                ) { chromeLayer.transform = targetTransform },
+                FluentLayerAnimationChange(
+                    layer: chromeLayer,
+                    key: "fluent.teachingTip.shadow",
+                    keyPath: "shadowOpacity",
+                    toValue: targetShadow
+                ) { chromeLayer.shadowOpacity = targetShadow }
+            ],
+            motion: motion,
+            animated: animated,
+            completion: { [weak self, weak panel] in
+                guard let self,
+                      let panel,
+                      self.panel === panel,
+                      self.transitionGeneration == generation else { return }
+                self.transitionState = nil
+                if opening {
+                    if self.needsDeferredPosition { self.positionPanel() }
+                    self.synchronizePresentation()
+                }
+                completion?()
+            }
+        )
     }
 
     private static func offset(for placement: FluentTeachingTipPlacement, distance: CGFloat) -> NSPoint {
@@ -351,6 +441,7 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
     }
 
     private func installOutsideClickMonitors(panel: NSPanel) {
+        removeOutsideClickMonitors()
         localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self, weak panel] event in
             if event.window !== panel { self?.requestDismissal() }
             return event
@@ -371,7 +462,8 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         if let observerID { binding.removeObserver(observerID) }
         removeOutsideClickMonitors()
         if let panel {
-            window?.removeChildWindow(panel)
+            animationCoordinator.cancelAll(on: [chrome?.layer].compactMap { $0 })
+            panel.parent?.removeChildWindow(panel)
             panel.orderOut(nil)
         }
     }
@@ -397,7 +489,7 @@ private final class FluentTeachingTipChrome: NSView {
         }
     }
 
-    private let material = FluentMaterialView(material: .acrylic)
+    private let material = FluentMaterialView(material: .liquidGlass)
     private let closeButton = NSButton()
 
     var panelSize: NSSize {
@@ -458,8 +550,10 @@ private final class FluentTeachingTipChrome: NSView {
         self.placement = placement
         self.theme = theme
         super.init(frame: NSRect(origin: .zero, size: .zero))
+        identifier = NSUserInterfaceItemIdentifier("FluentKit.TeachingTip.Chrome")
         frame.size = panelSize
         wantsLayer = true
+        layer?.name = "FluentKit.TeachingTip.Chrome"
         layer?.shadowColor = NSColor.black.cgColor
         layer?.shadowRadius = 12
         layer?.shadowOffset = CGSize(width: 0, height: -4)
@@ -502,6 +596,10 @@ private final class FluentTeachingTipChrome: NSView {
     override func layout() {
         super.layout()
         material.frame = surfaceFrame
+        material.materialStyle = theme.material(for: .transient) ?? .liquidGlass
+        material.fluentTheme = theme
+        material.isMaterialEnabled = theme.materialEffectsEnabled
+        material.fallbackColor = theme.flyoutSurfaceFill
         updateShadowPath()
     }
 

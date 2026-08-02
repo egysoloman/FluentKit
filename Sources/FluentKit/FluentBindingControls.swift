@@ -1,13 +1,118 @@
 import AppKit
 
+final class FluentStringBindingCoordinator {
+    private weak var field: NSTextField?
+    private var binding: FluentBinding<String>
+    private var observerID: UUID?
+    private var subscriptionGeneration: UInt = 0
+    private var deliveryGeneration: UInt = 0
+    private var publicationGeneration: UInt = 0
+    private var publicationScheduled = false
+    var currentBinding: FluentBinding<String> { binding }
+
+    init(field: NSTextField, binding: FluentBinding<String>) {
+        self.field = field
+        self.binding = binding
+        installObserver()
+        synchronizeExternalValue(binding.get())
+    }
+
+    func update(binding newBinding: FluentBinding<String>) {
+        let reusesObservation = binding.observationIdentity != nil
+            && binding.observationIdentity == newBinding.observationIdentity
+        if !reusesObservation {
+            cancelScheduledPublication()
+            removeObserver()
+        }
+        binding = newBinding
+        if !reusesObservation {
+            installObserver()
+        }
+        synchronizeExternalValue(newBinding.get())
+    }
+
+    func publishCurrentValue() {
+        cancelScheduledPublication()
+        publishFieldValue()
+    }
+
+    func scheduleCurrentValuePublication() {
+        guard !publicationScheduled else { return }
+        publicationScheduled = true
+        let publication = publicationGeneration
+        DispatchQueue.main.async { [weak self] in
+            guard let self,
+                  self.publicationScheduled,
+                  publication == self.publicationGeneration else { return }
+            self.publicationScheduled = false
+            self.publishFieldValue()
+        }
+    }
+
+    private func publishFieldValue() {
+        guard let field else { return }
+        let value = field.stringValue
+        guard binding.get() != value else { return }
+        binding.set(value)
+    }
+
+    private func cancelScheduledPublication() {
+        publicationGeneration &+= 1
+        publicationScheduled = false
+    }
+
+    private func installObserver() {
+        subscriptionGeneration &+= 1
+        let subscription = subscriptionGeneration
+        observerID = binding.observe { [weak self] value in
+            self?.receiveExternalValue(value, subscription: subscription)
+        }
+    }
+
+    private func receiveExternalValue(_ value: String, subscription: UInt) {
+        deliveryGeneration &+= 1
+        let delivery = deliveryGeneration
+        let apply = { [weak self] in
+            guard let self,
+                  subscription == self.subscriptionGeneration,
+                  delivery == self.deliveryGeneration,
+                  self.binding.get() == value else { return }
+            self.synchronizeExternalValue(value)
+        }
+        if Thread.isMainThread {
+            apply()
+        } else {
+            DispatchQueue.main.async(execute: apply)
+        }
+    }
+
+    private func synchronizeExternalValue(_ value: String) {
+        guard let field,
+              !fluentTextControlHasFocus(field),
+              field.stringValue != value else { return }
+        field.stringValue = value
+    }
+
+    private func removeObserver() {
+        subscriptionGeneration &+= 1
+        deliveryGeneration &+= 1
+        if let observerID { binding.removeObserver(observerID) }
+        observerID = nil
+    }
+
+    deinit {
+        cancelScheduledPublication()
+        removeObserver()
+    }
+}
+
 public final class FluentBoundTextField: NSView {
     public var theme: FluentTheme = .current { didSet { field.theme = theme } }
     public let field: FluentTextField
-    var binding: FluentBinding<String>
-    private var observer: UUID?
+    private var bindingCoordinator: FluentStringBindingCoordinator!
+    var binding: FluentBinding<String> { bindingCoordinator.currentBinding }
 
     public init(_ binding: FluentBinding<String>, placeholder: String = "", observable: FluentObservable<String>? = nil) {
-        self.binding = binding
         field = FluentTextField(placeholder: placeholder)
         super.init(frame: .zero)
         addSubview(field)
@@ -21,45 +126,28 @@ public final class FluentBoundTextField: NSView {
         field.target = self
         field.action = #selector(commitValue)
         field.delegate = self
-        if let observe = binding.observe {
-            observer = observe { [weak self] value in
-                guard let self, self.field.stringValue != value else { return }
-                DispatchQueue.main.async { [weak self] in
-                    guard let self, self.field.window?.firstResponder !== self.field else { return }
-                    self.field.stringValue = value
-                }
-            }
-        }
         field.stringValue = binding.get()
+        bindingCoordinator = FluentStringBindingCoordinator(field: field, binding: binding)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    @objc private func commitValue() { binding.set(field.stringValue) }
+    @objc private func commitValue() { bindingCoordinator.publishCurrentValue() }
 
     func update(binding: FluentBinding<String>, theme: FluentTheme) {
-        if let observer { self.binding.removeObserver?(observer) }
-        self.binding = binding
-        self.theme = theme
-        if field.window?.firstResponder !== field {
-            let value = binding.get()
-            if field.stringValue != value { field.stringValue = value }
-        }
-        observer = binding.observe? { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.field.window?.firstResponder !== self.field else { return }
-                self.field.stringValue = value
-            }
-        }
-    }
-
-    deinit {
-        if let observer { binding.removeObserver?(observer) }
+        bindingCoordinator.update(binding: binding)
+        if self.theme != theme { self.theme = theme }
     }
 }
 
 extension FluentBoundTextField: NSTextFieldDelegate {
-    public func controlTextDidChange(_ obj: Notification) { binding.set(field.stringValue) }
+    public func controlTextDidChange(_ obj: Notification) {
+        bindingCoordinator.scheduleCurrentValuePublication()
+    }
+
+    public func controlTextDidEndEditing(_ obj: Notification) {
+        bindingCoordinator.publishCurrentValue()
+    }
 }
 
 public final class FluentBoundToggle: NSView {
@@ -67,6 +155,7 @@ public final class FluentBoundToggle: NSView {
     var binding: FluentBinding<Bool>
     private var observer: UUID?
     private var isApplyingBinding = false
+    private var subscriptionGeneration: UInt = 0
 
     public init(_ binding: FluentBinding<Bool>, title: String = "Toggle") {
         self.binding = binding
@@ -84,16 +173,7 @@ public final class FluentBoundToggle: NSView {
             guard let self, !self.isApplyingBinding else { return }
             self.binding.set(value)
         }
-        if let observe = binding.observe {
-            observer = observe { [weak self] value in
-                DispatchQueue.main.async { [weak self] in
-                    guard let self, self.toggle.isOn != value else { return }
-                    self.isApplyingBinding = true
-                    self.toggle.setStateFromBinding(value)
-                    self.isApplyingBinding = false
-                }
-            }
-        }
+        installObserver()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -104,26 +184,43 @@ public final class FluentBoundToggle: NSView {
         reduceMotion: Bool,
         layoutDirection: FluentLayoutDirection
     ) {
-        if let observer { self.binding.removeObserver?(observer) }
+        let reusesObservation = self.binding.observationIdentity != nil
+            && self.binding.observationIdentity == binding.observationIdentity
+        if !reusesObservation { removeObserver() }
         self.binding = binding
-        toggle.theme = theme
-        toggle.reduceMotion = reduceMotion
-        toggle.fluentLayoutDirection = layoutDirection
+        if toggle.theme != theme { toggle.theme = theme }
+        if toggle.reduceMotion != reduceMotion { toggle.reduceMotion = reduceMotion }
+        if toggle.fluentLayoutDirection != layoutDirection {
+            toggle.fluentLayoutDirection = layoutDirection
+        }
         let value = binding.get()
         if toggle.isOn != value { toggle.setStateFromBinding(value) }
-        observer = binding.observe? { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.toggle.isOn != value else { return }
+        if !reusesObservation { installObserver() }
+    }
+
+    private func installObserver() {
+        subscriptionGeneration &+= 1
+        let subscription = subscriptionGeneration
+        observer = binding.observe { [weak self] value in
+            let apply = { [weak self] in
+                guard let self,
+                      subscription == self.subscriptionGeneration,
+                      self.toggle.isOn != value else { return }
                 self.isApplyingBinding = true
                 self.toggle.setStateFromBinding(value)
                 self.isApplyingBinding = false
             }
+            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
         }
     }
 
-    deinit {
-        if let observer { binding.removeObserver?(observer) }
+    private func removeObserver() {
+        subscriptionGeneration &+= 1
+        if let observer { binding.removeObserver(observer) }
+        observer = nil
     }
+
+    deinit { removeObserver() }
 }
 
 public final class FluentBoundSlider: NSView {
@@ -131,6 +228,11 @@ public final class FluentBoundSlider: NSView {
     var binding: FluentBinding<Double>
     private var observer: UUID?
     private var isApplyingBinding = false
+    private var observedBinding: FluentBinding<Double>?
+    private var observedBindingIdentity: ObjectIdentifier?
+    private var subscriptionGeneration: UInt64 = 0
+    private var latestValueGeneration: UInt64 = 0
+    private var lastLocallyWrittenValue: Double?
 
     public init(_ binding: FluentBinding<Double>, range: ClosedRange<Double> = 0...1) {
         self.binding = binding
@@ -146,18 +248,10 @@ public final class FluentBoundSlider: NSView {
         ])
         slider.onValueChanged = { [weak self] value in
             guard let self, !self.isApplyingBinding else { return }
+            self.lastLocallyWrittenValue = value
             self.binding.set(value)
         }
-        if let observe = binding.observe {
-            observer = observe { [weak self] value in
-                DispatchQueue.main.async { [weak self] in
-                    guard let self, self.slider.value != value else { return }
-                    self.isApplyingBinding = true
-                    self.slider.setValueFromBinding(value)
-                    self.isApplyingBinding = false
-                }
-            }
-        }
+        installObserver()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -168,25 +262,70 @@ public final class FluentBoundSlider: NSView {
         reduceMotion: Bool,
         layoutDirection: FluentLayoutDirection
     ) {
-        if let observer { self.binding.removeObserver?(observer) }
+        let reusesObservation = observer != nil
+            && binding.observationIdentity != nil
+            && binding.observationIdentity == observedBindingIdentity
         self.binding = binding
-        slider.theme = theme
-        slider.reduceMotion = reduceMotion
-        slider.fluentLayoutDirection = layoutDirection
+        if slider.theme != theme { slider.theme = theme }
+        if slider.reduceMotion != reduceMotion { slider.reduceMotion = reduceMotion }
+        if slider.fluentLayoutDirection != layoutDirection {
+            slider.fluentLayoutDirection = layoutDirection
+        }
         let value = binding.get()
-        if slider.value != value { slider.setValueFromBinding(value) }
+        if slider.value != value { applyExternalValue(value) }
+        if !reusesObservation { installObserver() }
+    }
+
+    private func installObserver() {
+        removeObserver()
+        observedBinding = binding
+        observedBindingIdentity = binding.observationIdentity
+        subscriptionGeneration &+= 1
+        let subscription = subscriptionGeneration
         observer = binding.observe? { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.slider.value != value else { return }
-                self.isApplyingBinding = true
-                self.slider.setValueFromBinding(value)
-                self.isApplyingBinding = false
-            }
+            self?.enqueueObservedValue(value, subscription: subscription)
         }
     }
 
+    private func enqueueObservedValue(_ value: Double, subscription: UInt64) {
+        latestValueGeneration &+= 1
+        let valueGeneration = latestValueGeneration
+        let apply = { [weak self] in
+            guard let self,
+                  self.subscriptionGeneration == subscription,
+                  self.latestValueGeneration == valueGeneration else { return }
+            if self.slider.value == value {
+                if self.lastLocallyWrittenValue == value { self.lastLocallyWrittenValue = nil }
+                return
+            }
+            self.applyExternalValue(value)
+        }
+        if Thread.isMainThread {
+            // Defer out of the binding notification while generation checks discard older drag
+            // samples that were superseded in the same run-loop turn.
+            DispatchQueue.main.async(execute: apply)
+        } else {
+            DispatchQueue.main.async(execute: apply)
+        }
+    }
+
+    private func applyExternalValue(_ value: Double) {
+        isApplyingBinding = true
+        slider.setValueFromBinding(value, cancelInteraction: true)
+        isApplyingBinding = false
+        lastLocallyWrittenValue = nil
+    }
+
+    private func removeObserver() {
+        subscriptionGeneration &+= 1
+        if let observer { observedBinding?.removeObserver?(observer) }
+        observer = nil
+        observedBinding = nil
+        observedBindingIdentity = nil
+    }
+
     deinit {
-        if let observer { binding.removeObserver?(observer) }
+        removeObserver()
     }
 }
 

@@ -1,6 +1,38 @@
 import AppKit
 import ObjectiveC
 
+/// Opt-in contract for compound surfaces that own the full horizontal row inside a vertical
+/// declarative stack. Ordinary leading-aligned content keeps its intrinsic-width behavior.
+protocol FluentFillWidthProviding: AnyObject {
+    var fluentFillsAvailableWidth: Bool { get }
+}
+
+extension FluentFillWidthProviding {
+    var fluentFillsAvailableWidth: Bool { true }
+}
+
+@inline(__always)
+func fluentViewFillsAvailableWidth(_ view: NSView) -> Bool {
+    (view as? FluentFillWidthProviding)?.fluentFillsAvailableWidth == true
+}
+
+private func fluentApplyFillWidth(_ view: NSView, in stack: NSStackView) {
+    guard fluentViewFillsAvailableWidth(view) else { return }
+    view.setContentHuggingPriority(.defaultLow, for: .horizontal)
+    view.setContentCompressionResistancePriority(.required, for: .horizontal)
+    let constraint = view.widthAnchor.constraint(equalTo: stack.widthAnchor)
+    constraint.identifier = "FluentKit.FillWidth"
+    constraint.isActive = true
+}
+
+private func fluentRemoveFillWidthConstraints(for view: NSView, from stack: NSStackView) {
+    let constraints = stack.constraints.filter { constraint in
+        constraint.identifier == "FluentKit.FillWidth"
+            && (constraint.firstItem as AnyObject?) === view
+    }
+    NSLayoutConstraint.deactivate(constraints)
+}
+
 /// A value that describes a native AppKit view tree. Views are lightweight values; their body is
 /// resolved whenever the host refreshes the tree.
 public protocol FluentView {
@@ -161,7 +193,10 @@ public struct FluentTupleView: FluentView {
         stack.alignment = .leading
         stack.spacing = context.spacing
         stack.translatesAutoresizingMaskIntoConstraints = false
-        children.map { $0.mount(context) }.forEach(stack.addArrangedSubview)
+        children.map { $0.mount(context) }.forEach {
+            stack.addArrangedSubview($0)
+            fluentApplyFillWidth($0, in: stack)
+        }
         return stack
     }
 
@@ -173,10 +208,14 @@ public struct FluentTupleView: FluentView {
             let nativeChild = stack.arrangedSubviews[index]
             if !child._update(nativeChild, in: context) {
                 let replacement = child.mount(context)
+                fluentRemoveFillWidthConstraints(for: nativeChild, from: stack)
                 stack.removeArrangedSubview(nativeChild)
                 nativeChild.removeFromSuperview()
                 stack.insertArrangedSubview(replacement, at: index)
             }
+            let resolvedChild = stack.arrangedSubviews[index]
+            fluentRemoveFillWidthConstraints(for: resolvedChild, from: stack)
+            fluentApplyFillWidth(resolvedChild, in: stack)
         }
         stack.spacing = context.spacing
         return true
@@ -203,7 +242,10 @@ public struct FluentVStackView: FluentPrimitiveView {
         stack.spacing = spacing
         stack.translatesAutoresizingMaskIntoConstraints = false
         let views = content.children?.map { $0.mount(context) } ?? [content.mount(context)]
-        views.forEach(stack.addArrangedSubview)
+        views.forEach {
+            stack.addArrangedSubview($0)
+            fluentApplyFillWidth($0, in: stack)
+        }
         return stack
     }
 
@@ -218,10 +260,14 @@ public struct FluentVStackView: FluentPrimitiveView {
             let nativeChild = stack.arrangedSubviews[index]
             if !child._update(nativeChild, in: context) {
                 let replacement = child.mount(context)
+                fluentRemoveFillWidthConstraints(for: nativeChild, from: stack)
                 stack.removeArrangedSubview(nativeChild)
                 nativeChild.removeFromSuperview()
                 stack.insertArrangedSubview(replacement, at: index)
             }
+            let resolvedChild = stack.arrangedSubviews[index]
+            fluentRemoveFillWidthConstraints(for: resolvedChild, from: stack)
+            fluentApplyFillWidth(resolvedChild, in: stack)
         }
         return true
     }
@@ -377,7 +423,12 @@ public struct FluentThemeVariantView<Content: FluentView>: FluentUpdatablePrimit
         var nested = context
         if let density { nested.theme = nested.theme.with(density: density) }
         if let contrast { nested.theme = nested.theme.with(contrast: contrast) }
-        if let colorScheme { nested.theme = nested.theme.with(colorScheme: colorScheme) }
+        if let colorScheme {
+            nested.theme = fluentResolvedTheme(
+                nested.theme.with(colorScheme: colorScheme),
+                using: nested.appearanceCoordinator?.resolvedAppearance
+            )
+        }
         return nested
     }
 
@@ -399,13 +450,15 @@ public struct FluentThemeStoreView<Content: FluentView>: FluentUpdatablePrimitiv
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         var nested = context
-        nested.theme = store.theme
+        nested.appearanceCoordinator?.bind(to: store)
+        nested.theme = nested.appearanceCoordinator?.resolvedTheme ?? store.resolvedTheme
         return content._mount(in: nested)
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         var nested = context
-        nested.theme = store.theme
+        nested.appearanceCoordinator?.bind(to: store)
+        nested.theme = nested.appearanceCoordinator?.resolvedTheme ?? store.resolvedTheme
         return content._update(view, in: nested)
     }
 }
@@ -519,9 +572,10 @@ public struct FluentRenderContext {
     public var layoutDirection: FluentLayoutDirection
     public var locale: Locale
     public var localizationBundle: Bundle
+    public var appearanceCoordinator: FluentAppearanceCoordinator?
 
-    public init(theme: FluentTheme = .current, spacing: CGFloat = 12, animationDuration: TimeInterval = FluentAnimation.content, animationTimingFunction: CAMediaTimingFunction = CAMediaTimingFunction(name: .easeInEaseOut), reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion, undoCoordinator: FluentUndoCoordinator? = nil, layoutDirection: FluentLayoutDirection = .system, locale: Locale = .current, localizationBundle: Bundle = .main, invalidate: (() -> Void)? = nil) {
-        self.theme = theme
+    public init(theme: FluentTheme = .current, spacing: CGFloat = 12, animationDuration: TimeInterval = FluentAnimation.content, animationTimingFunction: CAMediaTimingFunction = CAMediaTimingFunction(name: .easeInEaseOut), reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion, undoCoordinator: FluentUndoCoordinator? = nil, layoutDirection: FluentLayoutDirection = .system, locale: Locale = .current, localizationBundle: Bundle = .main, appearanceCoordinator: FluentAppearanceCoordinator? = nil, invalidate: (() -> Void)? = nil) {
+        self.theme = fluentResolvedTheme(theme, using: appearanceCoordinator?.resolvedAppearance)
         self.spacing = spacing
         self.animationDuration = animationDuration
         self.animationTimingFunction = animationTimingFunction
@@ -530,6 +584,7 @@ public struct FluentRenderContext {
         self.layoutDirection = layoutDirection
         self.locale = locale
         self.localizationBundle = localizationBundle
+        self.appearanceCoordinator = appearanceCoordinator
         self.invalidate = invalidate
     }
 }
@@ -565,7 +620,11 @@ public protocol FluentUpdatablePrimitiveView: FluentPrimitiveView {
 
 /// Hosts a declarative Fluent view inside an AppKit view hierarchy. Calling `update` replaces the
 /// rendered tree while retaining the native window and responder chain.
-public final class FluentViewHost<Content: FluentView>: NSView {
+protocol FluentAppearanceHost: AnyObject {
+    func synchronizeAppearanceRegistration()
+}
+
+public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearanceHost {
     public private(set) var content: Content
     public var context: FluentRenderContext {
         didSet {
@@ -578,6 +637,8 @@ public final class FluentViewHost<Content: FluentView>: NSView {
     private var isRendering = false
     private var refreshScheduled = false
     private var dependencyCancellations: [ObjectIdentifier: () -> Void] = [:]
+    private weak var registeredAppearanceCoordinator: FluentAppearanceCoordinator?
+    private var appearanceRegistration: UUID?
 
     /// Forward a mounted leaf's natural size when the host is used as an AppKit custom view,
     /// such as an NSToolbarItem. Container roots can still opt out by returning no intrinsic size.
@@ -595,6 +656,57 @@ public final class FluentViewHost<Content: FluentView>: NSView {
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        synchronizeAppearanceRegistration()
+    }
+
+    public override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        synchronizeAppearanceRegistration()
+    }
+
+    func synchronizeAppearanceRegistration() {
+        let coordinator = context.appearanceCoordinator ?? window?.fluentAppearanceCoordinator
+        guard let coordinator, window != nil, !hasFluentHostAncestor else {
+            unregisterAppearanceRegistration()
+            return
+        }
+        if registeredAppearanceCoordinator === coordinator, appearanceRegistration != nil { return }
+        unregisterAppearanceRegistration()
+        registeredAppearanceCoordinator = coordinator
+        appearanceRegistration = coordinator.register(
+            owner: self,
+            prepareForAppearanceChange: { [weak self] in
+                fluentPrepareAppearance(in: self?.mountedView)
+            }
+        ) {
+            [weak self, weak coordinator] theme in
+            guard let self, let coordinator else { return }
+            var updated = self.context
+            updated.theme = theme
+            updated.appearanceCoordinator = coordinator
+            self.context = updated
+        }
+    }
+
+    private var hasFluentHostAncestor: Bool {
+        var ancestor = superview
+        while let view = ancestor {
+            if view is any FluentAppearanceHost { return true }
+            ancestor = view.superview
+        }
+        return false
+    }
+
+    private func unregisterAppearanceRegistration() {
+        if let appearanceRegistration {
+            registeredAppearanceCoordinator?.unregister(appearanceRegistration)
+        }
+        appearanceRegistration = nil
+        registeredAppearanceCoordinator = nil
+    }
 
     public func update(_ content: Content) {
         self.content = content
@@ -674,6 +786,7 @@ public final class FluentViewHost<Content: FluentView>: NSView {
     }
 
     deinit {
+        unregisterAppearanceRegistration()
         dependencyCancellations.values.forEach { $0() }
     }
 }

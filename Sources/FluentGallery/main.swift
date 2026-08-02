@@ -170,10 +170,10 @@ private struct GalleryNavigationShell: FluentView {
     let page: GalleryPage
     let selection: FluentBinding<GalleryPage>
     let isPaneOpen: FluentBinding<Bool>
+    let search: FluentBinding<String>
     let content: FluentAnyView
     let theme: FluentTheme
     let reduceMotion: Bool
-    let isRTL: Bool
 
     var body: FluentAnyView {
         let navigationSelection = selection.map(
@@ -194,66 +194,75 @@ private struct GalleryNavigationShell: FluentView {
                 systemImageName: GalleryPage.settings.symbolName
             )
         ]
-        let paneDisplayMode: FluentNavigationPaneDisplayMode = switch ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_NAV_MODE"] {
+        let environment = ProcessInfo.processInfo.environment
+        let showsBackButton = environment["FLUENTKIT_GALLERY_SHOW_BACK"] == "1"
+        let navigationPlacement: FluentWindowNavigationPlacement = switch environment["FLUENTKIT_GALLERY_NAV_MODE"] {
+        case "none": .none
         case "auto": .automatic
         case "compact": .leftCompact
         case "minimal": .leftMinimal
         case "top": .top
         default: .left
         }
-        let insertionEdge: FluentTransitionEdge = isRTL ? .leading : .trailing
-        let removalEdge: FluentTransitionEdge = isRTL ? .trailing : .leading
-        let animatedContent = FluentAnyView(
-            content
-                .fluentID(page)
-                .transition(
-                    FluentTransition.asymmetric(
-                        insertion: FluentTransition.move(edge: insertionEdge).combined(with: .crossFade),
-                        removal: FluentTransition.move(edge: removalEdge).combined(with: .crossFade)
-                    ),
-                    animation: FluentMotion.controlNormal.transaction
-                )
-                .fluentReduceMotion(reduceMotion)
+        let titleBarStyle: FluentWindowTitleBarStyle = environment["FLUENTKIT_GALLERY_TITLEBAR_STYLE"] == "native"
+            ? .native
+            : .extended
+        let paneTogglePlacement: FluentWindowPaneTogglePlacement = environment["FLUENTKIT_GALLERY_TOGGLE_PLACEMENT"] == "pane"
+            ? .navigationPane
+            : .titleBar
+        let searchPlacement: FluentWindowSearchPlacement = environment["FLUENTKIT_GALLERY_SEARCH_PLACEMENT"] == "none"
+            ? .none
+            : .titleBar
+        let shellConfiguration = FluentWindowConfiguration(
+            layout: navigationPlacement == .none
+                ? .standard
+                : (navigationPlacement == .top ? .topNavigation : .settings),
+            titleBarStyle: titleBarStyle,
+            navigationPlacement: navigationPlacement,
+            paneTogglePlacement: paneTogglePlacement,
+            searchPlacement: searchPlacement,
+            backdrop: .liquidGlass,
+            contentCornerStyle: navigationPlacement == .top ? FluentContentCornerStyle.none : .topLeading,
+            titleBarHeight: .expanded,
+            contentTransition: .bottomUp
         )
         return FluentAnyView(
-            FluentVStack(spacing: 0, alignment: .width) {
-                FluentTitleBar(
-                    title: "FluentKit Gallery",
-                    systemImageName: "square.grid.2x2.fill",
-                    heightMode: .expanded,
-                    isPaneToggleButtonVisible: false,
-                    isPaneOpen: isPaneOpen
-                )
-                FluentNavigationView(
-                    navigationItems,
-                    footerItems: footerItems,
-                    selection: navigationSelection,
-                    isPaneOpen: isPaneOpen,
-                    paneDisplayMode: paneDisplayMode,
-                    isPaneToggleButtonVisible: paneDisplayMode != .top,
-                    openPaneLength: theme.designTokens.navigationPaneWidth,
-                    compactPaneLength: 48,
-                    rowHeight: 40,
-                    paneSectionTitle: "Explore"
-                ) {
-                    FluentEmptyView()
-                } header: {
+            FluentWindowShell(
+                configuration: shellConfiguration,
+                title: "FluentKit Gallery",
+                systemImageName: "square.grid.2x2.fill",
+                isBackButtonVisible: showsBackButton,
+                isBackButtonEnabled: page != .overview,
+                onBack: { selection.wrappedValue = .overview },
+                items: navigationItems,
+                footerItems: footerItems,
+                selection: navigationSelection,
+                isPaneOpen: isPaneOpen,
+                openPaneLength: theme.designTokens.navigationPaneWidth,
+                compactPaneLength: 48,
+                rowHeight: 40,
+                paneSectionTitle: "Explore",
+                titleBarContent: {
+                    FluentSearchField(search, placeholder: "Search controls and samples...")
+                        .frame(width: 360, height: 32)
+                },
+                header: {
                     FluentVStack(spacing: 0) {
                         FluentHStack(spacing: 12) {
                             FluentText(page.title, style: .title)
                             FluentSpacer()
                         }
                         .padding(NSEdgeInsets(top: 24, left: 32, bottom: 22, right: 32))
-                        .background(theme.cardFill, cornerRadius: 0)
                         FluentDivider()
                     }
-                } content: {
+                },
+                content: {
                     FluentScrollView(.vertical) {
-                        animatedContent.padding(NSEdgeInsets(top: 28, left: 32, bottom: 36, right: 32))
+                        content.padding(NSEdgeInsets(top: 28, left: 32, bottom: 36, right: 32))
                     }
                 }
-                .background(theme.windowBackground.withAlphaComponent(theme.isDark ? 0.92 : 0.94), cornerRadius: 0)
-            }
+            )
+            .fluentReduceMotion(reduceMotion)
         )
     }
 }
@@ -264,11 +273,17 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var isNavigationPaneOpen = true
     @FluentState private var notifications = true
     @FluentState private var syncEnabled = false
+    @FluentState private var toggleButtonEnabled = true
+    @FluentState private var toggleButtonState: FluentToggleButtonState = .mixed
+    @FluentState private var repeatButtonCount = 0
     @FluentState private var slider = 0.62
     @FluentState private var search = ""
     @FluentState private var password = ""
     @FluentState private var selectedAccount: String? = "Work"
     @FluentState private var selectedTheme: String? = "System"
+    @FluentState private var editableTheme: String = "Type a theme"
+    @FluentState private var editableThemeSelection: String?
+    @FluentState private var selectedLongOption: Int? = 21
     @FluentState private var date = Date()
     @FluentState private var quantity = 3
     @FluentState private var checked = true
@@ -276,6 +291,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var selectedRadio = true
     @FluentState private var selectedSegment = 0
     @FluentState private var progressMode = 0
+    @FluentState private var collectionLayout = 0
     @FluentState private var selectedCollectionItems = Set([2])
     @FluentState private var navigationSelection: String? = "Library"
     @FluentState private var sidebarVisible = true
@@ -290,19 +306,44 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var importPanelVisible = false
     @FluentState private var exportPanelVisible = false
 
-    init() {
-        let requestedScheme = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_SCHEME"]
-        let scheme: FluentThemeColorScheme = switch requestedScheme {
-        case "light": .light
-        case "dark": .dark
-        default: .light
+    init(themeStore: FluentThemeStore? = nil) {
+        if let themeStore {
+            applicationTheme = themeStore
+        } else {
+            let requestedScheme = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_SCHEME"]
+            let scheme: FluentThemeColorScheme = switch requestedScheme {
+            case "light": .light
+            case "dark": .dark
+            case "system": .system
+            default: .light
+            }
+            let contrast: FluentThemeContrast = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_CONTRAST"] == "high"
+                ? .high
+                : .standard
+            applicationTheme = FluentThemeStore(
+                FluentTheme.custom(
+                    contrast: contrast,
+                    colorScheme: scheme,
+                    materialEffectsEnabled: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_MATERIALS"] != "0"
+                )
+            )
         }
-        applicationTheme = FluentThemeStore(FluentTheme.custom(colorScheme: scheme))
         let requestedPage = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_PAGE"]
             .flatMap(GalleryPage.init(rawValue:)) ?? .overview
         _page = FluentState(wrappedValue: requestedPage)
+        _isNavigationPaneOpen = FluentState(
+            wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_PANE_OPEN"] != "0"
+        )
+        _reduceMotion = FluentState(
+            wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_REDUCE_MOTION"] == "1"
+        )
         _teachingTipVisible = FluentState(
             wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_TEACHING_TIP"] == "1"
+        )
+        _collectionLayout = FluentState(
+            wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_COLLECTION_LAYOUT"] == "list"
+                ? 1
+                : 0
         )
         _rtlEnabled = FluentState(
             wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_DIRECTION"] == "rtl"
@@ -310,17 +351,17 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     var body: FluentAnyView {
-        let theme = applicationTheme.theme
+        let theme = applicationTheme.resolvedTheme
         let content = pageContent(theme)
         return FluentAnyView(
             GalleryNavigationShell(
                 page: page,
                 selection: $page,
                 isPaneOpen: $isNavigationPaneOpen,
+                search: $search,
                 content: content,
                 theme: theme,
-                reduceMotion: reduceMotion,
-                isRTL: rtlEnabled
+                reduceMotion: reduceMotion
             )
                 .fluentTheme(applicationTheme)
                 .fluentLayoutDirection(rtlEnabled ? .rightToLeft : .leftToRight)
@@ -348,14 +389,17 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func overviewPage(_ theme: FluentTheme) -> FluentAnyView {
-        FluentAnyView(
+        let overviewColumns = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_NAV_MODE"] == "minimal"
+            ? 2
+            : 3
+        return FluentAnyView(
             FluentVStack(spacing: 22) {
                 FluentVStack(spacing: 8) {
                     FluentText("Build calm, capable desktop apps.", style: .largeTitle)
                     FluentText("A native Swift declaration model with Fluent surfaces, controls, and motion.", style: .body, color: theme.textSecondary)
                 }
                 .padding(NSEdgeInsets(top: 4, left: 0, bottom: 10, right: 0))
-                FluentHStack(spacing: 12) {
+                FluentGrid(columns: overviewColumns, spacing: 12) {
                     FluentVStack(spacing: 5) {
                         FluentText("Design tokens", style: .headline)
                         FluentText("Mica, spacing, and type.", style: .caption, color: theme.textSecondary)
@@ -405,26 +449,52 @@ private struct WinUIStyleGalleryScreen: FluentView {
                         FluentButtonView("Standard")
                         FluentButtonView("Outline").buttonStyle(FluentOutlineButtonStyle())
                         FluentButtonView("Subtle").buttonStyle(FluentBorderlessButtonStyle())
+                        FluentRepeatButtonView("Hold +") { repeatButtonCount += 1 }
+                        FluentText("Count \(repeatButtonCount)", style: .caption, color: theme.textSecondary)
                     }
                 }
                 FluentVStack(spacing: 12) {
                     FluentText("Menus", style: .headline)
                     FluentHStack(spacing: 10) {
-                        FluentMenuButton(title: "Menu flyout", items: [
-                            FluentMenuItem("New item") {},
-                            FluentMenuItem("Pin", state: checked ? .on : .off) { checked.toggle() },
+                        FluentDropDownButton(title: "Menu flyout", items: [
+                            FluentMenuItem(
+                                "New item",
+                                systemImageName: "plus",
+                                keyEquivalent: "n"
+                            ) {},
+                            FluentMenuItem(
+                                "Pin",
+                                systemImageName: "pin",
+                                state: checked ? .on : .off
+                            ) { checked.toggle() },
                             .separator,
-                            .submenu("More") {
-                                FluentMenuItem("Archive") {}
-                                FluentMenuItem("Share") {}
+                            .submenu("More", systemImageName: "ellipsis.circle") {
+                                FluentMenuItem("Archive", systemImageName: "archivebox") {}
+                                FluentMenuItem("Share", systemImageName: "square.and.arrow.up") {}
                             }
                         ])
-                        FluentMenuButton(title: "Context menu", items: [
-                            FluentMenuItem("Open") {},
-                            FluentMenuItem("Rename") {},
-                            .separator,
-                            FluentMenuItem("Remove") {}
-                        ])
+                        FluentButtonView("Button flyout")
+                            .flyout {
+                                FluentMenuItem("Open") {}
+                                FluentMenuItem("Rename") {}
+                                FluentMenuItem.separator
+                                FluentMenuItem("Remove") {}
+                            }
+                        FluentButtonView("Command bar")
+                            .commandBarFlyout {
+                                FluentCommandBarItem("Copy", systemImageName: "doc.on.doc") {}
+                                FluentCommandBarItem.separator
+                                FluentCommandBarItem.toggle(
+                                    "Pin",
+                                    systemImageName: "pin",
+                                    isOn: checked
+                                ) { checked = $0 }
+                            } secondaryCommands: {
+                                FluentCommandBarItem("Archive", systemImageName: "archivebox") {}
+                                FluentCommandBarItem.separator
+                                FluentCommandBarItem("Share", systemImageName: "square.and.arrow.up") {}
+                            }
+                        FluentButtonView("Context target")
                             .contextMenu {
                                 FluentMenuItem("Open") {}
                                 FluentMenuItem("Rename") {}
@@ -453,6 +523,19 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 }
                 FluentVStack(spacing: 12) {
                     FluentText("Selection and range", style: .headline)
+                    FluentHStack(spacing: 10) {
+                        FluentToggleButtonView("Toggle button", isOn: $toggleButtonEnabled)
+                        FluentToggleButtonView(
+                            "Three state",
+                            state: $toggleButtonState,
+                            allowsMixedState: true
+                        )
+                        FluentToggleButtonView(
+                            "Disabled",
+                            isOn: FluentBinding(get: { true }, set: { _ in })
+                        )
+                        .disabled()
+                    }
                     FluentHStack(spacing: 18) {
                         FluentToggleView("Notifications", isOn: $notifications)
                         FluentToggleView("Sync", isOn: $syncEnabled)
@@ -511,6 +594,10 @@ private struct WinUIStyleGalleryScreen: FluentView {
 
     private func inputsPage(_ theme: FluentTheme) -> FluentAnyView {
         let inputWidth: CGFloat = 280
+        let numberBoxPlacement: FluentNumberBoxSpinButtonPlacementMode =
+            ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_NUMBERBOX_COMPACT"] == "1"
+                ? .compact
+                : .inline
         return FluentAnyView(
             FluentVStack(spacing: 20) {
                 pageIntroduction("Consistent fields for search, credentials, choices, and values.", theme: theme)
@@ -530,7 +617,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
                     .frame(width: inputWidth)
                     FluentVStack(spacing: 16) {
                         FluentText("Structured values", style: .headline)
-                        FluentMenuButton(title: selectedAccount ?? "Choose account", items: [
+                        FluentDropDownButton(title: selectedAccount ?? "Choose account", items: [
                             FluentMenuItem("Personal", state: selectedAccount == "Personal" ? .on : .off) { selectedAccount = "Personal" },
                             FluentMenuItem("Work", state: selectedAccount == "Work" ? .on : .off) { selectedAccount = "Work" },
                             FluentMenuItem("Shared", state: selectedAccount == "Shared" ? .on : .off) { selectedAccount = "Shared" },
@@ -541,22 +628,45 @@ private struct WinUIStyleGalleryScreen: FluentView {
                             }
                         ])
                         .frame(width: inputWidth, height: 32)
+                        FluentVStack(spacing: 5) {
+                            FluentText("Selection", style: .caption, color: theme.textSecondary)
+                            FluentComboBox(
+                                options: ["System", "Light", "Dark"],
+                                selection: $selectedTheme,
+                                title: { $0 }
+                            )
+                            .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
+                        }
+                        FluentVStack(spacing: 5) {
+                            FluentText("Editable", style: .caption, color: theme.textSecondary)
+                            FluentComboBox(
+                                options: ["System", "Light", "Dark"],
+                                selection: $editableThemeSelection,
+                                mode: .editable,
+                                text: $editableTheme,
+                                title: { $0 }
+                            )
+                            .textFieldStyle(FluentAutomaticTextFieldStyle())
+                            .frame(width: inputWidth, height: 32)
+                        }
                         FluentComboBox(
-                            options: ["System", "Light", "Dark"],
-                            selection: $selectedTheme,
-                            title: { $0 }
+                            options: Array(1...30),
+                            selection: $selectedLongOption,
+                            title: { "Option \($0)" }
                         )
                         .textFieldStyle(FluentAutomaticTextFieldStyle())
                         .frame(width: inputWidth, height: 32)
                         FluentDatePicker(selection: $date)
                             .textFieldStyle(FluentAutomaticTextFieldStyle())
                             .frame(width: inputWidth, height: 32)
-                        FluentVStack(spacing: 4) {
-                            FluentText("Items", style: .caption)
-                            FluentStepper("", value: $quantity, in: 1...12)
-                                .stepperStyle(FluentNumberBoxStepperStyle(valueFieldWidth: inputWidth - 32))
-                                .frame(width: inputWidth, height: 32)
-                        }
+                        FluentNumberBox(
+                            "Items",
+                            value: $quantity,
+                            in: 1...12,
+                            spinButtonPlacement: numberBoxPlacement
+                        )
+                        .frame(width: inputWidth)
                     }
                     .frame(width: inputWidth)
                 }
@@ -577,10 +687,22 @@ private struct WinUIStyleGalleryScreen: FluentView {
         snapshot.appendSections(["Pinned", "Recent"])
         snapshot.appendItems([1, 2, 3], toSection: "Pinned")
         snapshot.appendItems([4, 5, 6], toSection: "Recent")
+        let layout = collectionLayout == 0
+            ? FluentCollectionLayout.adaptiveGrid(minimumItemWidth: 148, itemHeight: 72, spacing: 8)
+            : FluentCollectionLayout.list()
         return FluentAnyView(
             FluentVStack(spacing: 18) {
                 pageIntroduction("Stable identity, selection, and virtualization for desktop data.", theme: theme)
-                FluentCollection(snapshot: snapshot, layout: .adaptiveGrid(minimumItemWidth: 148, itemHeight: 62, spacing: 8), selectionIDs: $selectedCollectionItems, content: { item in
+                FluentSelectorBar([
+                    FluentSelectorBarItem(value: 0, title: "Grid", systemImage: "square.grid.2x2"),
+                    FluentSelectorBarItem(value: 1, title: "List", systemImage: "list.bullet")
+                ], selection: $collectionLayout)
+                FluentCollection(
+                    snapshot: snapshot,
+                    layout: layout,
+                    selectionIDs: $selectedCollectionItems,
+                    isEnabled: { $0 != 6 },
+                    content: { item in
                     FluentText("Item \(item)", style: .body)
                 }, header: { section in
                     FluentText(section, style: .caption)
@@ -613,16 +735,23 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func motionPage(_ theme: FluentTheme) -> FluentAnyView {
-        FluentAnyView(
+        let materialBinding = FluentBinding<Bool>(
+            get: { applicationTheme.resolvedTheme.materialEffectsEnabled },
+            set: {
+                applicationTheme.theme = applicationTheme.resolvedTheme.with(materialEffectsEnabled: $0)
+            }
+        )
+        return FluentAnyView(
             FluentVStack(spacing: 18) {
                 pageIntroduction("Material, contrast, and animation are application-level concerns.", theme: theme)
                 FluentToggleView("Reduce motion", isOn: $reduceMotion)
+                FluentToggleView("Liquid Glass surfaces", isOn: materialBinding)
                 FluentHStack(spacing: 10) {
                     FluentButtonView("Light", role: theme.isDark ? .standard : .primary) {
-                        applicationTheme.theme = applicationTheme.theme.with(colorScheme: .light)
+                        applicationTheme.preference = .light
                     }
                     FluentButtonView("Dark", role: theme.isDark ? .primary : .standard) {
-                        applicationTheme.theme = applicationTheme.theme.with(colorScheme: .dark)
+                        applicationTheme.preference = .dark
                     }
                 }
                 FluentButtonView("Show teaching tip") {
@@ -636,16 +765,18 @@ private struct WinUIStyleGalleryScreen: FluentView {
                     FluentVStack(spacing: 7) {
                         FluentText("Motion follows intent", style: .headline)
                         FluentText("Separate entrance and exit curves.", style: .body, color: theme.textSecondary)
-                        FluentText("Acrylic elevation preserves context.", style: .caption, color: theme.textSecondary)
+                        FluentText("Liquid Glass elevation preserves context.", style: .caption, color: theme.textSecondary)
                     }
                 }
                 .fluentReduceMotion(reduceMotion)
-                FluentVStack(spacing: 10) {
-                    FluentText("Material surface", style: .headline)
-                    FluentText("The window uses native macOS material with a stable Fluent tint.", style: .body, color: theme.textSecondary)
+                FluentMaterialSurface(role: .transient, cornerRadius: theme.cardCornerRadius) {
+                    FluentVStack(spacing: 10) {
+                        FluentText("Material surface", style: .headline)
+                        FluentText("Liquid Glass follows the global surface switch.", style: .body, color: theme.textSecondary)
+                    }
+                    .padding(20)
                 }
-                .padding(20)
-                .cardStyle(FluentElevatedCardStyle())
+                .frame(width: 500)
             }
         )
     }
@@ -732,7 +863,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 FluentVStack(spacing: 10) {
                     FluentText("System menus", style: .headline)
                     FluentHStack(spacing: 10) {
-                        FluentMenuButton(title: "Workspace actions", items: [
+                        FluentDropDownButton(title: "Workspace actions", items: [
                         FluentMenuItem("New workspace") {
                             applicationServiceStatus = "New workspace requested"
                         },
@@ -860,6 +991,7 @@ struct GalleryScreen: FluentView {
     @FluentState private var navigationSidebarVisible = true
     @FluentState private var inspectorVisible = true
     @FluentState private var sheetVisible = false
+    @FluentState private var popoverVisible = false
     @FluentState private var reduceMotion = false
     @FluentState private var choreographyExpanded = false
     @FluentState private var geometryExpanded = false
@@ -923,7 +1055,7 @@ struct GalleryScreen: FluentView {
         case 2: selectedDensity = .spacious
         default: selectedDensity = .regular
         }
-        let selectedColorScheme = applicationTheme.theme.colorScheme
+        let selectedThemePreference = applicationTheme.preference
         let choreographyContent = choreographyExpanded
             ? FluentAnyView(
                 FluentVStack(spacing: 4) {
@@ -964,7 +1096,10 @@ struct GalleryScreen: FluentView {
             FluentDivider()
             FluentText("Controls", size: 16, weight: .semibold)
             FluentText("Collection preview", size: 13, color: FluentTheme.current.textSecondary)
-            FluentSegmentedControl(["Grid", "List"], selection: $collectionLayout)
+            FluentSelectorBar([
+                FluentSelectorBarItem(value: 0, title: "Grid", systemImage: "square.grid.2x2"),
+                FluentSelectorBarItem(value: 1, title: "List", systemImage: "list.bullet")
+            ], selection: $collectionLayout)
             FluentCollection(
                 snapshot: collectionSnapshot,
                 layout: collectionLayoutValue,
@@ -1114,14 +1249,14 @@ struct GalleryScreen: FluentView {
                     .segmentedStyle(FluentNeutralSegmentedStyle())
                 FluentBoundToggle($highContrastTheme, title: "High contrast")
                 FluentHStack(spacing: 8) {
-                    FluentButtonView("System", role: selectedColorScheme == .system ? .primary : .standard) {
-                        applicationTheme.theme = applicationTheme.theme.with(colorScheme: .system)
+                    FluentButtonView("System", role: selectedThemePreference == .system ? .primary : .standard) {
+                        applicationTheme.preference = .system
                     }
-                    FluentButtonView("Light", role: selectedColorScheme == .light ? .primary : .standard) {
-                        applicationTheme.theme = applicationTheme.theme.with(colorScheme: .light)
+                    FluentButtonView("Light", role: selectedThemePreference == .light ? .primary : .standard) {
+                        applicationTheme.preference = .light
                     }
-                    FluentButtonView("Dark", role: selectedColorScheme == .dark ? .primary : .standard) {
-                        applicationTheme.theme = applicationTheme.theme.with(colorScheme: .dark)
+                    FluentButtonView("Dark", role: selectedThemePreference == .dark ? .primary : .standard) {
+                        applicationTheme.preference = .dark
                     }
                 }
                 FluentHStack(spacing: 8) {
@@ -1198,12 +1333,13 @@ struct GalleryScreen: FluentView {
                     button.isEnabled = false
                     return button
                 }())
-            FluentPopoverButton(title: "Details") {
-                    FluentVStack(spacing: 10) {
-                        FluentText("Quick details", size: 16, weight: .semibold)
-                        FluentText("Popover content is composed from the same Fluent view values.", size: 13, color: FluentTheme.current.textSecondary)
+                FluentButtonView("Details") { popoverVisible = true }
+                    .popover(isPresented: $popoverVisible, placement: .bottom, size: NSSize(width: 280, height: 180)) {
+                        FluentVStack(spacing: 10) {
+                            FluentText("Quick details", size: 16, weight: .semibold)
+                            FluentText("Popover content is composed from the same Fluent view values.", size: 13, color: FluentTheme.current.textSecondary)
+                        }
                     }
-                }
             }
             FluentHStack(spacing: 10) {
                 FluentDragSource(NSString(string: "FluentKit sample")) {
@@ -1249,7 +1385,7 @@ struct GalleryScreen: FluentView {
             FluentOutline(nodes: outlineNodes, selectionID: $selectedOutlineItem)
                 .frame(height: 142)
             FluentHStack(spacing: 10) {
-                FluentMenuButton(title: "Options", items: [
+                FluentDropDownButton(title: "Options", items: [
                     FluentMenuItem("Focus search") { searchFocused = true },
                     .separator,
                     FluentMenuItem("Notifications", state: notificationsEnabled ? .on : .off) {
@@ -1314,7 +1450,9 @@ struct GalleryScreen: FluentView {
 }
 
 private final class GalleryBackdropView: NSView {
-    let fillColor: NSColor
+    var fillColor: NSColor {
+        didSet { needsDisplay = true }
+    }
 
     init(frame: NSRect, fillColor: NSColor) {
         self.fillColor = fillColor
@@ -1331,6 +1469,8 @@ private final class GalleryBackdropView: NSView {
 
 final class GalleryWindowController: NSWindowController {
     static let rootHostIdentifier = NSUserInterfaceItemIdentifier("FluentGallery.RootHost")
+    private var appearanceCoordinator: FluentAppearanceCoordinator?
+    private var appearanceRegistration: UUID?
     static var contentSize: NSSize {
         guard ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_PATH"] != nil else {
             return NSSize(width: 980, height: 680)
@@ -1347,14 +1487,14 @@ final class GalleryWindowController: NSWindowController {
         window.title = "FluentKit Gallery"
         window.titlebarAppearsTransparent = false
         window.titleVisibility = .visible
-        window.isOpaque = true
-        window.backgroundColor = theme.windowBackground
-        switch theme.colorScheme {
-        case .dark: window.appearance = NSAppearance(named: .darkAqua)
-        case .light: window.appearance = NSAppearance(named: .aqua)
-        case .system: window.appearance = nil
-        }
+        // Behind-window Liquid Glass needs a composited window so NavigationView and transient
+        // surfaces can sample the desktop instead of only the Gallery's flat content fill.
+        window.isOpaque = false
+        window.backgroundColor = .clear
         self.init(window: window)
+        let appearanceCoordinator = FluentAppearanceCoordinator(theme: theme)
+        appearanceCoordinator.attach(to: window)
+        self.appearanceCoordinator = appearanceCoordinator
         let contentView = makeContentView()
         contentView.frame = NSRect(origin: .zero, size: Self.contentSize)
         contentView.autoresizingMask = [.width, .height]
@@ -1367,14 +1507,20 @@ final class GalleryWindowController: NSWindowController {
     }
 
     private func makeContentView() -> NSView {
-        let theme = Self.requestedTheme()
+        let requestedTheme = Self.requestedTheme()
+        let themeStore = FluentThemeStore(requestedTheme)
+        appearanceCoordinator?.bind(to: themeStore)
+        let theme = appearanceCoordinator?.resolvedTheme ?? themeStore.resolvedTheme
         let root = GalleryBackdropView(frame: NSRect(origin: .zero, size: Self.contentSize), fillColor: theme.windowBackground)
         let base = GalleryBackdropView(frame: root.bounds, fillColor: theme.windowBackground)
         base.autoresizingMask = [.width, .height]
         root.addSubview(base)
         let material = FluentMaterialView(material: .mica)
+        material.fluentTheme = theme
         material.tintColor = theme.micaTint.withAlphaComponent(theme.isDark ? 0.28 : 0.20)
         material.alphaValue = theme.isDark ? 0.22 : 0.18
+        material.isMaterialEnabled = theme.materialEffectsEnabled
+        material.fallbackColor = theme.windowBackground
         material.isHidden = ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_PATH"] != nil
         let content: FluentAnyView
         switch ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_SCENE"] {
@@ -1383,9 +1529,16 @@ final class GalleryWindowController: NSWindowController {
         case "styles":
             content = FluentAnyView(GalleryStyleSnapshot())
         default:
-            content = FluentAnyView(WinUIStyleGalleryScreen())
+            content = FluentAnyView(WinUIStyleGalleryScreen(themeStore: themeStore))
         }
-        let host = FluentViewHost(content, context: FluentRenderContext(theme: theme, spacing: theme.designTokens.spacingMedium))
+        let host = FluentViewHost(
+            content,
+            context: FluentRenderContext(
+                theme: theme,
+                spacing: theme.designTokens.spacingMedium,
+                appearanceCoordinator: appearanceCoordinator
+            )
+        )
         host.identifier = Self.rootHostIdentifier
         material.frame = root.bounds
         material.autoresizingMask = [.width, .height]
@@ -1398,6 +1551,18 @@ final class GalleryWindowController: NSWindowController {
             host.topAnchor.constraint(equalTo: root.topAnchor),
             host.bottomAnchor.constraint(equalTo: root.bottomAnchor)
         ])
+        if let appearanceCoordinator {
+            appearanceRegistration = appearanceCoordinator.register(owner: root, updateImmediately: false) {
+                [weak root, weak base, weak material] theme in
+                root?.fillColor = theme.windowBackground
+                base?.fillColor = theme.windowBackground
+                material?.fluentTheme = theme
+                material?.tintColor = theme.micaTint.withAlphaComponent(theme.isDark ? 0.28 : 0.20)
+                material?.alphaValue = theme.isDark ? 0.22 : 0.18
+                material?.isMaterialEnabled = theme.materialEffectsEnabled
+                material?.fallbackColor = theme.windowBackground
+            }
+        }
         return root
     }
 
@@ -1407,13 +1572,32 @@ final class GalleryWindowController: NSWindowController {
         case "system": .system
         default: .light
         }
-        return FluentTheme.custom(colorScheme: scheme)
+        let contrast: FluentThemeContrast = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_CONTRAST"] == "high"
+            ? .high
+            : .standard
+        return FluentTheme.custom(
+            contrast: contrast,
+            colorScheme: scheme,
+            materialEffectsEnabled: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_MATERIALS"] != "0"
+        )
     }
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var controller: GalleryWindowController!
     private var snapshotPresentationPrepared = false
+
+    private var snapshotPresentationDelay: TimeInterval {
+        let milliseconds = Double(ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_PRESENTATION_DELAY_MS"] ?? "200") ?? 200
+        return min(max(milliseconds, 0), 2_000) / 1_000
+    }
+
+    private func captureAfterPresentationDelay(window: NSWindow) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + snapshotPresentationDelay) { [weak self, weak window] in
+            guard let self, let window else { return }
+            self.captureSnapshotIfRequested(window: window)
+        }
+    }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         controller = GalleryWindowController()
@@ -1437,9 +1621,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func prepareSnapshotPresentationIfRequested(window: NSWindow) {
         let openMenu = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_MENU"] == "1"
         let openCombo = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_COMBO"] == "1"
+        let openDatePicker = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_DATE_PICKER"] == "1"
         let openContextMenu = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_CONTEXT_MENU"] == "1"
+        let openTextCommands = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_TEXT_COMMANDS"] == "1"
+        let expandTextCommands = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_EXPAND_TEXT_COMMANDS"] == "1"
+        let focusSearch = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_FOCUS_SEARCH"] == "1"
+        let focusNumberBox = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_FOCUS_NUMBERBOX"] == "1"
+        let navigationTarget = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_NAV_SELECT"]
+        let toggleNavigationPane = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_TOGGLE_PANE"] == "1"
         let menuTitle = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_MENU_TITLE"]
-        guard (openMenu || openCombo || openContextMenu), !snapshotPresentationPrepared else {
+        let highlightedMenuItem = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_HIGHLIGHT_MENU_ITEM"]
+        let needsPresentationAction = openMenu
+            || openCombo
+            || openDatePicker
+            || openContextMenu
+            || openTextCommands
+            || focusSearch
+            || focusNumberBox
+            || navigationTarget != nil
+            || toggleNavigationPane
+        guard needsPresentationAction, !snapshotPresentationPrepared else {
             captureSnapshotIfRequested(window: window)
             return
         }
@@ -1449,33 +1650,101 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             captureSnapshotIfRequested(window: window)
             return
         }
-        if openMenu, let menuButton = firstMenuButton(in: root, title: menuTitle) {
+        if openTextCommands, let searchField = firstSearchField(in: root) {
+            window.makeKeyAndOrderFront(nil)
+            searchField.stringValue = "Search text"
+            _ = window.makeFirstResponder(searchField)
+            searchField.selectText(nil)
+            postRightClick(on: searchField)
+        } else if focusSearch, let searchField = firstSearchField(in: root) {
+            window.makeKeyAndOrderFront(nil)
+            _ = window.makeFirstResponder(searchField)
+            searchField.selectText(nil)
+        } else if focusNumberBox, let numberBox = firstNumberBox(in: root) {
+            window.makeKeyAndOrderFront(nil)
+            _ = window.makeFirstResponder(numberBox.textField)
+            numberBox.textField.selectText(nil)
+            numberBox.controlTextDidBeginEditing(
+                Notification(name: NSControl.textDidBeginEditingNotification, object: numberBox.textField)
+            )
+        } else if openMenu, let menuButton = firstMenuButton(in: root, title: menuTitle) {
             window.makeKeyAndOrderFront(nil)
             postPrimaryClick(on: menuButton)
-        } else if openCombo, let comboBox = firstComboBox(in: root) {
-            comboBox.performClick(nil)
+        } else if openMenu, let button = firstFluentButton(in: root, title: menuTitle) {
+            window.makeKeyAndOrderFront(nil)
+            postPrimaryClick(on: button)
+        } else if openCombo, let comboBox = firstComboBoxTrigger(
+            in: root,
+            value: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_COMBO_VALUE"]
+        ) {
+            window.makeKeyAndOrderFront(nil)
+            postPrimaryClick(on: comboBox)
+        } else if openDatePicker, let datePicker = firstDatePicker(in: root) {
+            window.makeKeyAndOrderFront(nil)
+            datePicker.performClick(nil)
         } else if openContextMenu,
                   let contextTarget = firstView(withAccessibilityTitle: "Context menu", in: root) {
             // Posted pointer events are only dispatched to an ordered window. This branch is
             // limited to the explicit context-menu snapshot mode.
             window.makeKeyAndOrderFront(nil)
             postRightClick(on: contextTarget)
+        } else if let navigationTarget,
+                  let item = firstView(withAccessibilityTitle: navigationTarget, in: root) {
+            _ = item.accessibilityPerformPress()
+            captureAfterPresentationDelay(window: window)
+            return
+        } else if toggleNavigationPane,
+                  let toggle = firstView(identifier: "FluentKit.NavigationView.PaneToggle", in: root) {
+            _ = toggle.accessibilityPerformPress()
+            captureAfterPresentationDelay(window: window)
+            return
         } else {
             captureSnapshotIfRequested(window: window)
             return
         }
+        if openTextCommands, expandTextCommands {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak window] in
+                guard let self, let window,
+                      let commandContent = window.childWindows?.first?.contentView,
+                      let moreButton = self.firstView(withAccessibilityTitle: "More", in: commandContent) else {
+                    if let self, let window { self.captureSnapshotIfRequested(window: window) }
+                    return
+                }
+                _ = moreButton.accessibilityPerformPress()
+                self.captureAfterPresentationDelay(window: window)
+            }
+            return
+        }
         guard openMenu else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self, weak window] in
-                guard let self, let window else { return }
-                self.captureSnapshotIfRequested(window: window)
+            captureAfterPresentationDelay(window: window)
+            return
+        }
+        if let highlightedMenuItem {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak window] in
+                guard let self, let window,
+                      let menuContent = window.childWindows?.first?.contentView,
+                      let row = self.firstView(withAccessibilityTitle: highlightedMenuItem, in: menuContent),
+                      let event = NSEvent.mouseEvent(
+                        with: .mouseMoved,
+                        location: row.convert(NSPoint(x: 6, y: row.bounds.midY), to: nil),
+                        modifierFlags: [],
+                        timestamp: ProcessInfo.processInfo.systemUptime,
+                        windowNumber: row.window?.windowNumber ?? 0,
+                        context: nil,
+                        eventNumber: 1,
+                        clickCount: 0,
+                        pressure: 0
+                      ) else {
+                    if let self, let window { self.captureSnapshotIfRequested(window: window) }
+                    return
+                }
+                row.mouseEntered(with: event)
+                self.captureAfterPresentationDelay(window: window)
             }
             return
         }
         guard let submenuTitle = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_SUBMENU"] else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self, weak window] in
-                guard let self, let window else { return }
-                self.captureSnapshotIfRequested(window: window)
-            }
+            captureAfterPresentationDelay(window: window)
             return
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self, weak window] in
@@ -1486,10 +1755,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 return
             }
             _ = submenuRow.accessibilityPerformPress()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self, weak window] in
-                guard let self, let window else { return }
-                self.captureSnapshotIfRequested(window: window)
-            }
+            self.captureAfterPresentationDelay(window: window)
         }
     }
 
@@ -1507,7 +1773,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         upType: NSEvent.EventType
     ) {
         guard let window = view.window else { return }
-        let location = view.convert(NSPoint(x: view.bounds.midX, y: view.bounds.midY), to: nil)
+        let localPoint: NSPoint
+        if view is NSComboBox || view.identifier?.rawValue == "FluentKit.ComboBox.EditableText" {
+            // Both selection and editable ComboBox paths reserve the trailing glyph column
+            // for opening the popup. Center clicks must remain available for editable text.
+            localPoint = NSPoint(x: view.bounds.maxX - 8, y: view.bounds.midY)
+        } else {
+            localPoint = NSPoint(x: view.bounds.midX, y: view.bounds.midY)
+        }
+        let location = view.convert(localPoint, to: nil)
         let timestamp = ProcessInfo.processInfo.systemUptime
         let eventNumber = 1
         guard let down = NSEvent.mouseEvent(
@@ -1535,22 +1809,54 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.postEvent(up, atStart: false)
     }
 
-    private func firstMenuButton(in view: NSView, title: String? = nil) -> FluentMenuButton? {
-        if let button = view as? FluentMenuButton,
+    private func firstMenuButton(in view: NSView, title: String? = nil) -> FluentDropDownButton? {
+        if let button = view as? FluentDropDownButton,
            title == nil || button.title == title {
             return button
         }
         return view.subviews.lazy.compactMap { self.firstMenuButton(in: $0, title: title) }.first
     }
 
-    private func firstComboBox(in view: NSView) -> NSComboBox? {
-        if let comboBox = view as? NSComboBox { return comboBox }
-        return view.subviews.lazy.compactMap(firstComboBox).first
+    private func firstFluentButton(in view: NSView, title: String? = nil) -> FluentButton? {
+        if let button = view as? FluentButton,
+           title == nil || button.title == title {
+            return button
+        }
+        return view.subviews.lazy.compactMap { self.firstFluentButton(in: $0, title: title) }.first
+    }
+
+    private func firstComboBoxTrigger(in view: NSView, value: String? = nil) -> NSView? {
+        if let field = view as? NSTextField,
+           (field is NSComboBox || field.identifier?.rawValue == "FluentKit.ComboBox.EditableText"),
+           value == nil || field.stringValue == value {
+            return field
+        }
+        return view.subviews.lazy.compactMap { self.firstComboBoxTrigger(in: $0, value: value) }.first
+    }
+
+    private func firstDatePicker(in view: NSView) -> NSDatePicker? {
+        if let datePicker = view as? NSDatePicker { return datePicker }
+        return view.subviews.lazy.compactMap(firstDatePicker).first
+    }
+
+    private func firstSearchField(in view: NSView) -> NSSearchField? {
+        if let searchField = view as? NSSearchField { return searchField }
+        return view.subviews.lazy.compactMap(firstSearchField).first
+    }
+
+    private func firstNumberBox(in view: NSView) -> FluentNumberBoxControl? {
+        if let numberBox = view as? FluentNumberBoxControl { return numberBox }
+        return view.subviews.lazy.compactMap(firstNumberBox).first
     }
 
     private func firstView(withAccessibilityTitle title: String, in view: NSView) -> NSView? {
         if view.accessibilityTitle() == title { return view }
         return view.subviews.lazy.compactMap { self.firstView(withAccessibilityTitle: title, in: $0) }.first
+    }
+
+    private func firstView(identifier: String, in view: NSView) -> NSView? {
+        if view.identifier?.rawValue == identifier { return view }
+        return view.subviews.lazy.compactMap { self.firstView(identifier: identifier, in: $0) }.first
     }
 
     private func captureSnapshotIfRequested(window: NSWindow, attempt: Int = 0) {
@@ -1608,12 +1914,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         targetView.window?.displayIfNeeded()
         targetView.layoutSubtreeIfNeeded()
+        if ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_CAPTURE_PRESENTATION"] == "1" {
+            freezeAnimatedPresentation(in: targetView)
+        }
         targetView.displayIfNeeded()
         let snapshotBounds = NSRect(origin: .zero, size: snapshotSize).integral
+        let requestedScale = CGFloat(Double(ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_SCALE"] ?? "") ?? 1)
+        let snapshotScale = min(max(requestedScale, 1), 3)
         guard let bitmap = NSBitmapImageRep(
             bitmapDataPlanes: nil,
-            pixelsWide: Int(snapshotBounds.width),
-            pixelsHigh: Int(snapshotBounds.height),
+            pixelsWide: Int(snapshotBounds.width * snapshotScale),
+            pixelsHigh: Int(snapshotBounds.height * snapshotScale),
             bitsPerSample: 8,
             samplesPerPixel: 4,
             hasAlpha: true,
@@ -1622,7 +1933,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             bytesPerRow: 0,
             bitsPerPixel: 0
         ) else {
-            fail("could not allocate a 1x AppKit snapshot bitmap for \(snapshotBounds.size)")
+            fail("could not allocate a \(snapshotScale)x AppKit snapshot bitmap for \(snapshotBounds.size)")
             return
         }
         bitmap.size = snapshotBounds.size
@@ -1642,6 +1953,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         NSApp.terminate(nil)
+    }
+
+    private func freezeAnimatedPresentation(in view: NSView) {
+        func freeze(_ layer: CALayer) {
+            let presentationAnimationKeys = (layer.animationKeys() ?? []).filter {
+                $0.hasPrefix("fluent.popup.")
+                    || $0.hasPrefix("fluent.navigation.")
+            }
+            if !presentationAnimationKeys.isEmpty, let presentation = layer.presentation() {
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                layer.position = presentation.position
+                layer.bounds = presentation.bounds
+                layer.transform = presentation.transform
+                layer.opacity = presentation.opacity
+                CATransaction.commit()
+                presentationAnimationKeys.forEach(layer.removeAnimation(forKey:))
+            }
+            if let mask = layer.mask { freeze(mask) }
+            layer.sublayers?.forEach(freeze)
+        }
+
+        if let layer = view.layer { freeze(layer) }
+        view.subviews.forEach { freezeAnimatedPresentation(in: $0) }
     }
 
     private func snapshotContainsRenderedContent(_ bitmap: NSBitmapImageRep) -> Bool {

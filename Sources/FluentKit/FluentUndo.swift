@@ -225,6 +225,14 @@ private final class FluentUndoScopeHost: NSView {
 
     override var undoManager: UndoManager? { coordinator.undoManager }
 
+    @objc private func undo(_ sender: Any?) {
+        coordinator.undo()
+    }
+
+    @objc private func redo(_ sender: Any?) {
+        coordinator.redo()
+    }
+
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection([.command, .option, .control, .shift])
         guard event.charactersIgnoringModifiers?.lowercased() == "z" else {

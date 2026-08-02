@@ -89,7 +89,8 @@ public final class FluentTextEditor: NSView, FluentUpdatablePrimitiveView, NSTex
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
-        applyTheme()
+        fluentNotifyAppearanceCoordinator(from: self)
+        needsDisplay = true
     }
 
     private func configureTextView() {

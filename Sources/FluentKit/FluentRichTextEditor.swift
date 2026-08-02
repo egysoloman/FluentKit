@@ -119,7 +119,12 @@ private final class FluentRichTextPlaceholderLabel: NSTextField {
 /// A native NSTextView-backed rich editor with attributed-text and selection bindings.
 /// Formatting methods operate on the current selection and preserve AppKit text-system behavior.
 public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, NSTextViewDelegate {
-    public var theme: FluentTheme = .current { didSet { applyTheme() } }
+    public var theme: FluentTheme = .current {
+        didSet {
+            guard oldValue != theme else { return }
+            applyTheme()
+        }
+    }
 
     public let textView: NSTextView
     public var binding: FluentBinding<NSAttributedString>
@@ -132,8 +137,16 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
     private let placeholderLabel: FluentRichTextPlaceholderLabel
     private var bindingObserverID: UUID?
     private var selectionObserverID: UUID?
+    private var bindingSubscriptionGeneration: UInt = 0
+    private var selectionSubscriptionGeneration: UInt = 0
     private var isApplyingBinding = false
     private var isApplyingSelection = false
+    private var isPublishingSelection = false
+    private var pendingSelectionUpdate: FluentTextSelection?
+    private var selectionUpdateScheduled = false
+    private var pendingPublishedSelection: FluentTextSelection?
+    private var selectionPublishScheduled = false
+    private var selectionPublishGeneration: UInt = 0
 
     public init(
         _ binding: FluentBinding<NSAttributedString>,
@@ -188,7 +201,8 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
-        applyTheme()
+        fluentNotifyAppearanceCoordinator(from: self)
+        needsDisplay = true
     }
 
     /// Replaces the selected text with an attributed value and keeps the selection after it.
@@ -491,7 +505,9 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
 
     public func textViewDidChangeSelection(_ notification: Notification) {
         guard !isApplyingSelection else { return }
-        selection?.set(FluentTextSelection(textView.selectedRange()))
+        let value = FluentTextSelection(textView.selectedRange())
+        guard selection?.get() != value else { return }
+        scheduleSelectionPublication(value)
     }
 
     private func configureTextView() {
@@ -553,15 +569,36 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
     }
 
     private func installObservers() {
+        installBindingObserver()
+        installSelectionObserver()
+    }
+
+    private func installBindingObserver() {
+        bindingSubscriptionGeneration &+= 1
+        let subscription = bindingSubscriptionGeneration
         bindingObserverID = binding.observe? { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.textView.attributedString() != value else { return }
-                guard self.textView.window?.firstResponder !== self.textView else { return }
+            let apply = { [weak self] in
+                guard let self,
+                      subscription == self.bindingSubscriptionGeneration,
+                      self.binding.get() == value,
+                      self.textView.attributedString() != value,
+                      self.textView.window?.firstResponder !== self.textView else { return }
                 self.applyAttributedValue(value)
             }
+            if Thread.isMainThread {
+                apply()
+            } else {
+                DispatchQueue.main.async(execute: apply)
+            }
         }
+    }
+
+    private func installSelectionObserver() {
+        selectionSubscriptionGeneration &+= 1
+        let subscription = selectionSubscriptionGeneration
         selectionObserverID = selection?.observe { [weak self] value in
-            DispatchQueue.main.async { [weak self] in self?.applySelectionValue(value) }
+            guard let self, !self.isPublishingSelection else { return }
+            self.scheduleSelectionUpdate(value, subscription: subscription)
         }
     }
 
@@ -574,14 +611,74 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
 
     private func applySelectionValue(_ value: FluentTextSelection?) {
         guard let value else { return }
+        let resolvedRange = clampedRange(value.nsRange)
+        guard textView.selectedRange() != resolvedRange else { return }
         isApplyingSelection = true
-        textView.setSelectedRange(clampedRange(value.nsRange))
+        textView.setSelectedRange(resolvedRange)
         isApplyingSelection = false
     }
 
     private func commitTextAndSelection() {
         binding.set(textView.attributedString())
-        selection?.set(FluentTextSelection(textView.selectedRange()))
+        let value = FluentTextSelection(textView.selectedRange())
+        if selection?.get() != value { publishSelection(value) }
+    }
+
+    private func publishSelection(_ value: FluentTextSelection) {
+        guard let selection else { return }
+        cancelPendingSelectionPublication()
+        isPublishingSelection = true
+        selection.set(value)
+        isPublishingSelection = false
+    }
+
+    private func scheduleSelectionPublication(_ value: FluentTextSelection) {
+        pendingPublishedSelection = value
+        guard !selectionPublishScheduled else { return }
+        selectionPublishScheduled = true
+        let generation = selectionPublishGeneration
+        DispatchQueue.main.async { [weak self] in
+            guard let self,
+                  generation == self.selectionPublishGeneration else { return }
+            self.selectionPublishScheduled = false
+            let pending = self.pendingPublishedSelection
+            self.pendingPublishedSelection = nil
+            guard let pending,
+                  self.selection?.get() != pending else { return }
+            self.publishSelection(pending)
+        }
+    }
+
+    private func cancelPendingSelectionPublication() {
+        selectionPublishGeneration &+= 1
+        selectionPublishScheduled = false
+        pendingPublishedSelection = nil
+    }
+
+    private func scheduleSelectionUpdate(
+        _ value: FluentTextSelection,
+        subscription: UInt
+    ) {
+        let enqueue = { [weak self] in
+            guard let self, subscription == self.selectionSubscriptionGeneration else { return }
+            self.cancelPendingSelectionPublication()
+            self.pendingSelectionUpdate = value
+            guard !self.selectionUpdateScheduled else { return }
+            self.selectionUpdateScheduled = true
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                guard subscription == self.selectionSubscriptionGeneration else { return }
+                self.selectionUpdateScheduled = false
+                let pending = self.pendingSelectionUpdate
+                self.pendingSelectionUpdate = nil
+                self.applySelectionValue(pending)
+            }
+        }
+        if Thread.isMainThread {
+            enqueue()
+        } else {
+            DispatchQueue.main.async(execute: enqueue)
+        }
     }
 
     private func updatePlaceholderVisibility() {
@@ -609,11 +706,23 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
     }
 
     private func applyDeclarativeConfiguration(from source: FluentRichTextEditor) {
-        if let bindingObserverID { binding.removeObserver?(bindingObserverID) }
-        if let selectionObserverID { selection?.removeObserver?(selectionObserverID) }
+        let reusesBindingObservation = binding.observationIdentity != nil
+            && binding.observationIdentity == source.binding.observationIdentity
+        let reusesSelectionObservation: Bool
+        switch (selection?.observationIdentity, source.selection?.observationIdentity) {
+        case let (oldID?, newID?):
+            reusesSelectionObservation = oldID == newID
+        case (nil, nil):
+            reusesSelectionObservation = selection == nil && source.selection == nil
+        default:
+            reusesSelectionObservation = false
+        }
+        if !reusesBindingObservation { removeBindingObserver() }
+        if !reusesSelectionObservation { removeSelectionObserver() }
         binding = source.binding
         selection = source.selection
-        installObservers()
+        if !reusesBindingObservation { installBindingObserver() }
+        if !reusesSelectionObservation { installSelectionObserver() }
         if textView.window?.firstResponder !== textView, textView.attributedString() != binding.get() {
             applyAttributedValue(binding.get())
         }
@@ -623,7 +732,22 @@ public final class FluentRichTextEditor: NSView, FluentUpdatablePrimitiveView, N
     }
 
     deinit {
+        removeBindingObserver()
+        removeSelectionObserver()
+    }
+
+    private func removeBindingObserver() {
+        bindingSubscriptionGeneration &+= 1
         if let bindingObserverID { binding.removeObserver?(bindingObserverID) }
+        bindingObserverID = nil
+    }
+
+    private func removeSelectionObserver() {
+        selectionSubscriptionGeneration &+= 1
+        cancelPendingSelectionPublication()
+        selectionUpdateScheduled = false
+        pendingSelectionUpdate = nil
         if let selectionObserverID { selection?.removeObserver?(selectionObserverID) }
+        selectionObserverID = nil
     }
 }

@@ -5,6 +5,7 @@ extension FluentButton: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         theme = context.theme
+        reduceMotion = context.reduceMotion
         return self
     }
 
@@ -12,6 +13,7 @@ extension FluentButton: FluentUpdatablePrimitiveView {
         guard let button = view as? FluentButton else { return false }
         button.theme = context.theme
         button.applyDeclarativeConfiguration(from: self)
+        button.reduceMotion = context.reduceMotion
         return true
     }
 }
@@ -94,12 +96,19 @@ extension FluentMaterialView: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
+        fluentTheme = context.theme
+        isMaterialEnabled = context.theme.materialEffectsEnabled
+        fallbackColor = materialStyle == .mica ? context.theme.windowBackground : context.theme.flyoutSurfaceFill
         return self
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let material = view as? FluentMaterialView else { return false }
-        material.needsDisplay = true
+        material.fluentTheme = context.theme
+        material.isMaterialEnabled = context.theme.materialEffectsEnabled
+        material.fallbackColor = material.materialStyle == .mica
+            ? context.theme.windowBackground
+            : context.theme.flyoutSurfaceFill
         return true
     }
 }
@@ -161,18 +170,22 @@ extension FluentPopoverButton: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         theme = context.theme
+        layoutDirection = context.layoutDirection
+        reduceMotion = context.reduceMotion
         return self
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let button = view as? FluentPopoverButton<Content> else { return false }
         button.theme = context.theme
+        button.layoutDirection = context.layoutDirection
+        button.reduceMotion = context.reduceMotion
         button.applyDeclarativeConfiguration(from: self)
         return true
     }
 }
 
-extension FluentMenuButton: FluentUpdatablePrimitiveView {
+extension FluentDropDownButton: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
@@ -182,7 +195,7 @@ extension FluentMenuButton: FluentUpdatablePrimitiveView {
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
-        guard let button = view as? FluentMenuButton else { return false }
+        guard let button = view as? FluentDropDownButton else { return false }
         button.theme = context.theme
         button.applyDeclarativeConfiguration(from: self)
         button.reduceMotion = context.reduceMotion

@@ -24,7 +24,7 @@ public struct FluentScrollView<Content: FluentView>: FluentUpdatablePrimitiveVie
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let scroll = NSScrollView()
+        let scroll = FluentScrollHost(axis: axis)
         scroll.drawsBackground = false
         scroll.hasVerticalScroller = axis != .horizontal
         scroll.hasHorizontalScroller = axis != .vertical
@@ -50,6 +50,19 @@ public struct FluentScrollView<Content: FluentView>: FluentUpdatablePrimitiveVie
               let document = scroll.documentView as? FluentScrollDocumentView else { return false }
         return content._update(document.contentView, in: context)
     }
+}
+
+private final class FluentScrollHost: NSScrollView, FluentFillWidthProviding {
+    let axis: FluentScrollAxis
+
+    init(axis: FluentScrollAxis) {
+        self.axis = axis
+        super.init(frame: .zero)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    var fluentFillsAvailableWidth: Bool { axis != .horizontal }
 }
 
 private final class FluentScrollDocumentView: NSView {

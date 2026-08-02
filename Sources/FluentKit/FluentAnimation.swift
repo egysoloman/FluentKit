@@ -87,8 +87,19 @@ public struct FluentMotionToken: Sendable {
 /// Fluent motion tokens organized by interaction rather than one global duration.
 public enum FluentMotion {
     public static let controlFaster = FluentMotionToken(duration: 0.083, curve: .controlFastOutSlowIn)
+    /// CommandBarFlyout's OpeningOpacityStoryboard is an uneased 83ms DoubleAnimation.
+    public static let commandBarFlyoutOpen = FluentMotionToken(duration: 0.083, curve: .linear)
     public static let controlFast = FluentMotionToken(duration: 0.167, curve: .controlFastOutSlowIn)
     public static let controlNormal = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn)
+    public static let collectionSelectionOpacity = FluentMotionToken(duration: 0.083, curve: .linear)
+    public static let collectionSelectionReveal = FluentMotionToken(
+        duration: 0.167,
+        curve: FluentCubicBezier(0.167, 0.167, 0, 1)
+    )
+    public static let collectionSelectionPress = FluentMotionToken(
+        duration: 0.167,
+        curve: .controlFastOutSlowIn
+    )
     public static let checkBoxGlyphOn = FluentMotionToken(duration: 19.0 / 60.0, curve: .checkGlyphReveal)
     public static let checkBoxGlyphOff = FluentMotionToken(duration: 4.0 / 60.0, curve: .checkGlyphHide)
     public static let progressReposition = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn)
@@ -100,11 +111,72 @@ public enum FluentMotion {
     public static let connectedGravity = FluentMotionToken(duration: 0.300, curve: .connectedDefault, distance: 80, scale: 1.1)
     public static let navigationIndicator = FluentMotionToken(duration: 0.600, curve: .direct)
     public static let navigationIndicatorExit = FluentMotionToken(duration: 0.600, curve: .navigationExit)
+    // NavigationView headers use a short fade and a delayed collapse in the WinUI template.
+    public static let navigationHeaderOpen = FluentMotionToken(
+        duration: 0.200,
+        curve: FluentCubicBezier(0.0, 0.35, 0.15, 1.0)
+    )
+    public static let navigationHeaderClose = FluentMotionToken(
+        duration: 0.100,
+        curve: FluentCubicBezier(0.0, 0.35, 0.15, 1.0)
+    )
     public static let navigationPaneOpen = FluentMotionToken(duration: 0.350, curve: .direct)
     public static let navigationPaneClose = FluentMotionToken(duration: 0.120, curve: .direct)
+    // NavigationTransitionInfo separates the 150ms outgoing phase from the delayed 300ms
+    // incoming phase. Slide and Entrance reuse these timings with different distances.
+    public static let navigationPageExit = FluentMotionToken(duration: 0.150, curve: .contract)
+    public static let navigationPageEntrance = FluentMotionToken(
+        duration: 0.300,
+        curve: .direct,
+        delay: 0.150,
+        distance: 140
+    )
+    public static let navigationPageSlideEntrance = FluentMotionToken(
+        duration: 0.300,
+        curve: .direct,
+        delay: 0.150,
+        distance: 200
+    )
+    public static let navigationPageSlideExit = FluentMotionToken(
+        duration: 0.150,
+        curve: .contract,
+        distance: 150
+    )
+    public static let navigationDrillInScale = FluentMotionToken(
+        duration: 0.783,
+        curve: .direct,
+        scale: 0.94
+    )
+    public static let navigationDrillInOpacity = FluentMotionToken(
+        duration: 0.333,
+        curve: FluentCubicBezier(0.17, 0.17, 0, 1)
+    )
+    public static let navigationDrillExit = FluentMotionToken(
+        duration: 0.100,
+        curve: .direct,
+        scale: 1.04
+    )
+    public static let navigationDrillBackEntrance = FluentMotionToken(
+        duration: 0.333,
+        curve: FluentCubicBezier(0.12, 0, 0, 1),
+        scale: 1.06
+    )
     public static let menuOpen = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn, scale: 0.5)
     public static let submenuOpen = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn, scale: 0.33)
-    public static let menuClose = FluentMotionToken(duration: 0.083, curve: .linear)
+    public static let comboBoxOpen = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn, scale: 0.5)
+    // ContentDialogOpenCloseThemeTransition uses a centered 1.05 scale. The scale and
+    // opacity timelines intentionally have different durations in the WinUI implementation.
+    public static let contentDialogOpen = FluentMotionToken(
+        duration: 0.250,
+        curve: .controlFastOutSlowIn,
+        scale: 1.05
+    )
+    public static let contentDialogClose = FluentMotionToken(
+        duration: 0.167,
+        curve: .controlFastOutSlowIn,
+        scale: 1.05
+    )
+    public static let contentDialogOpacity = FluentMotionToken(duration: 0.083, curve: .linear)
     public static let teachingTipOpen = FluentMotionToken(duration: 0.300, curve: .direct, distance: 8, scale: 0.97)
     public static let teachingTipClose = FluentMotionToken(duration: 0.200, curve: .contract, distance: 8, scale: 0.97)
 }
@@ -137,19 +209,29 @@ public struct FluentAnimationTransaction {
     }
 }
 
-private extension CAMediaTimingFunction {
-    func fluentProgress(at fraction: CGFloat) -> CGFloat {
-        let x = min(max(fraction, 0), 1)
-        if x == 0 || x == 1 { return x }
-
+extension CAMediaTimingFunction {
+    var fluentCubicBezier: FluentCubicBezier {
         var first = [Float](repeating: 0, count: 2)
         var second = [Float](repeating: 0, count: 2)
         getControlPoint(at: 1, values: &first)
         getControlPoint(at: 2, values: &second)
-        let x1 = CGFloat(first[0])
-        let y1 = CGFloat(first[1])
-        let x2 = CGFloat(second[0])
-        let y2 = CGFloat(second[1])
+        return FluentCubicBezier(
+            CGFloat(first[0]),
+            CGFloat(first[1]),
+            CGFloat(second[0]),
+            CGFloat(second[1])
+        )
+    }
+
+    func fluentProgress(at fraction: CGFloat) -> CGFloat {
+        let x = min(max(fraction, 0), 1)
+        if x == 0 || x == 1 { return x }
+
+        let curve = fluentCubicBezier
+        let x1 = curve.x1
+        let y1 = curve.y1
+        let x2 = curve.x2
+        let y2 = curve.y2
 
         func coordinate(_ t: CGFloat, _ firstControl: CGFloat, _ secondControl: CGFloat) -> CGFloat {
             let inverse = 1 - t
@@ -173,7 +255,8 @@ private extension CAMediaTimingFunction {
     }
 }
 
-/// An edge used by a move transition. Values follow the native AppKit coordinate system.
+/// A visual edge used by a move transition. The transition host maps it into the backing layer's
+/// flipped or non-flipped coordinate system before creating animations.
 public enum FluentTransitionEdge: Sendable {
     case leading
     case trailing
@@ -203,27 +286,31 @@ public indirect enum FluentTransition: Sendable {
         .combined(self, other)
     }
 
-    fileprivate var insertionState: FluentTransitionVisualState {
+    fileprivate func insertionState(inFlippedHost: Bool) -> FluentTransitionVisualState {
         switch self {
         case .none: return .identity
         case .crossFade: return FluentTransitionVisualState(opacity: 0)
         case .slide: return FluentTransitionVisualState(opacity: 0, transform: CGAffineTransform(translationX: 24, y: 0))
         case .scale: return FluentTransitionVisualState(transform: CGAffineTransform(scaleX: 0.94, y: 0.94))
-        case .move(let edge): return FluentTransitionVisualState(transform: edge.translation)
-        case .combined(let first, let second): return first.insertionState.combined(with: second.insertionState)
-        case .asymmetric(let insertion, _): return insertion.insertionState
+        case .move(let edge): return FluentTransitionVisualState(transform: edge.translation(inFlippedHost: inFlippedHost))
+        case .combined(let first, let second):
+            return first.insertionState(inFlippedHost: inFlippedHost)
+                .combined(with: second.insertionState(inFlippedHost: inFlippedHost))
+        case .asymmetric(let insertion, _): return insertion.insertionState(inFlippedHost: inFlippedHost)
         }
     }
 
-    fileprivate var removalState: FluentTransitionVisualState {
+    fileprivate func removalState(inFlippedHost: Bool) -> FluentTransitionVisualState {
         switch self {
         case .none: return .identity
         case .crossFade: return FluentTransitionVisualState(opacity: 0)
         case .slide: return FluentTransitionVisualState(opacity: 0)
         case .scale: return FluentTransitionVisualState(opacity: 0, transform: CGAffineTransform(scaleX: 0.94, y: 0.94))
-        case .move(let edge): return FluentTransitionVisualState(transform: edge.translation)
-        case .combined(let first, let second): return first.removalState.combined(with: second.removalState)
-        case .asymmetric(_, let removal): return removal.removalState
+        case .move(let edge): return FluentTransitionVisualState(transform: edge.translation(inFlippedHost: inFlippedHost))
+        case .combined(let first, let second):
+            return first.removalState(inFlippedHost: inFlippedHost)
+                .combined(with: second.removalState(inFlippedHost: inFlippedHost))
+        case .asymmetric(_, let removal): return removal.removalState(inFlippedHost: inFlippedHost)
         }
     }
 }
@@ -258,12 +345,14 @@ private struct FluentTransitionVisualState {
 }
 
 private extension FluentTransitionEdge {
-    var translation: CGAffineTransform {
+    func translation(inFlippedHost: Bool) -> CGAffineTransform {
         switch self {
         case .leading: return CGAffineTransform(translationX: -24, y: 0)
         case .trailing: return CGAffineTransform(translationX: 24, y: 0)
-        case .top: return CGAffineTransform(translationX: 0, y: 24)
-        case .bottom: return CGAffineTransform(translationX: 0, y: -24)
+        case .top:
+            return CGAffineTransform(translationX: 0, y: inFlippedHost ? -24 : 24)
+        case .bottom:
+            return CGAffineTransform(translationX: 0, y: inFlippedHost ? 24 : -24)
         }
     }
 }
@@ -320,16 +409,18 @@ private final class FluentTransitionHost: NSView {
     private var isTransitioning = false
     private var pendingUpdate: (() -> Void)?
     private var timingFunction: CAMediaTimingFunction
-    private var completionDelegate: FluentTransitionCompletionDelegate?
-    private var completionWorkItem: DispatchWorkItem?
+    private let animationCoordinator: FluentAnimationCoordinator
     private var transitionGeneration: UInt64 = 0
 
     init(content: NSView, transition: FluentTransition, duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
         self.current = FluentTransitionEntry(content: content)
         self.duration = duration
         self.timingFunction = timingFunction
+        animationCoordinator = FluentAnimationCoordinator(reduceMotion: duration <= 0)
         super.init(frame: .zero)
         wantsLayer = true
+        identifier = NSUserInterfaceItemIdentifier("FluentKit.TransitionHost")
+        layer?.name = "FluentKit.TransitionHost"
         install(self.current)
     }
 
@@ -343,6 +434,7 @@ private final class FluentTransitionHost: NSView {
     ) {
         duration = context.animationDuration
         timingFunction = context.animationTimingFunction
+        animationCoordinator.reduceMotion = context.reduceMotion || duration <= 0
         guard !isTransitioning else {
             pendingUpdate = { [weak self] in
                 self?.update(updateContent: updateContent, makeContent: makeContent, transition: transition, context: context)
@@ -358,8 +450,8 @@ private final class FluentTransitionHost: NSView {
         install(replacement)
 
         let old = current
-        let insertionState = transition.insertionState
-        let removalState = transition.removalState
+        let insertionState = transition.insertionState(inFlippedHost: replacement.isFlipped)
+        let removalState = transition.removalState(inFlippedHost: old.isFlipped)
         guard duration > 0, !insertionState.isIdentity || !removalState.isIdentity else {
             old.removeFromSuperview()
             current = replacement
@@ -373,22 +465,28 @@ private final class FluentTransitionHost: NSView {
         let cleanupDuration = max(duration, matchedGeometryViews.map(\.duration).max() ?? 0)
         replacement.apply(insertionState)
         old.apply(.identity)
-        NSAnimationContext.runAnimationGroup { animationContext in
-            animationContext.duration = duration
-            animationContext.timingFunction = timingFunction
-            replacement.animate(to: .identity)
-            old.animate(to: removalState)
-            fluentAnimateMatchedGeometry(matchedGeometryViews)
-        }
+        let transitionMotion = FluentMotionToken(
+            duration: duration,
+            curve: timingFunction.fluentCubicBezier
+        )
+        animationCoordinator.animateTransition(
+            replacement.animationChanges(
+                to: .identity,
+                keyPrefix: "fluent.transition.incoming"
+            ) + old.animationChanges(
+                to: removalState,
+                keyPrefix: "fluent.transition.outgoing"
+            ),
+            motion: transitionMotion,
+            animated: true
+        )
+        fluentAnimateMatchedGeometry(matchedGeometryViews)
         let completeTransition: () -> Void = { [weak self, weak old, weak replacement] in
             guard let self,
                   self.transitionGeneration == generation,
                   self.isTransitioning,
                   let replacement else { return }
             self.isTransitioning = false
-            self.completionWorkItem?.cancel()
-            self.completionWorkItem = nil
-            self.layer?.removeAnimation(forKey: "fluent.transition.cleanup")
             old?.removeFromSuperview()
             matchedGeometryViews.forEach { prepared in
                 prepared.view.layer?.removeAnimation(forKey: "fluent.connected.transform")
@@ -398,23 +496,29 @@ private final class FluentTransitionHost: NSView {
             }
             replacement.apply(.identity)
             self.current = replacement
-            self.completionDelegate = nil
             self.finishTransition()
         }
-        completionDelegate = FluentTransitionCompletionDelegate(completion: completeTransition)
-        let completionAnimation = CABasicAnimation(keyPath: "opacity")
-        completionAnimation.fromValue = 1
-        completionAnimation.toValue = 1
-        completionAnimation.duration = cleanupDuration
-        completionAnimation.isRemovedOnCompletion = true
-        completionAnimation.delegate = completionDelegate
-        layer?.add(completionAnimation, forKey: "fluent.transition.cleanup")
-        let completionWorkItem = DispatchWorkItem(block: completeTransition)
-        self.completionWorkItem = completionWorkItem
-        DispatchQueue.main.asyncAfter(
-            deadline: .now() + cleanupDuration,
-            execute: completionWorkItem
-        )
+        if let layer {
+            let cleanupMotion = FluentMotionToken(
+                duration: cleanupDuration,
+                curve: timingFunction.fluentCubicBezier
+            )
+            animationCoordinator.animateTransition(
+                [
+                    FluentLayerAnimationChange(
+                        layer: layer,
+                        key: "fluent.transition.cleanup",
+                        keyPath: "opacity",
+                        toValue: layer.opacity
+                    ) {}
+                ],
+                motion: cleanupMotion,
+                animated: true,
+                completion: completeTransition
+            )
+        } else {
+            completeTransition()
+        }
     }
 
     private func finishTransition() {
@@ -425,8 +529,8 @@ private final class FluentTransitionHost: NSView {
     }
 
     deinit {
-        completionWorkItem?.cancel()
-        layer?.removeAnimation(forKey: "fluent.transition.cleanup")
+        let layers = subviews.compactMap(\.layer) + [layer].compactMap { $0 }
+        animationCoordinator.cancelAll(on: layers)
     }
 
     private func install(_ entry: FluentTransitionEntry) {
@@ -441,16 +545,34 @@ private final class FluentTransitionHost: NSView {
     }
 }
 
-private final class FluentTransitionCompletionDelegate: NSObject, CAAnimationDelegate {
-    private let completion: () -> Void
+extension FluentTransitionHost: FluentAppearanceParticipant {
+    func prepareForFluentAppearanceChange() {
+        transitionGeneration &+= 1
+        let entries = subviews.compactMap { $0 as? FluentTransitionEntry }
+        let survivor = entries.last ?? current
+        animationCoordinator.cancelAll(on: entries.compactMap(\.layer) + [layer].compactMap { $0 })
 
-    init(completion: @escaping () -> Void) {
-        self.completion = completion
+        func settleMatchedGeometry(in view: NSView) {
+            if view is FluentMatchedGeometryHost, let layer = view.layer {
+                layer.removeAnimation(forKey: "fluent.connected.transform")
+                layer.removeAnimation(forKey: "fluent.connected.gravity.shadow")
+                layer.setAffineTransform(.identity)
+                layer.shadowOpacity = 0
+            }
+            view.subviews.forEach(settleMatchedGeometry)
+        }
+        settleMatchedGeometry(in: survivor)
+
+        for entry in entries where entry !== survivor { entry.removeFromSuperview() }
+        survivor.apply(.identity)
+        current = survivor
+        isTransitioning = false
+        pendingUpdate = nil
     }
 
-    func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
-        guard flag else { return }
-        completion()
+    func applyFluentAppearance(_ theme: FluentTheme) {
+        // The owning declarative host applies the resolved render context after this timeline has
+        // settled. This participant exists to keep old-theme entries out of that update.
     }
 }
 
@@ -458,12 +580,15 @@ private final class FluentTransitionEntry: NSView {
     let content: NSView
     private let preservedTransforms: [(NSView, CGAffineTransform)]
 
+    override var isFlipped: Bool { content.isFlipped }
+
     init(content: NSView) {
         self.content = content
         preservedTransforms = fluentCaptureLayerTransforms(in: content)
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         wantsLayer = true
+        layer?.name = "FluentKit.TransitionEntry"
         content.translatesAutoresizingMaskIntoConstraints = false
         addSubview(content)
         NSLayoutConstraint.activate([
@@ -492,10 +617,29 @@ private final class FluentTransitionEntry: NSView {
         restoreContentTransforms()
     }
 
-    func animate(to state: FluentTransitionVisualState) {
-        animator().alphaValue = state.opacity
-        animator().layer?.setAffineTransform(state.transform)
-        restoreContentTransforms()
+    func animationChanges(
+        to state: FluentTransitionVisualState,
+        keyPrefix: String
+    ) -> [FluentLayerAnimationChange] {
+        guard let layer else { return [] }
+        let transform = CATransform3DMakeAffineTransform(state.transform)
+        return [
+            FluentLayerAnimationChange(
+                layer: layer,
+                key: "\(keyPrefix).opacity",
+                keyPath: "opacity",
+                toValue: Float(state.opacity)
+            ) { [layer] in layer.opacity = Float(state.opacity) },
+            FluentLayerAnimationChange(
+                layer: layer,
+                key: "\(keyPrefix).transform",
+                keyPath: "transform",
+                toValue: NSValue(caTransform3D: transform)
+            ) { [weak self, layer] in
+                layer.setAffineTransform(state.transform)
+                self?.restoreContentTransforms()
+            }
+        ]
     }
 }
 

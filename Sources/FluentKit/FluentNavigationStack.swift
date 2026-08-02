@@ -410,7 +410,7 @@ private final class FluentNavigationStackHost: NSView {
     private let backButton = FluentButton(title: "Back")
     private let titleLabel = NSTextField(labelWithString: "")
     private let contentContainer = NSView()
-    private var contentHost: FluentViewHost<FluentAnyView>
+    private var contentHost: FluentNavigationContentPresenter<AnyHashable>
 
     init(
         root: FluentAnyView,
@@ -428,7 +428,11 @@ private final class FluentNavigationStackHost: NSView {
         self.resolvedDestination = resolvedDestination
         self.transition = transition
         self.context = context
-        contentHost = FluentViewHost(root, context: context)
+        contentHost = FluentNavigationContentPresenter(
+            content: root,
+            identity: AnyHashable(path.get()),
+            context: context
+        )
         super.init(frame: .zero)
 
         stack.orientation = .vertical
@@ -496,9 +500,9 @@ private final class FluentNavigationStackHost: NSView {
         self.context = context
         backButton.theme = context.theme
         titleLabel.textColor = context.theme.textPrimary
-        contentHost.context = context
         installObserver()
-        render(path: path.get(), animated: false)
+        let nextPath = path.get()
+        render(path: nextPath, animated: nextPath != lastRenderedPath)
     }
 
     private func installObserver() {
@@ -510,45 +514,48 @@ private final class FluentNavigationStackHost: NSView {
 
     private func render(path: [AnyHashable], animated: Bool) {
         guard path != lastRenderedPath || !animated else { return }
+        let previousPath = lastRenderedPath
         lastRenderedPath = path
         let route = path.last
         backButton.isHidden = route == nil
         let resolved = route.flatMap { resolvedDestination?($0) }
         titleLabel.stringValue = resolved?.title ?? route.map(title) ?? ""
         let view = resolved?.content ?? route.map(destination) ?? root
-        let update = { [weak self] in
-            guard let self else { return }
-            self.contentHost.update(view)
-            self.contentHost.needsLayout = true
-            self.needsLayout = true
-        }
-        guard animated, !context.reduceMotion, transition != .none else {
-            update()
-            return
-        }
-        contentHost.wantsLayer = true
-        let duration = context.animationDuration
+        let direction = transitionDirection(from: previousPath, to: path)
+        let mode = animated ? navigationTransitionMode : .none
+        contentHost.update(
+            content: view,
+            identity: AnyHashable(path),
+            direction: direction,
+            mode: mode,
+            context: context
+        )
+        contentHost.needsLayout = true
+        needsLayout = true
+    }
+
+    private var navigationTransitionMode: FluentNavigationTransitionMode {
         switch transition {
-        case .crossFade:
-            contentHost.alphaValue = 0
-            update()
-            NSAnimationContext.runAnimationGroup { animationContext in
-                animationContext.duration = duration
-                animationContext.timingFunction = context.animationTimingFunction
-                contentHost.animator().alphaValue = 1
-            }
-        case .slide:
-            contentHost.layer?.setAffineTransform(CGAffineTransform(translationX: 24, y: 0))
-            update()
-            NSAnimationContext.runAnimationGroup { animationContext in
-                animationContext.duration = duration
-                animationContext.timingFunction = context.animationTimingFunction
-                animationContext.allowsImplicitAnimation = true
-                contentHost.animator().layer?.setAffineTransform(.identity)
-            }
-        case .none:
-            update()
+        case .none: return .none
+        case .crossFade: return .crossFade
+        case .slide: return .slide
         }
+    }
+
+    private func transitionDirection(
+        from oldPath: [AnyHashable],
+        to newPath: [AnyHashable]
+    ) -> FluentNavigationTransitionDirection {
+        guard oldPath != newPath else { return .neutral }
+        if newPath.count > oldPath.count,
+           newPath.starts(with: oldPath) {
+            return .forward
+        }
+        if oldPath.count > newPath.count,
+           oldPath.starts(with: newPath) {
+            return .backward
+        }
+        return newPath.count >= oldPath.count ? .forward : .backward
     }
 
     private func pop() {

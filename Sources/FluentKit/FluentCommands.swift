@@ -88,7 +88,7 @@ public struct FluentCommandsView<Content: FluentView>: FluentUpdatablePrimitiveV
 /// Owns the native application menu generated from declarative command groups. The coordinator
 /// keeps menu targets alive, rebuilds structure when groups change, and validates enabled state
 /// immediately before the menu opens or a key equivalent is dispatched.
-public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate {
+public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate, NSMenuItemValidation {
     public private(set) var menu: NSMenu
     public private(set) var servicesMenu: NSMenu
     public let applicationName: String
@@ -145,6 +145,12 @@ public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate {
         validateAllItems(in: menu)
     }
 
+    public func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
+        guard let id = itemIDs[ObjectIdentifier(menuItem)],
+              let command = commandByID[id] else { return true }
+        return command.isEnabled()
+    }
+
     @objc private func invoke(_ sender: NSMenuItem) {
         guard let id = itemIDs[ObjectIdentifier(sender)],
               let command = commandByID[id],
@@ -161,7 +167,7 @@ public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate {
         itemIDs.removeAll(keepingCapacity: true)
         servicesMenu = NSMenu(title: "Services")
         let nextMenu = NSMenu(title: applicationName)
-        nextMenu.autoenablesItems = false
+        nextMenu.autoenablesItems = true
         nextMenu.delegate = self
 
         let appItem = NSMenuItem()
@@ -191,10 +197,67 @@ public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate {
         appItem.submenu = appMenu
         nextMenu.addItem(appItem)
 
+        addStandardMenu(
+            title: "File",
+            items: [
+                standardItem("New", action: #selector(NSDocumentController.newDocument(_:)), key: "n"),
+                standardItem("Open...", action: #selector(NSDocumentController.openDocument(_:)), key: "o"),
+                .separator(),
+                standardItem("Close Window", action: #selector(NSWindow.performClose(_:)), key: "w")
+            ],
+            to: nextMenu
+        )
+        addStandardMenu(
+            title: "Edit",
+            items: [
+                standardItem("Undo", action: Selector(("undo:")), key: "z"),
+                standardItem("Redo", action: Selector(("redo:")), key: "z", modifiers: [.command, .shift]),
+                .separator(),
+                standardItem("Cut", action: #selector(NSText.cut(_:)), key: "x"),
+                standardItem("Copy", action: #selector(NSText.copy(_:)), key: "c"),
+                standardItem("Paste", action: #selector(NSText.paste(_:)), key: "v"),
+                standardItem("Select All", action: #selector(NSText.selectAll(_:)), key: "a")
+            ],
+            to: nextMenu
+        )
+        addStandardMenu(
+            title: "View",
+            items: [
+                standardItem("Enter Full Screen", action: #selector(NSWindow.toggleFullScreen(_:)), key: "f", modifiers: [.command, .control])
+            ],
+            to: nextMenu
+        )
+        addStandardMenu(
+            title: "Window",
+            items: [
+                standardItem("Close Window", action: #selector(NSWindow.performClose(_:)), key: "w"),
+                .separator(),
+                standardItem("Minimize", action: #selector(NSWindow.performMiniaturize(_:)), key: "m"),
+                standardItem("Zoom", action: #selector(NSWindow.performZoom(_:)), key: ""),
+                .separator(),
+                standardItem("Bring All to Front", action: #selector(NSApplication.arrangeInFront(_:)), key: "")
+            ],
+            to: nextMenu
+        )
+        addStandardMenu(
+            title: "Help",
+            items: [
+                standardItem("\(applicationName) Help", action: #selector(NSApplication.showHelp(_:)), key: "?")
+            ],
+            to: nextMenu
+        )
+
         for group in groups {
-            let groupItem = NSMenuItem(title: group.title, action: nil, keyEquivalent: "")
-            let groupMenu = NSMenu(title: group.title)
-            groupMenu.autoenablesItems = false
+            let groupMenu: NSMenu
+            if let standardMenu = nextMenu.items.first(where: { $0.submenu?.title == group.title })?.submenu {
+                groupMenu = standardMenu
+                if !groupMenu.items.isEmpty, !group.commands.isEmpty { groupMenu.addItem(.separator()) }
+            } else {
+                let groupItem = NSMenuItem(title: group.title, action: nil, keyEquivalent: "")
+                groupMenu = NSMenu(title: group.title)
+                groupItem.submenu = groupMenu
+                nextMenu.addItem(groupItem)
+            }
             groupMenu.delegate = self
             for command in group.commands {
                 let id = UUID()
@@ -206,8 +269,6 @@ public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate {
                 item.isEnabled = command.isEnabled()
                 groupMenu.addItem(item)
             }
-            groupItem.submenu = groupMenu
-            nextMenu.addItem(groupItem)
         }
 
         menu = nextMenu
@@ -215,6 +276,27 @@ public final class FluentMainMenuCoordinator: NSObject, NSMenuDelegate {
             installedApplication.mainMenu = nextMenu
             installedApplication.servicesMenu = servicesMenu
         }
+    }
+
+    private func addStandardMenu(title: String, items: [NSMenuItem], to menu: NSMenu) {
+        let menuItem = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        let submenu = NSMenu(title: title)
+        submenu.autoenablesItems = true
+        items.forEach(submenu.addItem)
+        menuItem.submenu = submenu
+        menu.addItem(menuItem)
+    }
+
+    private func standardItem(
+        _ title: String,
+        action: Selector,
+        key: String,
+        modifiers: NSEvent.ModifierFlags = [.command]
+    ) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
+        item.keyEquivalentModifierMask = modifiers.nsMenuModifierMask
+        item.target = nil
+        return item
     }
 
     private func validateAllItems(in menu: NSMenu? = nil) {

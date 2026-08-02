@@ -23,12 +23,66 @@ public struct FluentButtonStyleConfiguration {
     }
 }
 
+/// The visual edge at which WinUI's absolute three-point elevation gradient is revealed.
+public enum FluentElevationBorderEdge: Hashable, Sendable {
+    case top
+    case bottom
+}
+
+/// Visual coordinates used by control-owned geometry. Resolve this from the control view when
+/// available, never from a child gradient or shape layer whose own flag does not describe the
+/// host transform.
+enum FluentVisualYAxis {
+    case down
+    case up
+
+    var visualBottom: CGFloat { self == .down ? 1 : 0 }
+    var visualTop: CGFloat { self == .down ? 0 : 1 }
+    var visualDownSign: CGFloat { self == .down ? 1 : -1 }
+
+    /// Resolves the control's local visual axis. The view's `isFlipped` is authoritative for
+    /// control-owned drawing; a backing layer can inherit a flipped value from WindowShell even
+    /// when the control itself still uses AppKit's unflipped view coordinates.
+    static func resolved(for layer: CALayer?, fallbackView view: NSView? = nil) -> Self {
+        if let view { return view.isFlipped ? .down : .up }
+        if let layer { return layer.isGeometryFlipped ? .down : .up }
+        return .up
+    }
+}
+
+struct FluentPixelGeometry {
+    let scale: CGFloat
+
+    init(backingScale: CGFloat? = nil) {
+        if let backingScale {
+            scale = max(backingScale, 1)
+        } else if let context = NSGraphicsContext.current?.cgContext {
+            let deviceSize = context.convertToDeviceSpace(CGSize(width: 1, height: 1))
+            scale = max(abs(deviceSize.width), abs(deviceSize.height), 1)
+        } else {
+            scale = max(NSScreen.main?.backingScaleFactor ?? 1, 1)
+        }
+    }
+
+    var pixel: CGFloat { 1 / scale }
+    var halfPixel: CGFloat { 0.5 / scale }
+
+    func align(_ value: CGFloat) -> CGFloat {
+        (value * scale).rounded() / scale
+    }
+
+    func containedAntialiasRect(in bounds: CGRect) -> CGRect {
+        bounds.insetBy(dx: halfPixel, dy: halfPixel)
+    }
+}
+
 /// The visual metrics returned by a button style.
 public struct FluentButtonAppearance {
     public let backgroundColor: NSColor
     public let foregroundColor: NSColor
     public let borderColor: NSColor
     public let borderGradientColors: [NSColor]?
+    public let borderGradientEdge: FluentElevationBorderEdge
     public let borderWidth: CGFloat
     public let cornerRadius: CGFloat
     public let contentInsets: NSEdgeInsets
@@ -40,6 +94,7 @@ public struct FluentButtonAppearance {
         foregroundColor: NSColor,
         borderColor: NSColor,
         borderGradientColors: [NSColor]? = nil,
+        borderGradientEdge: FluentElevationBorderEdge = .bottom,
         borderWidth: CGFloat = 1,
         cornerRadius: CGFloat = 7,
         contentInsets: NSEdgeInsets = NSEdgeInsetsZero,
@@ -50,12 +105,154 @@ public struct FluentButtonAppearance {
         self.foregroundColor = foregroundColor
         self.borderColor = borderColor
         self.borderGradientColors = borderGradientColors
+        self.borderGradientEdge = borderGradientEdge
         self.borderWidth = max(borderWidth, 0)
         self.cornerRadius = max(cornerRadius, 0)
         self.contentInsets = contentInsets
         self.focusRingColor = focusRingColor
         self.focusRingWidth = max(focusRingWidth, 0)
     }
+}
+
+@inline(__always)
+func fluentHalfPixelInset(backingScale: CGFloat? = nil) -> CGFloat {
+    FluentPixelGeometry(backingScale: backingScale).halfPixel
+}
+
+/// Applies the source brush geometry used by Button, DropDownButton, and ComboBox.
+/// WinUI's `ControlElevationBorderBrush` is absolute, ending after three points rather
+/// than spanning the entire control. The layer is still allowed to pad its final color
+/// outside that interval, so the lower/upper edge reads as a shallow elevation lip.
+@inline(__always)
+func configureFluentElevationBorderLayer(_ layer: CAGradientLayer, mask: CAShapeLayer) {
+    let scale = NSScreen.main?.backingScaleFactor ?? 1
+    layer.contentsScale = scale
+    mask.contentsScale = scale
+    layer.startPoint = CGPoint(x: 0.5, y: 0)
+    layer.endPoint = CGPoint(x: 0.5, y: 1)
+    mask.fillColor = NSColor.black.cgColor
+    mask.fillRule = .evenOdd
+    mask.strokeColor = nil
+    layer.mask = mask
+    // Mounting can configure colors before the control has non-zero bounds. Keep the shared
+    // gradient inert until the first explicit visual-geometry synchronization.
+    layer.isHidden = true
+    mask.isHidden = true
+}
+
+@inline(__always)
+func updateFluentElevationBorderLayer(
+    _ layer: CAGradientLayer,
+    mask: CAShapeLayer,
+    bounds: CGRect,
+    appearance: FluentButtonAppearance,
+    visualYAxis: FluentVisualYAxis,
+    backingScale: CGFloat = NSScreen.main?.backingScaleFactor ?? 1
+) {
+    guard bounds.width > 0, bounds.height > 0 else { return }
+    let borderWidth = appearance.borderWidth
+    let extent = min(CGFloat(3), bounds.height)
+    let normalizedExtent = extent / bounds.height
+    // Gradient unit coordinates are local, but AppKit may flip the entire child layer when it is
+    // composited into its control. Anchor the brush using the control root's actual visual axis.
+    let visualBottom = visualYAxis.visualBottom
+    let visualTop = visualYAxis.visualTop
+    let inwardFromBottom = -normalizedExtent * visualYAxis.visualDownSign
+    let inwardFromTop = normalizedExtent * visualYAxis.visualDownSign
+    let sourceColors = (appearance.borderGradientColors
+        ?? [appearance.borderColor, appearance.borderColor]).map(\.cgColor)
+    // Keep the WinUI brush's source stop order stable. Mirroring the edge geometry and the
+    // colors together cancels the correction and puts the stronger stop back on the visual top.
+    layer.colors = sourceColors
+    if appearance.borderGradientEdge == .bottom {
+        layer.startPoint = CGPoint(x: 0.5, y: visualBottom)
+        layer.endPoint = CGPoint(x: 0.5, y: visualBottom + inwardFromBottom)
+    } else {
+        layer.startPoint = CGPoint(x: 0.5, y: visualTop)
+        layer.endPoint = CGPoint(x: 0.5, y: visualTop + inwardFromTop)
+    }
+    let resolvedScale = max(backingScale, 1)
+    layer.contentsScale = resolvedScale
+    mask.contentsScale = resolvedScale
+    layer.locations = [0.33, 1]
+    layer.frame = bounds
+    mask.frame = bounds
+    // Keep the rounded antialiasing footprint inside the layer at both 1x and 2x. The background
+    // still owns the complete bounds; only the painted border ring is inset by half a device pixel.
+    let visualBounds = FluentPixelGeometry(backingScale: resolvedScale)
+        .containedAntialiasRect(in: bounds)
+    let innerRect = visualBounds.insetBy(dx: borderWidth, dy: borderWidth)
+    let ring = CGMutablePath()
+    ring.addRoundedRect(
+        in: visualBounds,
+        cornerWidth: appearance.cornerRadius,
+        cornerHeight: appearance.cornerRadius
+    )
+    if innerRect.width > 0, innerRect.height > 0 {
+        ring.addRoundedRect(
+            in: innerRect,
+            cornerWidth: max(appearance.cornerRadius - borderWidth, 0),
+            cornerHeight: max(appearance.cornerRadius - borderWidth, 0)
+        )
+    }
+    mask.path = ring
+    mask.isHidden = borderWidth <= 0
+    layer.isHidden = borderWidth <= 0
+}
+
+/// Applies the shared Button faceplate as one animation transaction. DropDownButton and the
+/// closed ComboBox trigger intentionally use this helper instead of maintaining separate implicit
+/// background and elevation animations.
+func applyFluentButtonChrome(
+    to layer: CALayer,
+    elevationLayer: CAGradientLayer,
+    elevationMask: CAShapeLayer,
+    bounds: CGRect,
+    appearance: FluentButtonAppearance,
+    visualYAxis: FluentVisualYAxis,
+    backingScale: CGFloat,
+    animationCoordinator: FluentAnimationCoordinator,
+    motion: FluentMotionToken,
+    keyPrefix: String = "fluent.buttonChrome",
+    animated: Bool
+) {
+    let colors = (appearance.borderGradientColors ?? [appearance.borderColor, appearance.borderColor]).map(\.cgColor)
+    let targetCornerRadius = appearance.cornerRadius as NSNumber
+    let changes = [
+        FluentLayerAnimationChange(
+            layer: layer,
+            key: "\(keyPrefix).background",
+            keyPath: "backgroundColor",
+            toValue: appearance.backgroundColor.cgColor
+        ) { layer.backgroundColor = appearance.backgroundColor.cgColor },
+        FluentLayerAnimationChange(
+            layer: layer,
+            key: "\(keyPrefix).cornerRadius",
+            keyPath: "cornerRadius",
+            toValue: targetCornerRadius
+        ) { layer.cornerRadius = appearance.cornerRadius },
+        FluentLayerAnimationChange(
+            layer: elevationLayer,
+            key: "\(keyPrefix).elevation",
+            keyPath: "colors",
+            toValue: colors
+        ) { elevationLayer.colors = colors }
+    ]
+    layer.borderWidth = 0
+    layer.cornerCurve = .continuous
+    elevationLayer.isHidden = false
+    animationCoordinator.animateState(changes, motion: motion, animated: animated)
+    CATransaction.begin()
+    CATransaction.setDisableActions(true)
+    updateFluentElevationBorderLayer(
+        elevationLayer,
+        mask: elevationMask,
+        bounds: bounds,
+        appearance: appearance,
+        visualYAxis: visualYAxis,
+        backingScale: backingScale
+    )
+    CATransaction.commit()
 }
 
 /// Supplies state-dependent visual metrics to a native Fluent button.
@@ -78,6 +275,7 @@ public struct FluentAutomaticButtonStyle: FluentButtonStyle {
                 foregroundColor: theme.buttonForeground(for: state),
                 borderColor: theme.isHighContrast ? theme.controlStrokeStrong : theme.controlStrokeDefault,
                 borderGradientColors: usesElevationBorder ? theme.controlElevationBorderColors : nil,
+                borderGradientEdge: .bottom,
                 borderWidth: theme.controlStrokeWidth,
                 cornerRadius: theme.buttonCornerRadius,
                 contentInsets: theme.controlPadding,
@@ -85,16 +283,16 @@ public struct FluentAutomaticButtonStyle: FluentButtonStyle {
                 focusRingWidth: theme.focusStrokeWidth
             )
         case .primary:
-            let alpha: CGFloat = state == .pressed ? 0.72 : (state == .pointerOver ? 0.88 : 1)
             let usesElevationBorder = state == .normal || state == .pointerOver || state == .focused
             let elevationBorder = theme.accentElevationBorderColors
             return FluentButtonAppearance(
-                backgroundColor: theme.accent.withAlphaComponent(configuration.isEnabled ? alpha : 0.35),
+                backgroundColor: theme.accentFill(for: state),
                 foregroundColor: state == .pressed
-                    ? theme.textOnAccent.withAlphaComponent(0.70)
-                    : theme.textOnAccent,
+                    ? theme.textOnAccentSecondary
+                    : (state == .disabled ? theme.textOnAccentDisabled : theme.textOnAccent),
                 borderColor: usesElevationBorder ? (elevationBorder.last ?? .clear) : .clear,
                 borderGradientColors: usesElevationBorder ? elevationBorder : nil,
+                borderGradientEdge: .bottom,
                 borderWidth: theme.controlStrokeWidth,
                 cornerRadius: theme.buttonCornerRadius,
                 contentInsets: theme.controlPadding,
@@ -124,16 +322,16 @@ public struct FluentAccentButtonStyle: FluentButtonStyle {
     public func appearance(for configuration: FluentButtonStyleConfiguration) -> FluentButtonAppearance {
         let theme = configuration.theme
         let state = configuration.isEnabled ? configuration.controlState : .disabled
-        let alpha: CGFloat = state == .pressed ? 0.72 : (state == .pointerOver ? 0.88 : 1)
         let usesElevationBorder = state == .normal || state == .pointerOver || state == .focused
         let elevationBorder = theme.accentElevationBorderColors
         return FluentButtonAppearance(
-            backgroundColor: theme.accent.withAlphaComponent(configuration.isEnabled ? alpha : 0.35),
+            backgroundColor: theme.accentFill(for: state),
             foregroundColor: state == .pressed
-                ? theme.textOnAccent.withAlphaComponent(0.70)
-                : theme.textOnAccent,
+                ? theme.textOnAccentSecondary
+                : (state == .disabled ? theme.textOnAccentDisabled : theme.textOnAccent),
             borderColor: usesElevationBorder ? (elevationBorder.last ?? .clear) : .clear,
             borderGradientColors: usesElevationBorder ? elevationBorder : nil,
+            borderGradientEdge: .bottom,
             borderWidth: theme.controlStrokeWidth,
             cornerRadius: theme.buttonCornerRadius,
             contentInsets: theme.controlPadding,
@@ -150,10 +348,10 @@ public struct FluentBorderlessButtonStyle: FluentButtonStyle {
     public func appearance(for configuration: FluentButtonStyleConfiguration) -> FluentButtonAppearance {
         let theme = configuration.theme
         let state = configuration.isEnabled ? configuration.controlState : .disabled
-        let foreground = configuration.isEnabled ? theme.accent : theme.textDisabled
+        let foreground = configuration.isEnabled ? theme.accentTextPrimary : theme.textDisabled
         let background: NSColor = switch state {
-        case .pointerOver: theme.controlFillSecondary
-        case .pressed: theme.controlFillTertiary
+        case .pointerOver: theme.subtleFillSecondary
+        case .pressed: theme.subtleFillTertiary
         default: .clear
         }
         return FluentButtonAppearance(
@@ -176,16 +374,16 @@ public struct FluentOutlineButtonStyle: FluentButtonStyle {
     public func appearance(for configuration: FluentButtonStyleConfiguration) -> FluentButtonAppearance {
         let theme = configuration.theme
         let state = configuration.isEnabled ? configuration.controlState : .disabled
-        let foreground = configuration.isEnabled ? theme.accent : theme.textDisabled
+        let foreground = configuration.isEnabled ? theme.accentTextPrimary : theme.textDisabled
         let background: NSColor = switch state {
-        case .pointerOver: theme.controlFillSecondary
-        case .pressed: theme.controlFillTertiary
+        case .pointerOver: theme.subtleFillSecondary
+        case .pressed: theme.subtleFillTertiary
         default: .clear
         }
         return FluentButtonAppearance(
             backgroundColor: background,
             foregroundColor: foreground,
-            borderColor: configuration.isEnabled ? theme.accent : theme.controlStroke,
+            borderColor: configuration.isEnabled ? theme.accentTextPrimary : theme.controlStroke,
             borderWidth: theme.controlStrokeWidth,
             cornerRadius: theme.buttonCornerRadius,
             contentInsets: theme.controlPadding,
@@ -437,12 +635,6 @@ public struct FluentAutomaticSliderStyle: FluentSliderStyle {
         } else {
             .normal
         }
-        let accentAlpha: CGFloat = switch state {
-        case .pointerOver: 0.90
-        case .pressed: 0.80
-        case .disabled: 0.35
-        default: 1
-        }
         let innerDiameter: CGFloat = switch state {
         case .pointerOver, .disabled: 14
         case .pressed: 10
@@ -450,8 +642,8 @@ public struct FluentAutomaticSliderStyle: FluentSliderStyle {
         }
         return FluentSliderAppearance(
             trackColor: theme.controlStrokeStrong.withAlphaComponent(configuration.isEnabled ? 1 : 0.35),
-            fillColor: theme.accent.withAlphaComponent(accentAlpha),
-            knobColor: theme.accent.withAlphaComponent(accentAlpha),
+            fillColor: theme.accentFill(for: state),
+            knobColor: theme.accentFill(for: state),
             haloColor: .clear,
             trackHeight: (theme.isHighContrast ? 6 : 4) * scale,
             knobDiameter: (theme.isHighContrast ? innerDiameter + 2 : innerDiameter) * scale,
@@ -513,12 +705,20 @@ public enum FluentTextFieldBorderShape: Hashable, Sendable {
 public struct FluentTextFieldStyleConfiguration {
     public let isEnabled: Bool
     public let isFocused: Bool
+    public let isPointerOver: Bool
     public let controlSize: FluentControlSize
     public let theme: FluentTheme
 
-    public init(isEnabled: Bool, isFocused: Bool, controlSize: FluentControlSize, theme: FluentTheme) {
+    public init(
+        isEnabled: Bool,
+        isFocused: Bool,
+        isPointerOver: Bool = false,
+        controlSize: FluentControlSize,
+        theme: FluentTheme
+    ) {
         self.isEnabled = isEnabled
         self.isFocused = isFocused
+        self.isPointerOver = isPointerOver
         self.controlSize = controlSize
         self.theme = theme
     }
@@ -528,27 +728,47 @@ public struct FluentTextFieldAppearance {
     public let backgroundColor: NSColor
     public let textColor: NSColor
     public let borderColor: NSColor
+    public let borderGradientColors: [NSColor]?
+    public let borderGradientLocations: [CGFloat]
+    public let borderGradientEdge: FluentElevationBorderEdge
+    public let borderGradientExtent: CGFloat
     public let borderWidth: CGFloat
     public let cornerRadius: CGFloat
     public let borderShape: FluentTextFieldBorderShape
     public let font: NSFont?
+    /// Optional focused-state accent drawn only along the visual bottom edge, matching the
+    /// TextControlBorderThemeThicknessFocused 1,1,1,2 contract.
+    public let focusIndicatorColor: NSColor?
+    public let focusIndicatorWidth: CGFloat
 
     public init(
         backgroundColor: NSColor,
         textColor: NSColor,
         borderColor: NSColor,
+        borderGradientColors: [NSColor]? = nil,
+        borderGradientLocations: [CGFloat] = [0.5, 1],
+        borderGradientEdge: FluentElevationBorderEdge = .bottom,
+        borderGradientExtent: CGFloat = 2,
         borderWidth: CGFloat = 1,
         cornerRadius: CGFloat = 7,
         borderShape: FluentTextFieldBorderShape = .rounded,
-        font: NSFont? = nil
+        font: NSFont? = nil,
+        focusIndicatorColor: NSColor? = nil,
+        focusIndicatorWidth: CGFloat = 0
     ) {
         self.backgroundColor = backgroundColor
         self.textColor = textColor
         self.borderColor = borderColor
+        self.borderGradientColors = borderGradientColors
+        self.borderGradientLocations = borderGradientLocations
+        self.borderGradientEdge = borderGradientEdge
+        self.borderGradientExtent = max(borderGradientExtent, 0)
         self.borderWidth = max(borderWidth, 0)
         self.cornerRadius = max(cornerRadius, 0)
         self.borderShape = borderShape
         self.font = font
+        self.focusIndicatorColor = focusIndicatorColor
+        self.focusIndicatorWidth = max(focusIndicatorWidth, 0)
     }
 }
 
@@ -563,12 +783,24 @@ public struct FluentAutomaticTextFieldStyle: FluentTextFieldStyle {
         let theme = configuration.theme
         let bodyFont = theme.typography.font(for: .body)
         return FluentTextFieldAppearance(
-            backgroundColor: theme.controlFill,
+            backgroundColor: theme.textControlBackground(
+                focused: configuration.isFocused,
+                pointerOver: configuration.isPointerOver,
+                enabled: configuration.isEnabled
+            ),
             textColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
-            borderColor: configuration.isFocused ? theme.controlStrokeStrong : theme.controlStroke,
+            borderColor: theme.controlStrokeDefault,
+            borderGradientColors: configuration.isEnabled
+                ? theme.textControlElevationBorderColors
+                : nil,
+            borderGradientLocations: [0.5, 1],
+            borderGradientEdge: .bottom,
+            borderGradientExtent: 2,
             borderWidth: theme.controlStrokeWidth,
             cornerRadius: theme.buttonCornerRadius,
-            font: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale)
+            font: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
+            focusIndicatorColor: configuration.isFocused ? theme.textControlFocusStroke : nil,
+            focusIndicatorWidth: configuration.isFocused ? 2 : 0
         )
     }
 }
@@ -582,7 +814,7 @@ public struct FluentUnderlineTextFieldStyle: FluentTextFieldStyle {
         return FluentTextFieldAppearance(
             backgroundColor: .clear,
             textColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
-            borderColor: configuration.isFocused ? theme.accent : theme.controlStrokeStrong,
+            borderColor: configuration.isFocused ? theme.textControlFocusStroke : theme.controlStrokeStrong,
             borderWidth: configuration.isFocused ? max(2, theme.controlStrokeWidth) : theme.controlStrokeWidth,
             cornerRadius: 0,
             borderShape: .underline,
@@ -609,19 +841,25 @@ public struct FluentStepperAppearance {
     public let spacing: CGFloat
     public let valueFieldWidth: CGFloat
     public let textFieldStyle: any FluentTextFieldStyle
+    public let drawsContainerChrome: Bool
+    public let arrowColumnWidth: CGFloat
 
     public init(
         labelColor: NSColor,
         labelFont: NSFont,
         spacing: CGFloat = 8,
         valueFieldWidth: CGFloat = 88,
-        textFieldStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle()
+        textFieldStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle(),
+        drawsContainerChrome: Bool = false,
+        arrowColumnWidth: CGFloat = 28
     ) {
         self.labelColor = labelColor
         self.labelFont = labelFont
         self.spacing = max(spacing, 0)
         self.valueFieldWidth = max(valueFieldWidth, 36)
         self.textFieldStyle = textFieldStyle
+        self.drawsContainerChrome = drawsContainerChrome
+        self.arrowColumnWidth = max(arrowColumnWidth, 20)
     }
 }
 
@@ -679,7 +917,10 @@ public struct FluentNumberBoxStepperStyle: FluentStepperStyle {
             labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
             spacing: 0,
             valueFieldWidth: valueFieldWidth * configuration.controlSize.metricScale,
-            textFieldStyle: FluentAutomaticTextFieldStyle()
+            textFieldStyle: FluentAutomaticTextFieldStyle(),
+            drawsContainerChrome: true,
+            // NumberBox.xaml sets SpinButtonsColumn.Width to 72 in SpinButtonsVisible.
+            arrowColumnWidth: 72 * configuration.controlSize.metricScale
         )
     }
 }
@@ -772,7 +1013,7 @@ public struct FluentAutomaticProgressStyle: FluentProgressStyle {
     public func appearance(for configuration: FluentProgressStyleConfiguration) -> FluentProgressAppearance {
         let theme = configuration.theme
         let progressColor: NSColor = switch configuration.state {
-        case .normal: theme.accent
+        case .normal: theme.accentFillDefault
         case .paused: theme.isHighContrast ? theme.controlStrokeStrong : .systemYellow
         case .error: theme.isHighContrast ? NSColor.systemRed : .systemRed
         }
@@ -904,12 +1145,6 @@ public struct FluentAutomaticCheckBoxStyle: FluentCheckBoxStyle {
         } else {
             .normal
         }
-        let stateAlpha: CGFloat = switch state {
-        case .pointerOver: 0.90
-        case .pressed: 0.80
-        case .disabled: 0.35
-        default: 1
-        }
         let uncheckedFill: NSColor = switch state {
         case .pointerOver: theme.controlFillSecondary
         case .pressed: theme.controlFillTertiary
@@ -917,10 +1152,10 @@ public struct FluentAutomaticCheckBoxStyle: FluentCheckBoxStyle {
         default: theme.controlFill
         }
         let fill = configuration.isChecked
-            ? theme.accent.withAlphaComponent(stateAlpha)
+            ? theme.accentFill(for: state)
             : uncheckedFill
         let border = configuration.isChecked && !theme.isHighContrast
-            ? theme.accent.withAlphaComponent(stateAlpha)
+            ? theme.accentFill(for: state)
             : theme.controlStrokeStrong.withAlphaComponent(state == .disabled ? 0.35 : 1)
         return FluentCheckBoxAppearance(
             boxSize: 20 * scale,
@@ -928,7 +1163,9 @@ public struct FluentAutomaticCheckBoxStyle: FluentCheckBoxStyle {
             fillColor: fill,
             borderColor: border,
             borderWidth: theme.controlStrokeWidth,
-            markColor: theme.textOnAccent.withAlphaComponent(state == .pressed ? 0.70 : 1),
+            markColor: state == .pressed
+                ? theme.textOnAccentSecondary
+                : (state == .disabled ? theme.textOnAccentDisabled : theme.textOnAccent),
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             labelFont: theme.typography.font(for: .body).withSize(theme.typography.font(for: .body).pointSize * configuration.controlSize.metricScale),
             labelSpacing: 8 * scale
@@ -1062,12 +1299,6 @@ public struct FluentAutomaticRadioButtonStyle: FluentRadioButtonStyle {
         } else {
             .normal
         }
-        let accentAlpha: CGFloat = switch state {
-        case .pointerOver: 0.90
-        case .pressed: 0.80
-        case .disabled: 0.35
-        default: 1
-        }
         let uncheckedFill: NSColor = switch state {
         case .pointerOver: theme.controlFillSecondary
         case .pressed: theme.controlFillTertiary
@@ -1083,10 +1314,10 @@ public struct FluentAutomaticRadioButtonStyle: FluentRadioButtonStyle {
         return FluentRadioButtonAppearance(
             diameter: 20 * scale,
             fillColor: configuration.isSelected
-                ? theme.accent.withAlphaComponent(accentAlpha)
+                ? theme.accentFill(for: state)
                 : uncheckedFill,
             borderColor: configuration.isSelected && !theme.isHighContrast
-                ? theme.accent.withAlphaComponent(accentAlpha)
+                ? theme.accentFill(for: state)
                 : theme.controlStrokeStrong.withAlphaComponent(state == .disabled ? 0.35 : 1),
             borderWidth: theme.controlStrokeWidth,
             dotColor: theme.textOnAccent,
@@ -1229,12 +1460,11 @@ public struct FluentAutomaticSegmentedStyle: FluentSegmentedStyle {
     public func appearance(for configuration: FluentSegmentedStyleConfiguration) -> FluentSegmentedAppearance {
         let theme = configuration.theme
         let font = theme.typography.font(for: .callout).withSize(theme.typography.font(for: .callout).pointSize * configuration.controlSize.metricScale)
-        let selectedAlpha: CGFloat = configuration.isEnabled ? 1 : 0.35
         return FluentSegmentedAppearance(
             backgroundColor: theme.controlFill,
-            selectedSegmentColor: theme.accent.withAlphaComponent(selectedAlpha),
-            selectedHoverSegmentColor: theme.accent.withAlphaComponent(configuration.isEnabled ? 0.88 : 0.35),
-            selectedPressedSegmentColor: theme.accent.withAlphaComponent(configuration.isEnabled ? 0.72 : 0.35),
+            selectedSegmentColor: configuration.isEnabled ? theme.accentFillDefault : theme.accentFillDisabled,
+            selectedHoverSegmentColor: configuration.isEnabled ? theme.accentFillSecondary : theme.accentFillDisabled,
+            selectedPressedSegmentColor: configuration.isEnabled ? theme.accentFillTertiary : theme.accentFillDisabled,
             hoverColor: theme.controlFillSecondary,
             pressedColor: theme.controlFillTertiary,
             foregroundColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
@@ -1330,7 +1560,7 @@ public struct FluentAutomaticCardStyle: FluentCardStyle {
     public func appearance(for theme: FluentTheme) -> FluentCardAppearance {
         FluentCardAppearance(
             fillColor: theme.cardFill,
-            strokeColor: theme.controlStroke,
+            strokeColor: theme.cardStroke,
             strokeWidth: theme.controlStrokeWidth,
             cornerRadius: theme.cardCornerRadius,
             contentInsets: NSEdgeInsets(

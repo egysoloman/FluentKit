@@ -17,23 +17,44 @@ public enum FluentNavigationViewDisplayMode: String, CaseIterable, Hashable, Sen
     case top
 }
 
+/// Defines which surface owns the persistent NavigationView pane background.
+public enum FluentNavigationPaneMaterialOwnership: String, CaseIterable, Hashable, Sendable {
+    /// Inherit an enclosing WindowShell Mica when present; otherwise own a standalone Mica.
+    case automatic
+    /// The pane stays transparent and reveals its enclosing WindowShell backdrop.
+    case inherited
+    /// The pane owns one persistent Mica surface when used outside a WindowShell.
+    case standalone
+    /// The pane uses the theme's opaque window background without a material sampler.
+    case solid
+}
+
 /// Stable metadata for one primary or footer destination in a `FluentNavigationView`.
 public struct FluentNavigationItem<ID: Hashable> {
     public let id: ID
     public let title: String
     public let systemImageName: String
     public let isEnabled: Bool
+    public let children: [FluentNavigationItem<ID>]
+    public let selectsOnInvoked: Bool
+    public let isExpanded: Bool
 
     public init(
         id: ID,
         title: String,
         systemImageName: String,
-        isEnabled: Bool = true
+        isEnabled: Bool = true,
+        children: [FluentNavigationItem<ID>] = [],
+        selectsOnInvoked: Bool = true,
+        isExpanded: Bool = false
     ) {
         self.id = id
         self.title = title
         self.systemImageName = systemImageName
         self.isEnabled = isEnabled
+        self.children = children
+        self.selectsOnInvoked = selectsOnInvoked
+        self.isExpanded = isExpanded
     }
 }
 
@@ -51,6 +72,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
     private let expandedModeThresholdWidth: CGFloat
     private let rowHeight: CGFloat
     private let paneSectionTitle: String?
+    private let contentTransition: FluentNavigationTransitionMode
+    private let paneMaterialOwnership: FluentNavigationPaneMaterialOwnership
     private let paneHeader: FluentAnyView?
     private let header: FluentAnyView?
     private let content: FluentAnyView
@@ -69,6 +92,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         expandedModeThresholdWidth: CGFloat = 1_008,
         rowHeight: CGFloat = 40,
         paneSectionTitle: String? = nil,
+        contentTransition: FluentNavigationTransitionMode = .automatic,
+        paneMaterialOwnership: FluentNavigationPaneMaterialOwnership = .automatic,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)? = nil,
         @FluentViewBuilder content: () -> Content
     ) {
@@ -85,6 +110,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             expandedModeThresholdWidth: expandedModeThresholdWidth,
             rowHeight: rowHeight,
             paneSectionTitle: paneSectionTitle,
+            contentTransition: contentTransition,
+            paneMaterialOwnership: paneMaterialOwnership,
             paneHeader: nil,
             header: nil,
             onDisplayModeChange: onDisplayModeChange,
@@ -105,6 +132,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         expandedModeThresholdWidth: CGFloat = 1_008,
         rowHeight: CGFloat = 40,
         paneSectionTitle: String? = nil,
+        contentTransition: FluentNavigationTransitionMode = .automatic,
+        paneMaterialOwnership: FluentNavigationPaneMaterialOwnership = .automatic,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)? = nil,
         @FluentViewBuilder paneHeader: () -> PaneHeader,
         @FluentViewBuilder content: () -> Content
@@ -122,6 +151,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             expandedModeThresholdWidth: expandedModeThresholdWidth,
             rowHeight: rowHeight,
             paneSectionTitle: paneSectionTitle,
+            contentTransition: contentTransition,
+            paneMaterialOwnership: paneMaterialOwnership,
             paneHeader: FluentAnyView(paneHeader()),
             header: nil,
             onDisplayModeChange: onDisplayModeChange,
@@ -142,6 +173,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         expandedModeThresholdWidth: CGFloat = 1_008,
         rowHeight: CGFloat = 40,
         paneSectionTitle: String? = nil,
+        contentTransition: FluentNavigationTransitionMode = .automatic,
+        paneMaterialOwnership: FluentNavigationPaneMaterialOwnership = .automatic,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)? = nil,
         @FluentViewBuilder paneHeader: () -> PaneHeader,
         @FluentViewBuilder header: () -> Header,
@@ -160,6 +193,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             expandedModeThresholdWidth: expandedModeThresholdWidth,
             rowHeight: rowHeight,
             paneSectionTitle: paneSectionTitle,
+            contentTransition: contentTransition,
+            paneMaterialOwnership: paneMaterialOwnership,
             paneHeader: FluentAnyView(paneHeader()),
             header: FluentAnyView(header()),
             onDisplayModeChange: onDisplayModeChange,
@@ -180,6 +215,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         expandedModeThresholdWidth: CGFloat,
         rowHeight: CGFloat,
         paneSectionTitle: String?,
+        contentTransition: FluentNavigationTransitionMode,
+        paneMaterialOwnership: FluentNavigationPaneMaterialOwnership,
         paneHeader: FluentAnyView?,
         header: FluentAnyView?,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)?,
@@ -197,6 +234,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         self.expandedModeThresholdWidth = max(expandedModeThresholdWidth, self.compactModeThresholdWidth)
         self.rowHeight = max(rowHeight, 36)
         self.paneSectionTitle = paneSectionTitle
+        self.contentTransition = contentTransition
+        self.paneMaterialOwnership = paneMaterialOwnership
         self.paneHeader = paneHeader
         self.header = header
         self.onDisplayModeChange = onDisplayModeChange
@@ -219,6 +258,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             expandedModeThresholdWidth: expandedModeThresholdWidth,
             rowHeight: rowHeight,
             paneSectionTitle: paneSectionTitle,
+            contentTransition: contentTransition,
+            paneMaterialOwnership: paneMaterialOwnership,
             paneHeader: paneHeader,
             header: header,
             content: content,
@@ -242,6 +283,8 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             expandedModeThresholdWidth: expandedModeThresholdWidth,
             rowHeight: rowHeight,
             paneSectionTitle: paneSectionTitle,
+            contentTransition: contentTransition,
+            paneMaterialOwnership: paneMaterialOwnership,
             paneHeader: paneHeader,
             header: header,
             content: content,
@@ -259,6 +302,12 @@ private enum FluentNavigationFocusMove {
     case start
 }
 
+private struct FluentNavigationItemRow<ID: Hashable> {
+    let item: FluentNavigationItem<ID>
+    let depth: Int
+    let parentID: ID?
+}
+
 private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var items: [FluentNavigationItem<ID>]
     private var footerItems: [FluentNavigationItem<ID>]
@@ -272,21 +321,25 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var expandedModeThresholdWidth: CGFloat
     private var rowHeight: CGFloat
     private var paneSectionTitle: String?
+    private var contentTransition: FluentNavigationTransitionMode
+    private var paneMaterialOwnership: FluentNavigationPaneMaterialOwnership
     private var paneHeader: FluentAnyView?
     private var header: FluentAnyView?
     private var content: FluentAnyView
     private var onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)?
     private var context: FluentRenderContext
 
-    private let contentHost: FluentViewHost<FluentAnyView>
+    private let contentHost: FluentNavigationContentPresenter<ID>
     private var headerHost: FluentViewHost<FluentAnyView>?
     private let paneView = FluentNavigationPaneBackgroundView()
+    private var paneMaterial: FluentMaterialView?
     private let dimmingView = FluentNavigationDismissView()
     private let minimalToggleButton = FluentNavigationPaneToggleButton()
     private let paneToggleButton = FluentNavigationPaneToggleButton()
     private let topOverflowButton = FluentNavigationOverflowButton<ID>()
     private let mainScrollView = NSScrollView()
     private let mainItemsView = FluentNavigationItemsView()
+    private let sectionLabelHost = FluentNavigationSectionLabelHost()
     private let sectionLabel = NSTextField(labelWithString: "")
     private var paneHeaderHost: FluentViewHost<FluentAnyView>?
     private var mainButtons: [FluentNavigationItemButton<ID>] = []
@@ -301,7 +354,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var selectionObserverID: UUID?
     private var observedPaneOpen: FluentBinding<Bool>?
     private var paneOpenObserverID: UUID?
-    private var scrollObserver: NSObjectProtocol?
+    private var selectionGeometryObservers: [NSObjectProtocol] = []
     private var internalPaneOpen: Bool
     private var isSynchronizingPaneBinding = false
     private var resolvedDisplayMode: FluentNavigationViewDisplayMode?
@@ -314,6 +367,21 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var paneAnimationDelegate: FluentNavigationAnimationCompletionDelegate?
     private var isSanitizingSelection = false
     private var contentColumnFrame = NSRect.zero
+    private var isApplyingSelectionTransition = false
+    private var isStabilizingPaneGeometry = false
+    private var selectionGeometryUpdateScheduled = false
+    private var pendingIndicatorAnimation = false
+    private var sectionLabelTransitionGeneration = 0
+    private var expandedItemIDs: Set<ID> = []
+    private var knownExpandableItemIDs: Set<ID> = []
+    private var expansionAnimationGenerations: [ID: UInt64] = [:]
+    private var pendingExpansionTargets: [ID: Bool] = [:]
+    private let expansionAnimationCoordinator = FluentAnimationCoordinator()
+    private let navigationHoverCoordinator = FluentHoverCoordinator<FluentNavigationItemButton<ID>> {
+        button,
+        hovering in
+        button.setPointerOver(hovering)
+    }
 
     init(
         items: [FluentNavigationItem<ID>],
@@ -328,6 +396,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         expandedModeThresholdWidth: CGFloat,
         rowHeight: CGFloat,
         paneSectionTitle: String?,
+        contentTransition: FluentNavigationTransitionMode,
+        paneMaterialOwnership: FluentNavigationPaneMaterialOwnership,
         paneHeader: FluentAnyView?,
         header: FluentAnyView?,
         content: FluentAnyView,
@@ -346,26 +416,34 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         self.expandedModeThresholdWidth = expandedModeThresholdWidth
         self.rowHeight = rowHeight
         self.paneSectionTitle = paneSectionTitle
+        self.contentTransition = contentTransition
+        self.paneMaterialOwnership = paneMaterialOwnership
         self.paneHeader = paneHeader
         self.header = header
         self.content = content
         self.onDisplayModeChange = onDisplayModeChange
         self.context = context
+        let initialExpandableItems = Self.flatten(items + footerItems).filter { !$0.children.isEmpty }
+        knownExpandableItemIDs = Set(initialExpandableItems.map(\.id))
+        expandedItemIDs = Set(initialExpandableItems.filter(\.isExpanded).map(\.id))
         internalPaneOpen = isPaneOpen?.get() ?? true
         selectedID = selection.get()
-        contentHost = FluentViewHost(content, context: context)
+        contentHost = FluentNavigationContentPresenter(
+            content: content,
+            identity: selection.get(),
+            context: context
+        )
         super.init(frame: .zero)
 
         identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView")
         setAccessibilityRole(.group)
         setAccessibilityLabel("Navigation view")
 
-        contentHost.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Content")
         contentHost.translatesAutoresizingMaskIntoConstraints = true
-        contentHost.wantsLayer = true
         paneView.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Pane")
         paneView.wantsLayer = true
         paneView.layer?.masksToBounds = true
+        applyPaneMaterialOwnership()
         if let paneLayer = paneView.layer {
             indicatorAnimator.attach(to: paneLayer)
         }
@@ -378,22 +456,45 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         paneToggleButton.onToggle = { [weak self] in self?.togglePane() }
         minimalToggleButton.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.MinimalPaneToggle")
         minimalToggleButton.onToggle = { [weak self] in self?.togglePane() }
+        paneToggleButton.update(
+            theme: context.theme,
+            layoutDirection: context.layoutDirection,
+            isPaneOpen: internalPaneOpen
+        )
+        minimalToggleButton.update(
+            theme: context.theme,
+            layoutDirection: context.layoutDirection,
+            isPaneOpen: internalPaneOpen
+        )
 
         mainScrollView.drawsBackground = false
         mainScrollView.hasVerticalScroller = true
         mainScrollView.hasHorizontalScroller = true
         mainScrollView.autohidesScrollers = true
         mainScrollView.borderType = .noBorder
+        mainScrollView.wantsLayer = true
+        mainScrollView.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.PrimaryScroll")
         mainScrollView.documentView = mainItemsView
         mainScrollView.contentView.postsBoundsChangedNotifications = true
+        mainItemsView.postsBoundsChangedNotifications = true
+        mainItemsView.postsFrameChangedNotifications = true
+        mainItemsView.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.PrimaryItems")
 
-        sectionLabel.font = context.theme.typography.font(for: .caption)
+        sectionLabel.font = NSFont.systemFont(
+            ofSize: 14 * context.theme.typography.scale,
+            weight: .semibold
+        )
         sectionLabel.textColor = context.theme.textSecondary
         sectionLabel.lineBreakMode = .byTruncatingTail
         sectionLabel.isSelectable = false
         sectionLabel.isEditable = false
         sectionLabel.isBordered = false
         sectionLabel.drawsBackground = false
+        sectionLabel.wantsLayer = true
+        sectionLabel.layer?.opacity = 1
+        sectionLabelHost.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.SectionHeader")
+        sectionLabelHost.layer?.masksToBounds = true
+        sectionLabelHost.addSubview(sectionLabel)
 
         addSubview(contentHost)
         addSubview(dimmingView)
@@ -402,7 +503,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         addSubview(minimalToggleButton)
         paneView.addSubview(paneToggleButton)
         paneView.addSubview(topOverflowButton)
-        paneView.addSubview(sectionLabel)
+        paneView.addSubview(sectionLabelHost)
         paneView.addSubview(mainScrollView)
 
         reconcilePaneHeader()
@@ -414,6 +515,11 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        applyPaneMaterialOwnership()
+    }
+
     override func layout() {
         super.layout()
         let mode = resolveDisplayMode(for: bounds.width)
@@ -421,7 +527,11 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             applyResolvedDisplayMode(mode)
         }
         layoutCurrentState()
-        updateSelectionIndicator(animated: false)
+        stabilizePaneGeometry()
+        if !isApplyingSelectionTransition {
+            updateSelectionIndicator(animated: false)
+        }
+        refreshNavigationPointerState()
     }
 
     func update(
@@ -437,6 +547,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         expandedModeThresholdWidth: CGFloat,
         rowHeight: CGFloat,
         paneSectionTitle: String?,
+        contentTransition: FluentNavigationTransitionMode,
+        paneMaterialOwnership: FluentNavigationPaneMaterialOwnership,
         paneHeader: FluentAnyView?,
         header: FluentAnyView?,
         content: FluentAnyView,
@@ -444,6 +556,13 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         context: FluentRenderContext
     ) {
         removeBindingObservers()
+        let nextExpandableItems = Self.flatten(items + footerItems).filter { !$0.children.isEmpty }
+        let nextExpandableIDs = Set(nextExpandableItems.map(\.id))
+        expandedItemIDs.formIntersection(nextExpandableIDs)
+        for item in nextExpandableItems where !knownExpandableItemIDs.contains(item.id) && item.isExpanded {
+            expandedItemIDs.insert(item.id)
+        }
+        knownExpandableItemIDs = nextExpandableIDs
         self.items = items
         self.footerItems = footerItems
         self.selection = selection
@@ -456,6 +575,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         self.expandedModeThresholdWidth = expandedModeThresholdWidth
         self.rowHeight = rowHeight
         self.paneSectionTitle = paneSectionTitle
+        self.contentTransition = contentTransition
+        self.paneMaterialOwnership = paneMaterialOwnership
         self.paneHeader = paneHeader
         self.header = header
         self.content = content
@@ -464,14 +585,14 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         internalPaneOpen = isPaneOpen?.get() ?? internalPaneOpen
         panePresentationExpanded = resolvedDisplayMode == .top || internalPaneOpen
 
-        contentHost.context = context
-        contentHost.update(content)
-        paneView.theme = context.theme
-        paneView.layoutDirection = context.layoutDirection
         dimmingView.theme = context.theme
+        applyPaneMaterialOwnership()
         paneToggleButton.update(theme: context.theme, layoutDirection: context.layoutDirection, isPaneOpen: internalPaneOpen)
         minimalToggleButton.update(theme: context.theme, layoutDirection: context.layoutDirection, isPaneOpen: internalPaneOpen)
-        sectionLabel.font = context.theme.typography.font(for: .caption)
+        sectionLabel.font = NSFont.systemFont(
+            ofSize: 14 * context.theme.typography.scale,
+            weight: .semibold
+        )
         sectionLabel.textColor = context.theme.textSecondary
 
         reconcileHeader()
@@ -480,6 +601,15 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         installBindingObservers()
         sanitizeSelectionIfNeeded()
         applySelection(selection.get(), animated: selectedID != selection.get())
+        contentHost.update(
+            content: content,
+            identity: selectedID,
+            orderedIDs: Self.flatten(items + footerItems).map(\.id),
+            primaryIDs: Set(Self.flatten(items).map(\.id)),
+            mode: contentTransition,
+            isTopNavigation: paneDisplayMode == .top || resolvedDisplayMode == .top,
+            context: context
+        )
         needsLayout = true
     }
 
@@ -514,7 +644,6 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             let host = FluentViewHost(header, context: context)
             host.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Header")
             host.translatesAutoresizingMaskIntoConstraints = true
-            host.wantsLayer = true
             addSubview(host, positioned: .below, relativeTo: dimmingView)
             headerHost = host
         }
@@ -523,12 +652,12 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private func reconcileButtons() {
         mainButtons = reconcile(
             existing: mainButtons,
-            items: items,
+            rows: visibleRows(in: items),
             superview: mainItemsView
         )
         footerButtons = reconcile(
             existing: footerButtons,
-            items: footerItems,
+            rows: visibleRows(in: footerItems),
             superview: paneView
         )
         updateButtonConfigurations()
@@ -536,13 +665,14 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     private func reconcile(
         existing: [FluentNavigationItemButton<ID>],
-        items: [FluentNavigationItem<ID>],
+        rows: [FluentNavigationItemRow<ID>],
         superview: NSView
     ) -> [FluentNavigationItemButton<ID>] {
         var available: [ID: [FluentNavigationItemButton<ID>]] = [:]
         for button in existing { available[button.itemID, default: []].append(button) }
         var result: [FluentNavigationItemButton<ID>] = []
-        for item in items {
+        for row in rows {
+            let item = row.item
             let button: FluentNavigationItemButton<ID>
             if var candidates = available[item.id], let reused = candidates.first {
                 button = reused
@@ -554,7 +684,11 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             }
             result.append(button)
         }
-        available.values.flatMap { $0 }.forEach { $0.removeFromSuperview() }
+        available.values.flatMap { $0 }.forEach { button in
+            navigationHoverCoordinator.remove(button)
+            button.resetPointerState()
+            button.removeFromSuperview()
+        }
         return result
     }
 
@@ -562,31 +696,180 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         let mode = resolvedDisplayMode ?? resolveDisplayMode(for: bounds.width)
         let top = mode == .top
         let expanded = top || panePresentationExpanded || (mode == .expanded && internalPaneOpen)
-        for (button, item) in zip(mainButtons, items) {
-            configure(button, item: item, expanded: expanded, top: top)
+        for (button, row) in zip(mainButtons, visibleRows(in: items)) {
+            configure(button, row: row, expanded: expanded, top: top)
         }
-        for (button, item) in zip(footerButtons, footerItems) {
-            configure(button, item: item, expanded: expanded, top: top)
+        for (button, row) in zip(footerButtons, visibleRows(in: footerItems)) {
+            configure(button, row: row, expanded: expanded, top: top)
         }
     }
 
     private func configure(
         _ button: FluentNavigationItemButton<ID>,
-        item: FluentNavigationItem<ID>,
+        row: FluentNavigationItemRow<ID>,
         expanded: Bool,
         top: Bool
     ) {
+        let item = row.item
         button.update(
             item: item,
             selected: selectedID == item.id,
             expanded: expanded,
             top: top,
+            depth: row.depth,
+            hasChildren: !item.children.isEmpty,
+            itemExpanded: expandedItemIDs.contains(item.id),
             theme: context.theme,
             layoutDirection: context.layoutDirection,
-            onActivate: { [weak self] id in self?.select(id) },
+            onActivate: { [weak self] id in self?.activateNavigationItem(id) },
             onMoveFocus: { [weak self] id, move in self?.moveFocus(from: id, move: move) },
-            onCancel: { [weak self] in self?.closeOverlayPaneIfNeeded() }
+            onCancel: { [weak self] in self?.closeOverlayPaneIfNeeded() },
+            onHoverChange: { [weak self] button, hovering in
+                self?.setHoveredNavigationButton(button, hovering: hovering)
+            }
         )
+    }
+
+    private static func flatten(_ source: [FluentNavigationItem<ID>]) -> [FluentNavigationItem<ID>] {
+        source.flatMap { item in [item] + flatten(item.children) }
+    }
+
+    private func visibleRows(
+        in source: [FluentNavigationItem<ID>],
+        depth: Int = 0,
+        parentID: ID? = nil
+    ) -> [FluentNavigationItemRow<ID>] {
+        source.flatMap { item in
+            let row = FluentNavigationItemRow(item: item, depth: depth, parentID: parentID)
+            guard !item.children.isEmpty, expandedItemIDs.contains(item.id) else { return [row] }
+            return [row] + visibleRows(in: item.children, depth: depth + 1, parentID: item.id)
+        }
+    }
+
+    private func item(withID id: ID) -> FluentNavigationItem<ID>? {
+        Self.flatten(items + footerItems).first { $0.id == id }
+    }
+
+    private func activateNavigationItem(_ id: ID) {
+        guard let item = item(withID: id), item.isEnabled else { return }
+        if !item.children.isEmpty {
+            let currentTarget = pendingExpansionTargets[id] ?? expandedItemIDs.contains(id)
+            animateExpansion(of: id, expanding: !currentTarget)
+        }
+        if item.selectsOnInvoked { select(id) }
+    }
+
+    private func animateExpansion(of id: ID, expanding: Bool) {
+        let generation = expansionAnimationGenerations[id, default: 0] &+ 1
+        expansionAnimationGenerations[id] = generation
+        pendingExpansionTargets[id] = expanding
+        expansionAnimationCoordinator.reduceMotion = context.reduceMotion
+        let childIDs = descendantIDs(of: id, in: items + footerItems)
+        if expanding {
+            expandedItemIDs.insert(id)
+            resetNavigationPointerState()
+            reconcileButtons()
+            needsLayout = true
+            layoutSubtreeIfNeeded()
+            let children = (mainButtons + footerButtons).filter { childIDs.contains($0.itemID) }
+            setLayerOpacity(children, to: 0)
+            let changes = children.compactMap { button -> FluentLayerAnimationChange? in
+                guard let layer = button.layer else { return nil }
+                return FluentLayerAnimationChange(
+                    layer: layer,
+                    key: "fluent.navigation.item.expansion",
+                    keyPath: "opacity",
+                    fromValue: 0,
+                    toValue: 1
+                ) { [weak layer] in layer?.opacity = 1 }
+            }
+            expansionAnimationCoordinator.animateState(
+                changes,
+                motion: FluentMotionToken(duration: FluentMotion.navigationHeaderOpen.duration, curve: .controlFastOutSlowIn),
+                animated: !context.reduceMotion,
+                completion: { [weak self] in
+                    guard let self, self.expansionAnimationGenerations[id] == generation else { return }
+                    self.setLayerOpacity(children, to: 1)
+                    self.pendingExpansionTargets[id] = nil
+                    self.expansionAnimationGenerations[id] = nil
+                }
+            )
+        } else {
+            let children = (mainButtons + footerButtons).filter { childIDs.contains($0.itemID) }
+            let changes = children.compactMap { button -> FluentLayerAnimationChange? in
+                guard let layer = button.layer else { return nil }
+                return FluentLayerAnimationChange(
+                    layer: layer,
+                    key: "fluent.navigation.item.expansion",
+                    keyPath: "opacity",
+                    fromValue: nil,
+                    toValue: 0
+                ) { [weak layer] in layer?.opacity = 0 }
+            }
+            expansionAnimationCoordinator.animateState(
+                changes,
+                motion: FluentMotionToken(duration: FluentMotion.navigationHeaderOpen.duration, curve: .controlFastOutSlowIn),
+                animated: !context.reduceMotion,
+                completion: { [weak self] in
+                    guard let self, self.expansionAnimationGenerations[id] == generation else { return }
+                    self.expandedItemIDs.remove(id)
+                    self.pendingExpansionTargets[id] = nil
+                    self.expansionAnimationGenerations[id] = nil
+                    self.resetNavigationPointerState()
+                    self.reconcileButtons()
+                    self.needsLayout = true
+                    self.layoutSubtreeIfNeeded()
+                    self.updateSelectionIndicator(animated: true)
+                }
+            )
+        }
+    }
+
+    private func setLayerOpacity(_ buttons: [FluentNavigationItemButton<ID>], to opacity: Float) {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        buttons.forEach { $0.layer?.opacity = opacity }
+        CATransaction.commit()
+    }
+
+    private func descendantIDs(
+        of id: ID,
+        in source: [FluentNavigationItem<ID>]
+    ) -> Set<ID> {
+        for item in source {
+            if item.id == id {
+                return Set(Self.flatten(item.children).map(\.id))
+            }
+            let nested = descendantIDs(of: id, in: item.children)
+            if !nested.isEmpty { return nested }
+        }
+        return []
+    }
+
+    private func visibleIndicatorID(for selected: ID) -> ID? {
+        let visibleIDs = Set((visibleRows(in: items) + visibleRows(in: footerItems)).map { $0.item.id })
+        if visibleIDs.contains(selected) { return selected }
+        return nearestVisibleAncestor(of: selected, in: items + footerItems, visibleIDs: visibleIDs)
+    }
+
+    private func nearestVisibleAncestor(
+        of selected: ID,
+        in source: [FluentNavigationItem<ID>],
+        visibleIDs: Set<ID>,
+        ancestors: [ID] = []
+    ) -> ID? {
+        for item in source {
+            if item.id == selected { return ancestors.reversed().first(where: visibleIDs.contains) }
+            if let match = nearestVisibleAncestor(
+                of: selected,
+                in: item.children,
+                visibleIDs: visibleIDs,
+                ancestors: ancestors + [item.id]
+            ) {
+                return match
+            }
+        }
+        return nil
     }
 
     private func resolveDisplayMode(for width: CGFloat) -> FluentNavigationViewDisplayMode {
@@ -645,6 +928,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             paneView.frame = NSRect(x: 0, y: 0, width: paneWidth, height: bounds.height)
             contentColumnFrame = NSRect(x: reservedWidth, y: 0, width: max(bounds.width - reservedWidth, 0), height: bounds.height)
         }
+        paneMaterial?.frame = paneView.bounds
         layoutContentColumn(mode: mode)
 
         let showOverlay = overlayMode && (internalPaneOpen || retainsOverlayDuringAnimation)
@@ -658,11 +942,10 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             height: 36
         )
 
-        paneView.theme = context.theme
-        paneView.layoutDirection = context.layoutDirection
-        paneView.displayMode = mode
-        paneView.needsDisplay = true
+        applyPaneMaterialOwnership()
         layoutPaneContent(mode: mode)
+        stabilizePaneGeometry()
+        refreshNavigationPointerState()
     }
 
     private func layoutContentColumn(mode: FluentNavigationViewDisplayMode) {
@@ -688,15 +971,67 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         )
     }
 
+    private var resolvedPaneMaterialOwnership: FluentNavigationPaneMaterialOwnership {
+        guard paneMaterialOwnership == .automatic else { return paneMaterialOwnership }
+        var ancestor = superview
+        while let view = ancestor {
+            if view.identifier?.rawValue == "FluentKit.WindowShell.MaterialSurface" {
+                return .inherited
+            }
+            ancestor = view.superview
+        }
+        return .standalone
+    }
+
+    private func applyPaneMaterialOwnership() {
+        switch resolvedPaneMaterialOwnership {
+        case .automatic:
+            break
+        case .inherited:
+            paneMaterial?.removeFromSuperview()
+            paneMaterial = nil
+            paneView.layer?.backgroundColor = nil
+        case .standalone:
+            let material: FluentMaterialView
+            if let paneMaterial {
+                material = paneMaterial
+            } else {
+                material = FluentMaterialView(material: .mica)
+                material.autoresizingMask = [.width, .height]
+                material.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.PaneMaterial")
+                paneMaterial = material
+            }
+            if material.superview !== paneView {
+                paneView.addSubview(material, positioned: .below, relativeTo: paneView.subviews.first)
+            }
+            material.frame = paneView.bounds
+            material.materialStyle = .mica
+            material.fluentTheme = context.theme
+            material.isMaterialEnabled = context.theme.materialEffectsEnabled
+            material.fallbackColor = context.theme.windowBackground
+            material.tintColor = context.theme.micaTint
+            paneView.layer?.backgroundColor = nil
+        case .solid:
+            paneMaterial?.removeFromSuperview()
+            paneMaterial = nil
+            paneView.layer?.backgroundColor = context.theme.windowBackground.cgColor
+        }
+    }
+
     private func layoutPaneContent(mode: FluentNavigationViewDisplayMode) {
         let top = mode == .top
         let expanded = top || panePresentationExpanded || (mode == .expanded && internalPaneOpen)
         paneToggleButton.isHidden = top || !isPaneToggleButtonVisible
         sectionLabel.stringValue = paneSectionTitle ?? ""
-        // Section text has no compact representation. Hide it as soon as the pane closes so a
-        // clipped prefix cannot flash inside the 48pt pane during the frame transition.
-        sectionLabel.isHidden = top || !internalPaneOpen || !expanded || paneSectionTitle == nil
-        paneHeaderHost?.isHidden = !expanded
+        // Section text has no compact representation. The header host is a clipped layout region,
+        // matching NavigationViewItemHeader's InnerHeaderGrid rather than painting directly into
+        // the pane while its width is collapsing.
+        let shouldShowSectionLabel = !top && internalPaneOpen && expanded && paneSectionTitle != nil
+        sectionLabelHost.isHidden = !shouldShowSectionLabel
+        sectionLabel.isHidden = !shouldShowSectionLabel
+        // Navigation search has a compact icon representation and therefore remains mounted when
+        // the pane is closed. Other arbitrary pane headers keep the existing expanded-only rule.
+        paneHeaderHost?.isHidden = !expanded && !paneHeaderContainsNavigationSearch
         updateButtonConfigurations()
 
         if top {
@@ -709,8 +1044,12 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private func layoutLeftPane(expanded: Bool) {
         topOverflowButton.isHidden = true
         mainScrollView.hasHorizontalScroller = false
-        mainButtons.forEach { $0.isHidden = false }
-        footerButtons.forEach { $0.isHidden = false }
+        let mainRows = visibleRows(in: items)
+        let footerRows = visibleRows(in: footerItems)
+        let visibleMainPairs = Array(zip(mainButtons, mainRows)).filter { expanded || $0.1.depth == 0 }
+        let visibleFooterPairs = Array(zip(footerButtons, footerRows)).filter { expanded || $0.1.depth == 0 }
+        for (button, row) in zip(mainButtons, mainRows) { button.isHidden = !expanded && row.depth > 0 }
+        for (button, row) in zip(footerButtons, footerRows) { button.isHidden = !expanded && row.depth > 0 }
         let paneWidth = max(paneView.bounds.width, expanded ? openPaneLength : compactPaneLength)
         var top: CGFloat = 4
         if !paneToggleButton.isHidden {
@@ -723,38 +1062,64 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             paneHeaderHost.frame = NSRect(x: 0, y: top, width: paneWidth, height: desiredHeight)
             top += desiredHeight
         }
-        if !sectionLabel.isHidden {
-            sectionLabel.frame = NSRect(x: 24, y: top + 4, width: max(paneWidth - 36, 0), height: 22)
-            top += 30
+        if !sectionLabelHost.isHidden {
+            let headerHeight: CGFloat = 40
+            sectionLabelHost.frame = NSRect(x: 0, y: top, width: paneWidth, height: headerHeight)
+            sectionLabel.frame = NSRect(
+                x: 16,
+                y: 0,
+                width: max(paneWidth - 32, 0),
+                height: headerHeight
+            )
+            top += headerHeight
+        } else {
+            sectionLabelHost.frame = NSRect(x: 0, y: top, width: paneWidth, height: 0)
+            sectionLabel.frame = .zero
         }
 
-        let footerHeight = CGFloat(footerButtons.count) * (rowHeight + 2) + (footerButtons.isEmpty ? 0 : 8)
+        let footerHeight = CGFloat(visibleFooterPairs.count) * (rowHeight + 2) + (visibleFooterPairs.isEmpty ? 0 : 8)
         let scrollBottom = max(paneView.bounds.height - footerHeight - 8, top)
         mainScrollView.frame = NSRect(x: 0, y: top, width: paneWidth, height: max(scrollBottom - top, 0))
+        mainScrollView.tile()
+        mainScrollView.layoutSubtreeIfNeeded()
 
-        let buttonWidth = max((expanded ? openPaneLength : compactPaneLength) - 12, 0)
+        // Keep the compact 40pt icon column stable at the 48pt pane center. Expanded mode only
+        // adds room to the trailing content; it must not move the icon or selection rail.
+        let buttonWidth = max(paneWidth - 8, 40)
         let documentHeight = max(
-            CGFloat(mainButtons.count) * (rowHeight + 2) + 4,
+            CGFloat(visibleMainPairs.count) * (rowHeight + 2) + 4,
             mainScrollView.contentSize.height
         )
         mainItemsView.frame = NSRect(x: 0, y: 0, width: paneWidth, height: documentHeight)
-        for (index, button) in mainButtons.enumerated() {
+        for (index, pair) in visibleMainPairs.enumerated() {
+            let button = pair.0
             button.frame = NSRect(
-                x: 6,
+                x: 4,
                 y: 2 + CGFloat(index) * (rowHeight + 2),
                 width: buttonWidth,
                 height: rowHeight
             )
         }
 
-        for (index, button) in footerButtons.enumerated() {
+        for (index, pair) in visibleFooterPairs.enumerated() {
+            let button = pair.0
             button.frame = NSRect(
-                x: 6,
+                x: 4,
                 y: paneView.bounds.height - footerHeight + CGFloat(index) * (rowHeight + 2),
                 width: buttonWidth,
                 height: rowHeight
             )
         }
+    }
+
+    private var paneHeaderContainsNavigationSearch: Bool {
+        guard let paneHeaderHost else { return false }
+        return containsNavigationSearch(in: paneHeaderHost)
+    }
+
+    private func containsNavigationSearch(in view: NSView) -> Bool {
+        if view.identifier?.rawValue == "FluentKit.NavigationView.Search" { return true }
+        return view.subviews.contains(where: containsNavigationSearch(in:))
     }
 
     private func layoutTopPane() {
@@ -796,7 +1161,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             }
         }
         let visibleIndexSet = Set(visibleIndices)
-        let overflowItems = items.indices.compactMap { visibleIndexSet.contains($0) ? nil : items[$0] }
+        let topItems = visibleRows(in: items).map(\.item)
+        let overflowItems = topItems.indices.compactMap { visibleIndexSet.contains($0) ? nil : topItems[$0] }
         for index in mainButtons.indices { mainButtons[index].isHidden = !visibleIndexSet.contains(index) }
         topOverflowButton.update(
             items: overflowItems,
@@ -819,6 +1185,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             width: mainViewportWidth,
             height: 40
         )
+        mainScrollView.tile()
+        mainScrollView.layoutSubtreeIfNeeded()
         mainItemsView.frame = NSRect(x: 0, y: 0, width: mainViewportWidth, height: 40)
         var itemX: CGFloat = isRTL ? mainViewportWidth : 0
         for index in visibleIndices {
@@ -856,13 +1224,97 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     private func installObservers() {
         installBindingObservers()
-        scrollObserver = NotificationCenter.default.addObserver(
-            forName: NSView.boundsDidChangeNotification,
-            object: mainScrollView.contentView,
-            queue: .main
-        ) { [weak self] _ in
-            self?.updateSelectionIndicator(animated: false)
+        let notificationCenter = NotificationCenter.default
+        selectionGeometryObservers = [
+            notificationCenter.addObserver(
+                forName: NSView.boundsDidChangeNotification,
+                object: mainScrollView.contentView,
+                queue: .main
+            ) { [weak self] _ in
+                self?.scheduleSelectionGeometryUpdate()
+                self?.refreshNavigationPointerState()
+            },
+            notificationCenter.addObserver(
+                forName: NSView.boundsDidChangeNotification,
+                object: mainItemsView,
+                queue: .main
+            ) { [weak self] _ in
+                self?.scheduleSelectionGeometryUpdate()
+                self?.refreshNavigationPointerState()
+            },
+            notificationCenter.addObserver(
+                forName: NSView.frameDidChangeNotification,
+                object: mainItemsView,
+                queue: .main
+            ) { [weak self] _ in
+                self?.scheduleSelectionGeometryUpdate()
+                self?.refreshNavigationPointerState()
+            },
+            notificationCenter.addObserver(
+                forName: NSWindow.didResignKeyNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] notification in
+                guard notification.object as? NSWindow === self?.window else { return }
+                self?.resetNavigationPointerState()
+            }
+        ]
+    }
+
+    private func setHoveredNavigationButton(
+        _ button: FluentNavigationItemButton<ID>,
+        hovering: Bool
+    ) {
+        navigationHoverCoordinator.update(button, hovering: hovering)
+    }
+
+    private func resetNavigationPointerState() {
+        let buttons = mainButtons + footerButtons
+        navigationHoverCoordinator.reset(items: buttons)
+        buttons.forEach { $0.resetPointerState() }
+    }
+
+    private func refreshNavigationPointerState() {
+        guard let window, window.isVisible, window.isKeyWindow else {
+            resetNavigationPointerState()
+            return
         }
+        let windowPoint = window.mouseLocationOutsideOfEventStream
+        let buttons = (mainButtons + footerButtons).filter { !$0.isHidden && $0.isEnabled }
+        guard let button = buttons.first(where: {
+            $0.bounds.contains($0.convert(windowPoint, from: nil))
+        }) else {
+            resetNavigationPointerState()
+            return
+        }
+        setHoveredNavigationButton(button, hovering: true)
+    }
+
+    private func scheduleSelectionGeometryUpdate(animated: Bool = false) {
+        pendingIndicatorAnimation = pendingIndicatorAnimation || animated
+        guard !selectionGeometryUpdateScheduled else { return }
+        selectionGeometryUpdateScheduled = true
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.selectionGeometryUpdateScheduled = false
+            let shouldAnimate = self.pendingIndicatorAnimation
+            self.pendingIndicatorAnimation = false
+            self.layoutSubtreeIfNeeded()
+            self.stabilizePaneGeometry()
+            self.updateSelectionIndicator(animated: shouldAnimate)
+        }
+    }
+
+    private func stabilizePaneGeometry() {
+        guard !isStabilizingPaneGeometry else { return }
+        isStabilizingPaneGeometry = true
+        defer { isStabilizingPaneGeometry = false }
+
+        paneView.layoutSubtreeIfNeeded()
+        mainScrollView.tile()
+        mainScrollView.layoutSubtreeIfNeeded()
+        mainScrollView.contentView.layoutSubtreeIfNeeded()
+        mainItemsView.layoutSubtreeIfNeeded()
     }
 
     private func installBindingObservers() {
@@ -889,7 +1341,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     private func sanitizeSelectionIfNeeded() {
         guard !isSanitizingSelection, let selected = selection.get() else { return }
-        let matches = (items + footerItems).filter { $0.id == selected && $0.isEnabled }
+        let matches = Self.flatten(items + footerItems).filter { $0.id == selected && $0.isEnabled }
         guard matches.count != 1 else { return }
         isSanitizingSelection = true
         selection.set(nil)
@@ -897,7 +1349,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     }
 
     private func applySelection(_ id: ID?, animated: Bool) {
-        let available = (items + footerItems).filter { $0.id == id && $0.isEnabled }
+        let available = Self.flatten(items + footerItems).filter { $0.id == id && $0.isEnabled }
         let resolved = available.count == 1 ? id : nil
         if id != nil, resolved == nil, !isSanitizingSelection {
             isSanitizingSelection = true
@@ -905,14 +1357,17 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             isSanitizingSelection = false
         }
         let changed = selectedID != resolved
+        isApplyingSelectionTransition = animated && changed
+        defer { isApplyingSelectionTransition = false }
         selectedID = resolved
         updateButtonConfigurations()
         layoutSubtreeIfNeeded()
+        stabilizePaneGeometry()
         updateSelectionIndicator(animated: animated && changed)
     }
 
     private func select(_ id: ID) {
-        guard (items + footerItems).contains(where: { $0.id == id && $0.isEnabled }) else { return }
+        guard Self.flatten(items + footerItems).contains(where: { $0.id == id && $0.isEnabled }) else { return }
         if selection.get() != id { selection.set(id) }
         applySelection(id, animated: true)
         closeOverlayPaneIfNeeded()
@@ -925,18 +1380,19 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
               paneView.bounds.height > 0 else {
             indicatorAnimator.update(
                 target: nil,
-                color: context.theme.accent,
+                color: context.theme.accentFillDefault,
                 animated: false,
                 reduceMotion: context.reduceMotion
             )
             return
         }
-        let selectedButton = (mainButtons + footerButtons).first(where: { $0.itemID == selectedID && !$0.isHidden })
-        let indicatorView: NSView? = selectedButton ?? (topOverflowButton.contains(selectedID) ? topOverflowButton : nil)
+        let indicatorID = visibleIndicatorID(for: selectedID) ?? selectedID
+        let selectedButton = (mainButtons + footerButtons).first(where: { $0.itemID == indicatorID && !$0.isHidden })
+        let indicatorView: NSView? = selectedButton ?? (topOverflowButton.contains(indicatorID) ? topOverflowButton : nil)
         guard let indicatorView else {
             indicatorAnimator.update(
                 target: nil,
-                color: context.theme.accent,
+                color: context.theme.accentFillDefault,
                 animated: false,
                 reduceMotion: context.reduceMotion
             )
@@ -952,7 +1408,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         }
         indicatorAnimator.update(
             target: target,
-            color: context.theme.accent,
+            color: context.theme.accentFillDefault,
             animated: animated,
             reduceMotion: context.reduceMotion
         )
@@ -1018,13 +1474,28 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         let oldPaneFrame = paneView.frame
         let oldContentFrame = contentHost.frame
         let oldHeaderFrame = headerHost?.frame
+        let oldMainScrollFrame = mainScrollView.frame
+        let hadVisibleSectionLabel = !sectionLabelHost.isHidden && paneSectionTitle != nil
         let oldDimmingOpacity = dimmingView.layer?.presentation()?.opacity ?? (dimmingView.isHidden ? 0 : 1)
 
         paneAnimationGeneration += 1
         let generation = paneAnimationGeneration
+        sectionLabelTransitionGeneration += 1
+        let sectionGeneration = sectionLabelTransitionGeneration
         paneView.layer?.removeAnimation(forKey: "fluent.navigation.pane.frame")
         contentHost.layer?.removeAnimation(forKey: "fluent.navigation.content.frame")
         dimmingView.layer?.removeAnimation(forKey: "fluent.navigation.dimming")
+        mainScrollView.layer?.removeAnimation(forKey: "fluent.navigation.header.frame")
+        sectionLabel.layer?.removeAnimation(forKey: "fluent.navigation.header.opacity")
+
+        let shouldAnimateSectionLabel = animated && !context.reduceMotion && paneSectionTitle != nil
+            && (hadVisibleSectionLabel || open)
+        if shouldAnimateSectionLabel {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            sectionLabel.layer?.opacity = open ? 0 : 1
+            CATransaction.commit()
+        }
 
         // The pane frame and its child layout must enter the same visual state before the
         // frame animation starts. Keeping expanded labels inside a 48pt model bounds causes
@@ -1035,8 +1506,15 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         layoutCurrentState()
 
         guard animated, !context.reduceMotion else {
-            panePresentationExpanded = open || resolvedDisplayMode == .expanded
+            // A manually closed `.left` pane still resolves to `.expanded`; its presenter must
+            // nevertheless use compact item geometry while the model width is 48pt. Basing this
+            // on the display mode re-enabled labels after the close animation completed.
+            panePresentationExpanded = open || resolvedDisplayMode == .top
             retainsOverlayDuringAnimation = open && (resolvedDisplayMode == .compact || resolvedDisplayMode == .minimal)
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            sectionLabel.layer?.opacity = open && paneSectionTitle != nil ? 1 : 0
+            CATransaction.commit()
             layoutCurrentState()
             updateSelectionIndicator(animated: false)
             return
@@ -1057,6 +1535,18 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             timingFunction: motion.curve.timingFunction,
             key: "fluent.navigation.content.frame"
         )
+        if oldMainScrollFrame != mainScrollView.frame {
+            animateFrame(
+                of: mainScrollView,
+                from: oldMainScrollFrame,
+                duration: FluentMotion.navigationHeaderOpen.duration,
+                timingFunction: FluentMotion.navigationHeaderOpen.curve.timingFunction,
+                key: "fluent.navigation.header.frame"
+            )
+        }
+        if shouldAnimateSectionLabel {
+            animateSectionLabel(open: open, generation: sectionGeneration)
+        }
         if let headerHost, let oldHeaderFrame {
             animateFrame(
                 of: headerHost,
@@ -1075,7 +1565,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
         let delegate = FluentNavigationAnimationCompletionDelegate { [weak self] in
             guard let self, self.paneAnimationGeneration == generation else { return }
-            self.panePresentationExpanded = open || self.resolvedDisplayMode == .expanded
+            self.panePresentationExpanded = open || self.resolvedDisplayMode == .top
             self.retainsOverlayDuringAnimation = open && (self.resolvedDisplayMode == .compact || self.resolvedDisplayMode == .minimal)
             self.layoutCurrentState()
             self.updateSelectionIndicator(animated: false)
@@ -1088,6 +1578,51 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         completion.duration = motion.duration
         completion.delegate = delegate
         paneView.layer?.add(completion, forKey: "fluent.navigation.pane.completion")
+    }
+
+    private func animateSectionLabel(open: Bool, generation: Int) {
+        guard let layer = sectionLabel.layer else { return }
+        let motion = open ? FluentMotion.navigationHeaderOpen : FluentMotion.navigationHeaderClose
+        let targetOpacity: Float = open ? 1 : 0
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        layer.opacity = targetOpacity
+        CATransaction.commit()
+
+        let opacity: CAAnimation
+        if open {
+            let keyframes = CAKeyframeAnimation(keyPath: "opacity")
+            keyframes.values = [0, 0, 1]
+            keyframes.keyTimes = [0, 0.5, 1]
+            keyframes.duration = motion.duration
+            // NavigationView.xaml holds HeaderText at zero for the first 100ms, then applies
+            // the header spline only to the 100-200ms fade. A group-level timing function warps
+            // the 0.5 key time and makes the label visible too early.
+            keyframes.timingFunctions = [
+                FluentCubicBezier.linear.timingFunction,
+                motion.curve.timingFunction
+            ]
+            opacity = keyframes
+        } else {
+            let fade = CABasicAnimation(keyPath: "opacity")
+            fade.fromValue = 1
+            fade.toValue = targetOpacity
+            fade.duration = motion.duration
+            fade.timingFunction = motion.curve.timingFunction
+            opacity = fade
+        }
+        opacity.isRemovedOnCompletion = true
+        layer.add(opacity, forKey: "fluent.navigation.header.opacity")
+
+        guard !open else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + FluentMotion.navigationHeaderOpen.duration) { [weak self] in
+            guard let self,
+                  self.sectionLabelTransitionGeneration == generation else { return }
+            self.sectionLabelHost.isHidden = true
+            self.sectionLabel.isHidden = true
+            self.layoutCurrentState()
+            self.updateSelectionIndicator(animated: false)
+        }
     }
 
     private func animateFrame(
@@ -1139,29 +1674,26 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     deinit {
         removeBindingObservers()
-        if let scrollObserver { NotificationCenter.default.removeObserver(scrollObserver) }
+        selectionGeometryObservers.forEach { NotificationCenter.default.removeObserver($0) }
     }
 }
 
-private final class FluentNavigationPaneBackgroundView: NSView {
-    var theme: FluentTheme = .current { didSet { needsDisplay = true } }
-    var layoutDirection: FluentLayoutDirection = .leftToRight { didSet { needsDisplay = true } }
-    var displayMode: FluentNavigationViewDisplayMode = .expanded { didSet { needsDisplay = true } }
-
+private final class FluentNavigationSectionLabelHost: NSView {
     override var isFlipped: Bool { true }
 
-    override func draw(_ dirtyRect: NSRect) {
-        theme.cardFill.setFill()
-        dirtyRect.fill()
-        theme.divider.setFill()
-        if displayMode == .top {
-            NSRect(x: 0, y: max(bounds.height - 1, 0), width: bounds.width, height: 1).fill()
-        } else if layoutDirection == .rightToLeft {
-            NSRect(x: 0, y: 0, width: 1, height: bounds.height).fill()
-        } else {
-            NSRect(x: max(bounds.width - 1, 0), y: 0, width: 1, height: bounds.height).fill()
-        }
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+        layer?.masksToBounds = true
+        setAccessibilityElement(false)
     }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+}
+
+private final class FluentNavigationPaneBackgroundView: NSView {
+    override var isFlipped: Bool { true }
+
 }
 
 private final class FluentNavigationItemsView: NSView {
@@ -1270,6 +1802,12 @@ private final class FluentNavigationPaneToggleButton: NSButton {
         if event.keyCode == 36 || event.keyCode == 49 { performClick(nil) } else { super.keyDown(with: event) }
     }
 
+    override func accessibilityPerformPress() -> Bool {
+        guard isEnabled, !isHidden else { return false }
+        performClick(nil)
+        return true
+    }
+
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
         if result { needsDisplay = true }
@@ -1292,13 +1830,21 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     private var selected = false
     private var expanded = true
     private var top = false
+    private var depth = 0
+    private var hasChildren = false
+    private var itemExpanded = false
     private var fluentTheme: FluentTheme = .current
     private var layoutDirection: FluentLayoutDirection = .leftToRight
-    private var pointerOver = false
-    private var pressed = false
+    private var pointerState = FluentPointerInteractionState()
     private var onActivate: ((ID) -> Void)?
     private var onMoveFocus: ((ID, FluentNavigationFocusMove) -> Void)?
     private var onCancel: (() -> Void)?
+    private var onHoverChange: ((FluentNavigationItemButton<ID>, Bool) -> Void)?
+    private let chevronLayer = FluentChevronPrimitiveLayer()
+    private lazy var pointerTrackingAreaHost = FluentTrackingAreaHost(
+        view: self,
+        options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect]
+    )
 
     var titleWidth: CGFloat {
         (itemTitle as NSString).size(withAttributes: [.font: fluentTheme.typography.font(for: .body)]).width
@@ -1313,74 +1859,107 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         super.init(frame: .zero)
         isBordered = false
         focusRingType = .none
+        wantsLayer = true
+        layer?.masksToBounds = false
+        chevronLayer.name = "FluentKit.NavigationView.ItemChevron"
+        layer?.addSublayer(chevronLayer)
         target = self
         action = #selector(invoke)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Item")
         setAccessibilityRole(.button)
         setAccessibilityTitle(item.title)
-        addTrackingArea(
-            NSTrackingArea(
-                rect: .zero,
-                options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
-                owner: self,
-                userInfo: nil
-            )
-        )
+        pointerTrackingAreaHost.update()
         isEnabled = item.isEnabled
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        pointerTrackingAreaHost.update()
+    }
 
     func update(
         item: FluentNavigationItem<ID>,
         selected: Bool,
         expanded: Bool,
         top: Bool,
+        depth: Int,
+        hasChildren: Bool,
+        itemExpanded: Bool,
         theme: FluentTheme,
         layoutDirection: FluentLayoutDirection,
         onActivate: @escaping (ID) -> Void,
         onMoveFocus: @escaping (ID, FluentNavigationFocusMove) -> Void,
-        onCancel: @escaping () -> Void
+        onCancel: @escaping () -> Void,
+        onHoverChange: @escaping (FluentNavigationItemButton<ID>, Bool) -> Void
     ) {
         itemID = item.id
         itemTitle = item.title
         systemImageName = item.systemImageName
+        let expansionChanged = self.itemExpanded != itemExpanded
         self.selected = selected
         self.expanded = expanded
         self.top = top
+        self.depth = depth
+        self.hasChildren = hasChildren
+        self.itemExpanded = itemExpanded
         fluentTheme = theme
         self.layoutDirection = layoutDirection
         self.onActivate = onActivate
         self.onMoveFocus = onMoveFocus
         self.onCancel = onCancel
+        self.onHoverChange = onHoverChange
         isEnabled = item.isEnabled
+        if !isEnabled { resetPointerState() }
         toolTip = expanded || top ? nil : item.title
         setAccessibilityTitle(item.title)
         setAccessibilitySelected(selected)
         setAccessibilityValue(selected ? "Selected" : "Not selected")
+        chevronLayer.isHidden = !hasChildren || (!expanded && !top)
+        updateChevron(animated: expansionChanged)
         needsDisplay = true
+    }
+
+    override func layout() {
+        super.layout()
+        updateChevron(animated: false)
     }
 
     override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
-        pointerOver = true
-        needsDisplay = true
+        onHoverChange?(self, true)
+        updateChevron(animated: true)
     }
 
     override func mouseExited(with event: NSEvent) {
-        pointerOver = false
-        pressed = false
-        needsDisplay = true
+        onHoverChange?(self, false)
+        updateChevron(animated: true)
     }
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
-        pressed = true
+        pointerState.setPressed(true)
         needsDisplay = true
         super.mouseDown(with: event)
-        pressed = false
-        pointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
+        pointerState.setPressed(false)
+        onHoverChange?(self, bounds.contains(convert(event.locationInWindow, from: nil)))
+        updateChevron(animated: true)
+        needsDisplay = true
+    }
+
+    func setPointerOver(_ value: Bool) {
+        let hoverChanged = pointerState.setPointerOver(value)
+        let pressChanged = !value && pointerState.setPressed(false)
+        guard hoverChanged || pressChanged else { return }
+        updateChevron(animated: true)
+        needsDisplay = true
+    }
+
+    func resetPointerState() {
+        guard pointerState.reset() else { return }
+        updateChevron(animated: false)
         needsDisplay = true
     }
 
@@ -1416,15 +1995,15 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         let background: NSColor
         if !isEnabled {
             background = selected ? fluentTheme.controlFillSecondary : .clear
-        } else if selected, pressed {
+        } else if selected, pointerState.isPressed {
             background = fluentTheme.controlFillSecondary
-        } else if selected, pointerOver {
+        } else if selected, pointerState.isPointerOver {
             background = fluentTheme.controlFillTertiary
         } else if selected {
             background = fluentTheme.controlFillSecondary
-        } else if pressed {
+        } else if pointerState.isPressed {
             background = fluentTheme.controlFillTertiary
-        } else if pointerOver {
+        } else if pointerState.isPointerOver {
             background = fluentTheme.controlFillSecondary
         } else {
             background = .clear
@@ -1435,11 +2014,12 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         let color = isEnabled ? fluentTheme.textPrimary : fluentTheme.textDisabled
         let iconSize: CGFloat = 18
         let isRTL = layoutDirection == .rightToLeft
+        let indent = top ? 0 : CGFloat(depth) * 20
         let iconX: CGFloat
         if top {
             iconX = isRTL ? bounds.maxX - 28 : 10
         } else if expanded {
-            iconX = isRTL ? bounds.maxX - 30 : 12
+            iconX = isRTL ? bounds.maxX - 29 - indent : 11 + indent
         } else {
             iconX = bounds.midX - iconSize / 2
         }
@@ -1456,12 +2036,12 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
             let textSize = (itemTitle as NSString).size(withAttributes: [.font: font])
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = isRTL ? .right : .left
-            let textX: CGFloat = isRTL ? 10 : 42
+            let textX: CGFloat = isRTL ? 10 + (hasChildren ? 28 : 0) : 42 + indent
             (itemTitle as NSString).draw(
                 in: NSRect(
                     x: textX,
                     y: bounds.midY - textSize.height / 2,
-                    width: max(bounds.width - 52, 0),
+                    width: max(bounds.width - textX - (hasChildren ? 34 : 10), 0),
                     height: textSize.height
                 ),
                 withAttributes: [
@@ -1478,6 +2058,33 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
             path.lineWidth = fluentTheme.focusStrokeWidth
             path.stroke()
         }
+    }
+
+    private func updateChevron(animated: Bool) {
+        guard hasChildren, expanded || top, bounds.width > 0, bounds.height > 0 else {
+            chevronLayer.isHidden = true
+            return
+        }
+        chevronLayer.isHidden = false
+        let state: FluentControlState = !isEnabled
+            ? .disabled
+            : (pointerState.isPressed ? .pressed : (pointerState.isPointerOver ? .pointerOver : .normal))
+        let color = isEnabled ? fluentTheme.textSecondary : fluentTheme.textDisabled
+        let isRTL = layoutDirection == .rightToLeft
+        chevronLayer.update(
+            frame: NSRect(
+                x: isRTL ? bounds.minX + 14 : bounds.maxX - 26,
+                y: bounds.midY - 6,
+                width: 12,
+                height: 12
+            ),
+            color: color,
+            state: state,
+            visual: .upDownSmall,
+            direction: itemExpanded ? .down : (isRTL ? .left : .right),
+            backingScale: window?.backingScaleFactor,
+            animated: animated && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        )
     }
 
     @objc private func invoke() { if isEnabled { onActivate?(itemID) } }
@@ -1618,6 +2225,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
         let menuItems = items.map { item in
             FluentMenuItem(
                 item.title,
+                systemImageName: item.systemImageName,
                 isEnabled: item.isEnabled,
                 state: item.id == selectedID ? .on : .off
             ) { [weak self] in self?.onSelect?(item.id) }
@@ -1629,7 +2237,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
             reduceMotion: reduceMotion
         )
         self.flyout = flyout
-        flyout.present(relativeTo: self, at: NSPoint(x: bounds.minX, y: bounds.minY))
+        flyout.present(relativeTo: self, placement: .below)
     }
 }
 
