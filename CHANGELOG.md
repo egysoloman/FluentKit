@@ -2,7 +2,11 @@
 
 All notable FluentKit changes are recorded here. Versions follow Semantic Versioning.
 
-## [0.1.0] - 2026-07-19
+## Unreleased
+
+No unreleased changes yet.
+
+## [0.1.0] - 2026-08-02
 
 Initial public framework baseline.
 
@@ -10,12 +14,6 @@ Initial public framework baseline.
 - Fluent theme tokens, Mica window surfaces, native controls, layout, collections, navigation, overlays, menus, motion, accessibility, localization, and RTL support.
 - Native application scenes, settings, commands, Dock menus, Services routing, file import/export, printing, sharing, document sessions, and multi-document coordination.
 - Gallery and executable validation with Light/Dark/RTL bitmap baselines.
-
-## Unreleased
-
-Changes after `0.1.0` will be grouped here until the next tagged release. Breaking public API changes
-require a major version; additive APIs remain source-compatible within a major version whenever
-AppKit and Swift permit it.
 
 - Gallery navigation now uses a dedicated `.bottomUp` page entrance while the existing generic
   NavigationView transition modes remain available. `.entrance` follows WinUI's asymmetric
@@ -158,3 +156,6 @@ AppKit and Swift permit it.
   edge; close uses a separate 83ms linear fade and Reduce Motion skips both animations.
 - Prevented NavigationView section text from clipping or jumping through the compact rail during
   pane collapse.
+
+[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/egysoloman/FluentKit/releases/tag/v0.1.0

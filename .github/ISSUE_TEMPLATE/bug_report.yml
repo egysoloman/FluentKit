@@ -1,0 +1,49 @@
+name: Bug report
+description: Report reproducible incorrect FluentKit behavior
+title: "[Bug]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a FluentKit problem.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the problem and its impact.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Provide a minimal code sample and exact steps to reproduce the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: Describe what should happen instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: FluentKit version or commit
+      placeholder: v0.1.0 or commit SHA
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the macOS and Swift/Xcode versions.
+      placeholder: macOS 15, Swift 6.0, Xcode 16
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Add logs, screenshots, or other relevant information. Do not disclose vulnerabilities here.

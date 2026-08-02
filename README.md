@@ -1,8 +1,28 @@
 # FluentKit
 
+[![CI](https://github.com/egysoloman/FluentKit/actions/workflows/swift.yml/badge.svg)](https://github.com/egysoloman/FluentKit/actions/workflows/swift.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 A declarative desktop UI framework inspired by Fluent Design, implemented in native Swift and AppKit.
 
 FluentKit provides a composable foundation for desktop interfaces: Fluent theme tokens, adaptive light and dark appearance, native macOS materials, state-aware controls, single- and multiline text editing, localized view updates, and a Swift-native declarative view tree. It deliberately has no markup compatibility layer.
+
+## Installation
+
+FluentKit supports macOS 12 or later and Swift 5.9 language mode. Add the package dependency to
+your `Package.swift`:
+
+```swift
+dependencies: [
+    .package(
+        url: "https://github.com/egysoloman/FluentKit.git",
+        from: "0.1.0"
+    )
+]
+```
+
+Then add `FluentKit` to the dependencies of your application target. See
+[COMPATIBILITY.md](COMPATIBILITY.md) for the supported baseline and API stability policy.
 
 ```swift
 struct SettingsView: FluentView {
@@ -1096,6 +1116,12 @@ immediately without an exit animation.
 Submenus open after a short pointer hover delay or immediately from keyboard/accessibility input.
 Arrow keys move between levels, printable keys perform type-ahead matching, and the presenter mirrors
 its chevrons, checkmarks, accelerator columns, and anchor placement for right-to-left layouts.
+
+## Contributing and security
+
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+Release maintainers should follow [RELEASING.md](RELEASING.md). Report potential vulnerabilities
+according to [SECURITY.md](SECURITY.md) rather than disclosing them in a public issue.
 
 ## License
 

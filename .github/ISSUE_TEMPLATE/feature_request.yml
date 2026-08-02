@@ -1,0 +1,29 @@
+name: Feature request
+description: Propose an addition or improvement to FluentKit
+title: "[Feature]: "
+labels: []
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Explain the user or maintainer problem this proposal would solve.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the API or behavior you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe existing AppKit or FluentKit approaches you considered.
+  - type: textarea
+    id: platform
+    attributes:
+      label: Platform considerations
+      description: Note accessibility, RTL, High Contrast, Reduce Motion, or compatibility implications.
