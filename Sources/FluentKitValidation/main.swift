@@ -2467,16 +2467,16 @@ let styledSegmentHost = FluentViewHost(
         .segmentedStyle(ValidationSegmentedStyle())
 )
 let segmentedMotionWindow = NSWindow(
-    contentRect: NSRect(x: 0, y: 0, width: 260, height: 64),
+    contentRect: NSRect(x: 0, y: 0, width: 240, height: 32),
     styleMask: [.borderless],
     backing: .buffered,
     defer: false
 )
 segmentedMotionWindow.contentView = styledSegmentHost
 segmentedMotionWindow.orderFront(nil)
+styledSegmentHost.layoutSubtreeIfNeeded()
 let nativeStyledSegmented = firstSegmentedControl(in: styledSegmentHost)
 require(nativeStyledSegmented?.font?.pointSize == 15, "segmented style applies semantic font metrics")
-nativeStyledSegmented?.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
 nativeStyledSegmented?.layoutSubtreeIfNeeded()
 let segmentedSelectionIndicators = nativeStyledSegmented?.subviews.filter {
     $0.identifier?.rawValue == "FluentKit.Segmented.SelectionIndicator"
@@ -2572,17 +2572,17 @@ let rtlSegmentHost = FluentViewHost(
     context: FluentRenderContext(layoutDirection: .rightToLeft)
 )
 let rtlSegmentWindow = NSWindow(
-    contentRect: NSRect(x: 0, y: 0, width: 300, height: 64),
+    contentRect: NSRect(x: 0, y: 0, width: 270, height: 32),
     styleMask: [.borderless],
     backing: .buffered,
     defer: false
 )
 rtlSegmentWindow.contentView = rtlSegmentHost
 rtlSegmentWindow.orderFront(nil)
+rtlSegmentHost.layoutSubtreeIfNeeded()
 guard let rtlSegmented = firstSegmentedControl(in: rtlSegmentHost) else {
     fatalError("RTL segmented validation hierarchy did not mount")
 }
-rtlSegmented.frame = NSRect(x: 0, y: 0, width: 270, height: 32)
 rtlSegmented.layoutSubtreeIfNeeded()
 let rtlFirstLabel = rtlSegmented.subviews.first {
     $0.identifier?.rawValue == "FluentKit.Segmented.Label.0"
@@ -9306,38 +9306,61 @@ navigationWindow.orderFront(nil)
 navigationView.layoutSubtreeIfNeeded()
 require(navigationView.subviews.count == 1, "navigation stack mounts a native host")
 navigationPath.wrappedValue = [AnyHashable("detail")]
-drainMainQueue()
+let navigationPushStarted = waitUntil(timeout: 0.15, pollInterval: 0.001) {
+    let entries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
+    return entries.count == 2
+        && entries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
+        && entries.last?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil
+}
 require(navigationPath.wrappedValue == [AnyHashable("detail")], "navigation path binding accepts pushed routes")
 let navigationPushEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
 require(
-    navigationPushEntries.count == 2
+    navigationPushStarted
+        && navigationPushEntries.count == 2
         && navigationPushEntries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
         && navigationPushEntries.last?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil,
-    "NavigationStack push uses the shared coordinated page presenter"
+    "NavigationStack push uses the shared coordinated page presenter "
+        + "(entries: \(navigationPushEntries.count), animations: "
+        + "\(navigationPushEntries.map { $0.layer?.animationKeys() ?? [] }))"
 )
 RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
 navigationPath.wrappedValue = []
-drainMainQueue()
+let navigationPopStarted = waitUntil(timeout: 0.15, pollInterval: 0.001) {
+    let entries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
+    return entries.count == 2
+        && entries.first?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
+        && entries.last?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil
+}
 let navigationPopEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
 let navigationPopOutgoing = navigationPopEntries.first?.layer?
     .animation(forKey: "fluent.navigation.page.transform") as? CABasicAnimation
 require(
-    navigationPopEntries.count == 2
+    navigationPopStarted
+        && navigationPopEntries.count == 2
         && navigationPopOutgoing != nil
         && navigationPopEntries.last?.layer?.animation(forKey: "fluent.navigation.page.opacity") != nil,
-    "NavigationStack pop preserves outgoing and incoming pages while reversing the shared transition"
+    "NavigationStack pop preserves outgoing and incoming pages while reversing the shared transition "
+        + "(entries: \(navigationPopEntries.count), animations: "
+        + "\(navigationPopEntries.map { $0.layer?.animationKeys() ?? [] }))"
 )
 RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
 navigationPath.wrappedValue = [AnyHashable("detail")]
 drainMainQueue()
 RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.50))
 navigationPath.wrappedValue = [AnyHashable("detail"), AnyHashable("detail")]
-drainMainQueue()
+let duplicateRouteTransitionStarted = waitUntil(timeout: 0.15, pollInterval: 0.001) {
+    let entries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
+    return entries.count == 2
+        && entries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil
+}
 let duplicateRouteEntries = views(identifier: "FluentKit.NavigationView.ContentEntry", in: navigationView)
 require(
-    duplicateRouteEntries.count == 2
+    duplicateRouteTransitionStarted
+        && duplicateRouteEntries.count == 2
         && duplicateRouteEntries.last?.layer?.animation(forKey: "fluent.navigation.page.transform") != nil,
-    "NavigationStack treats duplicate route values at different depths as distinct pages"
+    "NavigationStack treats duplicate route values at different depths as distinct pages "
+        + "(entries: \(duplicateRouteEntries.count), animations: "
+        + "\(duplicateRouteEntries.map { $0.layer?.animationKeys() ?? [] }))"
 )
 navigationWindow.orderOut(nil)
 

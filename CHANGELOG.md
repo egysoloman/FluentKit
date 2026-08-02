@@ -14,6 +14,7 @@ Initial public framework baseline.
 - Fluent theme tokens, Mica window surfaces, native controls, layout, collections, navigation, overlays, menus, motion, accessibility, localization, and RTL support.
 - Native application scenes, settings, commands, Dock menus, Services routing, file import/export, printing, sharing, document sessions, and multi-document coordination.
 - Gallery and executable validation with Light/Dark/RTL bitmap baselines.
+- SwiftPM XCTest coverage and GitHub Actions gates for warning-free Debug and Release builds.
 
 - Gallery navigation now uses a dedicated `.bottomUp` page entrance while the existing generic
   NavigationView transition modes remain available. `.entrance` follows WinUI's asymmetric

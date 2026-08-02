@@ -16,7 +16,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate:
+  test:
     runs-on: macos-latest
     timeout-minutes: 20
 
@@ -30,8 +30,8 @@ jobs:
       - name: Build debug configuration
         run: swift build -Xswiftc -warnings-as-errors
 
-      - name: Run FluentKit validation
-        run: swift run FluentKitValidation
+      - name: Run tests
+        run: swift test -Xswiftc -warnings-as-errors
 
       - name: Build release configuration
         run: swift build --configuration release -Xswiftc -warnings-as-errors

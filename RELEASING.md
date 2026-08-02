@@ -12,9 +12,12 @@ and the GitHub Release must match.
 
    ```bash
    swift build -Xswiftc -warnings-as-errors
-   swift run FluentKitValidation
+   swift test -Xswiftc -warnings-as-errors
    swift build --configuration release -Xswiftc -warnings-as-errors
    ```
+
+   Run `swift run FluentKitValidation` in an interactive macOS session as the extended desktop
+   acceptance check, especially when the release changes controls, navigation, motion, or snapshots.
 
 5. Commit and push the release preparation changes.
 6. Wait for the `main` branch CI workflow to complete successfully.

@@ -12,6 +12,7 @@ let package = Package(
     targets: [
         .target(name: "FluentKit"),
         .executableTarget(name: "FluentGallery", dependencies: ["FluentKit"]),
-        .executableTarget(name: "FluentKitValidation", dependencies: ["FluentKit"])
+        .executableTarget(name: "FluentKitValidation", dependencies: ["FluentKit"]),
+        .testTarget(name: "FluentKitTests", dependencies: ["FluentKit"])
     ]
 )

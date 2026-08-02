@@ -198,10 +198,9 @@ FluentButtonView("Import") { showImporter = true }
     }
 ```
 
-For command-line smoke validation of state, bindings, theme tokens, public identity APIs, performance,
-lifecycle cleanup, and snapshot baselines, run `swift run FluentKitValidation`. XCTest is intentionally
-not declared yet because the current Command Line Tools installation does not provide the XCTest module;
-the validation executable keeps CI checks useful until a full Xcode toolchain is available. Release
+Run `swift test` for the deterministic package test suite used by CI. For the extended desktop acceptance
+suite covering state, bindings, theme tokens, public identity APIs, performance, lifecycle cleanup, and
+snapshot baselines, run `swift run FluentKitValidation` from an interactive macOS session. Release
 compatibility and versioning policy live in [COMPATIBILITY.md](COMPATIBILITY.md), and the current release
 is recorded in [VERSION](VERSION).
 

@@ -14,11 +14,12 @@ Clone the repository and run the required validation gates:
 
 ```bash
 swift build -Xswiftc -warnings-as-errors
-swift run FluentKitValidation
+swift test -Xswiftc -warnings-as-errors
 ```
 
 The standalone Gallery can be built from `FluentKitGallery/FluentKitGallery.xcodeproj`. The SwiftPM
-Gallery is available with `swift run FluentGallery`.
+Gallery is available with `swift run FluentGallery`. Run `swift run FluentKitValidation` from an
+interactive macOS session when changing controls, navigation, animation, lifecycle, or snapshots.
 
 ## Before opening an issue
 
@@ -55,7 +56,8 @@ performed. Keep unrelated cleanup in separate changes.
 Before submitting, confirm:
 
 - `swift build -Xswiftc -warnings-as-errors` succeeds.
-- `swift run FluentKitValidation` passes.
+- `swift test -Xswiftc -warnings-as-errors` passes.
+- UI and interaction changes have appropriate `swift run FluentKitValidation` coverage.
 - Public API changes are documented.
 - Visual changes include appropriate Gallery coverage and snapshots.
 - Accessibility, RTL, High Contrast, and Reduce Motion were considered.
