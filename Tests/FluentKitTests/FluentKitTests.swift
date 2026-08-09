@@ -327,7 +327,8 @@ final class FluentKitTests: XCTestCase {
                 selection: selection.projectedValue,
                 paneDisplayMode: .left,
                 content: { FluentText("Content") }
-            )
+            ),
+            context: FluentRenderContext(reduceMotion: false)
         )
         host.frame = NSRect(x: 0, y: 0, width: 720, height: 520)
         host.layoutSubtreeIfNeeded()
@@ -477,7 +478,6 @@ final class FluentKitTests: XCTestCase {
         firstState.wrappedValue = "still preserved"
         XCTAssertEqual(firstState.wrappedValue, "still preserved")
 
-        RunLoop.current.run(until: Date().addingTimeInterval(0.05))
         XCTAssertEqual(coordinator.groupIDs, [originalGroup])
         coordinator.close(groupID: originalGroup)
         RunLoop.current.run(until: Date().addingTimeInterval(0.05))

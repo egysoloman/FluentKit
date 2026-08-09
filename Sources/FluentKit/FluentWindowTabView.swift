@@ -483,10 +483,14 @@ public final class FluentWindowTabCoordinator: NSObject, NSWindowDelegate {
     private func closeEmptyGroup(_ record: GroupRecord) {
         record.closesWithoutConsultingTabs = true
         record.controller?.window?.orderOut(nil)
-        DispatchQueue.main.async { [weak self, weak record] in
-            guard let self, let record, self.groupsByID[record.id] === record else { return }
-            record.controller?.window?.close()
-        }
+        // Logical membership must change synchronously with the move/close operation. Waiting for
+        // `windowWillClose` leaves a short-lived empty group in the public `groupIDs` collection
+        // and makes observers depend on AppKit run-loop timing. The deferred close remains only
+        // for native window teardown, where avoiding re-entrancy is still useful.
+        groupsByID.removeValue(forKey: record.id)
+        orderedGroupIDs.removeAll { $0 == record.id }
+        let window = record.controller?.window
+        DispatchQueue.main.async { window?.close() }
     }
 
     private func publishChanges(focusing groupID: FluentWindowTabGroupID?) {
