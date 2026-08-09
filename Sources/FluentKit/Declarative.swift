@@ -92,3 +92,5 @@ public final class FluentCard: NSView {
         needsDisplay = true
     }
 }
+
+extension FluentCard: FluentFillWidthProviding {}

@@ -205,13 +205,23 @@ func fluentPrepareMenuPopupEntrance(
           let surfaceLayer = host.surface.layer,
           host.content.layer != nil else { return }
 
+    host.layoutSubtreeIfNeeded()
+
     let ratio = min(max(closedRatio, 0.05), 0.95)
     let distance = host.bounds.height * ratio
     // XAML's negative Top translation is a positive Core Animation Y translation. It initially
     // exposes the lower menu rows, then returns the complete presenter downward into place.
     let direction: CGFloat = edge == .top ? 1 : -1
-    var closedSurface = CATransform3DMakeScale(1, 1 - ratio, 1)
-    closedSurface.m42 = edge == .top ? 0 : distance
+    let surfacePivot = NSPoint(
+        x: surfaceLayer.bounds.midX,
+        y: edge == .top ? surfaceLayer.bounds.maxY : surfaceLayer.bounds.minY
+    )
+    let closedSurface = fluentScaleTransform(
+        scaleX: 1,
+        scaleY: 1 - ratio,
+        around: surfacePivot,
+        in: surfaceLayer
+    )
     let closedAnimationRoot = CATransform3DMakeTranslation(0, direction * distance, 0)
     let closedClip = CATransform3DMakeTranslation(0, -direction * distance, 0)
 

@@ -12,13 +12,14 @@ public enum FluentTitleBarBackgroundStyle: String, CaseIterable, Hashable, Senda
     case transparent
 }
 
-/// Native window chrome that preserves macOS window controls while providing Fluent title content.
+/// Native window chrome with selectable macOS or Windows-style system controls and Fluent content.
 public struct FluentTitleBar: FluentUpdatablePrimitiveView {
     private let title: String
     private let subtitle: String?
     private let systemImageName: String?
     private let heightMode: FluentTitleBarHeightMode
     private let backgroundStyle: FluentTitleBarBackgroundStyle
+    private let windowControlsStyle: FluentWindowControlsStyle
     private let isBackButtonVisible: Bool
     private let isBackButtonEnabled: Bool
     private let isForwardButtonVisible: Bool
@@ -39,6 +40,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         systemImageName: String? = nil,
         heightMode: FluentTitleBarHeightMode = .automatic,
         backgroundStyle: FluentTitleBarBackgroundStyle = .solid,
+        windowControlsStyle: FluentWindowControlsStyle = .macOS,
         isBackButtonVisible: Bool = false,
         isBackButtonEnabled: Bool = true,
         isForwardButtonVisible: Bool = false,
@@ -56,6 +58,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             systemImageName: systemImageName,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
+            windowControlsStyle: windowControlsStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
             isForwardButtonVisible: isForwardButtonVisible,
@@ -78,6 +81,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         systemImageName: String? = nil,
         heightMode: FluentTitleBarHeightMode = .automatic,
         backgroundStyle: FluentTitleBarBackgroundStyle = .solid,
+        windowControlsStyle: FluentWindowControlsStyle = .macOS,
         isBackButtonVisible: Bool = false,
         isBackButtonEnabled: Bool = true,
         isForwardButtonVisible: Bool = false,
@@ -98,6 +102,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             systemImageName: systemImageName,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
+            windowControlsStyle: windowControlsStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
             isForwardButtonVisible: isForwardButtonVisible,
@@ -120,6 +125,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         systemImageName: String?,
         heightMode: FluentTitleBarHeightMode,
         backgroundStyle: FluentTitleBarBackgroundStyle,
+        windowControlsStyle: FluentWindowControlsStyle,
         isBackButtonVisible: Bool,
         isBackButtonEnabled: Bool,
         isForwardButtonVisible: Bool,
@@ -139,6 +145,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         self.systemImageName = systemImageName
         self.heightMode = heightMode
         self.backgroundStyle = backgroundStyle
+        self.windowControlsStyle = windowControlsStyle
         self.isBackButtonVisible = isBackButtonVisible
         self.isBackButtonEnabled = isBackButtonEnabled
         self.isForwardButtonVisible = isForwardButtonVisible
@@ -163,6 +170,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             systemImageName: systemImageName,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
+            windowControlsStyle: windowControlsStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
             isForwardButtonVisible: isForwardButtonVisible,
@@ -188,6 +196,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             systemImageName: systemImageName,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
+            windowControlsStyle: windowControlsStyle,
             isBackButtonVisible: isBackButtonVisible,
             isBackButtonEnabled: isBackButtonEnabled,
             isForwardButtonVisible: isForwardButtonVisible,
@@ -223,6 +232,7 @@ private final class FluentTitleBarHost: NSView {
     private var systemImageName: String?
     private var heightMode: FluentTitleBarHeightMode
     private var backgroundStyle: FluentTitleBarBackgroundStyle
+    private var windowControlsStyle: FluentWindowControlsStyle
     private var isBackButtonVisible: Bool
     private var isBackButtonEnabled: Bool
     private var isForwardButtonVisible: Bool
@@ -269,6 +279,7 @@ private final class FluentTitleBarHost: NSView {
         systemImageName: String?,
         heightMode: FluentTitleBarHeightMode,
         backgroundStyle: FluentTitleBarBackgroundStyle,
+        windowControlsStyle: FluentWindowControlsStyle,
         isBackButtonVisible: Bool,
         isBackButtonEnabled: Bool,
         isForwardButtonVisible: Bool,
@@ -289,6 +300,7 @@ private final class FluentTitleBarHost: NSView {
         self.systemImageName = systemImageName
         self.heightMode = heightMode
         self.backgroundStyle = backgroundStyle
+        self.windowControlsStyle = windowControlsStyle
         self.isBackButtonVisible = isBackButtonVisible
         self.isBackButtonEnabled = isBackButtonEnabled
         self.isForwardButtonVisible = isForwardButtonVisible
@@ -343,6 +355,7 @@ private final class FluentTitleBarHost: NSView {
         systemImageName: String?,
         heightMode: FluentTitleBarHeightMode,
         backgroundStyle: FluentTitleBarBackgroundStyle,
+        windowControlsStyle: FluentWindowControlsStyle,
         isBackButtonVisible: Bool,
         isBackButtonEnabled: Bool,
         isForwardButtonVisible: Bool,
@@ -365,6 +378,7 @@ private final class FluentTitleBarHost: NSView {
         self.systemImageName = systemImageName
         self.heightMode = heightMode
         self.backgroundStyle = backgroundStyle
+        self.windowControlsStyle = windowControlsStyle
         self.isBackButtonVisible = isBackButtonVisible
         self.isBackButtonEnabled = isBackButtonEnabled
         self.isForwardButtonVisible = isForwardButtonVisible
@@ -400,7 +414,7 @@ private final class FluentTitleBarHost: NSView {
         let height = min(resolvedHeight, bounds.height)
         let direction = context.layoutDirection
         let leftInset = physicalLeftInset()
-        let rightInset: CGFloat = 0
+        let rightInset = windowControlsStyle.trailingTitleBarInset
         let availableWidth = max(bounds.width - leftInset - rightInset, 0)
 
         func physicalFrame(logicalX: CGFloat, width: CGFloat) -> NSRect {
@@ -704,6 +718,7 @@ private final class FluentTitleBarHost: NSView {
                 titlebarAppearsTransparent: window.titlebarAppearsTransparent,
                 titleVisibility: window.titleVisibility,
                 titlebarSeparatorStyle: window.titlebarSeparatorStyle,
+                windowControlsStyle: window.fluentWindowControlsStyle,
                 title: window.title
             )
             window.styleMask.insert(.fullSizeContentView)
@@ -713,6 +728,11 @@ private final class FluentTitleBarHost: NSView {
         } else if !extendsIntoWindowChrome, originalWindowConfiguration != nil {
             restoreWindowConfiguration(window)
         }
+        window.applyFluentWindowControlsStyle(
+            windowControlsStyle,
+            titleBarHeight: resolvedHeight,
+            hostedIn: extendsIntoWindowChrome ? self : nil
+        )
         syncWindowTitle()
         needsLayout = true
     }
@@ -742,6 +762,7 @@ private final class FluentTitleBarHost: NSView {
         window.titlebarAppearsTransparent = configuration.titlebarAppearsTransparent
         window.titleVisibility = configuration.titleVisibility
         window.titlebarSeparatorStyle = configuration.titlebarSeparatorStyle
+        window.applyFluentWindowControlsStyle(configuration.windowControlsStyle)
         if window.title == lastAppliedWindowTitle { window.title = configuration.title }
         originalWindowConfiguration = nil
         lastAppliedWindowTitle = nil
@@ -766,6 +787,7 @@ private struct WindowConfiguration {
     let titlebarAppearsTransparent: Bool
     let titleVisibility: NSWindow.TitleVisibility
     let titlebarSeparatorStyle: NSTitlebarSeparatorStyle
+    let windowControlsStyle: FluentWindowControlsStyle
     let title: String
 }
 

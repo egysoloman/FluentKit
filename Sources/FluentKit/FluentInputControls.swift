@@ -1158,7 +1158,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
-        guard bounds.contains(point) else { return nil }
+        let localPoint = superview.map { convert(point, from: $0) } ?? point
+        guard bounds.contains(localPoint) else { return nil }
         if mode == .selection { return comboBox.isEnabled ? self : nil }
         return super.hitTest(point)
     }

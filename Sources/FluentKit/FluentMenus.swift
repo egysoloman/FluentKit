@@ -475,22 +475,18 @@ public final class FluentMenuFlyout {
         childIndex = nil
         presenter?.resetPointerState()
         if owner == nil { removeOutsideClickMonitors() }
-        guard let panel else { return }
-        let finish = { [weak self, weak panel] in
-            guard let self, let panel, self.panel === panel else { return }
-            self.parentWindow?.removeChildWindow(panel)
-            panel.orderOut(nil)
-            self.panel = nil
-            self.presenter = nil
-            self.transitionHost = nil
-            if self.owner == nil { self.anchorView = nil }
-            if self.owner == nil { self.unregisterAppearanceUpdates() }
-            self.onDismiss?()
-        }
+        guard let popupPanel = panel else { return }
+        panel = nil
+        presenter = nil
+        transitionHost = nil
+        if owner == nil { anchorView = nil }
+        if owner == nil { unregisterAppearanceUpdates() }
+        popupPanel.parent?.removeChildWindow(popupPanel)
+        popupPanel.orderOut(nil)
         // MenuFlyout unload is intentionally immediate in FluentKit. Only entrance motion is
         // retained; dismissing from an item, Escape, the trigger, or an outside click removes the
         // complete presenter in one transaction.
-        finish()
+        onDismiss?()
     }
 
     private func installOutsideClickMonitors() {
@@ -1211,7 +1207,8 @@ private final class FluentContextMenuHost: NSView {
     override func hitTest(_ point: NSPoint) -> NSView? {
         switch NSApp.currentEvent?.type {
         case .rightMouseDown?, .rightMouseUp?, .rightMouseDragged?:
-            return bounds.contains(point) ? self : nil
+            let localPoint = superview.map { convert(point, from: $0) } ?? point
+            return bounds.contains(localPoint) ? self : nil
         default:
             return super.hitTest(point)
         }

@@ -124,7 +124,8 @@ final class FluentNavigationContentPresenter<ID: Hashable>: NSView {
 
         let replacement = FluentNavigationContentEntry(content: content, context: context)
         addPage(replacement)
-        layoutSubtreeIfNeeded()
+        let hasLayoutSlot = bounds.width > 0 && bounds.height > 0
+        if hasLayoutSlot { layoutSubtreeIfNeeded() }
 
         let outgoing = current
         current = replacement
@@ -133,7 +134,8 @@ final class FluentNavigationContentPresenter<ID: Hashable>: NSView {
         let generation = transitionGeneration
 
         removeSupersededEntries(keeping: outgoing, replacement)
-        guard !appearanceDidChange,
+        guard hasLayoutSlot,
+              !appearanceDidChange,
               !context.reduceMotion,
               mode != .none,
               mode != .suppress else {

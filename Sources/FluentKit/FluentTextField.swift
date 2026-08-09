@@ -437,6 +437,12 @@ public class FluentTextField: NSTextField {
     }
 
     public override func textDidBeginEditing(_ notification: Notification) {
+        // AppKit may refresh cell flags as it installs the shared field editor. Reassert that
+        // Fluent owns every visible part of the input chrome before configuring the editor.
+        focusRingType = .none
+        isBordered = false
+        isBezeled = false
+        drawsBackground = false
         super.textDidBeginEditing(notification)
         textEditingSession.didBeginEditing()
         needsDisplay = true

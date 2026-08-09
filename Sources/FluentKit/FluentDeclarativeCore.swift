@@ -16,8 +16,8 @@ func fluentViewFillsAvailableWidth(_ view: NSView) -> Bool {
     (view as? FluentFillWidthProviding)?.fluentFillsAvailableWidth == true
 }
 
-private func fluentApplyFillWidth(_ view: NSView, in stack: NSStackView) {
-    guard fluentViewFillsAvailableWidth(view) else { return }
+private func fluentApplyFillWidth(_ view: NSView, in stack: NSStackView, force: Bool = false) {
+    guard force || fluentViewFillsAvailableWidth(view) else { return }
     view.setContentHuggingPriority(.defaultLow, for: .horizontal)
     view.setContentCompressionResistancePriority(.required, for: .horizontal)
     let constraint = view.widthAnchor.constraint(equalTo: stack.widthAnchor)
@@ -236,25 +236,30 @@ public struct FluentVStackView: FluentPrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let stack = NSStackView()
+        let stack = FluentVerticalStackView()
         stack.orientation = .vertical
-        stack.alignment = alignment
+        stack.fillsAvailableWidth = alignment == .width
+        // `.width` is FluentKit's explicit stretch alignment. NSLayoutConstraint.Attribute.width
+        // is not a valid visual alignment for NSStackView and produced centered/right-shifted
+        // intrinsic stacks. Use a leading alignment and install equal-width constraints instead.
+        stack.alignment = alignment == .width ? .leading : alignment
         stack.spacing = spacing
         stack.translatesAutoresizingMaskIntoConstraints = false
         let views = content.children?.map { $0.mount(context) } ?? [content.mount(context)]
         views.forEach {
             stack.addArrangedSubview($0)
-            fluentApplyFillWidth($0, in: stack)
+            fluentApplyFillWidth($0, in: stack, force: alignment == .width)
         }
         return stack
     }
 
     public func _update(_ nativeView: NSView, in context: FluentRenderContext) -> Bool {
-        guard let stack = nativeView as? NSStackView,
+        guard let stack = nativeView as? FluentVerticalStackView,
               let children = Optional(content.children ?? [content]),
               stack.arrangedSubviews.count == children.count else { return false }
         stack.spacing = spacing
-        stack.alignment = alignment
+        stack.fillsAvailableWidth = alignment == .width
+        stack.alignment = alignment == .width ? .leading : alignment
         for index in children.indices {
             let child = children[index]
             let nativeChild = stack.arrangedSubviews[index]
@@ -267,10 +272,15 @@ public struct FluentVStackView: FluentPrimitiveView {
             }
             let resolvedChild = stack.arrangedSubviews[index]
             fluentRemoveFillWidthConstraints(for: resolvedChild, from: stack)
-            fluentApplyFillWidth(resolvedChild, in: stack)
+            fluentApplyFillWidth(resolvedChild, in: stack, force: alignment == .width)
         }
         return true
     }
+}
+
+private final class FluentVerticalStackView: NSStackView, FluentFillWidthProviding {
+    var fillsAvailableWidth = false
+    var fluentFillsAvailableWidth: Bool { fillsAvailableWidth }
 }
 
 public func FluentVStack(spacing: CGFloat = 12, alignment: NSLayoutConstraint.Attribute = .leading, @FluentViewBuilder content: () -> FluentAnyView) -> FluentVStackView {

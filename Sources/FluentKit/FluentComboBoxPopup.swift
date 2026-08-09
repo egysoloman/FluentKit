@@ -113,8 +113,12 @@ final class FluentComboBoxPopup: NSObject {
                 self?.onMove(index)
             },
             onCommit: { [weak self] index in
-                self?.onCommit(index)
-                self?.dismiss(animated: true)
+                // Keep the popup alive across the commit. A commit can replace the declarative
+                // anchor (for example when it changes the window theme), whose deinit dismisses
+                // this popup reentrantly while the row's mouse-up callback is still running.
+                guard let self else { return }
+                self.onCommit(index)
+                self.dismiss(animated: true)
             },
             onDismiss: { [weak self] in self?.dismiss(animated: true) }
         )
@@ -178,25 +182,21 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     func dismiss(animated _: Bool) {
-        guard let panel else {
-            onDismiss()
-            return
-        }
+        guard let popupPanel = panel else { return }
         popupView?.resetPointerState()
         removeOutsideClickMonitors()
-        let finish = { [weak self, weak panel] in
-            guard let self, let panel, self.panel === panel else { return }
-            self.anchor?.window?.removeChildWindow(panel)
-            panel.orderOut(nil)
-            self.panel = nil
-            self.popupView = nil
-            self.transitionHost = nil
-            self.unregisterAppearanceUpdates()
-            self.onDismiss()
-        }
+        // Clear ownership before touching AppKit. `orderOut` and the external callback can both
+        // re-enter dismissal, and the theme-changing commit may already be tearing down the
+        // anchor host. The panel's local strong reference keeps it valid until cleanup finishes.
+        panel = nil
+        popupView = nil
+        transitionHost = nil
+        unregisterAppearanceUpdates()
+        popupPanel.parent?.removeChildWindow(popupPanel)
+        popupPanel.orderOut(nil)
         // ComboBox popup unload is intentionally immediate. Selection commits, Escape, trigger
         // toggles and outside clicks all remove the complete popup without a close storyboard.
-        finish()
+        onDismiss()
     }
 
     private func preferredSize(visibleItemCount: Int) -> NSSize {

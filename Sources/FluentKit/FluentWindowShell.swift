@@ -136,6 +136,7 @@ private func fluentWindowContentSurfacePath(
 public struct FluentWindowConfiguration: Hashable, Sendable {
     public let layout: FluentWindowLayout
     public let titleBarStyle: FluentWindowTitleBarStyle
+    public let windowControlsStyle: FluentWindowControlsStyle
     public let navigationPlacement: FluentWindowNavigationPlacement
     public let paneTogglePlacement: FluentWindowPaneTogglePlacement
     public let searchPlacement: FluentWindowSearchPlacement
@@ -143,17 +144,20 @@ public struct FluentWindowConfiguration: Hashable, Sendable {
     public let contentCornerStyle: FluentContentCornerStyle
     public let titleBarHeight: FluentTitleBarHeightMode
     public let contentTransition: FluentNavigationTransitionMode
+    public let selectionIndicatorMode: FluentNavigationSelectionIndicatorMode
 
     public init(
         layout: FluentWindowLayout = .standard,
         titleBarStyle: FluentWindowTitleBarStyle? = nil,
+        windowControlsStyle: FluentWindowControlsStyle = .macOS,
         navigationPlacement: FluentWindowNavigationPlacement? = nil,
         paneTogglePlacement: FluentWindowPaneTogglePlacement? = nil,
         searchPlacement: FluentWindowSearchPlacement? = nil,
         backdrop: FluentWindowBackdrop? = nil,
         contentCornerStyle: FluentContentCornerStyle? = nil,
         titleBarHeight: FluentTitleBarHeightMode? = nil,
-        contentTransition: FluentNavigationTransitionMode = .automatic
+        contentTransition: FluentNavigationTransitionMode = .automatic,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode = .adaptive
     ) {
         let preset = Self.preset(for: layout)
         let resolvedTitleBarStyle = titleBarStyle ?? preset.titleBarStyle
@@ -162,6 +166,7 @@ public struct FluentWindowConfiguration: Hashable, Sendable {
         let requestedSearchPlacement = searchPlacement ?? preset.searchPlacement
         self.layout = layout
         self.titleBarStyle = resolvedTitleBarStyle
+        self.windowControlsStyle = windowControlsStyle
         self.navigationPlacement = resolvedNavigationPlacement
         // Native AppKit title bars cannot host Fluent content. Keep a requested pane action
         // available by moving it into vertical navigation, and suppress unsupported search.
@@ -174,6 +179,7 @@ public struct FluentWindowConfiguration: Hashable, Sendable {
         self.contentCornerStyle = contentCornerStyle ?? preset.contentCornerStyle
         self.titleBarHeight = titleBarHeight ?? preset.titleBarHeight
         self.contentTransition = contentTransition
+        self.selectionIndicatorMode = selectionIndicatorMode
     }
 
     private static func preset(for layout: FluentWindowLayout) -> FluentWindowConfigurationPreset {
@@ -541,6 +547,7 @@ public struct FluentWindowShell<ID: Hashable>: FluentView {
                     systemImageName: systemImageName,
                     heightMode: configuration.titleBarHeight,
                     backgroundStyle: .transparent,
+                    windowControlsStyle: configuration.windowControlsStyle,
                     isBackButtonVisible: isBackButtonVisible,
                     isBackButtonEnabled: isBackButtonEnabled,
                     isForwardButtonVisible: isForwardButtonVisible,
@@ -559,6 +566,7 @@ public struct FluentWindowShell<ID: Hashable>: FluentView {
                 systemImageName: systemImageName,
                 heightMode: configuration.titleBarHeight,
                 backgroundStyle: .transparent,
+                windowControlsStyle: configuration.windowControlsStyle,
                 isBackButtonVisible: isBackButtonVisible,
                 isBackButtonEnabled: isBackButtonEnabled,
                 isForwardButtonVisible: isForwardButtonVisible,
@@ -598,6 +606,7 @@ public struct FluentWindowShell<ID: Hashable>: FluentView {
                 paneSectionTitle: paneSectionTitle,
                 contentTransition: configuration.contentTransition,
                 paneMaterialOwnership: .inherited,
+                selectionIndicatorMode: configuration.selectionIndicatorMode,
                 paneHeader: { paneHeader ?? FluentAnyView(FluentEmptyView()) },
                 // Keep the page header outside NavigationView's transition presenter. The
                 // presenter then moves only the viewport below it, while this surface owns the

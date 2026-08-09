@@ -87,6 +87,7 @@ public final class FluentButton: NSButton {
         wantsLayer = true
         layer?.masksToBounds = false
         focusRingType = .none
+        configureContentPriorities()
         visualStateCoordinator.reduceMotion = reduceMotion
         configureElevationBorder()
         setAccessibilityRole(.button)
@@ -101,6 +102,7 @@ public final class FluentButton: NSButton {
         wantsLayer = true
         layer?.masksToBounds = false
         focusRingType = .none
+        configureContentPriorities()
         visualStateCoordinator.reduceMotion = reduceMotion
         configureElevationBorder()
         refreshAppearance(animated: false)
@@ -211,14 +213,34 @@ public final class FluentButton: NSButton {
             focusPath.stroke()
         }
 
-        let textSize = (title as NSString).size(withAttributes: [.font: font as Any])
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        paragraphStyle.lineBreakMode = .byTruncatingTail
+        let contentInsets = appearance.contentInsets
         let textRect = fluentSingleLineTextRect(
-            NSRect(x: bounds.midX - textSize.width / 2, y: 0, width: textSize.width, height: textSize.height),
+            NSRect(
+                x: bounds.minX + contentInsets.left,
+                y: 0,
+                width: max(0, bounds.width - contentInsets.left - contentInsets.right),
+                height: bounds.height
+            ),
             in: bounds,
-            font: font
+            font: font,
+            topInset: contentInsets.top,
+            bottomInset: contentInsets.bottom
         )
-        appearance.foregroundColor.set()
-        (title as NSString).draw(in: textRect, withAttributes: [.font: font as Any, .foregroundColor: appearance.foregroundColor])
+        let attributedTitle = NSAttributedString(
+            string: title,
+            attributes: [
+                .font: font as Any,
+                .foregroundColor: appearance.foregroundColor,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
+        attributedTitle.draw(
+            with: textRect,
+            options: [.usesLineFragmentOrigin, .truncatesLastVisibleLine]
+        )
     }
 
     public override func viewDidChangeEffectiveAppearance() {
@@ -244,6 +266,15 @@ public final class FluentButton: NSButton {
         }
         // AppKit's button tracking must finish before the child panel is ordered above it.
         DispatchQueue.main.async { [weak self] in self?.presentFlyoutIfNeeded() }
+    }
+
+    private func configureContentPriorities() {
+        // Labels commonly sit beside buttons in an HStack. Make the label yield first so the
+        // button keeps its title and Fluent horizontal padding instead of clipping both edges.
+        setContentCompressionResistancePriority(
+            NSLayoutConstraint.Priority(rawValue: NSLayoutConstraint.Priority.defaultHigh.rawValue + 1),
+            for: .horizontal
+        )
     }
 
     func applyDeclarativeConfiguration(from source: FluentButton) {

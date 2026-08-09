@@ -29,6 +29,16 @@ public enum FluentNavigationPaneMaterialOwnership: String, CaseIterable, Hashabl
     case solid
 }
 
+/// Selects how the NavigationView selection indicator travels between destinations.
+public enum FluentNavigationSelectionIndicatorMode: String, CaseIterable, Hashable, Sendable {
+    /// Uses a bounded two-rail jump at one depth and WinUI's in-place scale across depths.
+    case jump
+    /// Keeps one connected rail moving continuously between nearby destinations.
+    case continuous
+    /// FluentKit extension: continuous nearby, bounded jump far away, and in-place scale across depths.
+    case adaptive
+}
+
 /// Stable metadata for one primary or footer destination in a `FluentNavigationView`.
 public struct FluentNavigationItem<ID: Hashable> {
     public let id: ID
@@ -74,6 +84,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
     private let paneSectionTitle: String?
     private let contentTransition: FluentNavigationTransitionMode
     private let paneMaterialOwnership: FluentNavigationPaneMaterialOwnership
+    private let selectionIndicatorMode: FluentNavigationSelectionIndicatorMode
     private let paneHeader: FluentAnyView?
     private let header: FluentAnyView?
     private let content: FluentAnyView
@@ -94,6 +105,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         paneSectionTitle: String? = nil,
         contentTransition: FluentNavigationTransitionMode = .automatic,
         paneMaterialOwnership: FluentNavigationPaneMaterialOwnership = .automatic,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode = .adaptive,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)? = nil,
         @FluentViewBuilder content: () -> Content
     ) {
@@ -112,6 +124,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             paneSectionTitle: paneSectionTitle,
             contentTransition: contentTransition,
             paneMaterialOwnership: paneMaterialOwnership,
+            selectionIndicatorMode: selectionIndicatorMode,
             paneHeader: nil,
             header: nil,
             onDisplayModeChange: onDisplayModeChange,
@@ -134,6 +147,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         paneSectionTitle: String? = nil,
         contentTransition: FluentNavigationTransitionMode = .automatic,
         paneMaterialOwnership: FluentNavigationPaneMaterialOwnership = .automatic,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode = .adaptive,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)? = nil,
         @FluentViewBuilder paneHeader: () -> PaneHeader,
         @FluentViewBuilder content: () -> Content
@@ -153,6 +167,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             paneSectionTitle: paneSectionTitle,
             contentTransition: contentTransition,
             paneMaterialOwnership: paneMaterialOwnership,
+            selectionIndicatorMode: selectionIndicatorMode,
             paneHeader: FluentAnyView(paneHeader()),
             header: nil,
             onDisplayModeChange: onDisplayModeChange,
@@ -175,6 +190,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         paneSectionTitle: String? = nil,
         contentTransition: FluentNavigationTransitionMode = .automatic,
         paneMaterialOwnership: FluentNavigationPaneMaterialOwnership = .automatic,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode = .adaptive,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)? = nil,
         @FluentViewBuilder paneHeader: () -> PaneHeader,
         @FluentViewBuilder header: () -> Header,
@@ -195,6 +211,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             paneSectionTitle: paneSectionTitle,
             contentTransition: contentTransition,
             paneMaterialOwnership: paneMaterialOwnership,
+            selectionIndicatorMode: selectionIndicatorMode,
             paneHeader: FluentAnyView(paneHeader()),
             header: FluentAnyView(header()),
             onDisplayModeChange: onDisplayModeChange,
@@ -217,6 +234,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         paneSectionTitle: String?,
         contentTransition: FluentNavigationTransitionMode,
         paneMaterialOwnership: FluentNavigationPaneMaterialOwnership,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode,
         paneHeader: FluentAnyView?,
         header: FluentAnyView?,
         onDisplayModeChange: ((FluentNavigationViewDisplayMode) -> Void)?,
@@ -236,6 +254,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
         self.paneSectionTitle = paneSectionTitle
         self.contentTransition = contentTransition
         self.paneMaterialOwnership = paneMaterialOwnership
+        self.selectionIndicatorMode = selectionIndicatorMode
         self.paneHeader = paneHeader
         self.header = header
         self.onDisplayModeChange = onDisplayModeChange
@@ -260,6 +279,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             paneSectionTitle: paneSectionTitle,
             contentTransition: contentTransition,
             paneMaterialOwnership: paneMaterialOwnership,
+            selectionIndicatorMode: selectionIndicatorMode,
             paneHeader: paneHeader,
             header: header,
             content: content,
@@ -285,6 +305,7 @@ public struct FluentNavigationView<ID: Hashable>: FluentUpdatablePrimitiveView {
             paneSectionTitle: paneSectionTitle,
             contentTransition: contentTransition,
             paneMaterialOwnership: paneMaterialOwnership,
+            selectionIndicatorMode: selectionIndicatorMode,
             paneHeader: paneHeader,
             header: header,
             content: content,
@@ -323,6 +344,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var paneSectionTitle: String?
     private var contentTransition: FluentNavigationTransitionMode
     private var paneMaterialOwnership: FluentNavigationPaneMaterialOwnership
+    private var selectionIndicatorMode: FluentNavigationSelectionIndicatorMode
     private var paneHeader: FluentAnyView?
     private var header: FluentAnyView?
     private var content: FluentAnyView
@@ -376,6 +398,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var knownExpandableItemIDs: Set<ID> = []
     private var expansionAnimationGenerations: [ID: UInt64] = [:]
     private var pendingExpansionTargets: [ID: Bool] = [:]
+    private var deferredRemovalButtons: [FluentNavigationItemButton<ID>] = []
+    private var deferredRemovalDocumentHeight: CGFloat?
     private let expansionAnimationCoordinator = FluentAnimationCoordinator()
     private let navigationHoverCoordinator = FluentHoverCoordinator<FluentNavigationItemButton<ID>> {
         button,
@@ -398,6 +422,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         paneSectionTitle: String?,
         contentTransition: FluentNavigationTransitionMode,
         paneMaterialOwnership: FluentNavigationPaneMaterialOwnership,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode,
         paneHeader: FluentAnyView?,
         header: FluentAnyView?,
         content: FluentAnyView,
@@ -418,6 +443,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         self.paneSectionTitle = paneSectionTitle
         self.contentTransition = contentTransition
         self.paneMaterialOwnership = paneMaterialOwnership
+        self.selectionIndicatorMode = selectionIndicatorMode
         self.paneHeader = paneHeader
         self.header = header
         self.content = content
@@ -439,7 +465,10 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         setAccessibilityRole(.group)
         setAccessibilityLabel("Navigation view")
 
-        contentHost.translatesAutoresizingMaskIntoConstraints = true
+        // The presenter is manually arranged. Keep its autoresizing-mask constraints disabled
+        // until the first non-empty Arrange slot so AppKit cannot turn the construction-time
+        // zero frame into a required width == 0 constraint for the descendant measure pass.
+        contentHost.translatesAutoresizingMaskIntoConstraints = false
         paneView.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Pane")
         paneView.wantsLayer = true
         paneView.layer?.masksToBounds = true
@@ -447,6 +476,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         if let paneLayer = paneView.layer {
             indicatorAnimator.attach(to: paneLayer)
         }
+        indicatorAnimator.setMode(selectionIndicatorMode)
 
         dimmingView.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.DismissLayer")
         dimmingView.onDismiss = { [weak self] in self?.setPaneOpen(false, userInitiated: true, animated: true) }
@@ -529,7 +559,9 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         layoutCurrentState()
         stabilizePaneGeometry()
         if !isApplyingSelectionTransition {
-            updateSelectionIndicator(animated: false)
+            let shouldAnimateIndicator = pendingIndicatorAnimation && window != nil
+            pendingIndicatorAnimation = false
+            updateSelectionIndicator(animated: shouldAnimateIndicator)
         }
         refreshNavigationPointerState()
     }
@@ -549,6 +581,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         paneSectionTitle: String?,
         contentTransition: FluentNavigationTransitionMode,
         paneMaterialOwnership: FluentNavigationPaneMaterialOwnership,
+        selectionIndicatorMode: FluentNavigationSelectionIndicatorMode,
         paneHeader: FluentAnyView?,
         header: FluentAnyView?,
         content: FluentAnyView,
@@ -577,6 +610,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         self.paneSectionTitle = paneSectionTitle
         self.contentTransition = contentTransition
         self.paneMaterialOwnership = paneMaterialOwnership
+        self.selectionIndicatorMode = selectionIndicatorMode
+        indicatorAnimator.setMode(selectionIndicatorMode)
         self.paneHeader = paneHeader
         self.header = header
         self.content = content
@@ -685,6 +720,10 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             result.append(button)
         }
         available.values.flatMap { $0 }.forEach { button in
+            // During a collapse the child rows remain mounted as a short-lived visual layer so
+            // they can fade out while the rows below them move upward. They are removed by the
+            // transition completion instead of disappearing during this reconciliation pass.
+            if deferredRemovalButtons.contains(where: { $0 === button }) { return }
             navigationHoverCoordinator.remove(button)
             button.resetPointerState()
             button.removeFromSuperview()
@@ -760,10 +799,29 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     }
 
     private func animateExpansion(of id: ID, expanding: Bool) {
+        // A second click can arrive while the previous group is still moving. Capture the
+        // presentation geometry before cancelling those animations; restarting from model
+        // frames makes every row visibly snap to the previous destination first.
+        let mountedButtons = mainButtons + footerButtons + deferredRemovalButtons
+        let oldFrames = Dictionary(
+            uniqueKeysWithValues: mountedButtons.map {
+                (ObjectIdentifier($0), currentVisualFrame(of: $0))
+            }
+        )
+        expansionAnimationCoordinator.cancelAll(on: mountedButtons.compactMap(\.layer))
+        for pendingID in pendingExpansionTargets.keys {
+            expansionAnimationGenerations[pendingID, default: 0] &+= 1
+        }
+        pendingExpansionTargets.removeAll()
+        removeDeferredNavigationRows()
+
         let generation = expansionAnimationGenerations[id, default: 0] &+ 1
         expansionAnimationGenerations[id] = generation
         pendingExpansionTargets[id] = expanding
         expansionAnimationCoordinator.reduceMotion = context.reduceMotion
+        let expansionMotion = expanding
+            ? FluentMotion.navigationHeaderOpen
+            : FluentMotion.navigationHeaderClose
         let childIDs = descendantIDs(of: id, in: items + footerItems)
         if expanding {
             expandedItemIDs.insert(id)
@@ -771,21 +829,12 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             reconcileButtons()
             needsLayout = true
             layoutSubtreeIfNeeded()
+            animateNavigationReflow(from: oldFrames, motion: expansionMotion)
             let children = (mainButtons + footerButtons).filter { childIDs.contains($0.itemID) }
-            setLayerOpacity(children, to: 0)
-            let changes = children.compactMap { button -> FluentLayerAnimationChange? in
-                guard let layer = button.layer else { return nil }
-                return FluentLayerAnimationChange(
-                    layer: layer,
-                    key: "fluent.navigation.item.expansion",
-                    keyPath: "opacity",
-                    fromValue: 0,
-                    toValue: 1
-                ) { [weak layer] in layer?.opacity = 1 }
-            }
+            let changes = expansionChanges(for: children, expanding: true)
             expansionAnimationCoordinator.animateState(
                 changes,
-                motion: FluentMotionToken(duration: FluentMotion.navigationHeaderOpen.duration, curve: .controlFastOutSlowIn),
+                motion: expansionMotion,
                 animated: !context.reduceMotion,
                 completion: { [weak self] in
                     guard let self, self.expansionAnimationGenerations[id] == generation else { return }
@@ -796,19 +845,17 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             )
         } else {
             let children = (mainButtons + footerButtons).filter { childIDs.contains($0.itemID) }
-            let changes = children.compactMap { button -> FluentLayerAnimationChange? in
-                guard let layer = button.layer else { return nil }
-                return FluentLayerAnimationChange(
-                    layer: layer,
-                    key: "fluent.navigation.item.expansion",
-                    keyPath: "opacity",
-                    fromValue: nil,
-                    toValue: 0
-                ) { [weak layer] in layer?.opacity = 0 }
-            }
+            deferredRemovalButtons = children
+            deferredRemovalDocumentHeight = mainItemsView.frame.height
+            let changes = expansionChanges(for: children, expanding: false)
+            expandedItemIDs.remove(id)
+            reconcileButtons()
+            needsLayout = true
+            layoutSubtreeIfNeeded()
+            animateNavigationReflow(from: oldFrames, motion: expansionMotion)
             expansionAnimationCoordinator.animateState(
                 changes,
-                motion: FluentMotionToken(duration: FluentMotion.navigationHeaderOpen.duration, curve: .controlFastOutSlowIn),
+                motion: expansionMotion,
                 animated: !context.reduceMotion,
                 completion: { [weak self] in
                     guard let self, self.expansionAnimationGenerations[id] == generation else { return }
@@ -816,13 +863,96 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
                     self.pendingExpansionTargets[id] = nil
                     self.expansionAnimationGenerations[id] = nil
                     self.resetNavigationPointerState()
-                    self.reconcileButtons()
+                    self.removeDeferredNavigationRows()
                     self.needsLayout = true
                     self.layoutSubtreeIfNeeded()
                     self.updateSelectionIndicator(animated: true)
                 }
             )
         }
+    }
+
+    private func currentVisualFrame(of button: FluentNavigationItemButton<ID>) -> NSRect {
+        guard let layer = button.layer else { return button.frame }
+        let visualLayer = layer.presentation() ?? layer
+        let size = layer.bounds.size
+        return NSRect(
+            x: visualLayer.position.x - size.width * layer.anchorPoint.x,
+            y: visualLayer.position.y - size.height * layer.anchorPoint.y + visualLayer.transform.m42,
+            width: size.width,
+            height: size.height
+        )
+    }
+
+    private func expansionChanges(
+        for buttons: [FluentNavigationItemButton<ID>],
+        expanding: Bool
+    ) -> [FluentLayerAnimationChange] {
+        buttons.flatMap { button -> [FluentLayerAnimationChange] in
+            guard let layer = button.layer else { return [] }
+            // WinUI reveals hierarchy rows as one translated branch. Collapsing every child
+            // into the header point made long groups fan through one another. Keep their relative
+            // spacing and use a short vertical reveal while following rows reflow separately.
+            // Animate only the translation component: animating a view-backed layer's `position`
+            // mixes AppKit's flipped view geometry with Core Animation coordinates and caused the
+            // rows below an expanded group to fly horizontally outside the pane.
+            let opacity = FluentLayerAnimationChange(
+                layer: layer,
+                key: "fluent.navigation.item.expansion",
+                keyPath: "opacity",
+                fromValue: expanding ? 0 : nil,
+                toValue: expanding ? Float(1) : Float(0)
+            ) { [weak layer] in layer?.opacity = expanding ? 1 : 0 }
+            let position = FluentLayerAnimationChange(
+                layer: layer,
+                key: "fluent.navigation.item.expansion.position",
+                keyPath: "transform.translation.y",
+                fromValue: expanding ? -8 : 0,
+                toValue: expanding ? 0 : -8,
+                applyModelValue: {}
+            )
+            return [opacity, position]
+        }
+    }
+
+    private func removeDeferredNavigationRows() {
+        deferredRemovalButtons.forEach {
+            navigationHoverCoordinator.remove($0)
+            $0.removeFromSuperview()
+        }
+        deferredRemovalButtons.removeAll()
+        deferredRemovalDocumentHeight = nil
+    }
+
+    /// Animates the row geometry after the flattened visible-item list changes. The model frames
+    /// are already at their destination; explicit layer animations preserve that model while
+    /// letting existing rows slide around the newly inserted/removed branch.
+    private func animateNavigationReflow(
+        from oldFrames: [ObjectIdentifier: NSRect],
+        motion: FluentMotionToken
+    ) {
+        let changes = (mainButtons + footerButtons).flatMap { button -> [FluentLayerAnimationChange] in
+            guard let layer = button.layer,
+                  let oldFrame = oldFrames[ObjectIdentifier(button)],
+                  oldFrame != button.frame else { return [] }
+            // Group expansion is a vertical list operation. Keep each row's x coordinate and
+            // width at the freshly arranged value; interpolating those as well can make a row
+            // inherit a stale compact-pane coordinate and visibly slide sideways.
+            let verticalOffset = oldFrame.midY - button.frame.midY
+            return [FluentLayerAnimationChange(
+                layer: layer,
+                key: "fluent.navigation.item.reflow.position",
+                keyPath: "transform.translation.y",
+                fromValue: verticalOffset,
+                toValue: 0,
+                applyModelValue: {}
+            )]
+        }
+        expansionAnimationCoordinator.animateState(
+            changes,
+            motion: motion,
+            animated: !context.reduceMotion
+        )
     }
 
     private func setLayerOpacity(_ buttons: [FluentNavigationItemButton<ID>], to opacity: Float) {
@@ -950,7 +1080,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     private func layoutContentColumn(mode: FluentNavigationViewDisplayMode) {
         guard let headerHost else {
-            contentHost.frame = contentColumnFrame
+            arrangeContentHost(in: contentColumnFrame)
             return
         }
         let headerHeight = min(max(headerHost.fittingSize.height, 0), 160)
@@ -963,12 +1093,19 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             width: max(contentColumnFrame.width - leadingInset, 0),
             height: headerHeight
         )
-        contentHost.frame = NSRect(
+        arrangeContentHost(in: NSRect(
             x: contentColumnFrame.minX,
             y: contentColumnFrame.minY,
             width: contentColumnFrame.width,
             height: max(contentColumnFrame.height - headerHeight, 0)
-        )
+        ))
+    }
+
+    private func arrangeContentHost(in frame: NSRect) {
+        contentHost.frame = frame
+        guard frame.width > 0, frame.height > 0,
+              !contentHost.translatesAutoresizingMaskIntoConstraints else { return }
+        contentHost.translatesAutoresizingMaskIntoConstraints = true
     }
 
     private var resolvedPaneMaterialOwnership: FluentNavigationPaneMaterialOwnership {
@@ -1088,9 +1225,23 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         let buttonWidth = max(paneWidth - 8, 40)
         let documentHeight = max(
             CGFloat(visibleMainPairs.count) * (rowHeight + 2) + 4,
-            mainScrollView.contentSize.height
+            mainScrollView.contentSize.height,
+            deferredRemovalDocumentHeight ?? 0
         )
+        let previousScrollOrigin = mainScrollView.contentView.bounds.origin
         mainItemsView.frame = NSRect(x: 0, y: 0, width: paneWidth, height: documentHeight)
+        // NSScrollView may bottom-anchor a flipped document when its height changes. A hierarchy
+        // toggle must keep the user's viewport anchored instead of revealing a clipped row at the
+        // top or jumping several categories, as WinUI's ItemsRepeater scroll anchoring does.
+        let maximumScrollY = max(documentHeight - mainScrollView.contentView.bounds.height, 0)
+        let preservedScrollOrigin = NSPoint(
+            x: 0,
+            y: min(max(previousScrollOrigin.y, 0), maximumScrollY)
+        )
+        if mainScrollView.contentView.bounds.origin != preservedScrollOrigin {
+            mainScrollView.contentView.scroll(to: preservedScrollOrigin)
+            mainScrollView.reflectScrolledClipView(mainScrollView.contentView)
+        }
         for (index, pair) in visibleMainPairs.enumerated() {
             let button = pair.0
             button.frame = NSRect(
@@ -1306,7 +1457,9 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     }
 
     private func stabilizePaneGeometry() {
-        guard !isStabilizingPaneGeometry else { return }
+        guard !isStabilizingPaneGeometry,
+              paneView.bounds.width > 0,
+              paneView.bounds.height > 0 else { return }
         isStabilizingPaneGeometry = true
         defer { isStabilizingPaneGeometry = false }
 
@@ -1361,6 +1514,13 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         defer { isApplyingSelectionTransition = false }
         selectedID = resolved
         updateButtonConfigurations()
+        guard bounds.width > 0, bounds.height > 0 else {
+            // Match NavigationView's post-measure LayoutUpdated behavior: selection state may
+            // commit immediately, but geometry and animation wait for a non-empty arrange slot.
+            pendingIndicatorAnimation = pendingIndicatorAnimation || (animated && changed)
+            needsLayout = true
+            return
+        }
         layoutSubtreeIfNeeded()
         stabilizePaneGeometry()
         updateSelectionIndicator(animated: animated && changed)
@@ -1374,22 +1534,24 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         context.invalidate?()
     }
 
-    private func updateSelectionIndicator(animated: Bool) {
+    private func selectionIndicatorTarget() -> NSRect? {
         guard let selectedID,
               paneView.bounds.width > 0,
-              paneView.bounds.height > 0 else {
-            indicatorAnimator.update(
-                target: nil,
-                color: context.theme.accentFillDefault,
-                animated: false,
-                reduceMotion: context.reduceMotion
-            )
-            return
-        }
+              paneView.bounds.height > 0 else { return nil }
         let indicatorID = visibleIndicatorID(for: selectedID) ?? selectedID
         let selectedButton = (mainButtons + footerButtons).first(where: { $0.itemID == indicatorID && !$0.isHidden })
         let indicatorView: NSView? = selectedButton ?? (topOverflowButton.contains(indicatorID) ? topOverflowButton : nil)
-        guard let indicatorView else {
+        guard let indicatorView else { return nil }
+        let frame = indicatorView.convert(indicatorView.bounds, to: paneView)
+        if resolvedDisplayMode == .top {
+            return NSRect(x: frame.midX - 8, y: frame.maxY - 5, width: 16, height: 3)
+        }
+        let x = context.layoutDirection == .rightToLeft ? frame.maxX - 5 : frame.minX + 2
+        return NSRect(x: x, y: frame.midY - 8, width: 3, height: 16)
+    }
+
+    private func updateSelectionIndicator(animated: Bool) {
+        guard let target = selectionIndicatorTarget() else {
             indicatorAnimator.update(
                 target: nil,
                 color: context.theme.accentFillDefault,
@@ -1397,14 +1559,6 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
                 reduceMotion: context.reduceMotion
             )
             return
-        }
-        let frame = indicatorView.convert(indicatorView.bounds, to: paneView)
-        let target: NSRect
-        if resolvedDisplayMode == .top {
-            target = NSRect(x: frame.midX - 8, y: frame.maxY - 5, width: 16, height: 3)
-        } else {
-            let x = context.layoutDirection == .rightToLeft ? frame.maxX - 5 : frame.minX + 2
-            target = NSRect(x: x, y: frame.midY - 8, width: 3, height: 16)
         }
         indicatorAnimator.update(
             target: target,
@@ -1521,6 +1675,15 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         }
 
         let motion = open ? FluentMotion.navigationPaneOpen : FluentMotion.navigationPaneClose
+        let headerMotion = open ? FluentMotion.navigationHeaderOpen : FluentMotion.navigationHeaderClose
+        indicatorAnimator.relayout(
+            target: selectionIndicatorTarget(),
+            color: context.theme.accentFillDefault,
+            animated: true,
+            reduceMotion: context.reduceMotion,
+            duration: headerMotion.duration,
+            timingFunction: headerMotion.curve.timingFunction
+        )
         animateFrame(
             of: paneView,
             from: oldPaneFrame,
@@ -1539,8 +1702,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             animateFrame(
                 of: mainScrollView,
                 from: oldMainScrollFrame,
-                duration: FluentMotion.navigationHeaderOpen.duration,
-                timingFunction: FluentMotion.navigationHeaderOpen.curve.timingFunction,
+                duration: headerMotion.duration,
+                timingFunction: headerMotion.curve.timingFunction,
                 key: "fluent.navigation.header.frame"
             )
         }
@@ -1615,7 +1778,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         layer.add(opacity, forKey: "fluent.navigation.header.opacity")
 
         guard !open else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + FluentMotion.navigationHeaderOpen.duration) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + FluentMotion.navigationHeaderClose.duration) { [weak self] in
             guard let self,
                   self.sectionLabelTransitionGeneration == generation else { return }
             self.sectionLabelHost.isHidden = true

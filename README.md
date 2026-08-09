@@ -244,7 +244,10 @@ FLUENTKIT_SNAPSHOT_CAPTURE_PRESENTATION=1 \
 swift run FluentGallery
 ```
 
-Application-wide commands can opt into a native macOS main menu by conforming the app to `FluentApplicationCommands`. Command groups are rebuilt declaratively, preserve key equivalents and modifier masks, and reevaluate `isEnabled` when the menu validates:
+Every `FluentApp` installs a native App/File/Edit/View/Window/Help menu through
+`NSApplication.mainMenu`. Conform to `FluentApplicationCommands` to append application commands to
+those standard menus (or create additional named menus). Command groups are rebuilt declaratively,
+preserve key equivalents and modifier masks, and reevaluate `isEnabled` when the menu validates:
 
 ```swift
 @main
@@ -584,6 +587,33 @@ content.toolbar {
 }
 ```
 
+`FluentTabView` remains a lightweight in-window control. Set `canDragTabs` and a shared
+`dragScopeIdentifier` when separate tab views should exchange stable-ID items. For a complete
+browser-style workspace, `FluentWindowTabCoordinator` combines the Windows Fluent tab strip with
+native macOS windows: dragging within a strip reorders, dropping on another coordinated strip
+merges, and dropping elsewhere tears the tab into a new window. It disables AppKit's unrelated
+native title-bar tab system and keeps the same `FluentWindowTab` content value across moves.
+Within the strip's `tearOutDistance` buffer, the tab follows the pointer and neighboring tabs open
+a live insertion gap; after the pointer crosses that boundary, the drag switches to a scaled window
+preview for tear-out or cross-window merging.
+
+```swift
+let tabs = FluentWindowTabCoordinator(
+    configuration: FluentWindowTabConfiguration(windowControlsStyle: .windows),
+    onAddTabRequested: { groupID in makeDocumentTab() }
+)
+let groupID = tabs.open(
+    FluentWindowTab(id: document.id, title: document.title, systemImage: "doc.text") {
+        DocumentEditor(document)
+    }
+)
+_ = tabs.open(makeDocumentTab(), in: groupID)
+```
+
+The coordinator also exposes `move(tabID:to:at:)`, `detach(tabID:at:)`, close vetoes, group/window
+lookup, and a content-wrapper hook for applications that need an additional shell around each tab
+window. Keep the coordinator alive for as long as any of its windows are open.
+
 Value-driven navigation uses a binding to route identities and a destination closure: the native host keeps the window and responder chain alive while replacing only the route content.
 
 ```swift
@@ -638,7 +668,8 @@ FluentNavigationView(
     selection: $selection,
     isPaneOpen: $isPaneOpen,
     paneDisplayMode: .automatic,
-    contentTransition: .automatic
+    contentTransition: .automatic,
+    selectionIndicatorMode: .adaptive
 ) {
     FluentText("FluentKit")
 } header: {
@@ -648,10 +679,12 @@ FluentNavigationView(
 }
 ```
 
-Pane opening uses separate 350ms/120ms open and close curves. Destination changes use the shared
-two-indicator 600ms choreography in either vertical or horizontal orientation, with rapid-target and
-Reduce Motion handling. Arrow keys, Home/End, disabled destinations, accessibility selection, RTL
-ordering, overlay dismissal, and Top overflow all use the same stable selection model.
+Pane opening uses separate 350ms/120ms open and close curves. Selection-indicator motion can use
+the WinUI-style two-rail masked jump (`.jump`), a connected nearby transition (`.continuous`), or
+the default `.adaptive`, which stays continuous between nearby destinations and switches to the
+two-rail jump between distant destinations. All three support vertical and horizontal layouts and snap under Reduce
+Motion. Arrow keys, Home/End, disabled destinations, accessibility selection, RTL ordering, overlay
+dismissal, and Top overflow all use the same stable selection model.
 
 `FluentNavigationView` also owns its page transition presenter. `.automatic` follows the WinUI
 recommendation by using a direction-aware Slide transition for ordered Top destinations and an
@@ -660,8 +693,11 @@ Entrance transition elsewhere. `.crossFade`, `.slide`, `.drillIn`, `.entrance`, 
 only for the required phase, resumes interruptions from presentation values, settles rapid changes
 on the newest destination, and replaces immediately under Reduce Motion.
 
-`FluentTitleBar` provides reusable custom window chrome without replacing macOS traffic lights or
-the native main menu. Compact and expanded modes use 32pt and 48pt geometry; the title bar can own a
+`FluentTitleBar` provides reusable custom window chrome while keeping the native main menu. Its
+`windowControlsStyle` independently chooses native macOS traffic lights on the left or Windows-style
+Minimize/Maximize/Close controls on the right; both styles route commands through `NSWindow`, and
+switching back to `.macOS` restores the prior native buttons. Compact and expanded modes use 32pt
+and 48pt geometry; the title bar can own a
 shared pane binding, back action, icon, title/subtitle, and left/center/right declarative slots. It
 synchronizes the native window title, preserves drag and double-click behavior, mirrors content in
 RTL, and restores the prior AppKit chrome configuration when detached.
@@ -671,6 +707,7 @@ FluentVStack(spacing: 0, alignment: .width) {
     FluentTitleBar(
         title: "Workspace",
         heightMode: .expanded,
+        windowControlsStyle: .windows,
         isPaneToggleButtonVisible: true,
         isPaneOpen: $isPaneOpen
     )
@@ -700,7 +737,8 @@ FluentWindowShell(
         layout: .settings,
         paneTogglePlacement: .titleBar,
         searchPlacement: .titleBar,
-        backdrop: .liquidGlass
+        backdrop: .liquidGlass,
+        selectionIndicatorMode: .adaptive
     ),
     title: "Workspace",
     isBackButtonVisible: true,

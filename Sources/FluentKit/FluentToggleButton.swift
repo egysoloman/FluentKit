@@ -137,6 +137,7 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
             guard oldValue != title else { return }
             setAccessibilityTitle(title)
             invalidateIntrinsicContentSize()
+            synchronizeStateGlyphGeometry()
             needsDisplay = true
         }
     }
@@ -154,6 +155,8 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
         didSet {
             guard oldValue != allowsMixedState else { return }
             if !allowsMixedState, selectionState == .mixed { selectionState = .off }
+            invalidateIntrinsicContentSize()
+            synchronizeStateGlyphGeometry()
         }
     }
     public var onValueChanged: ((FluentToggleButtonState) -> Void)?
@@ -162,6 +165,7 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
     private let elevationBorderLayer = CAGradientLayer()
     private let elevationBorderMask = CAShapeLayer()
     private let focusLayer = CAShapeLayer()
+    private let stateGlyphLayer = CAShapeLayer()
     private var pointerTrackingArea: NSTrackingArea?
     private var isPointerOver = false
     private var isPointerPressed = false
@@ -194,8 +198,9 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
         let appearance = resolvedAppearance()
         let font = resolvedFont
         let text = (title as NSString).size(withAttributes: [.font: font])
+        let glyphWidth = allowsMixedState ? stateGlyphReservedWidth : 0
         return NSSize(
-            width: ceil(text.width + appearance.contentInsets.left + appearance.contentInsets.right),
+            width: ceil(text.width + glyphWidth + appearance.contentInsets.left + appearance.contentInsets.right),
             height: ceil(max(
                 theme.controlHeight(for: fluentControlSize),
                 text.height + appearance.contentInsets.top + appearance.contentInsets.bottom
@@ -226,15 +231,19 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
     private func synchronizeVisualGeometry() {
         updateElevationBorderGeometry(for: resolvedAppearance())
         updateFocusGeometry()
+        synchronizeStateGlyphGeometry()
     }
 
     public override func draw(_ dirtyRect: NSRect) {
         let appearance = resolvedAppearance()
         let font = resolvedFont
         let textSize = (title as NSString).size(withAttributes: [.font: font])
+        let glyphWidth = allowsMixedState ? stateGlyphReservedWidth : 0
+        let contentWidth = textSize.width + glyphWidth
+        let textOriginX = bounds.midX - contentWidth / 2 + glyphWidth
         let textRect = fluentSingleLineTextRect(
             NSRect(
-                x: bounds.midX - textSize.width / 2,
+                x: textOriginX,
                 y: 0,
                 width: textSize.width,
                 height: textSize.height
@@ -452,6 +461,14 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
         focusLayer.zPosition = 2
         focusLayer.opacity = 0
         layer?.addSublayer(focusLayer)
+
+        stateGlyphLayer.name = "FluentKit.ToggleButton.StateGlyph"
+        stateGlyphLayer.fillColor = NSColor.clear.cgColor
+        stateGlyphLayer.lineCap = .round
+        stateGlyphLayer.lineJoin = .round
+        stateGlyphLayer.zPosition = 2
+        stateGlyphLayer.opacity = 0
+        layer?.addSublayer(stateGlyphLayer)
         refreshAppearance(animated: false)
     }
 
@@ -499,6 +516,7 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
         }
         updateElevationBorderGeometry(for: appearance)
         updateFocusGeometry(appearance: appearance)
+        updateStateGlyph(appearance: appearance, animated: transition.isAnimated)
         needsDisplay = true
     }
 
@@ -533,6 +551,67 @@ public final class FluentToggleButton: NSControl, FluentControlSizeConfigurable 
         focusLayer.lineWidth = appearance.focusRingWidth
         focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
         CATransaction.commit()
+    }
+
+    /// WinUI maps Indeterminate to the same unaccented surface resources as Unchecked. Because
+    /// FluentKit's title-only API has no app-supplied content that can communicate that state, a
+    /// compact check/dash affordance is reserved for three-state buttons. The source surface,
+    /// typography, borders, and interaction resources remain unchanged.
+    private var stateGlyphReservedWidth: CGFloat {
+        18 * theme.density.metricScale * fluentControlSize.metricScale
+    }
+
+    private var stateGlyphSize: CGFloat {
+        12 * theme.density.metricScale * fluentControlSize.metricScale
+    }
+
+    private func synchronizeStateGlyphGeometry() {
+        let font = resolvedFont
+        let textSize = (title as NSString).size(withAttributes: [.font: font])
+        let glyphSize = stateGlyphSize
+        let groupWidth = textSize.width + stateGlyphReservedWidth
+        let frame = NSRect(
+            x: bounds.midX - groupWidth / 2,
+            y: bounds.midY - glyphSize / 2,
+            width: glyphSize,
+            height: glyphSize
+        )
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        stateGlyphLayer.frame = frame
+        stateGlyphLayer.lineWidth = max(1.5, glyphSize * 0.13)
+        CATransaction.commit()
+    }
+
+    private func updateStateGlyph(appearance: FluentButtonAppearance, animated: Bool) {
+        synchronizeStateGlyphGeometry()
+        let size = stateGlyphSize
+        let path = CGMutablePath()
+        switch selectionState {
+        case .off:
+            break
+        case .on:
+            path.move(to: CGPoint(x: size * 0.15, y: size * 0.50))
+            path.addLine(to: CGPoint(x: size * 0.39, y: size * 0.26))
+            path.addLine(to: CGPoint(x: size * 0.84, y: size * 0.75))
+        case .mixed:
+            path.move(to: CGPoint(x: size * 0.18, y: size * 0.50))
+            path.addLine(to: CGPoint(x: size * 0.82, y: size * 0.50))
+        }
+        let isVisible = allowsMixedState && selectionState != .off
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        stateGlyphLayer.path = path
+        stateGlyphLayer.strokeColor = appearance.foregroundColor.cgColor
+        stateGlyphLayer.opacity = isVisible ? 1 : 0
+        CATransaction.commit()
+        if animated {
+            let fade = CATransition()
+            fade.type = .fade
+            fade.duration = FluentMotion.controlFaster.duration
+            fade.timingFunction = FluentMotion.controlFaster.curve.timingFunction
+            stateGlyphLayer.add(fade, forKey: "fluent.toggleButton.stateGlyph")
+        }
     }
 }
 

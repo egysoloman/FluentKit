@@ -13,7 +13,7 @@ private struct GalleryNavigationSnapshot: FluentView {
     @FluentState private var isSidebarVisible = true
 
     var body: FluentAnyView {
-        FluentAnyView(
+        return FluentAnyView(
             FluentVStack(spacing: 14) {
                 FluentText("Navigation workspace", size: 24, weight: .semibold)
                 FluentText(
@@ -174,6 +174,7 @@ private struct GalleryNavigationShell: FluentView {
     let content: FluentAnyView
     let theme: FluentTheme
     let reduceMotion: Bool
+    let windowControlsStyle: FluentWindowControlsStyle
 
     var body: FluentAnyView {
         let navigationSelection = selection.map(
@@ -218,6 +219,7 @@ private struct GalleryNavigationShell: FluentView {
                 ? .standard
                 : (navigationPlacement == .top ? .topNavigation : .settings),
             titleBarStyle: titleBarStyle,
+            windowControlsStyle: windowControlsStyle,
             navigationPlacement: navigationPlacement,
             paneTogglePlacement: paneTogglePlacement,
             searchPlacement: searchPlacement,
@@ -267,6 +269,146 @@ private struct GalleryNavigationShell: FluentView {
     }
 }
 
+private struct GalleryTabDocument: Hashable {
+    let id: Int
+    let title: String
+    let systemImageName: String
+}
+
+private struct GalleryWindowTabDocumentView: FluentView {
+    let title: String
+    @FluentState private var notes = ""
+
+    init(title: String) { self.title = title }
+
+    var body: FluentAnyView {
+        FluentAnyView(
+            FluentNativeView(
+                GalleryWindowTabDocumentNativeView(title: title, notes: $notes)
+            )
+        )
+    }
+}
+
+private final class GalleryWindowTabDocumentNativeView: NSView, NSTextFieldDelegate {
+    private let titleLabel: NSTextField
+    private let descriptionLabel: NSTextField
+    private let notesField = NSTextField()
+    private let notes: FluentBinding<String>
+    private var notesObserverID: UUID?
+
+    override var isFlipped: Bool { true }
+
+    init(title: String, notes: FluentBinding<String>) {
+        self.notes = notes
+        titleLabel = NSTextField(labelWithString: title)
+        descriptionLabel = NSTextField(
+            labelWithString: "Drag this Fluent tab out to create a macOS window, or drop it into another window's tab strip."
+        )
+        super.init(frame: .zero)
+        identifier = NSUserInterfaceItemIdentifier("FluentGallery.WindowTabDocument")
+
+        titleLabel.font = NSFont.systemFont(ofSize: 24, weight: .semibold)
+        titleLabel.textColor = FluentTheme.current.textPrimary
+        descriptionLabel.font = NSFont.systemFont(ofSize: 14)
+        descriptionLabel.textColor = FluentTheme.current.textSecondary
+        descriptionLabel.lineBreakMode = .byTruncatingTail
+        notesField.font = NSFont.systemFont(ofSize: 14)
+        notesField.placeholderString = "State follows the tab between windows"
+        notesField.stringValue = notes.get()
+        notesField.delegate = self
+        notesField.identifier = NSUserInterfaceItemIdentifier("FluentGallery.WindowTabDocument.Notes")
+
+        addSubview(titleLabel)
+        addSubview(descriptionLabel)
+        addSubview(notesField)
+        notesObserverID = notes.observe { [weak self] value in
+            guard let self, self.notesField.stringValue != value else { return }
+            self.notesField.stringValue = value
+        }
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    deinit {
+        if let notesObserverID { notes.removeObserver(notesObserverID) }
+    }
+
+    override func layout() {
+        super.layout()
+        let left: CGFloat = 36
+        let availableWidth = max(0, bounds.width - left - 36)
+        let titleHeight = ceil(titleLabel.intrinsicContentSize.height)
+        let descriptionHeight = ceil(descriptionLabel.intrinsicContentSize.height)
+        titleLabel.frame = NSRect(x: left, y: 34, width: availableWidth, height: titleHeight)
+        descriptionLabel.frame = NSRect(
+            x: left,
+            y: titleLabel.frame.maxY + 14,
+            width: availableWidth,
+            height: descriptionHeight
+        )
+        notesField.frame = NSRect(
+            x: left,
+            y: descriptionLabel.frame.maxY + 14,
+            width: min(420, availableWidth),
+            height: 30
+        )
+    }
+
+    func controlTextDidChange(_ obj: Notification) {
+        notes.set(notesField.stringValue)
+    }
+}
+
+private final class GalleryWindowTabDemo {
+    static let shared = GalleryWindowTabDemo()
+
+    private var coordinators: [FluentWindowControlsStyle: FluentWindowTabCoordinator] = [:]
+    private var nextID = 1
+
+    private init() {}
+
+    private func coordinator(for style: FluentWindowControlsStyle) -> FluentWindowTabCoordinator {
+        if let coordinator = coordinators[style] { return coordinator }
+        let coordinator = FluentWindowTabCoordinator(
+            configuration: FluentWindowTabConfiguration(
+                size: NSSize(width: 880, height: 560),
+                minimumSize: NSSize(width: 560, height: 360),
+                material: .mica,
+                tabWidthMode: .equal,
+                closeButtonOverlayMode: .onPointerOver,
+                windowControlsStyle: style,
+                context: FluentRenderContext(theme: .current)
+            )
+        )
+        coordinator.onAddTabRequested = { [weak self] _ in self?.makeTab() }
+        coordinators[style] = coordinator
+        return coordinator
+    }
+
+    func open(style requestedStyle: FluentWindowControlsStyle? = nil) {
+        let style = requestedStyle ?? NSApp.keyWindow?.fluentWindowControlsStyle ?? .macOS
+        let coordinator = coordinator(for: style)
+        if let groupID = coordinator.groupIDs.first, let window = coordinator.window(for: groupID) {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+        let groupID = coordinator.open(makeTab(title: "Welcome"))
+        _ = coordinator.open(makeTab(title: "Documents"), in: groupID, select: false)
+        _ = coordinator.open(makeTab(title: "Activity"), in: groupID, select: false)
+    }
+
+    private func makeTab(title: String? = nil) -> FluentWindowTab {
+        let id = nextID
+        nextID += 1
+        let resolvedTitle = title ?? "Document \(id)"
+        return FluentWindowTab(id: id, title: resolvedTitle, systemImage: "doc.text") {
+            GalleryWindowTabDocumentView(title: resolvedTitle)
+        }
+    }
+}
+
 private struct WinUIStyleGalleryScreen: FluentView {
     private let applicationTheme: FluentThemeStore
     @FluentState private var page: GalleryPage = .overview
@@ -295,7 +437,15 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var selectedCollectionItems = Set([2])
     @FluentState private var navigationSelection: String? = "Library"
     @FluentState private var sidebarVisible = true
+    @FluentState private var selectedWorkspaceTab = 0
+    @FluentState private var workspaceTabs = [
+        GalleryTabDocument(id: 1, title: "Overview", systemImageName: "square.grid.2x2"),
+        GalleryTabDocument(id: 2, title: "Documents", systemImageName: "doc.text"),
+        GalleryTabDocument(id: 3, title: "Activity", systemImageName: "clock")
+    ]
+    @FluentState private var nextWorkspaceTabID = 4
     @FluentState private var reduceMotion = false
+    @FluentState private var windowControlsStyle: FluentWindowControlsStyle = .macOS
     @FluentState private var teachingTipVisible = false
     @FluentState private var rtlEnabled = false
     @FluentState private var accessibilityLabel = "Notifications control"
@@ -337,6 +487,11 @@ private struct WinUIStyleGalleryScreen: FluentView {
         _reduceMotion = FluentState(
             wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_REDUCE_MOTION"] == "1"
         )
+        _windowControlsStyle = FluentState(
+            wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_WINDOW_CONTROLS_STYLE"] == "windows"
+                ? .windows
+                : .macOS
+        )
         _teachingTipVisible = FluentState(
             wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_TEACHING_TIP"] == "1"
         )
@@ -361,7 +516,8 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 search: $search,
                 content: content,
                 theme: theme,
-                reduceMotion: reduceMotion
+                reduceMotion: reduceMotion,
+                windowControlsStyle: windowControlsStyle
             )
                 .fluentTheme(applicationTheme)
                 .fluentLayoutDirection(rtlEnabled ? .rightToLeft : .leftToRight)
@@ -378,7 +534,7 @@ private struct WinUIStyleGalleryScreen: FluentView {
         case .motion: return motionPage(theme)
         case .application: return applicationPage(theme)
         case .accessibility: return accessibilityPage(theme)
-        case .settings: return motionPage(theme)
+        case .settings: return settingsPage(theme)
         }
     }
 
@@ -714,9 +870,81 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func navigationPage(_ theme: FluentTheme) -> FluentAnyView {
-        FluentAnyView(
+        let tabs = workspaceTabs.map { document in
+            FluentTabItem(
+                id: document.id,
+                title: document.title,
+                systemImage: document.systemImageName
+            ) {
+                FluentVStack(spacing: 8) {
+                    FluentText(document.title, style: .title2)
+                    FluentText(
+                        "Stable tab identity keeps this declarative page mounted while selection changes.",
+                        style: .body,
+                        color: theme.textSecondary
+                    )
+                }
+                .padding(24)
+            }
+        }
+        return FluentAnyView(
             FluentVStack(spacing: 16) {
-                pageIntroduction("A split view keeps the sidebar and detail column mounted together.", theme: theme)
+                pageIntroduction("Source-mapped tab and split navigation keep destination identity stable.", theme: theme)
+                FluentVStack(spacing: 8) {
+                    FluentText("TabView", style: .headline)
+                    FluentTabView(
+                        items: tabs,
+                        selectedIndex: $selectedWorkspaceTab,
+                        tabWidthMode: .equal,
+                        closeButtonOverlayMode: .onPointerOver,
+                        isAddTabButtonVisible: true,
+                        onAddTabButtonClick: {
+                            let id = nextWorkspaceTabID
+                            nextWorkspaceTabID += 1
+                            workspaceTabs.append(
+                                GalleryTabDocument(
+                                    id: id,
+                                    title: "Document \(id)",
+                                    systemImageName: "doc"
+                                )
+                            )
+                            selectedWorkspaceTab = workspaceTabs.count - 1
+                        },
+                        onTabCloseRequested: { index in
+                            guard workspaceTabs.indices.contains(index) else { return }
+                            workspaceTabs.remove(at: index)
+                            selectedWorkspaceTab = workspaceTabs.isEmpty
+                                ? -1
+                                : min(selectedWorkspaceTab, workspaceTabs.count - 1)
+                        },
+                        onTabMoveRequested: { fromIndex, toIndex in
+                            guard workspaceTabs.indices.contains(fromIndex),
+                                  workspaceTabs.indices.contains(toIndex),
+                                  fromIndex != toIndex else { return }
+                            let selectedID = workspaceTabs.indices.contains(selectedWorkspaceTab)
+                                ? workspaceTabs[selectedWorkspaceTab].id
+                                : nil
+                            let moved = workspaceTabs.remove(at: fromIndex)
+                            workspaceTabs.insert(moved, at: toIndex)
+                            if let selectedID,
+                               let nextSelection = workspaceTabs.firstIndex(where: { $0.id == selectedID }) {
+                                selectedWorkspaceTab = nextSelection
+                            }
+                        }
+                    )
+                    .frame(height: 220)
+                    FluentHStack(spacing: 12) {
+                        FluentButtonView("Open detachable window tabs") {
+                            GalleryWindowTabDemo.shared.open(style: windowControlsStyle)
+                        }
+                        .buttonStyle(FluentAccentButtonStyle())
+                        FluentText(
+                            "Windows-style Fluent tabs with native macOS window tear-out and merge behavior.",
+                            style: .caption,
+                            color: theme.textSecondary
+                        )
+                    }
+                }
                 FluentToggleView("Show sidebar", isOn: $sidebarVisible)
                 FluentNavigationSplitView(["Home", "Library", "Settings"], id: { $0 }, selection: $navigationSelection, isSidebarVisible: $sidebarVisible, sidebarWidth: 180...300, idealSidebarWidth: 220) { item in
                     FluentText(item, style: .body)
@@ -735,25 +963,12 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func motionPage(_ theme: FluentTheme) -> FluentAnyView {
-        let materialBinding = FluentBinding<Bool>(
-            get: { applicationTheme.resolvedTheme.materialEffectsEnabled },
-            set: {
-                applicationTheme.theme = applicationTheme.resolvedTheme.with(materialEffectsEnabled: $0)
-            }
-        )
         return FluentAnyView(
             FluentVStack(spacing: 18) {
-                pageIntroduction("Material, contrast, and animation are application-level concerns.", theme: theme)
-                FluentToggleView("Reduce motion", isOn: $reduceMotion)
-                FluentToggleView("Liquid Glass surfaces", isOn: materialBinding)
-                FluentHStack(spacing: 10) {
-                    FluentButtonView("Light", role: theme.isDark ? .standard : .primary) {
-                        applicationTheme.preference = .light
-                    }
-                    FluentButtonView("Dark", role: theme.isDark ? .primary : .standard) {
-                        applicationTheme.preference = .dark
-                    }
-                }
+                pageIntroduction(
+                    "Preview Fluent motion and transient theme surfaces; application preferences live in Settings.",
+                    theme: theme
+                )
                 FluentButtonView("Show teaching tip") {
                     teachingTipVisible = true
                 }
@@ -772,11 +987,89 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 FluentMaterialSurface(role: .transient, cornerRadius: theme.cardCornerRadius) {
                     FluentVStack(spacing: 10) {
                         FluentText("Material surface", style: .headline)
-                        FluentText("Liquid Glass follows the global surface switch.", style: .body, color: theme.textSecondary)
+                        FluentText(
+                            "Liquid Glass follows the global switch configured in Settings.",
+                            style: .body,
+                            color: theme.textSecondary
+                        )
                     }
                     .padding(20)
                 }
                 .frame(width: 500)
+            }
+        )
+    }
+
+    private func settingsPage(_ theme: FluentTheme) -> FluentAnyView {
+        let appearanceSelection = FluentBinding<Int>(
+            get: {
+                switch applicationTheme.preference {
+                case .system: return 0
+                case .light: return 1
+                case .dark: return 2
+                }
+            },
+            set: { selection in
+                applicationTheme.preference = switch selection {
+                case 1: .light
+                case 2: .dark
+                default: .system
+                }
+            }
+        )
+        let controlsSelection = FluentBinding<Int>(
+            get: { windowControlsStyle == .macOS ? 0 : 1 },
+            set: { windowControlsStyle = $0 == 1 ? .windows : .macOS }
+        )
+        let materialBinding = FluentBinding<Bool>(
+            get: { applicationTheme.resolvedTheme.materialEffectsEnabled },
+            set: {
+                let preference = applicationTheme.preference
+                applicationTheme.theme = applicationTheme.resolvedTheme.with(materialEffectsEnabled: $0)
+                applicationTheme.preference = preference
+            }
+        )
+        return FluentAnyView(
+            FluentVStack(spacing: 18) {
+                pageIntroduction(
+                    "Application appearance and interaction preferences update the mounted window immediately.",
+                    theme: theme
+                )
+                FluentVStack(spacing: 12) {
+                    FluentText("Appearance", style: .headline)
+                    FluentSegmentedControl(
+                        ["System", "Light", "Dark"],
+                        selection: appearanceSelection
+                    )
+                    FluentText(
+                        "System follows the current macOS appearance.",
+                        style: .caption,
+                        color: theme.textSecondary
+                    )
+                }
+                .cardStyle(FluentPlainCardStyle())
+                FluentVStack(spacing: 12) {
+                    FluentText("Window controls", style: .headline)
+                    FluentSegmentedControl(
+                        ["macOS", "Windows"],
+                        selection: controlsSelection
+                    )
+                    FluentText(
+                        windowControlsStyle == .windows
+                            ? "Minimize, Maximize, and Close are placed on the right."
+                            : "Native red, yellow, and green controls remain on the left.",
+                        style: .caption,
+                        color: theme.textSecondary
+                    )
+                }
+                .cardStyle(FluentPlainCardStyle())
+                FluentVStack(spacing: 12) {
+                    FluentText("Interaction", style: .headline)
+                    FluentToggleView("Reduce motion", isOn: $reduceMotion)
+                    FluentToggleView("Liquid Glass surfaces", isOn: materialBinding)
+                    FluentToggleView("Right-to-left layout", isOn: $rtlEnabled)
+                }
+                .cardStyle(FluentPlainCardStyle())
             }
         )
     }
@@ -1585,6 +1878,7 @@ final class GalleryWindowController: NSWindowController {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var controller: GalleryWindowController!
+    private var mainMenuCoordinator: FluentMainMenuCoordinator?
     private var snapshotPresentationPrepared = false
 
     private var snapshotPresentationDelay: TimeInterval {
@@ -1600,6 +1894,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        let menuCoordinator = FluentMainMenuCoordinator(
+            applicationName: "FluentKit Gallery",
+            groups: [
+                FluentCommandGroup("File") {
+                    FluentCommand("Open Detachable Window", keyEquivalent: "t") {
+                        GalleryWindowTabDemo.shared.open()
+                    }
+                }
+            ]
+        )
+        menuCoordinator.install(on: NSApp)
+        mainMenuCoordinator = menuCoordinator
         controller = GalleryWindowController()
         let snapshotRequested = ProcessInfo.processInfo.environment["FLUENTKIT_SNAPSHOT_PATH"] != nil
         if !snapshotRequested {

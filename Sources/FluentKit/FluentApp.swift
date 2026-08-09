@@ -52,6 +52,7 @@ public struct FluentWindowDescription {
     public let restoration: FluentWindowRestoration
     public let role: FluentWindowRole
     public let tabbing: FluentWindowTabbing
+    public let windowControlsStyle: FluentWindowControlsStyle
     public let initiallyVisible: Bool
     public let context: FluentRenderContext
 
@@ -66,6 +67,7 @@ public struct FluentWindowDescription {
         restoration: FluentWindowRestoration = .automatic,
         role: FluentWindowRole = .standard,
         tabbing: FluentWindowTabbing = .automatic,
+        windowControlsStyle: FluentWindowControlsStyle = .macOS,
         initiallyVisible: Bool = true,
         context: FluentRenderContext = .init(),
         content: FluentAnyView
@@ -82,6 +84,7 @@ public struct FluentWindowDescription {
         self.restoration = restoration
         self.role = role
         self.tabbing = tabbing
+        self.windowControlsStyle = windowControlsStyle
         self.initiallyVisible = initiallyVisible
         self.context = context
     }
@@ -169,6 +172,7 @@ public struct FluentWindowScene<Content: FluentView>: FluentScene {
         restoration: FluentWindowRestoration = .automatic,
         role: FluentWindowRole = .standard,
         tabbing: FluentWindowTabbing = .automatic,
+        windowControlsStyle: FluentWindowControlsStyle = .macOS,
         initiallyVisible: Bool = true,
         theme: FluentTheme = FluentTheme(),
         spacing: CGFloat = 12,
@@ -187,6 +191,7 @@ public struct FluentWindowScene<Content: FluentView>: FluentScene {
             restoration: restoration,
             role: role,
             tabbing: tabbing,
+            windowControlsStyle: windowControlsStyle,
             initiallyVisible: initiallyVisible,
             context: FluentRenderContext(theme: theme, spacing: spacing, animationDuration: animationDuration, animationTimingFunction: animationTimingFunction),
             content: FluentAnyView(content())
@@ -534,17 +539,15 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
             windows: coordinator
         )
         self.servicesCoordinator = servicesCoordinator
-        if commandProvider != nil || coordinator.settingsWindowID != nil || applicationServicesProvider != nil {
-            let menuCoordinator = FluentMainMenuCoordinator(
-                applicationName: ProcessInfo.processInfo.processName,
-                groups: commandProvider?.applicationCommandGroups ?? [],
-                settingsAction: coordinator.settingsWindowID.map { settingsID in
-                    { [weak coordinator] in _ = coordinator?.open(id: settingsID) }
-                }
-            )
-            menuCoordinator.install(on: NSApp)
-            mainMenuCoordinator = menuCoordinator
-        }
+        let menuCoordinator = FluentMainMenuCoordinator(
+            applicationName: ProcessInfo.processInfo.processName,
+            groups: commandProvider?.applicationCommandGroups ?? [],
+            settingsAction: coordinator.settingsWindowID.map { settingsID in
+                { [weak coordinator] in _ = coordinator?.open(id: settingsID) }
+            }
+        )
+        menuCoordinator.install(on: NSApp)
+        mainMenuCoordinator = menuCoordinator
         servicesCoordinator.installServices(on: NSApp)
         coordinator.openInitiallyVisibleWindows()
         windows = descriptions.compactMap { coordinator.window(for: $0.id) }
@@ -632,6 +635,7 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
         window.contentMinSize = description.minimumSize
         window.minSize = description.minimumSize
         window.isReleasedWhenClosed = false
+        window.applyFluentWindowControlsStyle(description.windowControlsStyle)
         switch description.tabbing {
         case .automatic:
             window.tabbingMode = .automatic

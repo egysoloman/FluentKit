@@ -97,6 +97,10 @@ final class FluentTextEditingSession {
         guard let editor = editor ?? control?.currentEditor() as? NSTextView else { return }
         self.editor = editor
         let preservedSelection = editor.selectedRange()
+        // The window-owned field editor becomes first responder in place of FluentTextField.
+        // Its default focus ring can otherwise leak through after content is remounted into a
+        // detached tab window, drawing AppKit's blue rectangle over Fluent's bottom accent.
+        if editor.focusRingType != .none { editor.focusRingType = .none }
         if editor.isVerticallyResizable { editor.isVerticallyResizable = false }
         if !editor.isHorizontallyResizable { editor.isHorizontallyResizable = true }
         configureFluentSingleLineFieldEditor(editor)

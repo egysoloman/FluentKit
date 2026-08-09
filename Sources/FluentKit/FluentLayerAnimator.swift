@@ -1,21 +1,22 @@
 import AppKit
 
-/// Changes a layer's transform origin without moving its untransformed frame. Call this before
-/// installing a transform animation; once a non-identity transform is active, `frame` is no
-/// longer a reliable geometry source.
-func fluentSetAnchorPoint(_ anchorPoint: CGPoint, preservingFrameOf layer: CALayer) {
-    let previousAnchor = layer.anchorPoint
-    guard previousAnchor != anchorPoint else { return }
-    let previousPosition = layer.position
-    let size = layer.bounds.size
-    CATransaction.begin()
-    CATransaction.setDisableActions(true)
-    layer.anchorPoint = anchorPoint
-    layer.position = CGPoint(
-        x: previousPosition.x + (anchorPoint.x - previousAnchor.x) * size.width,
-        y: previousPosition.y + (anchorPoint.y - previousAnchor.y) * size.height
+/// Builds a scale transform around a point in the layer's local bounds without changing the
+/// shared layer anchor. Edge-revealed surfaces otherwise drift toward Core Animation's default
+/// center anchor instead of remaining attached to the popup edge nearest their trigger.
+func fluentScaleTransform(
+    scaleX: CGFloat,
+    scaleY: CGFloat,
+    around pivot: CGPoint,
+    in layer: CALayer
+) -> CATransform3D {
+    let anchor = CGPoint(
+        x: layer.bounds.minX + layer.bounds.width * layer.anchorPoint.x,
+        y: layer.bounds.minY + layer.bounds.height * layer.anchorPoint.y
     )
-    CATransaction.commit()
+    var transform = CATransform3DMakeScale(scaleX, scaleY, 1)
+    transform.m41 = (pivot.x - anchor.x) * (1 - scaleX)
+    transform.m42 = (pivot.y - anchor.y) * (1 - scaleY)
+    return transform
 }
 
 struct FluentLayerAnimationChange {

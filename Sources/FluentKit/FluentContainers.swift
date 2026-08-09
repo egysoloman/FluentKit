@@ -31,7 +31,7 @@ public struct FluentScrollView<Content: FluentView>: FluentUpdatablePrimitiveVie
         scroll.autohidesScrollers = true
         scroll.borderType = .noBorder
         let contentView = content._mount(in: context)
-        let document = FluentScrollDocumentView(contentView: contentView)
+        let document = FluentScrollDocumentView(contentView: contentView, axis: axis)
         document.translatesAutoresizingMaskIntoConstraints = false
         scroll.documentView = document
         if axis == .vertical {
@@ -70,16 +70,30 @@ private final class FluentScrollDocumentView: NSView {
 
     override var isFlipped: Bool { true }
 
-    init(contentView: NSView) {
+    init(contentView: NSView, axis: FluentScrollAxis) {
         self.contentView = contentView
         super.init(frame: .zero)
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
+        let trailing = contentView.trailingAnchor.constraint(equalTo: trailingAnchor)
+        let bottom = contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        // A scroll viewport may be larger than its document's natural content. Along a scrolling
+        // axis, keep content packed against the leading edge instead of stretching stacks to the
+        // opposite edge; stretching is what made collapsed expanders redistribute empty space
+        // through SettingsSection. The equality remains a sizing hint when content is larger.
+        if axis != .horizontal {
+            bottom.priority = .defaultHigh
+            contentView.setContentHuggingPriority(.required, for: .vertical)
+        }
+        if axis != .vertical {
+            trailing.priority = .defaultHigh
+            contentView.setContentHuggingPriority(.required, for: .horizontal)
+        }
         NSLayoutConstraint.activate([
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            trailing,
             contentView.topAnchor.constraint(equalTo: topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+            bottom
         ])
     }
 

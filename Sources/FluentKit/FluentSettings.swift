@@ -203,8 +203,18 @@ public struct FluentSettingsExpanderView<Action: FluentView, Content: FluentView
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentSettingsExpanderHost else { return false }
-        guard host.updateAction?(host.actionView, context) ?? false,
-              host.updateContent?(host.contentView, context) ?? false else { return false }
+        // Update with the new value's closures, not the callbacks captured when the host was
+        // first mounted. Type-erased Gallery samples have the same outer Content type while the
+        // underlying control changes; replaying the old callback kept Button mounted on the
+        // CheckBox page and RadioButton mounted on the Slider page.
+        guard action._update(host.actionView, in: context),
+              content._update(host.contentView, in: context) else { return false }
+        host.updateAction = { [action] nativeView, updateContext in
+            action._update(nativeView, in: updateContext)
+        }
+        host.updateContent = { [content] nativeView, updateContext in
+            content._update(nativeView, in: updateContext)
+        }
         host.update(
             title: title,
             description: description,
@@ -343,6 +353,7 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
 
         row.orientation = .horizontal
         row.alignment = .centerY
+        row.distribution = .fill
         row.spacing = 12
         row.translatesAutoresizingMaskIntoConstraints = false
         addSubview(row)
@@ -385,7 +396,8 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
-        guard bounds.contains(point), isEnabled else { return nil }
+        let localPoint = superview.map { convert(point, from: $0) } ?? point
+        guard bounds.contains(localPoint), isEnabled else { return nil }
         let target = super.hitTest(point)
         if hasAction,
            let target,
@@ -1012,8 +1024,10 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
 
     private func measuredContentHeight() -> CGFloat {
         layoutSubtreeIfNeeded()
+        let intrinsic = contentView.intrinsicContentSize.height
         let fitting = contentView.fittingSize.height
-        return max(fitting + 20, 20)
+        let desired = intrinsic == NSView.noIntrinsicMetric ? fitting : intrinsic
+        return max(desired + 20, 20)
     }
 
     private func applyExpanded(animated: Bool, force: Bool = false) {
@@ -1046,16 +1060,13 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
             update: { [weak self] value in
                 guard let self else { return }
                 self.contentHeight.constant = value
-                self.invalidateIntrinsicContentSize()
-                self.needsLayout = true
-                self.superview?.layoutSubtreeIfNeeded()
+                self.invalidateExpandedLayout()
             },
             completion: { [weak self] in
                 guard let self, self.expansionGeneration == generation else { return }
                 self.contentContainer.isHidden = !expanded
                 self.contentHeight.constant = target
-                self.invalidateIntrinsicContentSize()
-                self.needsLayout = true
+                self.invalidateExpandedLayout()
             }
         )
         header.setChevronExpanded(expanded, animated: effectiveAnimated)
@@ -1074,6 +1085,20 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
                 animated: effectiveAnimated
             )
         }
+    }
+
+    private func invalidateExpandedLayout() {
+        // NSStackView updates this control's frame as the height constraint animates, but custom
+        // wrapper and scroll-document views do not automatically invalidate their own forwarded
+        // fitting sizes. Propagate the new DesiredSize to the window root before hit-testing or
+        // scroll tiling, matching WinUI's upward Measure invalidation.
+        var view: NSView? = self
+        while let current = view {
+            current.invalidateIntrinsicContentSize()
+            current.needsLayout = true
+            view = current.superview
+        }
+        window?.contentView?.layoutSubtreeIfNeeded()
     }
 
     private func applySurface() {

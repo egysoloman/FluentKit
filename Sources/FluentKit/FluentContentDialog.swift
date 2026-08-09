@@ -345,6 +345,11 @@ private final class FluentContentDialogHost<DialogContent: FluentView>: NSView {
             return
         }
 
+        // A newly granted coordinator generation must never inherit a pending decision or close
+        // guard from the presenter it replaced. This also keeps a rapid reopen immediately
+        // dismissible when an old Core Animation completion is delivered late.
+        closeDecisionPending = false
+        isClosing = false
         generation &+= 1
         let currentGeneration = generation
         var presentationContext = context
@@ -544,9 +549,14 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
             return
         }
         prepareForPresentation()
-        fluentSetAnchorPoint(
-            CGPoint(x: 0.5, y: 0.5),
-            preservingFrameOf: surfaceLayer
+        // AppKit owns the geometry of this backing layer. Changing its anchorPoint can be
+        // overwritten by a later layout pass and makes a rapid open-to-close handoff use a stale
+        // pivot. Encode the centered pivot entirely in the transform instead.
+        let centeredOpenTransform = fluentScaleTransform(
+            scaleX: FluentMotion.contentDialogOpen.scale,
+            scaleY: FluentMotion.contentDialogOpen.scale,
+            around: CGPoint(x: surfaceLayer.bounds.midX, y: surfaceLayer.bounds.midY),
+            in: surfaceLayer
         )
         beginTransition(.presenting, completion: completion)
         animationCoordinator.animateTransition(
@@ -554,10 +564,10 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
                 FluentLayerAnimationChange(
                     layer: surfaceLayer,
                     key: "fluent.contentDialog.scale",
-                    keyPath: "transform.scale",
-                    fromValue: FluentMotion.contentDialogOpen.scale,
-                    toValue: CGFloat(1),
-                    applyModelValue: { surfaceLayer.setValue(CGFloat(1), forKeyPath: "transform.scale") }
+                    keyPath: "transform",
+                    fromValue: NSValue(caTransform3D: centeredOpenTransform),
+                    toValue: NSValue(caTransform3D: CATransform3DIdentity),
+                    applyModelValue: { surfaceLayer.transform = CATransform3DIdentity }
                 )
             ],
             motion: FluentMotion.contentDialogOpen,
@@ -595,17 +605,21 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
             completion?()
             return
         }
+        let centeredCloseTransform = fluentScaleTransform(
+            scaleX: FluentMotion.contentDialogClose.scale,
+            scaleY: FluentMotion.contentDialogClose.scale,
+            around: CGPoint(x: surfaceLayer.bounds.midX, y: surfaceLayer.bounds.midY),
+            in: surfaceLayer
+        )
         beginTransition(.dismissing, completion: completion)
         animationCoordinator.animateTransition(
             [
                 FluentLayerAnimationChange(
                     layer: surfaceLayer,
                     key: "fluent.contentDialog.scale",
-                    keyPath: "transform.scale",
-                    toValue: FluentMotion.contentDialogClose.scale,
-                    applyModelValue: {
-                        surfaceLayer.setValue(FluentMotion.contentDialogClose.scale, forKeyPath: "transform.scale")
-                    }
+                    keyPath: "transform",
+                    toValue: NSValue(caTransform3D: centeredCloseTransform),
+                    applyModelValue: { surfaceLayer.transform = centeredCloseTransform }
                 )
             ],
             motion: FluentMotion.contentDialogClose,
@@ -681,11 +695,16 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
         CATransaction.setDisableActions(true)
         switch phase {
         case .presenting:
-            surfaceLayer.setValue(CGFloat(1), forKeyPath: "transform.scale")
+            surfaceLayer.transform = CATransform3DIdentity
             surfaceLayer.opacity = 1
             dimmingLayer.opacity = 1
         case .dismissing:
-            surfaceLayer.setValue(FluentMotion.contentDialogClose.scale, forKeyPath: "transform.scale")
+            surfaceLayer.transform = fluentScaleTransform(
+                scaleX: FluentMotion.contentDialogClose.scale,
+                scaleY: FluentMotion.contentDialogClose.scale,
+                around: CGPoint(x: surfaceLayer.bounds.midX, y: surfaceLayer.bounds.midY),
+                in: surfaceLayer
+            )
             surfaceLayer.opacity = 0
             dimmingLayer.opacity = 0
         case .idle:

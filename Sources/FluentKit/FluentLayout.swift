@@ -261,6 +261,18 @@ private class FluentLayoutContainer: NSView, FluentFillWidthProviding {
         trailing = child.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right)
         top = child.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
         bottom = child.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
+        // WinUI's LayoutPanel subtracts padding from the available size and clamps the result to
+        // zero before arranging children. Auto Layout has no equivalent measure/arrange phase: a
+        // required trailing/bottom equality would instead demand a negative child size while an
+        // ancestor is temporarily zero-sized. Keep the leading/top origin stable and make the far
+        // edges strong sizing boundaries that may yield until a real layout slot is available.
+        let boundaryPriority = NSLayoutConstraint.Priority(rawValue: 999)
+        trailing?.priority = boundaryPriority
+        bottom?.priority = boundaryPriority
+        leading?.identifier = "FluentKit.LayoutBoundary.Leading"
+        trailing?.identifier = "FluentKit.LayoutBoundary.Trailing"
+        top?.identifier = "FluentKit.LayoutBoundary.Top"
+        bottom?.identifier = "FluentKit.LayoutBoundary.Bottom"
         NSLayoutConstraint.activate([leading!, trailing!, top!, bottom!])
         invalidateIntrinsicContentSize()
     }
