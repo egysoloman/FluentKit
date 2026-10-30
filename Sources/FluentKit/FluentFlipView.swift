@@ -2,6 +2,8 @@ import AppKit
 
 /// A WinUI-style horizontal paging control. Items occupy one viewport at a time and can be
 /// navigated with the overlaid previous/next buttons or the Left/Right arrow keys.
+/// Selection is zero-based and clamped to the available range, or `-1` for an empty collection.
+/// Data changes synchronize that normalized index back to the optional binding.
 public struct FluentFlipView<Data: RandomAccessCollection, Content: FluentView>:
     FluentUpdatablePrimitiveView {
     private let data: Data
@@ -88,11 +90,13 @@ private final class FluentFlipViewHost: NSView {
     private var contentHosts: [NSView] = []
     private var selectionBinding: FluentBinding<Int>?
     private var selectionObserverID: UUID?
+    private var selectionObservationGeneration: UInt64 = 0
     private var onSelectionChanged: ((Int) -> Void)?
     private var context: FluentRenderContext
     private var selectedIndex = 0
     private var isWritingBinding = false
     private var animationGeneration = 0
+    private var isTransitioning = false
     private let animationCoordinator = FluentAnimationCoordinator()
 
     init(
@@ -133,9 +137,10 @@ private final class FluentFlipViewHost: NSView {
         addSubview(nextButton)
 
         animationCoordinator.reduceMotion = context.reduceMotion
-        rebuildContentHosts(animated: false)
+        rebuildContentHosts()
         selectedIndex = clamped(selection?.get() ?? 0)
-        showCurrent(animated: false)
+        synchronizeSelectionBinding()
+        showCurrent()
         updateAccessibilityValue()
         updateButtonState()
         installSelectionObserver()
@@ -197,13 +202,14 @@ private final class FluentFlipViewHost: NSView {
         onSelectionChanged: ((Int) -> Void)?,
         context: FluentRenderContext
     ) {
+        // Detach from the old source before replacing its binding, including queued deliveries.
+        removeSelectionObserver()
         selectionBinding = selection
         self.onSelectionChanged = onSelectionChanged
         self.context = context
         animationCoordinator.reduceMotion = context.reduceMotion
         previousButton.theme = context.theme
         nextButton.theme = context.theme
-        installSelectionObserver()
 
         let canReuse = self.records.count == records.count
         var reuseFailed = false
@@ -218,14 +224,16 @@ private final class FluentFlipViewHost: NSView {
         }
         self.records = records
         if !canReuse || reuseFailed {
-            rebuildContentHosts(animated: false)
+            rebuildContentHosts()
         }
         let target = clamped(selection?.get() ?? selectedIndex)
         if target != selectedIndex {
             commit(to: target, animated: false)
         } else {
-            showCurrent(animated: false)
+            synchronizeSelectionBinding()
+            if !isTransitioning || context.reduceMotion { showCurrent() }
         }
+        installSelectionObserver()
         updateAccessibilityValue()
         updateButtonState()
         needsLayout = true
@@ -252,24 +260,30 @@ private final class FluentFlipViewHost: NSView {
     private func select(_ index: Int, animated: Bool) {
         let target = clamped(index)
         guard target >= 0, target != selectedIndex else { return }
-        if let selectionBinding, !isWritingBinding {
-            isWritingBinding = true
-            selectionBinding.set(target)
-            isWritingBinding = false
-        }
         commit(to: target, animated: animated)
+    }
+
+    private func synchronizeSelectionBinding() {
+        guard let selectionBinding, !isWritingBinding, selectionBinding.get() != selectedIndex else { return }
+        isWritingBinding = true
+        defer { isWritingBinding = false }
+        selectionBinding.set(selectedIndex)
     }
 
     private func commit(to index: Int, animated: Bool) {
         let oldIndex = selectedIndex
         selectedIndex = index
-        onSelectionChanged?(index)
+        synchronizeSelectionBinding()
         updateAccessibilityValue()
         updateButtonState()
         animateSelection(from: oldIndex, to: index, animated: animated)
+        onSelectionChanged?(index)
     }
 
     private func animateSelection(from oldIndex: Int, to newIndex: Int, animated: Bool) {
+        // Settle any interrupted transition before starting another. An older outgoing page
+        // must not remain visible when its completion is superseded by a later selection.
+        showCurrent()
         guard contentHosts.indices.contains(oldIndex),
               contentHosts.indices.contains(newIndex) else { return }
         let oldHost = contentHosts[oldIndex]
@@ -280,7 +294,8 @@ private final class FluentFlipViewHost: NSView {
         animationGeneration &+= 1
         let generation = animationGeneration
         let distance = max(contentContainer.bounds.width, 1)
-        let direction: CGFloat = newIndex > oldIndex ? 1 : -1
+        let logicalDirection: CGFloat = newIndex > oldIndex ? 1 : -1
+        let direction = userInterfaceLayoutDirection == .rightToLeft ? -logicalDirection : logicalDirection
         let newStart = CATransform3DMakeTranslation(direction * distance, 0, 0)
         let oldEnd = CATransform3DMakeTranslation(-direction * distance, 0, 0)
 
@@ -300,20 +315,23 @@ private final class FluentFlipViewHost: NSView {
             return
         }
 
+        isTransitioning = true
         animationCoordinator.animateTransition(
             [
                 FluentLayerAnimationChange(
                     layer: oldLayer,
-                    key: "fluent.flipView.old.\(generation)",
+                    key: "fluent.flipView.old",
                     keyPath: "transform",
+                    fromValue: NSValue(caTransform3D: CATransform3DIdentity),
                     toValue: NSValue(caTransform3D: oldEnd)
                 ) {
                     oldLayer.transform = oldEnd
                 },
                 FluentLayerAnimationChange(
                     layer: newLayer,
-                    key: "fluent.flipView.new.\(generation)",
+                    key: "fluent.flipView.new",
                     keyPath: "transform",
+                    fromValue: NSValue(caTransform3D: newStart),
                     toValue: NSValue(caTransform3D: CATransform3DIdentity)
                 ) {
                     newLayer.transform = CATransform3DIdentity
@@ -323,17 +341,18 @@ private final class FluentFlipViewHost: NSView {
             animated: true,
             completion: { [weak self] in
                 guard let self, self.animationGeneration == generation else { return }
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                oldHost.isHidden = true
-                oldLayer.transform = CATransform3DIdentity
-                newLayer.transform = CATransform3DIdentity
-                CATransaction.commit()
+                self.showCurrent()
             }
         )
     }
 
-    private func showCurrent(animated: Bool) {
+    private func showCurrent() {
+        isTransitioning = false
+        animationGeneration &+= 1
+        animationCoordinator.cancelAll(on: contentHosts.compactMap(\.layer))
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        defer { CATransaction.commit() }
         for (index, host) in contentHosts.enumerated() {
             host.isHidden = index != selectedIndex
             host.layer?.removeAllAnimations()
@@ -345,8 +364,9 @@ private final class FluentFlipViewHost: NSView {
         updateButtonState()
     }
 
-    private func rebuildContentHosts(animated: Bool) {
-        animationCoordinator.cancelAllValueAnimations()
+    private func rebuildContentHosts() {
+        animationGeneration &+= 1
+        animationCoordinator.cancelAll(on: contentHosts.compactMap(\.layer))
         contentHosts.forEach {
             $0.layer?.removeAllAnimations()
             $0.removeFromSuperview()
@@ -358,8 +378,7 @@ private final class FluentFlipViewHost: NSView {
             contentContainer.addSubview(host)
             return host
         }
-        selectedIndex = clamped(selectedIndex)
-        showCurrent(animated: animated)
+        showCurrent()
         updateAccessibilityChildren()
     }
 
@@ -385,17 +404,24 @@ private final class FluentFlipViewHost: NSView {
     private func installSelectionObserver() {
         removeSelectionObserver()
         guard let selectionBinding else { return }
-        selectionObserverID = selectionBinding.observe { [weak self] value in
+        let generation = selectionObservationGeneration
+        selectionObserverID = selectionBinding.observe { [weak self] _ in
             DispatchQueue.main.async { [weak self] in
-                guard let self, !self.isWritingBinding else { return }
-                let target = self.clamped(value)
-                guard target >= 0, target != self.selectedIndex else { return }
-                self.commit(to: target, animated: true)
+                guard let self, self.selectionObservationGeneration == generation,
+                      !self.isWritingBinding, let binding = self.selectionBinding else { return }
+                // Multiple writes in one turn resolve to the current model value.
+                let target = self.clamped(binding.get())
+                if target != self.selectedIndex {
+                    self.commit(to: target, animated: true)
+                } else {
+                    self.synchronizeSelectionBinding()
+                }
             }
         }
     }
 
     private func removeSelectionObserver() {
+        selectionObservationGeneration &+= 1
         if let selectionObserverID {
             selectionBinding?.removeObserver(selectionObserverID)
         }

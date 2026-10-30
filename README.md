@@ -619,6 +619,13 @@ pip is centered with source-style scrolling, while edge hiding, pointer-only vis
 RTL mirroring, focus-without-selection arrow navigation, and Selection accessibility remain part
 of the same bound control lifecycle.
 
+FlipView provides horizontal pages with previous/next buttons and Left/Right/Home/End navigation.
+Selection is zero-based, clamped to available items, and `-1` when empty; removing pages updates
+the bound value. RTL mirrors both the buttons and transition direction. The Gallery sample exposes
+last-page selection, removal to empty and reset. Coverage remains partial: pages are eagerly mounted,
+and touch/trackpad paging, vertical layout, navigation-button fade/hiding and complete WinUI
+item-container semantics remain open.
+
 BreadcrumbBar preserves WinUI's suffix-overflow layout: the current final item always remains
 visible, earlier items collapse behind an ellipsis only when required, and the flyout lists the
 hidden prefix from nearest to farthest. `ItemClicked` reports the original zero-based source index;

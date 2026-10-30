@@ -34,3 +34,9 @@ README 的 1 个 body、SwiftPM Gallery 的 4 个 body、Xcode Gallery ContentDi
 继续以 WinUI 源码和可复现差异推进，而不按控件类型存在就宣称还原完成。当前先修复集合视口变化导致的行宽错配、滚动位置跳变及窄窗口约束问题；随后处理目录/质量门禁和文档入口。CalendarView、集合选择/模板、命令控件状态、缺失控件、真实 Windows 对拍、中文输入法及 VoiceOver 保留在整体目标中。
 
 对照：`microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/HyperlinkButton_Partial.cpp`；本项目 `Sources/FluentKit/FluentDeclarativeCore.swift`、`FluentPrimitives.swift`、`FluentCollectionSnapshot.swift`、`FluentTitleBar.swift`、`FluentPrinting.swift`、`FluentHyperlinkButton.swift` 与 GalleryCatalog。
+
+## 后续落实（2026-10-31）
+
+CI 已改用固定的 `tools/run-quality-checks.sh`，保留日期目录中的历史脚本和数据；验证见
+[quality-entry/RESULTS.md](quality-entry/RESULTS.md)。FlipView 目录和样例已更新，并独立复现、修复
+五个绑定/选中项/过渡问题，见[后续证据](../2026-10-31/flip-view/RESULTS.md)。其覆盖仍为 partial。

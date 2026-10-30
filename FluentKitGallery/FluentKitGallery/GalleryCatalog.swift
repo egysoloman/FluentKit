@@ -159,7 +159,7 @@ enum GalleryCatalog {
 
     private static let partial: Set<String> = [
         "RelativePanel", "VariableSizedWrapGrid", "AppBarButton", "AppBarSeparator", "AppBarToggleButton", "CommandBar", "MenuBar",
-        "StandardUICommand", "XamlUICommand", "GridView", "ItemsRepeater", "ItemsView", "ListBox",
+        "StandardUICommand", "XamlUICommand", "FlipView", "GridView", "ItemsRepeater", "ItemsView", "ListBox",
         "ListView", "TreeView", "CalendarDatePicker", "TimePicker", "DropDownButton",
         "HyperlinkButton", "SplitButton", "ToggleSplitButton",
         "Flyout", "Popup", "ScrollView", "ScrollViewer", "Border", "Canvas",
@@ -209,6 +209,7 @@ enum GallerySampleID: String, CaseIterable {
     case RadioButton
     case RatingControl
     case PipsPager
+    case FlipView
     case BreadcrumbBar
     case Slider
     case ProgressBar

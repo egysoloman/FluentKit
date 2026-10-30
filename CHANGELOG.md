@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Fixed FlipView observer replacement, selection synchronization after item removal/empty/refill,
+  interrupted-page cleanup and RTL transition direction. Added a direct Gallery sample with
+  conservative partial coverage; WinUI touch/virtualization parity remains pending.
+
 - Fixed CollectionView resize ordering: list rows stay in one column and retain their scroll
   offset as legacy scrollbars and window widths change. Tiny/collapsed viewports recover without
   negative content constraints or stale flow-layout extents. Release audits now reject collection

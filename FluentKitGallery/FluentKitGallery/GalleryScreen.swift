@@ -14,6 +14,8 @@ struct GalleryScreen: FluentView {
     @FluentState private var radioValue = false
     @FluentState private var ratingValue = -1.0
     @FluentState private var pipsPage = 2
+    @FluentState private var flipPage = 0
+    @FluentState private var flipPages = ["Mountains", "Coast", "Forest"]
     @FluentState private var breadcrumbItems = [
         FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
         FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
@@ -390,6 +392,31 @@ struct GalleryScreen: FluentView {
                     nextButtonVisibility: .visible,
                     wrapMode: .wrap
                 )
+            })
+        case .FlipView:
+            return FluentAnyView(FluentVStack(spacing: 12) {
+                FluentText(flipPages.isEmpty ? "No pages" : "Page \(flipPage + 1) of \(flipPages.count)",
+                    style: .caption, color: theme.textSecondary)
+                FluentFlipView(flipPages, selection: $flipPage) { title in
+                    FluentVStack(spacing: 12) {
+                        FluentText(title, style: .title)
+                        FluentText("Use the arrows to explore each page.", style: .body,
+                            color: theme.textSecondary)
+                    }
+                    .padding(24)
+                    .frame(width: 420, height: 180)
+                    .background(theme.cardFill, cornerRadius: 8)
+                }
+                .frame(width: 420, height: 180)
+                FluentHStack(spacing: 8) {
+                    FluentButtonView("Last page") { flipPage = flipPages.count - 1 }
+                        .disabled(flipPages.isEmpty)
+                    FluentButtonView("Remove last") { if !flipPages.isEmpty { flipPages.removeLast() } }
+                        .disabled(flipPages.isEmpty)
+                    FluentButtonView("Reset") { flipPages = ["Mountains", "Coast", "Forest"]; flipPage = 0 }
+                }
+                FluentText("Left/Right follows reading direction; Home/End selects the first/last page.",
+                    style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:
             return FluentAnyView(FluentVStack(spacing: 10) {
