@@ -78,7 +78,7 @@ Gallery PNGs above remain historical captures and were not silently regenerated 
 Generate candidate images outside the baseline, then compare (Python Pillow required):
 
 ```sh
-./audits/2026-10-30/run-repairs.sh /tmp/fluentkit-audit-candidate
+./tools/run-quality-checks.sh /tmp/fluentkit-audit-candidate
 python3 tools/compare_snapshots.py .snapshots/audit-states /tmp/fluentkit-audit-candidate/visual
 ```
 

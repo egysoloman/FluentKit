@@ -1326,6 +1326,6 @@ of complete visual parity with Windows.
   through the render context or `view.fluentSetLocalization(locale:bundle:)` for native subtrees.
 
 Run `swift test` for behavior and work-count regressions, and
-`./audits/2026-10-30/run-repairs.sh` for Release raw data, registered Gallery sample mounting and
+`./tools/run-quality-checks.sh` for Release raw data, registered Gallery sample mounting and
 controlled screenshots. `tools/compare_snapshots.py` compares reviewed image pairs without
 rewriting their baselines; capture OS, scale and fonts must match.
