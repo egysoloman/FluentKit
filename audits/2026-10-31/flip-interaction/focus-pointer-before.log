@@ -1,0 +1,21 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[5 / 10] FluentKitTests-product
+[8 / 11] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (4.07秒)
+Test Suite 'Selected tests' started at 2026-10-31 00:42:44.042.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 00:42:44.043.
+Test Suite 'FlipViewInteractionTests' started at 2026-10-31 00:42:44.043.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testKeyboardFocusRevealsButtonsAndAccessibilityExcludesInactivePages]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/FlipViewInteractionTests.swift:212: error: -[FluentKitTests.FlipViewInteractionTests testKeyboardFocusRevealsButtonsAndAccessibilityExcludesInactivePages] : XCTAssertEqual failed: ("Optional(1.0)") is not equal to ("Optional(0.0)") - Pointer activation clears the keyboard focus visual even if first responder stays unchanged
+Test Case '-[FluentKitTests.FlipViewInteractionTests testKeyboardFocusRevealsButtonsAndAccessibilityExcludesInactivePages]' failed (0.440 seconds).
+Test Suite 'FlipViewInteractionTests' failed at 2026-10-31 00:42:44.483.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.440 (0.440) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 00:42:44.483.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.440 (0.440) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 00:42:44.483.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.440 (0.441) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

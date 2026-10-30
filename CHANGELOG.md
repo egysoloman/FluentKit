@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Matched FlipView navigation-button geometry, idle/hover visibility and wheel-burst throttling
+  to the WinUI source; added keyboard focus and current-page accessibility actions. Disabled
+  composites now restore child controls before reconciling their parent and track newly mounted
+  controls without retaining removed ones.
+
 - Fixed FlipView observer replacement, selection synchronization after item removal/empty/refill,
   interrupted-page cleanup and RTL transition direction. Added a direct Gallery sample with
   conservative partial coverage; WinUI touch/virtualization parity remains pending.

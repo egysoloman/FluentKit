@@ -39,3 +39,6 @@ Gallery 新增真实样例，可选择末页、连续删除至空和重置；目
 
 `verification.json` 记录基准提交及源文件 SHA-256；`quality/` 保留原始 Release 结果。
 真实 Windows 截图对拍、VoiceOver 和物理输入设备操作仍待专项验收。
+
+后续：导航按钮几何/显隐、滚轮、焦点、禁用及当前页辅助功能已进一步处理，见
+[导航交互复核](../flip-interaction/RESULTS.md)。本目录保留上一批原始状态与结果。

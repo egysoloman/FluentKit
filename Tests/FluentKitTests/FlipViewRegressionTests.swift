@@ -109,7 +109,7 @@ final class FlipViewRegressionTests: XCTestCase {
         native.frame = NSRect(x: 0, y: 0, width: 320, height: 180)
         native.layoutSubtreeIfNeeded()
         let next = try XCTUnwrap(native.subviews.first { $0.identifier?.rawValue == "FluentKit.FlipView.Next" } as? NSButton)
-        XCTAssertEqual(next.frame.minX, 0)
+        XCTAssertEqual(next.frame.minX, 1)
         let left = try XCTUnwrap(NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
             timestamp: 0, windowNumber: 0, context: nil, characters: "", charactersIgnoringModifiers: "",
             isARepeat: false, keyCode: 123))

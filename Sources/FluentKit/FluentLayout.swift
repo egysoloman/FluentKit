@@ -340,42 +340,42 @@ private final class FluentTransformContainer: FluentLayoutContainer {
 }
 
 private final class FluentDisabledContainer: FluentLayoutContainer {
-    private var previousEnabled: [ObjectIdentifier: Bool] = [:]
+    private let previousEnabled = NSMapTable<NSControl, NSNumber>(keyOptions: .weakMemory, valueOptions: .strongMemory)
     private var isDisabled = false
 
     func applyDisabled(_ disabled: Bool) {
-        guard disabled != isDisabled else {
-            if disabled { subviews.forEach { enforceDisabled($0) } }
-            return
-        }
         if disabled {
-            previousEnabled.removeAll(keepingCapacity: true)
-            subviews.forEach { snapshotAndDisable($0) }
-        } else {
+            if !isDisabled { previousEnabled.removeAllObjects() }
+            // Capture the whole tree before composite controls propagate their own disabled
+            // state. New children mounted during a disabled update need a snapshot as well.
+            subviews.forEach { snapshotEnabled($0) }
+            subviews.forEach { enforceDisabled($0) }
+        } else if isDisabled {
             subviews.forEach { restoreEnabled($0) }
-            previousEnabled.removeAll(keepingCapacity: true)
+            previousEnabled.removeAllObjects()
         }
         isDisabled = disabled
     }
 
-    private func snapshotAndDisable(_ view: NSView) {
-        if let control = view as? NSControl {
-            previousEnabled[ObjectIdentifier(control)] = control.isEnabled
-            control.isEnabled = false
+    private func snapshotEnabled(_ view: NSView) {
+        if let control = view as? NSControl, previousEnabled.object(forKey: control) == nil {
+            previousEnabled.setObject(NSNumber(value: control.isEnabled), forKey: control)
         }
-        view.subviews.forEach { snapshotAndDisable($0) }
+        view.subviews.forEach { snapshotEnabled($0) }
     }
 
     private func restoreEnabled(_ view: NSView) {
-        if let control = view as? NSControl {
-            control.isEnabled = previousEnabled[ObjectIdentifier(control)] ?? control.isEnabled
-        }
         view.subviews.forEach { restoreEnabled($0) }
+        if let control = view as? NSControl {
+            // Restore composite controls last so they can reconcile children against current
+            // selection/boundary state instead of restoring obsolete child flags over it.
+            control.isEnabled = previousEnabled.object(forKey: control)?.boolValue ?? control.isEnabled
+        }
     }
 
     private func enforceDisabled(_ view: NSView) {
-        if let control = view as? NSControl { control.isEnabled = false }
         view.subviews.forEach { enforceDisabled($0) }
+        if let control = view as? NSControl { control.isEnabled = false }
     }
 }
 

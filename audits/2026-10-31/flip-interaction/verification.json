@@ -1,0 +1,32 @@
+{
+  "timestampUTC": "2026-10-30T16:48:36.714642+00:00",
+  "baseCommit": "57c5d46c7eeeb4afef8dd1284b91e0957f83b92e",
+  "sourceSHA256": {
+    "Sources/FluentKit/FluentFlipView.swift": "e2a8f85643de9bd29ff230e459e9b9dc814f3b2a3db10cbb97d74b7ea7011922",
+    "Sources/FluentKit/FluentLayout.swift": "27c4984543734428257a8e6ba755821156685f97e3efe325f681c96d26b4a8d9",
+    "Tests/FluentKitTests/FlipViewInteractionTests.swift": "061c9a4a6269096f55664cc11e7cea32d215f0407d088be1cb066629a94805a6",
+    "Tests/FluentKitTests/FlipViewRegressionTests.swift": "2aca204a4d878c427cccdf589b70a7c87cd234d3ce0ef8f295f2b8d627ee33da",
+    "Tests/FluentKitTests/FluentKitTests.swift": "36e5e39b727517e466893f38984a43222f8f81132d3f10386499dd59ecd9f5ce",
+    "FluentKitGallery/FluentKitGallery/GalleryScreen.swift": "d50d93dfe23a268465f1d909fa1a211933162f04b8eda062aa5ef671b10154e8"
+  },
+  "upstreamSHA256": {
+    "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/FlipView_Partial.cpp": "d9e79af6a96740b8773d1260005d91c93467615e507d14f0011aaa9f746b1b7f",
+    "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/FlipView_Partial.h": "b8dd783035730e9ca6e8d3ebbab13868d27836c71dcb13681a851c20023475ed",
+    "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/FlipView_themeresources.xaml": "21af9d36c9fa28b7e751c1cfa8a8ad2d037b6e515232235927b61b34036de93a",
+    "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/FlipView_themeresources_perf2026.xaml": "2d36dbe5c46afe2c7ca5901292e547ce3f62dfb527d380b6cb771166673397b0"
+  },
+  "unitTests": 147,
+  "newInteractionTests": 7,
+  "baselineAssertionFailures": 26,
+  "additionalPointerFocusFailure": {
+    "failures": 1,
+    "stage": "intermediate implementation"
+  },
+  "visualStates": 18,
+  "directGallerySamples": 34,
+  "nativeValidation": "PASS",
+  "xcodeGalleryBuild": "SUCCEEDED",
+  "coverage": "partial",
+  "physicalInputDevicesVerified": false,
+  "realVoiceOverVerified": false
+}

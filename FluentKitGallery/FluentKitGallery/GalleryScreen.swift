@@ -415,7 +415,9 @@ struct GalleryScreen: FluentView {
                         .disabled(flipPages.isEmpty)
                     FluentButtonView("Reset") { flipPages = ["Mountains", "Coast", "Forest"]; flipPage = 0 }
                 }
-                FluentText("Left/Right follows reading direction; Home/End selects the first/last page.",
+                FluentText("Move the pointer to reveal arrows. Scroll or press Left/Right to change pages.",
+                    style: .caption, color: theme.textSecondary)
+                FluentText("Home/End selects the first/last page. Horizontal navigation mirrors in RTL.",
                     style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:

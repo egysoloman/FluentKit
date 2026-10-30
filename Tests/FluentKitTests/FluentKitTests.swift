@@ -3249,8 +3249,9 @@ final class FluentKitTests: XCTestCase {
         XCTAssertEqual(flipHost.accessibilityValue() as? String, "1 of 3")
         XCTAssertFalse(previous.isEnabled)
         XCTAssertTrue(next.isEnabled)
-        XCTAssertEqual(previous.frame.size, NSSize(width: 20, height: 36))
-        XCTAssertEqual(next.frame.size, NSSize(width: 20, height: 36))
+        // FlipView_themeresources[_perf2026].xaml: 16x38 with a one-point outer margin.
+        XCTAssertEqual(previous.frame.size, NSSize(width: 16, height: 38))
+        XCTAssertEqual(next.frame.size, NSSize(width: 16, height: 38))
 
         next.performClick(nil)
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
