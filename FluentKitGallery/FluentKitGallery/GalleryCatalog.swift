@@ -149,19 +149,21 @@ enum GalleryCatalog {
 
     private static let implemented: Set<String> = [
         "Button", "RepeatButton", "ToggleButton", "CheckBox", "ColorPicker", "ComboBox",
-        "RadioButton", "Slider", "ToggleSwitch", "ProgressBar", "ProgressRing", "TeachingTip",
+        "RadioButton", "RatingControl", "Slider", "ToggleSwitch", "ProgressBar", "ProgressRing", "TeachingTip",
+        "InfoBadge", "InfoBar", "ToolTip", "Expander",
+        "PipsPager", "BreadcrumbBar",
         "Grid", "SplitView", "StackPanel", "NavigationView", "SelectorBar", "TabView",
         "NumberBox", "PasswordBox", "RichEditBox", "TextBlock", "TextBox", "MenuFlyout",
         "CommandBarFlyout", "ContentDialog", "DatePicker", "Clipboard", "StoragePickers", "TitleBar"
     ]
 
     private static let partial: Set<String> = [
-        "AppBarButton", "AppBarSeparator", "AppBarToggleButton", "CommandBar", "MenuBar",
+        "RelativePanel", "VariableSizedWrapGrid", "AppBarButton", "AppBarSeparator", "AppBarToggleButton", "CommandBar", "MenuBar",
         "StandardUICommand", "XamlUICommand", "GridView", "ItemsRepeater", "ItemsView", "ListBox",
         "ListView", "TreeView", "CalendarDatePicker", "TimePicker", "DropDownButton",
-        "HyperlinkButton", "SplitButton", "ToggleSplitButton", "InfoBadge", "InfoBar", "ToolTip",
+        "HyperlinkButton", "SplitButton", "ToggleSplitButton",
         "Flyout", "Popup", "ScrollView", "ScrollViewer", "Border", "Canvas",
-        "Expander", "Viewbox", "Image", "IconElement", "Line", "Shape", "SystemBackdrops",
+        "Viewbox", "Image", "IconElement", "Line", "Shape", "SystemBackdrops",
         "SystemBackdropElement", "ThemeShadow", "AutoSuggestBox", "RichTextBlock", "ConnectedAnimation",
         "EasingFunction", "ImplicitTransition", "PageTransition", "ThemeTransition", "AppWindow",
         "AppWindowTitleBar", "CreateMultipleWindows", "Color", "Geometry", "Iconography", "Spacing",
@@ -169,7 +171,7 @@ enum GalleryCatalog {
     ]
 
     private static let platformAlternative: Set<String> = [
-        "CalendarView", "RatingControl", "MediaPlayerElement", "PersonPicture", "Sound", "WebView2",
+        "CalendarView", "MediaPlayerElement", "PersonPicture", "Sound", "WebView2",
         "Acrylic", "CompactSizing", "RadialGradientBrush", "XamlResources", "XamlStyles", "Binding",
         "Templates", "CustomUserControls", "ScratchPad", "AppNotification", "BadgeNotificationManager",
         "JumpList"
@@ -180,6 +182,7 @@ enum GalleryCatalog {
     private static let newItems: Set<String> = [
         "XamlResources", "XamlStyles", "Binding", "Templates", "CustomUserControls",
         "CustomXamlConditionals", "Popup", "SelectorBar", "CaptureElementPreview",
+        "PipsPager", "BreadcrumbBar",
         "SystemBackdropElement", "ThemeShadow", "AppWindow", "ContentIsland", "AppNotification",
         "BadgeNotificationManager", "JumpList"
     ]
@@ -189,10 +192,47 @@ enum GalleryCatalog {
     ]
 
     private static func coverage(for id: String) -> GalleryCoverage {
-        if implemented.contains(id) { return .implemented }
+        if implemented.contains(id) { return GallerySampleID(rawValue: id) != nil ? .implemented : .partial }
         if partial.contains(id) { return .partial }
         if platformAlternative.contains(id) { return .platformAlternative }
         if notApplicable.contains(id) { return .notApplicable }
         return .missing
     }
+}
+
+/// Exhaustively switched by GalleryScreen. Adding a registration requires an executable sample.
+enum GallerySampleID: String, CaseIterable {
+    case Button
+    case MenuFlyout
+    case ToggleSwitch
+    case CheckBox
+    case RadioButton
+    case RatingControl
+    case PipsPager
+    case BreadcrumbBar
+    case Slider
+    case ProgressBar
+    case ProgressRing
+    case TextBox
+    case PasswordBox
+    case ComboBox
+    case NumberBox
+    case SelectorBar
+    case DatePicker
+    case CalendarDatePicker
+    case ColorPicker
+    case ContentDialog
+    case Expander
+    case ToolTip
+    case AppBarButton
+    case CommandBar
+    case Typography
+    case IconElement
+    case SystemBackdrops
+    case AutoSuggestBox
+    case ListView
+    case GridView
+    case InfoBadge
+    case InfoBar
+    case TextBlock
 }

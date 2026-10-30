@@ -62,7 +62,8 @@ private struct GalleryStyleSnapshot: FluentView {
     @FluentState private var sliderValue = 0.58
     @FluentState private var searchText = ""
     @FluentState private var showCompleted = true
-    @FluentState private var primaryChoice = false
+    @FluentState private var primaryChoice: String? = "Primary"
+    @FluentState private var ratingValue = 3.5
     @FluentState private var selectedSegment = 0
     @FluentState private var secureText = ""
     @FluentState private var quantity = 2
@@ -77,6 +78,9 @@ private struct GalleryStyleSnapshot: FluentView {
                     FluentButtonView("Accent").buttonStyle(FluentAccentButtonStyle())
                     FluentButtonView("Outline").buttonStyle(FluentOutlineButtonStyle())
                     FluentButtonView("Borderless").buttonStyle(FluentBorderlessButtonStyle())
+                    FluentButtonView("Copy", image: NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil))
+                    FluentButtonView("", image: NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: nil), imagePosition: .imageOnly)
+                        .accessibilityLabel("Refresh")
                 }
                 FluentHStack(spacing: 14) {
                     FluentToggleView("Updates", isOn: $notificationsEnabled)
@@ -87,18 +91,24 @@ private struct GalleryStyleSnapshot: FluentView {
                     FluentTextFieldView(text: $searchText, placeholder: "Underline style")
                         .textFieldStyle(FluentUnderlineTextFieldStyle())
                         .frame(width: 170)
-                    FluentProgressBar(value: sliderValue)
+                    FluentProgressBar(value: sliderValue * 100)
                         .progressStyle(FluentNeutralProgressStyle())
                         .frame(width: 210)
                 }
                 FluentHStack(spacing: 14) {
                     FluentCheckBoxView("Completed", isChecked: $showCompleted)
                         .checkBoxStyle(FluentMonochromeCheckBoxStyle())
-                    FluentRadioButtonView("Primary", isSelected: $primaryChoice)
-                        .radioButtonStyle(FluentAutomaticRadioButtonStyle())
                     FluentSegmentedControl(["One", "Two"], selection: $selectedSegment)
                         .segmentedStyle(FluentNeutralSegmentedStyle())
                 }
+                FluentRadioButtons(
+                    ["Primary", "Secondary", "Disabled"],
+                    selection: $primaryChoice,
+                    header: "Radio buttons",
+                    maxColumns: 3,
+                    isEnabled: { $0 != "Disabled" }
+                )
+                FluentRatingControlView(value: $ratingValue, caption: "312 ratings")
                 FluentHStack(spacing: 14) {
                     FluentSecureField($secureText, placeholder: "Secure underline")
                         .textFieldStyle(FluentUnderlineTextFieldStyle())
@@ -122,6 +132,41 @@ private struct GalleryStyleSnapshot: FluentView {
                 .fluentContrast(.high)
             }
             .padding(NSEdgeInsets(top: 36, left: 42, bottom: 36, right: 42))
+        )
+    }
+}
+
+private struct GalleryTeachingTipSnapshot: FluentView {
+    @FluentState private var isPresented = false
+
+    var body: FluentAnyView {
+        FluentAnyView(
+            FluentVStack(spacing: 18) {
+                FluentText("TeachingTip", style: .title)
+                FluentText(
+                    "WinUI target guidance with source-aligned content and dismissal semantics.",
+                    style: .body,
+                    color: FluentTheme.current.textSecondary
+                )
+                FluentButtonView("Show teaching tip") { isPresented = true }
+                    .teachingTip(
+                        isPresented: $isPresented,
+                        title: "Keyboard navigation",
+                        subtitle: "Move through the current group without leaving the keyboard.",
+                        systemImageName: "keyboard",
+                        placement: .bottomRight,
+                        shouldConstrainToRootBounds: false,
+                        size: NSSize(width: 320, height: 176),
+                        actionButtonTitle: "Show shortcuts",
+                        closeButtonTitle: "Got it"
+                    ) {
+                        FluentText(
+                            "Action commands keep the TeachingTip open.",
+                            style: .caption
+                        )
+                    }
+            }
+            .padding(NSEdgeInsets(top: 80, left: 120, bottom: 80, right: 120))
         )
     }
 }
@@ -182,7 +227,16 @@ private struct GalleryNavigationShell: FluentView {
             { $0 ?? selection.wrappedValue }
         )
         let navigationItems = GalleryPage.allCases.filter { $0 != .settings }.map { item in
-            FluentNavigationItem(
+            if item == .controls {
+                return FluentNavigationItem(
+                    id: item,
+                    title: item.title,
+                    systemImageName: item.symbolName
+                ) {
+                    FluentInfoBadge(value: 3, accessibilityLabel: "3 new control samples")
+                }
+            }
+            return FluentNavigationItem(
                 id: item,
                 title: item.title,
                 systemImageName: item.symbolName
@@ -429,10 +483,22 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var date = Date()
     @FluentState private var quantity = 3
     @FluentState private var checked = true
-    @FluentState private var radio = false
-    @FluentState private var selectedRadio = true
+    @FluentState private var radioChoice: String? = "Selected"
+    @FluentState private var rating = -1.0
+    @FluentState private var pipsPage = 2
+    @FluentState private var breadcrumbItems = [
+        FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
+        FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
+        FluentBreadcrumbBarItem("Design", id: "design"),
+        FluentBreadcrumbBarItem("Northwind", id: "northwind"),
+        FluentBreadcrumbBarItem("Images", id: "images"),
+        FluentBreadcrumbBarItem("Folder 1", id: "folder-1")
+    ]
     @FluentState private var selectedSegment = 0
-    @FluentState private var progressMode = 0
+    @FluentState private var progressIsIndeterminate = false
+    @FluentState private var progressShowPaused = false
+    @FluentState private var progressShowError = false
+    @FluentState private var progressRingActive = true
     @FluentState private var collectionLayout = 0
     @FluentState private var selectedCollectionItems = Set([2])
     @FluentState private var navigationSelection: String? = "Library"
@@ -455,6 +521,9 @@ private struct WinUIStyleGalleryScreen: FluentView {
     @FluentState private var applicationServiceStatus = "Ready for external events"
     @FluentState private var importPanelVisible = false
     @FluentState private var exportPanelVisible = false
+    @FluentState private var infoBarOpen = true
+    @FluentState private var infoBarSeverity = 0
+    @FluentState private var expanderExpanded = true
 
     init(themeStore: FluentThemeStore? = nil) {
         if let themeStore {
@@ -503,6 +572,13 @@ private struct WinUIStyleGalleryScreen: FluentView {
         _rtlEnabled = FluentState(
             wrappedValue: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_DIRECTION"] == "rtl"
         )
+        let requestedInfoBarSeverity = switch ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_INFOBAR_SEVERITY"] {
+        case "success": 1
+        case "warning": 2
+        case "error": 3
+        default: 0
+        }
+        _infoBarSeverity = FluentState(wrappedValue: requestedInfoBarSeverity)
     }
 
     var body: FluentAnyView {
@@ -589,20 +665,114 @@ private struct WinUIStyleGalleryScreen: FluentView {
     }
 
     private func controlsPage(_ theme: FluentTheme) -> FluentAnyView {
-        let progressState: FluentProgressState = switch progressMode {
-        case 1: .paused
-        case 2: .error
-        default: .normal
+        let infoBarState: FluentInfoBarSeverity = switch infoBarSeverity {
+        case 1: .success
+        case 2: .warning
+        case 3: .error
+        default: .informational
         }
-        let progressIsIndeterminate = progressMode == 3
         return FluentAnyView(
             FluentVStack(spacing: 20) {
                 pageIntroduction("The baseline Fluent states use the same geometry and semantic colors.", theme: theme)
+                FluentVStack(spacing: 12, alignment: .width) {
+                    FluentText("InfoBar", style: .headline)
+                    FluentSegmentedControl(
+                        ["Informational", "Success", "Warning", "Error"],
+                        selection: $infoBarSeverity
+                    )
+                    FluentInfoBar(
+                        isOpen: $infoBarOpen,
+                        title: infoBarState == .success ? "Update installed" : "Update available",
+                        message: infoBarState == .error
+                            ? "The update could not be installed. Check your connection and try again."
+                            : "Restart the gallery to finish applying the latest FluentKit components.",
+                        severity: infoBarState,
+                        onClosed: { _ in infoBarOpen = false }
+                    ) {
+                        FluentButtonView(infoBarState == .error ? "Try again" : "Restart") {
+                            infoBarOpen = false
+                        }
+                    }
+                    FluentHStack(spacing: 0) {
+                        FluentAnyView(
+                            FluentButtonView(infoBarOpen ? "Hide InfoBar" : "Show InfoBar") {
+                                infoBarOpen.toggle()
+                            }
+                        )
+                    }
+                }
+                FluentVStack(spacing: 10) {
+                    FluentText("InfoBadge", style: .headline)
+                    FluentHStack(spacing: 18) {
+                        FluentHStack(spacing: 6) {
+                            FluentText("Dot", style: .caption, color: theme.textSecondary)
+                            FluentInfoBadge(accessibilityLabel: "New activity")
+                        }
+                        FluentHStack(spacing: 6) {
+                            FluentText("Value", style: .caption, color: theme.textSecondary)
+                            FluentInfoBadge(value: 10, accessibilityLabel: "10 unread items")
+                        }
+                        FluentHStack(spacing: 6) {
+                            FluentText("Icon", style: .caption, color: theme.textSecondary)
+                            FluentInfoBadge(
+                                systemImageName: "bell.fill",
+                                accessibilityLabel: "Notifications"
+                            )
+                        }
+                    }
+                    FluentHStack(spacing: 12) {
+                        FluentInfoBadge(appearance: .attention, accessibilityLabel: "Attention")
+                        FluentInfoBadge(value: 5, appearance: .informational, accessibilityLabel: "5 informational items")
+                        FluentInfoBadge(
+                            systemImageName: "checkmark",
+                            appearance: .success,
+                            accessibilityLabel: "Success"
+                        )
+                        FluentInfoBadge(
+                            systemImageName: "exclamationmark",
+                            appearance: .caution,
+                            accessibilityLabel: "Caution"
+                        )
+                        FluentInfoBadge(
+                            systemImageName: "xmark",
+                            appearance: .critical,
+                            accessibilityLabel: "Critical"
+                        )
+                    }
+                }
+                FluentVStack(spacing: 10, alignment: .width) {
+                    FluentText("Expander", style: .headline)
+                    FluentExpander(
+                        "More details",
+                        isExpanded: $expanderExpanded
+                    ) {
+                        FluentText(
+                            "The content surface joins the 48pt header and uses the WinUI expand and collapse motion.",
+                            style: .body,
+                            color: theme.textSecondary
+                        )
+                    }
+                }
+                FluentVStack(spacing: 10) {
+                    FluentText("ToolTip", style: .headline)
+                    FluentHStack(spacing: 12) {
+                        FluentButtonView("Hover for details")
+                            .toolTip("WinUI-aligned pointer delay, safe-zone dismissal, and screen-edge fallback.")
+                        FluentButtonView("Keyboard help")
+                            .toolTip("Keyboard focus uses the target and a 12pt placement offset.", placement: .right)
+                    }
+                    FluentText(
+                        "Automatic ToolTips are non-interactive, globally exclusive, and expose their text as accessibility help.",
+                        style: .caption,
+                        color: theme.textSecondary
+                    )
+                }
                 FluentVStack(spacing: 12) {
                     FluentText("Buttons", style: .headline)
                     FluentHStack(spacing: 10) {
                         FluentButtonView("Primary", role: .primary)
                         FluentButtonView("Standard")
+                        FluentButtonView("Copy", image: NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil))
                         FluentButtonView("Outline").buttonStyle(FluentOutlineButtonStyle())
                         FluentButtonView("Subtle").buttonStyle(FluentBorderlessButtonStyle())
                         FluentRepeatButtonView("Hold +") { repeatButtonCount += 1 }
@@ -661,21 +831,49 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 }
                 FluentVStack(spacing: 10) {
                     FluentText("Progress", style: .headline)
-                    FluentSegmentedControl(
-                        ["Normal", "Paused", "Error", "Indeterminate"],
-                        selection: $progressMode
-                    )
+                    FluentHStack(spacing: 16) {
+                        FluentToggleView("Indeterminate", isOn: $progressIsIndeterminate)
+                        FluentToggleView("ShowPaused", isOn: $progressShowPaused)
+                        FluentToggleView("ShowError", isOn: $progressShowError)
+                    }
                     FluentProgressBar(
-                        value: slider,
+                        value: slider * 100,
                         isIndeterminate: progressIsIndeterminate,
-                        state: progressState
+                        showPaused: progressShowPaused,
+                        showError: progressShowError
                     )
                         .frame(width: 360)
                     FluentText(
-                        progressIsIndeterminate ? "Indeterminate" : "\(Int(slider * 100))% complete",
+                        progressShowError
+                            ? "Error (takes precedence over ShowPaused)"
+                            : progressShowPaused
+                                ? "Paused"
+                                : progressIsIndeterminate
+                                    ? "Indeterminate"
+                                    : "\(Int(slider * 100))% complete",
                         style: .caption,
                         color: theme.textSecondary
                     )
+                    FluentHStack(spacing: 24) {
+                        FluentVStack(spacing: 6) {
+                            FluentProgressRing(
+                                isActive: progressRingActive,
+                                isIndeterminate: true
+                            )
+                            .frame(width: 32, height: 32)
+                            FluentText("Indeterminate", style: .caption, color: theme.textSecondary)
+                        }
+                        FluentVStack(spacing: 6) {
+                            FluentProgressRing(
+                                isActive: progressRingActive,
+                                isIndeterminate: false,
+                                value: slider * 100
+                            )
+                            .frame(width: 32, height: 32)
+                            FluentText("Determinate", style: .caption, color: theme.textSecondary)
+                        }
+                        FluentToggleView("Active", isOn: $progressRingActive)
+                    }
                 }
                 FluentVStack(spacing: 12) {
                     FluentText("Selection and range", style: .headline)
@@ -720,14 +918,53 @@ private struct WinUIStyleGalleryScreen: FluentView {
                         )
                         .disabled()
                     }
+                    FluentRadioButtons(
+                        ["Unselected", "Selected", "Disabled"],
+                        selection: $radioChoice,
+                        header: "Radio buttons",
+                        maxColumns: 3,
+                        isEnabled: { $0 != "Disabled" }
+                    )
                     FluentHStack(spacing: 20) {
-                        FluentRadioButtonView("Unselected", isSelected: $radio)
-                        FluentRadioButtonView("Selected", isSelected: $selectedRadio)
-                        FluentRadioButtonView(
-                            "Disabled",
-                            isSelected: FluentBinding(get: { false }, set: { _ in })
-                        )
-                        .disabled()
+                        FluentVStack(spacing: 6) {
+                            FluentText("Interactive rating", style: .caption, color: theme.textSecondary)
+                            FluentRatingControlView(
+                                value: $rating,
+                                placeholderValue: 3.5,
+                                caption: "312 ratings"
+                            )
+                        }
+                        FluentVStack(spacing: 6) {
+                            FluentText("Read only", style: .caption, color: theme.textSecondary)
+                            FluentRatingControlView(
+                                value: FluentBinding(get: { 4 }, set: { _ in }),
+                                isReadOnly: true,
+                                caption: "4.0"
+                            )
+                        }
+                    }
+                    FluentHStack(spacing: 28, alignment: .top) {
+                        FluentVStack(spacing: 6) {
+                            FluentText("PipsPager · page \(pipsPage + 1) of 8", style: .caption, color: theme.textSecondary)
+                            FluentPipsPagerView(
+                                selectedPageIndex: $pipsPage,
+                                numberOfPages: 8,
+                                previousButtonVisibility: .visible,
+                                nextButtonVisibility: .visible,
+                                wrapMode: .wrap
+                            )
+                        }
+                        FluentVStack(spacing: 6) {
+                            FluentText("Vertical", style: .caption, color: theme.textSecondary)
+                            FluentPipsPagerView(
+                                selectedPageIndex: $pipsPage,
+                                numberOfPages: 8,
+                                orientation: .vertical,
+                                previousButtonVisibility: .visibleOnPointerOver,
+                                nextButtonVisibility: .visibleOnPointerOver
+                            )
+                            .frame(width: 24, height: 108)
+                        }
                     }
                     FluentHStack(spacing: 18) {
                         FluentVStack(spacing: 6) {
@@ -891,6 +1128,19 @@ private struct WinUIStyleGalleryScreen: FluentView {
             FluentVStack(spacing: 16) {
                 pageIntroduction("Source-mapped tab and split navigation keep destination identity stable.", theme: theme)
                 FluentVStack(spacing: 8) {
+                    FluentText("BreadcrumbBar", style: .headline)
+                    FluentBreadcrumbBarView(items: breadcrumbItems) { _, index in
+                        guard breadcrumbItems.indices.contains(index) else { return }
+                        breadcrumbItems = Array(breadcrumbItems.prefix(index + 1))
+                    }
+                    .frame(width: 360, height: 32)
+                    FluentText(
+                        "The hidden prefix moves into the ellipsis flyout in nearest-first order.",
+                        style: .caption,
+                        color: theme.textSecondary
+                    )
+                }
+                FluentVStack(spacing: 8) {
                     FluentText("TabView", style: .headline)
                     FluentTabView(
                         items: tabs,
@@ -974,14 +1224,19 @@ private struct WinUIStyleGalleryScreen: FluentView {
                 }
                 .teachingTip(
                     isPresented: $teachingTipVisible,
+                    title: "Motion follows intent",
+                    subtitle: "TeachingTip keeps guidance attached to its target.",
+                    systemImageName: "lightbulb",
                     placement: .top,
-                    size: NSSize(width: 300, height: 126)
+                    size: NSSize(width: 320, height: 166),
+                    actionButtonTitle: "Preview again",
+                    closeButtonTitle: "Got it"
                 ) {
-                    FluentVStack(spacing: 7) {
-                        FluentText("Motion follows intent", style: .headline)
-                        FluentText("Separate entrance and exit curves.", style: .body, color: theme.textSecondary)
-                        FluentText("Liquid Glass elevation preserves context.", style: .caption, color: theme.textSecondary)
-                    }
+                    FluentText(
+                        "The action remains open; only Close, Escape, or a programmatic change dismisses it.",
+                        style: .caption,
+                        color: theme.textSecondary
+                    )
                 }
                 .fluentReduceMotion(reduceMotion)
                 FluentMaterialSurface(role: .transient, cornerRadius: theme.cardCornerRadius) {
@@ -1480,7 +1735,7 @@ struct GalleryScreen: FluentView {
             FluentFormSection("Motion") {
                 FluentBoundToggle($reduceMotion, title: "Reduce motion")
                 FluentText("Progress: \(Int(motionProgress * 100))%", size: 13, color: FluentTheme.current.textSecondary)
-                FluentProgressBar(value: Double(motionProgress))
+                FluentProgressBar(value: Double(motionProgress * 100))
                 FluentText("Animated value", size: 15, weight: .semibold)
                     .opacity(0.25 + motionProgress * 0.75)
                     .scaleEffect(0.85 + motionProgress * 0.15)
@@ -1821,6 +2076,8 @@ final class GalleryWindowController: NSWindowController {
             content = FluentAnyView(GalleryNavigationSnapshot())
         case "styles":
             content = FluentAnyView(GalleryStyleSnapshot())
+        case "teaching-tip":
+            content = FluentAnyView(GalleryTeachingTipSnapshot())
         default:
             content = FluentAnyView(WinUIStyleGalleryScreen(themeStore: themeStore))
         }
@@ -1930,9 +2187,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let openDatePicker = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_DATE_PICKER"] == "1"
         let openContextMenu = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_CONTEXT_MENU"] == "1"
         let openTextCommands = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_TEXT_COMMANDS"] == "1"
+        let emptyTextCommands = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_EMPTY_TEXT_COMMANDS"] == "1"
+        let openTeachingTip = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_TEACHING_TIP"] == "1"
+        let openToolTip = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_TOOLTIP"] == "1"
         let expandTextCommands = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_EXPAND_TEXT_COMMANDS"] == "1"
         let focusSearch = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_FOCUS_SEARCH"] == "1"
         let focusNumberBox = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_FOCUS_NUMBERBOX"] == "1"
+        let hoverRating = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_HOVER_RATING"] == "1"
+        let hoverPipsPager = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_HOVER_PIPS"] == "1"
+        let openBreadcrumb = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_OPEN_BREADCRUMB"] == "1"
         let navigationTarget = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_NAV_SELECT"]
         let toggleNavigationPane = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_TOGGLE_PANE"] == "1"
         let menuTitle = ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_MENU_TITLE"]
@@ -1942,8 +2205,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             || openDatePicker
             || openContextMenu
             || openTextCommands
+            || emptyTextCommands
+            || openTeachingTip
+            || openToolTip
             || focusSearch
             || focusNumberBox
+            || hoverRating
+            || hoverPipsPager
+            || openBreadcrumb
             || navigationTarget != nil
             || toggleNavigationPane
         guard needsPresentationAction, !snapshotPresentationPrepared else {
@@ -1956,9 +2225,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             captureSnapshotIfRequested(window: window)
             return
         }
-        if openTextCommands, let searchField = firstSearchField(in: root) {
+        if (openTextCommands || emptyTextCommands), let searchField = firstSearchField(in: root) {
             window.makeKeyAndOrderFront(nil)
-            searchField.stringValue = "Search text"
+            searchField.stringValue = emptyTextCommands ? "" : "Search text"
             _ = window.makeFirstResponder(searchField)
             searchField.selectText(nil)
             postRightClick(on: searchField)
@@ -1973,6 +2242,51 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             numberBox.controlTextDidBeginEditing(
                 Notification(name: NSControl.textDidBeginEditingNotification, object: numberBox.textField)
             )
+        } else if hoverRating, let rating = firstRatingControl(in: root) {
+            // Keep the hovered control in the captured viewport; the Controls page is taller
+            // than the Gallery window and RatingControl lives below the initial scroll position.
+            _ = rating.scrollToVisible(rating.bounds.insetBy(dx: -24, dy: -24))
+            root.layoutSubtreeIfNeeded()
+            let location = rating.convert(
+                NSPoint(x: min(56, rating.bounds.maxX), y: rating.bounds.midY),
+                to: nil
+            )
+            if let event = NSEvent.mouseEvent(
+                with: .mouseMoved,
+                location: location,
+                modifierFlags: [],
+                timestamp: ProcessInfo.processInfo.systemUptime,
+                windowNumber: window.windowNumber,
+                context: nil,
+                eventNumber: 1,
+                clickCount: 0,
+                pressure: 0
+            ) {
+                rating.mouseMoved(with: event)
+            }
+        } else if hoverPipsPager, let pager = firstPipsPager(in: root) {
+            _ = pager.scrollToVisible(pager.bounds.insetBy(dx: -24, dy: -24))
+            root.layoutSubtreeIfNeeded()
+            let location = pager.convert(NSPoint(x: pager.bounds.midX, y: pager.bounds.midY), to: nil)
+            if let event = NSEvent.mouseEvent(
+                with: .mouseMoved,
+                location: location,
+                modifierFlags: [],
+                timestamp: ProcessInfo.processInfo.systemUptime,
+                windowNumber: window.windowNumber,
+                context: nil,
+                eventNumber: 2,
+                clickCount: 0,
+                pressure: 0
+            ) {
+                pager.mouseEntered(with: event)
+            }
+        } else if openBreadcrumb,
+                  let breadcrumb = firstBreadcrumbBar(in: root),
+                  let ellipsis = breadcrumb.accessibilityChildren()?.first as? NSView,
+                  ellipsis.accessibilityLabel() == "More links" {
+            window.makeKeyAndOrderFront(nil)
+            _ = ellipsis.accessibilityPerformPress()
         } else if openMenu, let menuButton = firstMenuButton(in: root, title: menuTitle) {
             window.makeKeyAndOrderFront(nil)
             postPrimaryClick(on: menuButton)
@@ -1984,10 +2298,41 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             value: ProcessInfo.processInfo.environment["FLUENTKIT_GALLERY_COMBO_VALUE"]
         ) {
             window.makeKeyAndOrderFront(nil)
-            postPrimaryClick(on: comboBox)
+            if let control = comboBox as? NSControl {
+                control.performClick(nil)
+            } else {
+                postPrimaryClick(on: comboBox)
+            }
         } else if openDatePicker, let datePicker = firstDatePicker(in: root) {
             window.makeKeyAndOrderFront(nil)
             datePicker.performClick(nil)
+        } else if openTeachingTip,
+                  let button = firstFluentButton(in: root, title: "Show teaching tip") {
+            window.makeKeyAndOrderFront(nil)
+            button.performClick(nil)
+        } else if openToolTip,
+                  let anchor = firstView(identifier: "FluentKit.ToolTip.Anchor", in: root) {
+            window.makeKeyAndOrderFront(nil)
+            _ = anchor.scrollToVisible(anchor.bounds.insetBy(dx: -24, dy: -24))
+            root.layoutSubtreeIfNeeded()
+            if let event = NSEvent.mouseEvent(
+                    with: .mouseMoved,
+                    location: anchor.convert(NSPoint(x: anchor.bounds.midX, y: anchor.bounds.midY), to: nil),
+                    modifierFlags: [],
+                    timestamp: ProcessInfo.processInfo.systemUptime,
+                    windowNumber: window.windowNumber,
+                    context: nil,
+                    eventNumber: 9,
+                    clickCount: 0,
+                    pressure: 0
+            ) {
+                anchor.mouseEntered(with: event)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.9) { [weak self, weak window] in
+                    guard let self, let window else { return }
+                    self.captureSnapshotIfRequested(window: window)
+                }
+                return
+            }
         } else if openContextMenu,
                   let contextTarget = firstView(withAccessibilityTitle: "Context menu", in: root) {
             // Posted pointer events are only dispatched to an ordered window. This branch is
@@ -2132,12 +2477,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func firstComboBoxTrigger(in view: NSView, value: String? = nil) -> NSView? {
-        if let field = view as? NSTextField,
-           (field is NSComboBox || field.identifier?.rawValue == "FluentKit.ComboBox.EditableText"),
-           value == nil || field.stringValue == value {
-            return field
+        var pending = [view]
+        var visited = Set<ObjectIdentifier>()
+        while let candidate = pending.popLast() {
+            guard visited.insert(ObjectIdentifier(candidate)).inserted else { continue }
+            if let field = candidate as? NSTextField,
+               (field is NSComboBox
+                    || field.identifier?.rawValue == "FluentKit.ComboBox.EditableText"),
+               value == nil || field.stringValue == value {
+                return field
+            }
+            pending.append(contentsOf: candidate.subviews.reversed())
         }
-        return view.subviews.lazy.compactMap { self.firstComboBoxTrigger(in: $0, value: value) }.first
+        return nil
     }
 
     private func firstDatePicker(in view: NSView) -> NSDatePicker? {
@@ -2153,6 +2505,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func firstNumberBox(in view: NSView) -> FluentNumberBoxControl? {
         if let numberBox = view as? FluentNumberBoxControl { return numberBox }
         return view.subviews.lazy.compactMap(firstNumberBox).first
+    }
+
+    private func firstRatingControl(in view: NSView) -> FluentRatingControl? {
+        if let rating = view as? FluentRatingControl { return rating }
+        return view.subviews.lazy.compactMap(firstRatingControl).first
+    }
+
+    private func firstPipsPager(in view: NSView) -> FluentPipsPager? {
+        if let pager = view as? FluentPipsPager { return pager }
+        return view.subviews.lazy.compactMap(firstPipsPager).first
+    }
+
+    private func firstBreadcrumbBar(in view: NSView) -> FluentBreadcrumbBar? {
+        if let breadcrumb = view as? FluentBreadcrumbBar { return breadcrumb }
+        return view.subviews.lazy.compactMap(firstBreadcrumbBar).first
     }
 
     private func firstView(withAccessibilityTitle title: String, in view: NSView) -> NSView? {

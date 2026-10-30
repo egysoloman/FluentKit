@@ -12,6 +12,16 @@ struct GalleryScreen: FluentView {
     @FluentState private var toggleValue = true
     @FluentState private var checkValue = true
     @FluentState private var radioValue = false
+    @FluentState private var ratingValue = -1.0
+    @FluentState private var pipsPage = 2
+    @FluentState private var breadcrumbItems = [
+        FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
+        FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
+        FluentBreadcrumbBarItem("Design", id: "design"),
+        FluentBreadcrumbBarItem("Northwind", id: "northwind"),
+        FluentBreadcrumbBarItem("Images", id: "images"),
+        FluentBreadcrumbBarItem("Folder 1", id: "folder-1")
+    ]
     @FluentState private var sliderValue = 0.58
     @FluentState private var textValue = ""
     @FluentState private var secureValue = ""
@@ -21,7 +31,10 @@ struct GalleryScreen: FluentView {
     @FluentState private var dateValue = Date()
     @FluentState private var colorValue = NSColor.systemBlue
     @FluentState private var reduceMotion = false
+    @FluentState private var infoBarOpen = true
     @FluentState private var sampleExpanded = true
+    @FluentState private var expanderExpanded = true
+    @FluentState private var expanderUpExpanded = true
     @FluentState private var canGoBack = false
     @FluentState private var canGoForward = false
 
@@ -309,7 +322,7 @@ struct GalleryScreen: FluentView {
                 }
                 FluentSettingsExpander(
                     "Interactive sample",
-                    description: "The live FluentKit counterpart for this WinUI Gallery entry",
+                    description: GallerySampleID(rawValue: item.id) == nil ? "No dedicated sample yet" : "Light, Dark and RTL mounting checked; interactive states need the acceptance matrix",
                     systemImageName: "play.circle",
                     isExpanded: $sampleExpanded
                 ) {
@@ -327,54 +340,88 @@ struct GalleryScreen: FluentView {
         )
     }
 
-    private func sample(for item: GalleryItem, theme: FluentTheme) -> FluentAnyView {
-        switch item.id {
-        case "Button":
+    func sample(for item: GalleryItem, theme: FluentTheme) -> FluentAnyView {
+        guard let sample = GallerySampleID(rawValue: item.id) else {
+            return FluentAnyView(FluentText(sampleMessage(for: item), style: .body, color: theme.textSecondary).frame(width: 620))
+        }
+        switch sample {
+        case .Button:
             return FluentAnyView(FluentHStack(spacing: 10) {
                 FluentButtonView("Standard")
                 FluentButtonView("Primary", role: .primary)
+                FluentButtonView("Copy", image: NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil))
                 FluentButtonView("Disabled").disabled(true)
             })
-        case "MenuFlyout":
+        case .MenuFlyout:
             return FluentAnyView(FluentButtonView("Open menu").flyout {
                 FluentMenuItem("New", systemImageName: "doc", action: {})
                 FluentMenuItem("Open", systemImageName: "folder", action: {})
                 FluentMenuItem.separator
                 FluentMenuItem("Settings", systemImageName: "gearshape", action: {})
             })
-        case "ToggleSwitch":
+        case .ToggleSwitch:
             return FluentAnyView(
                 FluentToggleView(
                     "Notifications",
                     isOn: $toggleValue.undoable(using: undoCoordinator, actionName: "Toggle Notifications")
                 )
             )
-        case "CheckBox":
+        case .CheckBox:
             return FluentAnyView(
                 FluentCheckBoxView(
                     "Remember selection",
                     isChecked: $checkValue.undoable(using: undoCoordinator, actionName: "Change Selection")
                 )
             )
-        case "RadioButton": return FluentAnyView(FluentRadioButtonView("Recommended", isSelected: $radioValue))
-        case "Slider":
+        case .RadioButton: return FluentAnyView(FluentRadioButtonView("Recommended", isSelected: $radioValue))
+        case .RatingControl:
+            return FluentAnyView(FluentRatingControlView(
+                value: $ratingValue,
+                placeholderValue: 3.5,
+                caption: "312 ratings"
+            ))
+        case .PipsPager:
+            return FluentAnyView(FluentVStack(spacing: 10) {
+                FluentText("Page \(pipsPage + 1) of 8", style: .caption, color: theme.textSecondary)
+                FluentPipsPagerView(
+                    selectedPageIndex: $pipsPage,
+                    numberOfPages: 8,
+                    previousButtonVisibility: .visible,
+                    nextButtonVisibility: .visible,
+                    wrapMode: .wrap
+                )
+            })
+        case .BreadcrumbBar:
+            return FluentAnyView(FluentVStack(spacing: 10) {
+                FluentBreadcrumbBarView(items: breadcrumbItems) { _, index in
+                    guard breadcrumbItems.indices.contains(index) else { return }
+                    breadcrumbItems = Array(breadcrumbItems.prefix(index + 1))
+                }
+                .frame(width: 360, height: 32)
+                FluentText(
+                    "Narrow the sample to reveal source-ordered overflow; choose a level to truncate the path.",
+                    style: .caption,
+                    color: theme.textSecondary
+                )
+            })
+        case .Slider:
             return FluentAnyView(
                 FluentSliderView(
                     value: $sliderValue.undoable(using: undoCoordinator, actionName: "Change Slider")
                 ).frame(width: 280)
             )
-        case "ProgressBar": return FluentAnyView(FluentProgressBar(value: sliderValue).frame(width: 300))
-        case "ProgressRing": return FluentAnyView(FluentNativeView(FluentProgressRing()).frame(width: 32, height: 32))
-        case "TextBox": return FluentAnyView(FluentTextFieldView(text: $textValue, placeholder: "Enter text").frame(width: 280))
-        case "PasswordBox": return FluentAnyView(FluentSecureField($secureValue, placeholder: "Password").frame(width: 280))
-        case "ComboBox":
+        case .ProgressBar: return FluentAnyView(FluentProgressBar(value: sliderValue * 100).frame(width: 300))
+        case .ProgressRing: return FluentAnyView(FluentNativeView(FluentProgressRing()).frame(width: 32, height: 32))
+        case .TextBox: return FluentAnyView(FluentTextFieldView(text: $textValue, placeholder: "Enter text").frame(width: 280))
+        case .PasswordBox: return FluentAnyView(FluentSecureField($secureValue, placeholder: "Password").frame(width: 280))
+        case .ComboBox:
             return FluentAnyView(
                 FluentComboBox(
                     options: ["Option 1", "Option 2", "Option 3"],
                     selection: $comboSelection.undoable(using: undoCoordinator, actionName: "Choose Option")
                 ).frame(width: 240)
             )
-        case "NumberBox":
+        case .NumberBox:
             return FluentAnyView(
                 FluentNumberBox(
                     "Quantity",
@@ -383,20 +430,98 @@ struct GalleryScreen: FluentView {
                     spinButtonPlacement: .inline
                 ).frame(width: 280)
             )
-        case "SelectorBar":
+        case .SelectorBar:
             return FluentAnyView(FluentSelectorBar([
                 FluentSelectorBarItem(value: "Recent", title: "Recent", systemImage: "clock"),
                 FluentSelectorBarItem(value: "Favorites", title: "Favorites", systemImage: "star")
             ], selection: $selectorValue))
-        case "DatePicker", "CalendarDatePicker": return FluentAnyView(FluentDatePicker(selection: $dateValue).frame(width: 240))
-        case "ColorPicker": return FluentAnyView(FluentColorPickerView(selection: $colorValue, label: "Accent color"))
-        case "ContentDialog":
+        case .DatePicker, .CalendarDatePicker: return FluentAnyView(FluentDatePicker(selection: $dateValue).frame(width: 240))
+        case .ColorPicker: return FluentAnyView(FluentColorPickerView(selection: $colorValue, label: "Accent color"))
+        case .ContentDialog:
             return FluentAnyView(ContentDialogGallerySample(theme: theme))
-        default:
-            return FluentAnyView(
-                FluentText(sampleMessage(for: item), style: .body, color: theme.textSecondary)
-                    .frame(width: 620)
-            )
+        case .Expander:
+            return FluentAnyView(FluentVStack(spacing: 20) {
+                FluentExpander(
+                    "More details",
+                    isExpanded: $expanderExpanded
+                ) {
+                    FluentText(
+                        "The content enters below the 48pt header using WinUI's 333ms expand motion.",
+                        style: .body,
+                        color: theme.textSecondary
+                    )
+                }
+                .frame(width: 520)
+                FluentExpander(
+                    "Open upward",
+                    isExpanded: $expanderUpExpanded,
+                    expandDirection: .up
+                ) {
+                    FluentText(
+                        "ExpandDirection.up places the content surface above its header.",
+                        style: .body,
+                        color: theme.textSecondary
+                    )
+                }
+                .frame(width: 520)
+            })
+        case .ToolTip:
+            return FluentAnyView(FluentVStack(spacing: 10) {
+                FluentHStack(spacing: 12) {
+                    FluentButtonView("Pointer ToolTip")
+                        .toolTip("Opens after the WinUI pointer delay and remains inside the safe zone.")
+                    FluentButtonView("Left placement")
+                        .toolTip("Left placement mirrors in right-to-left layouts.", placement: .left)
+                }
+                FluentText(
+                    "Hover a target or reach it from the keyboard; only one automatic ToolTip is visible at a time.",
+                    style: .caption,
+                    color: theme.textSecondary
+                )
+            })
+        case .AppBarButton:
+            return FluentAnyView(FluentAppBarButtonView("查看", systemImageName: "list.bullet", defaultLabelPosition: .right,
+                flyoutItems: [FluentMenuItem("Details", action: {}), FluentMenuItem("Properties", isEnabled: false, action: {})]))
+        case .CommandBar:
+            return FluentAnyView(FluentNativeView(make: {
+                let view = FluentCommandBar(primaryCommands: [], secondaryCommands: [FluentCommandBarItem("More commands", systemImageName: "folder", action: {})])
+                return view
+            }, update: { (view: FluentCommandBar, context) in view.theme = context.theme }).frame(width: 400, height: 48))
+        case .Typography:
+            return FluentAnyView(FluentVStack {
+                FluentText("Display 68", style: .display)
+                FluentText("Title Large 40", style: .titleLarge)
+                FluentText("Title 28", style: .title)
+                FluentText("Subtitle 20", style: .subtitle)
+                FluentText("Body 14 · Caption 12", style: .body)
+            })
+        case .IconElement:
+            return FluentAnyView(FluentButtonView("Custom glyph menu").flyout {
+                FluentMenuItem("Symbol", icon: .systemSymbol("folder"), action: {})
+                FluentMenuItem("Glyph", icon: .glyph("★", font: .systemFont(ofSize: 16)), action: {})
+                FluentMenuItem("Path", icon: .path(CGPath(ellipseIn: CGRect(x: 0, y: 0, width: 20, height: 12), transform: nil)), action: {})
+            })
+        case .SystemBackdrops:
+            return FluentAnyView(FluentHStack {
+                FluentMaterialSurface(material: .mica) { FluentText("Mica base recipe") }.frame(width: 200, height: 100)
+                FluentMaterialSurface(material: .nativeMica) { FluentText("macOS native effect") }.frame(width: 200, height: 100)
+            })
+        case .AutoSuggestBox:
+            return FluentAnyView(FluentAutoSuggestBox($textValue.textInput(.init(commitPolicy: .committedText)), placeholder: "Search after IME commit",
+                suggestions: { query in ["Documents", "Downloads", "Desktop"].filter { $0.localizedCaseInsensitiveContains(query) }.map { .init(id: $0, title: $0) } }).frame(width: 320))
+        case .ListView:
+            return FluentAnyView(FluentListView(Array(0..<5000)) { FluentText("Item \($0)") }.contentVersion { $0 }.frame(width: 420, height: 320))
+        case .GridView:
+            return FluentAnyView(FluentGridView(Array(0..<100)) { FluentText("Item \($0)") }.contentVersion { $0 }.frame(width: 420, height: 320))
+        case .InfoBadge:
+            return FluentAnyView(FluentHStack { FluentInfoBadge(); FluentInfoBadge(value: 12); FluentInfoBadge(systemImageName: "checkmark") })
+        case .InfoBar:
+            return FluentAnyView(FluentVStack {
+                FluentButtonView("Show message", action: { infoBarOpen = true })
+                FluentInfoBar(isOpen: $infoBarOpen, title: "Saved", message: "Your settings were updated.", severity: .success)
+            }.frame(width: 480))
+        case .TextBlock:
+            return FluentAnyView(FluentVStack { FluentText("Title", style: .title); FluentText("Readable body", style: .body); FluentText("Caption", style: .caption) })
         }
     }
 
@@ -459,7 +584,7 @@ struct GalleryScreen: FluentView {
 
     private func coverageExplanation(_ coverage: GalleryCoverage) -> String {
         switch coverage {
-        case .implemented: return "FluentKit has a direct component or service counterpart. The page can host a real sample and parity tests."
+        case .implemented: return "FluentKit has a direct component or service counterpart. This entry has a directly registered sample. State and Windows parity checks remain separate."
         case .partial: return "FluentKit covers the central behavior, but the WinUI surface, variants, or Gallery sample matrix is incomplete."
         case .platformAlternative: return "The Windows-specific concept maps to a native AppKit/macOS facility rather than a literal API clone."
         case .missing: return "No stable FluentKit counterpart is present yet. This entry is retained so the gap stays visible and searchable."
@@ -469,7 +594,7 @@ struct GalleryScreen: FluentView {
 
     private func sampleMessage(for item: GalleryItem) -> String {
         switch item.coverage {
-        case .implemented: return "The component exists in FluentKit; a dedicated Gallery sample still needs to be authored."
+        case .implemented: return "A registered sample is available."
         case .partial: return "A partial implementation exists. Add a focused sample only after its visual and interaction contract is audited."
         case .platformAlternative: return "This page will demonstrate the native macOS alternative and document the mapping to WinUI."
         case .missing: return "Planned placeholder. No component is being simulated here."
