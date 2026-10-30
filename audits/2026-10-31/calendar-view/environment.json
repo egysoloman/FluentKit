@@ -1,0 +1,13 @@
+{
+  "baseCommit": "fce8b148f8bfb037a3d6c511dc1fb1de7612ceb3",
+  "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.2.0",
+  "macOS": "ProductName:\t\tmacOS\nProductVersion:\t\t27.2\nBuildVersion:\t\t26B123",
+  "sourceSHA256": {
+    "Sources/FluentKit/FluentCalendarView.swift": "75a95a1f69a3c60dbb12848611e75ec27c86321278b102ec80e4a56f63ab233b",
+    "Sources/FluentKit/FluentCalendarModel.swift": "6c1fd08eeaff0b6c4f1190921d1674c50c13678f7d766257393e55bbfc31448f",
+    "Sources/FluentKit/FluentCalendarButton.swift": "4ae3be9f155c31c20d5901664df367246bd031e623d294397d994067fe02b0c1",
+    "Sources/FluentKit/FluentCalendarViewNative.swift": "6869f35c66eac4bc24702fb7adc1d527fb7549042eb27d567aa35dfbdf8ef674",
+    "Sources/FluentKit/FluentDateColorPickers.swift": "ddfaaa65d0d535dd842e7d7eade6d6dede6fc502ff91af95e4c83cb7a3eebf94",
+    "Tests/FluentKitTests/CalendarViewRegressionTests.swift": "e113f256d2ee97f3dd4f82d7de0c631c93c7ca170c7b4a59177b0e3f58037b89"
+  }
+}

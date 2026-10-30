@@ -31,6 +31,7 @@ struct GalleryScreen: FluentView {
     @FluentState private var numberValue = 3
     @FluentState private var selectorValue: String? = "Recent"
     @FluentState private var dateValue = Date()
+    @FluentState private var calendarDates: [Date] = []
     @FluentState private var colorValue = NSColor.systemBlue
     @FluentState private var reduceMotion = false
     @FluentState private var infoBarOpen = true
@@ -465,6 +466,13 @@ struct GalleryScreen: FluentView {
                 FluentSelectorBarItem(value: "Favorites", title: "Favorites", systemImage: "star")
             ], selection: $selectorValue))
         case .DatePicker, .CalendarDatePicker: return FluentAnyView(FluentDatePicker(selection: $dateValue).frame(width: 240))
+        case .CalendarView:
+            return FluentAnyView(FluentVStack(spacing: 12) {
+                FluentCalendarView(selection: $calendarDates, selectionMode: .multiple)
+                    .frame(width: 310, height: 350)
+                FluentText("Selected dates: \(calendarDates.count)")
+                FluentText("Click the header or press Ctrl+Up / Ctrl+Down to change calendar level.", style: .caption)
+            })
         case .ColorPicker: return FluentAnyView(FluentColorPickerView(selection: $colorValue, label: "Accent color"))
         case .ContentDialog:
             return FluentAnyView(ContentDialogGallerySample(theme: theme))

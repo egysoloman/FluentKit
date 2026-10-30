@@ -160,7 +160,7 @@ enum GalleryCatalog {
     private static let partial: Set<String> = [
         "RelativePanel", "VariableSizedWrapGrid", "AppBarButton", "AppBarSeparator", "AppBarToggleButton", "CommandBar", "MenuBar",
         "StandardUICommand", "XamlUICommand", "FlipView", "GridView", "ItemsRepeater", "ItemsView", "ListBox",
-        "ListView", "TreeView", "CalendarDatePicker", "TimePicker", "DropDownButton",
+        "ListView", "TreeView", "CalendarDatePicker", "CalendarView", "TimePicker", "DropDownButton",
         "HyperlinkButton", "SplitButton", "ToggleSplitButton",
         "Flyout", "Popup", "ScrollView", "ScrollViewer", "Border", "Canvas",
         "Viewbox", "Image", "IconElement", "Line", "Shape", "SystemBackdrops",
@@ -171,7 +171,7 @@ enum GalleryCatalog {
     ]
 
     private static let platformAlternative: Set<String> = [
-        "CalendarView", "MediaPlayerElement", "PersonPicture", "Sound", "WebView2",
+        "MediaPlayerElement", "PersonPicture", "Sound", "WebView2",
         "Acrylic", "CompactSizing", "RadialGradientBrush", "XamlResources", "XamlStyles", "Binding",
         "Templates", "CustomUserControls", "ScratchPad", "AppNotification", "BadgeNotificationManager",
         "JumpList"
@@ -221,6 +221,7 @@ enum GallerySampleID: String, CaseIterable {
     case SelectorBar
     case DatePicker
     case CalendarDatePicker
+    case CalendarView
     case ColorPicker
     case ContentDialog
     case Expander

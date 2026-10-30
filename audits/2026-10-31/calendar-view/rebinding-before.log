@@ -1,0 +1,23 @@
+Building for debugging...
+[1 / 2] FluentKit_FluentKit
+[2 / 8] FluentKitTests-product
+[4 / 10] FluentKitTests-product
+[8 / 12] FluentKitTests-product
+[10 / 12] FluentKitTests-product
+Build complete! (1.46秒)
+Test Suite 'Selected tests' started at 2026-10-31 01:24:56.516.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 01:24:56.517.
+Test Suite 'CalendarViewRegressionTests' started at 2026-10-31 01:24:56.517.
+Test Case '-[FluentKitTests.CalendarViewRegressionTests testDatePickerRebindingDoesNotApplyAQueuedOldModelValue]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarViewRegressionTests.swift:243: error: -[FluentKitTests.CalendarViewRegressionTests testDatePickerRebindingDoesNotApplyAQueuedOldModelValue] : XCTAssertEqual failed: ("2026-05-11 00:00:00 +0000") is not equal to ("2026-05-15 00:00:00 +0000")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarViewRegressionTests.swift:246: error: -[FluentKitTests.CalendarViewRegressionTests testDatePickerRebindingDoesNotApplyAQueuedOldModelValue] : XCTAssertEqual failed: ("2026-05-11 00:00:00 +0000") is not equal to ("2026-05-15 00:00:00 +0000")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarViewRegressionTests.swift:250: error: -[FluentKitTests.CalendarViewRegressionTests testDatePickerRebindingDoesNotApplyAQueuedOldModelValue] : XCTAssertEqual failed: ("Optional(2026-05-15 00:00:00 +0000)") is not equal to ("Optional(2026-05-10 00:00:00 +0000)")
+Test Case '-[FluentKitTests.CalendarViewRegressionTests testDatePickerRebindingDoesNotApplyAQueuedOldModelValue]' failed (0.464 seconds).
+Test Suite 'CalendarViewRegressionTests' failed at 2026-10-31 01:24:56.982.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.464 (0.464) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 01:24:56.982.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.464 (0.464) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 01:24:56.982.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.464 (0.465) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

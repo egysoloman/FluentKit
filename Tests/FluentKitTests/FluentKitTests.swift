@@ -4347,7 +4347,7 @@ final class FluentKitTests: XCTestCase {
             [root] + root.subviews.flatMap { descendants(in: $0) }
         }
         XCTAssertTrue(descendants(in: editor).filter { $0 is NSDatePicker }.isEmpty)
-        let dayButtons = descendants(in: editor).compactMap { $0 as? FluentButton }
+        let dayButtons = descendants(in: editor).compactMap { $0 as? NSButton }
         XCTAssertEqual(dayButtons.count, 45)
         let calendarCells = dayButtons.filter {
             $0.identifier?.rawValue.hasPrefix("FluentKit.CalendarDatePicker.Day.") == true
@@ -4394,9 +4394,9 @@ final class FluentKitTests: XCTestCase {
         header.performClick(nil)
         editor.layoutSubtreeIfNeeded()
         let visibleMonthCells = calendarCells.filter { !$0.isHidden && !$0.title.isEmpty }
-        XCTAssertEqual(visibleMonthCells.count, 12)
-        XCTAssertEqual(Set(visibleMonthCells.map { Int(($0.frame.minX / 70).rounded(.down)) }).count, 4)
-        XCTAssertEqual(Set(visibleMonthCells.map(\.frame.minY)).count, 3)
+        XCTAssertEqual(visibleMonthCells.count, 16)
+        XCTAssertEqual(Set(visibleMonthCells.map(\.frame.minX)).count, 4)
+        XCTAssertEqual(Set(visibleMonthCells.map(\.frame.minY)).count, 4)
         XCTAssertFalse(visibleMonthCells.contains { $0.title == "..." })
     }
 

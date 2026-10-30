@@ -246,7 +246,7 @@ MenuFlyout and ComboBox popup dismissal is immediate, so the harness captures en
 `FLUENTKIT_GALLERY_REDUCE_MOTION=1` exercise the corresponding environment variants. Set
 `FLUENTKIT_SNAPSHOT_SCALE=2` for a Retina bitmap while preserving the same logical Gallery
 dimensions. `FLUENTKIT_GALLERY_OPEN_DATE_PICKER=1` opens the source-derived
-CalendarDatePicker so its native calendar popover can be captured with
+CalendarDatePicker so its shared Fluent calendar grid, hosted inside an AppKit popover, can be captured with
 `FLUENTKIT_SNAPSHOT_CHILD_PANEL=1`.
 `FLUENTKIT_GALLERY_FOCUS_SEARCH=1` captures the real SearchBox field editor and
 `FLUENTKIT_GALLERY_OPEN_TEXT_COMMANDS=1` opens its application-owned text command presenter; combine
@@ -618,6 +618,28 @@ and 24pt navigation buttons. Finite collections virtualize around the visible ra
 pip is centered with source-style scrolling, while edge hiding, pointer-only visibility, Wrap,
 RTL mirroring, focus-without-selection arrow navigation, and Selection accessibility remain part
 of the same bound control lifecycle.
+
+CalendarView is an embedded Fluent calendar; CalendarDatePicker shares its grid inside an AppKit
+popover. It supports single/multiple/no selection, blackout dates, inclusive date ranges, and
+Month/Year/Decade navigation (4×4 in Year/Decade). Arrow keys move focus; Space/Enter activates;
+Home/End target the current scope; PageUp/PageDown change scopes; Ctrl+Up/Down change levels.
+
+```swift
+@FluentState private var selectedDays: [Date] = []
+
+// In a Fluent body:
+FluentCalendarView(selection: $selectedDays, selectionMode: .multiple)
+    .frame(width: 310, height: 350)
+```
+
+Pass `calendar` to configure locale and time zone, and `firstWeekday` to override the week start.
+Dates are compared by local calendar day. Activating a selected day removes it; in multiple mode,
+all equivalent duplicate entries are removed. Range/blackout/mode changes normalize the bound
+selection. CalendarDatePicker retains its nonoptional-date API and commits an already selected day.
+`displayDate`, `displayMode`, and unbound `selectedDates` apply initially and when their values
+change; unchanged parent values preserve browsing. Coverage remains partial: continuous scrolling,
+full multi-era calendar behavior, item templates/density indicators, Windows screenshot comparison,
+and real VoiceOver acceptance are pending.
 
 FlipView provides horizontal pages with buttons, Left/Right/Home/End keys and wheel input. Wheel
 bursts advance once until a 200 ms pause or direction reversal; eligible events at a boundary and

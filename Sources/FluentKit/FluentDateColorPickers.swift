@@ -80,6 +80,7 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
     private var binding: FluentBinding<Date>?
     private var observedBinding: FluentBinding<Date>?
     private var observerID: UUID?
+    private var observationGeneration: UInt64 = 0
     private var isApplyingBinding = false
     private var isPointerOver = false
     private var isPressed = false
@@ -193,14 +194,20 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
     }
 
     private func installObserver() {
+        observationGeneration &+= 1
+        let generation = observationGeneration
         if let observerID { observedBinding?.removeObserver?(observerID) }
         observedBinding = binding
-        observerID = binding?.observe? { [weak self] value in
+        observerID = binding?.observe? { [weak self] _ in
             DispatchQueue.main.async { [weak self] in
-                guard let self, !self.isApplyingBinding, self.dateValue != value else { return }
+                guard let self, self.observationGeneration == generation, !self.isApplyingBinding,
+                      let binding = self.binding else { return }
+                let value = binding.get()
+                guard self.dateValue != value else { return }
                 self.isApplyingBinding = true
                 self.dateValue = value
                 self.isApplyingBinding = false
+                self.setAccessibilityValue(value as NSDate)
                 self.syncCalendarOverlay()
                 self.needsDisplay = true
             }
@@ -373,7 +380,8 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
         )
 
         let padding: CGFloat = 8
-        let contentSize = NSSize(width: 296, height: 280)
+        let contentSize = NSSize(width: calendarMonthView.intrinsicContentSize.width + 2 * padding,
+            height: calendarMonthView.intrinsicContentSize.height + 2 * padding)
         let contentView = FluentMaterialView(
             frame: NSRect(origin: .zero, size: contentSize)
         )
@@ -420,6 +428,8 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
     }
 
     private func syncCalendarOverlay() {
+        calendarMonthView?.theme = theme
+        calendarMonthView?.updateLimits(minDate: minDate, maxDate: maxDate)
         calendarMonthView?.setSelectedDate(dateValue)
     }
 

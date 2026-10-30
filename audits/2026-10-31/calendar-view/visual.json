@@ -1,0 +1,302 @@
+[
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10
+    ],
+    "state" : "month",
+    "variant" : "light",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10
+    ],
+    "state" : "hover",
+    "variant" : "light",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12
+    ],
+    "state" : "selected",
+    "variant" : "light",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "keyboard",
+    "variant" : "light",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 68.5,
+    "cellWidth" : 71.5,
+    "header" : "2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "year",
+    "variant" : "light",
+    "visibleCells" : 16,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 68.5,
+    "cellWidth" : 71.5,
+    "header" : "2020 – 2029",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "decade",
+    "variant" : "light",
+    "visibleCells" : 16,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "disabled",
+    "variant" : "light",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10
+    ],
+    "state" : "month",
+    "variant" : "dark",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10
+    ],
+    "state" : "hover",
+    "variant" : "dark",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12
+    ],
+    "state" : "selected",
+    "variant" : "dark",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "keyboard",
+    "variant" : "dark",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 68.5,
+    "cellWidth" : 71.5,
+    "header" : "2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "year",
+    "variant" : "dark",
+    "visibleCells" : 16,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 68.5,
+    "cellWidth" : 71.5,
+    "header" : "2020 – 2029",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "decade",
+    "variant" : "dark",
+    "visibleCells" : 16,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "disabled",
+    "variant" : "dark",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10
+    ],
+    "state" : "month",
+    "variant" : "rtl",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10
+    ],
+    "state" : "hover",
+    "variant" : "rtl",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12
+    ],
+    "state" : "selected",
+    "variant" : "rtl",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "keyboard",
+    "variant" : "rtl",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 68.5,
+    "cellWidth" : 71.5,
+    "header" : "2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "year",
+    "variant" : "rtl",
+    "visibleCells" : 16,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 68.5,
+    "cellWidth" : 71.5,
+    "header" : "2020 – 2029",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "decade",
+    "variant" : "rtl",
+    "visibleCells" : 16,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "cellHeight" : 40.666666666666664,
+    "cellWidth" : 40,
+    "header" : "May 2026",
+    "selectedDays" : [
+      10,
+      12,
+      1
+    ],
+    "state" : "disabled",
+    "variant" : "rtl",
+    "visibleCells" : 42,
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  }
+]

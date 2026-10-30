@@ -11,6 +11,14 @@ FluentKit aims to become a complete, modern declarative UI framework for native 
 - No markup compatibility layer and no copied implementation code.
 - MIT-licensed framework code with the reference-project notice kept separate.
 
+## Calendar follow-up (2026-10-31)
+
+- Available: embedded CalendarView and a shared CalendarDatePicker grid; single/multiple/no
+  selection, blackout dates, range reconciliation, RTL keyboard navigation and 4×4 Year/Decade views.
+- Pending: continuous scrolling/virtualization, complete era-boundary behavior, item templates and
+  density indicators, Windows screenshot comparison and real VoiceOver acceptance.
+- Evidence: [independent reproduction and verification](audits/2026-10-31/calendar-view/REPORT.md).
+
 ## Completed Foundation
 
 Milestones 1-13 provide the completed foundation: the declarative view protocol and builder, observable state and bindings, environment propagation, native layout and controls, stable-ID collections, materials, overlays, navigation, animation transactions, commands and menus, single- and multi-window scenes, frame restoration, focus routing, accessibility composition, a scrollable Gallery, Codable restored application state, native undo transactions, document sessions, sectioned diffable collections, native table and outline controls, adaptive grids, stable multi-selection, drag-reorder intents, large-data validation, and native input/form primitives. Milestone 14 now includes its foundational rich-text slice, Milestone 15 includes stable two-column navigation, destination registration, and typed navigation restoration, and Milestone 20 includes accessibility depth, localization, RTL propagation, and semantic audits.

@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added embedded CalendarView with single/multiple/no selection, blackout/range reconciliation,
+  RTL keyboard navigation and 4×4 Year/Decade views; CalendarDatePicker shares the same grid.
+  Fixed weekday ordering, time-zone-inconsistent date math and out-of-range month navigation.
+  CalendarDatePicker now rejects queued notifications from replaced bindings and updates its AX value.
+  Added a direct Gallery sample with partial coverage; full scrolling/calendar/accessibility
+  parity remains pending.
+
 - Matched FlipView navigation-button geometry, idle/hover visibility and wheel-burst throttling
   to the WinUI source; added keyboard focus and current-page accessibility actions. Disabled
   composites now restore child controls before reconciling their parent and track newly mounted
