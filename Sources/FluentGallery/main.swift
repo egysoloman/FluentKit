@@ -12,48 +12,46 @@ private struct GalleryNavigationSnapshot: FluentView {
     @FluentState private var selection: String? = "Library"
     @FluentState private var isSidebarVisible = true
 
-    var body: FluentAnyView {
-        return FluentAnyView(
-            FluentVStack(spacing: 14) {
-                FluentText("Navigation workspace", size: 24, weight: .semibold)
-                FluentText(
-                    "A persistent native split view with stable destination identity.",
-                    size: 13,
-                    color: FluentTheme.current.textSecondary
-                )
-                FluentBoundToggle($isSidebarVisible, title: "Show sidebar")
-                FluentNavigationSplitView(
-                    ["Home", "Library", "Settings"],
-                    id: { $0 },
-                    selection: $selection,
-                    isSidebarVisible: $isSidebarVisible,
-                    sidebarWidth: 180...300,
-                    idealSidebarWidth: 220
-                ) { item in
-                    FluentText(item, size: 13)
-                } detail: { item in
-                    FluentVStack(spacing: 10) {
-                        FluentText(item, size: 22, weight: .semibold)
-                        FluentText(
-                            "Stable selection drives this native detail column.",
-                            size: 13,
-                            color: FluentTheme.current.textSecondary
-                        )
-                        FluentDivider()
-                        FluentText(
-                            "The sidebar uses macOS material while the content remains fully declarative.",
-                            size: 13
-                        )
-                    }
-                    .padding(28)
-                } placeholder: {
-                    FluentText("Choose a destination", size: 14, color: FluentTheme.current.textSecondary)
-                        .padding(28)
+    var body: some FluentView {
+        FluentVStack(spacing: 14) {
+            FluentText("Navigation workspace", size: 24, weight: .semibold)
+            FluentText(
+                "A persistent native split view with stable destination identity.",
+                size: 13,
+                color: FluentTheme.current.textSecondary
+            )
+            FluentBoundToggle($isSidebarVisible, title: "Show sidebar")
+            FluentNavigationSplitView(
+                ["Home", "Library", "Settings"],
+                id: { $0 },
+                selection: $selection,
+                isSidebarVisible: $isSidebarVisible,
+                sidebarWidth: 180...300,
+                idealSidebarWidth: 220
+            ) { item in
+                FluentText(item, size: 13)
+            } detail: { item in
+                FluentVStack(spacing: 10) {
+                    FluentText(item, size: 22, weight: .semibold)
+                    FluentText(
+                        "Stable selection drives this native detail column.",
+                        size: 13,
+                        color: FluentTheme.current.textSecondary
+                    )
+                    FluentDivider()
+                    FluentText(
+                        "The sidebar uses macOS material while the content remains fully declarative.",
+                        size: 13
+                    )
                 }
-                .frame(height: 330)
+                .padding(28)
+            } placeholder: {
+                FluentText("Choose a destination", size: 14, color: FluentTheme.current.textSecondary)
+                    .padding(28)
             }
-            .padding(NSEdgeInsets(top: 34, left: 36, bottom: 36, right: 36))
-        )
+            .frame(height: 330)
+        }
+        .padding(NSEdgeInsets(top: 34, left: 36, bottom: 36, right: 36))
     }
 }
 
@@ -68,106 +66,102 @@ private struct GalleryStyleSnapshot: FluentView {
     @FluentState private var secureText = ""
     @FluentState private var quantity = 2
 
-    var body: FluentAnyView {
-        FluentAnyView(
-            FluentVStack(spacing: 18) {
-                FluentText("Styles and theming", style: .title)
-                FluentText("Reusable native appearances with inherited semantic metrics.", style: .callout)
-                FluentHStack(spacing: 10) {
-                    FluentButtonView("Automatic")
-                    FluentButtonView("Accent").buttonStyle(FluentAccentButtonStyle())
-                    FluentButtonView("Outline").buttonStyle(FluentOutlineButtonStyle())
-                    FluentButtonView("Borderless").buttonStyle(FluentBorderlessButtonStyle())
-                    FluentButtonView("Copy", image: NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil))
-                    FluentButtonView("", image: NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: nil), imagePosition: .imageOnly)
-                        .accessibilityLabel("Refresh")
-                }
-                FluentHStack(spacing: 14) {
-                    FluentToggleView("Updates", isOn: $notificationsEnabled)
-                        .toggleStyle(FluentMonochromeToggleStyle())
-                    FluentSliderView(value: $sliderValue)
-                        .sliderStyle(FluentNeutralSliderStyle())
-                        .frame(width: 150)
-                    FluentTextFieldView(text: $searchText, placeholder: "Underline style")
-                        .textFieldStyle(FluentUnderlineTextFieldStyle())
-                        .frame(width: 170)
-                    FluentProgressBar(value: sliderValue * 100)
-                        .progressStyle(FluentNeutralProgressStyle())
-                        .frame(width: 210)
-                }
-                FluentHStack(spacing: 14) {
-                    FluentCheckBoxView("Completed", isChecked: $showCompleted)
-                        .checkBoxStyle(FluentMonochromeCheckBoxStyle())
-                    FluentSegmentedControl(["One", "Two"], selection: $selectedSegment)
-                        .segmentedStyle(FluentNeutralSegmentedStyle())
-                }
-                FluentRadioButtons(
-                    ["Primary", "Secondary", "Disabled"],
-                    selection: $primaryChoice,
-                    header: "Radio buttons",
-                    maxColumns: 3,
-                    isEnabled: { $0 != "Disabled" }
-                )
-                FluentRatingControlView(value: $ratingValue, caption: "312 ratings")
-                FluentHStack(spacing: 14) {
-                    FluentSecureField($secureText, placeholder: "Secure underline")
-                        .textFieldStyle(FluentUnderlineTextFieldStyle())
-                        .frame(width: 190)
-                    FluentStepper("Items", value: $quantity, in: 1...9)
-                        .stepperStyle(FluentInlineStepperStyle())
-                }
-                FluentVStack(spacing: 6) {
-                    FluentText("Elevated card", style: .headline)
-                    FluentText("The card surface and content inset come from a reusable style.", style: .caption)
-                }
-                .cardStyle(FluentElevatedCardStyle())
-                FluentVStack(spacing: 8) {
-                    FluentText("Compact high contrast", style: .headline)
-                    FluentHStack(spacing: 8) {
-                        FluentButtonView("Primary").buttonStyle(FluentAccentButtonStyle())
-                        FluentButtonView("Secondary").buttonStyle(FluentOutlineButtonStyle())
-                    }
-                }
-                .fluentDensity(.compact)
-                .fluentContrast(.high)
+    var body: some FluentView {
+        FluentVStack(spacing: 18) {
+            FluentText("Styles and theming", style: .title)
+            FluentText("Reusable native appearances with inherited semantic metrics.", style: .callout)
+            FluentHStack(spacing: 10) {
+                FluentButtonView("Automatic")
+                FluentButtonView("Accent").buttonStyle(FluentAccentButtonStyle())
+                FluentButtonView("Outline").buttonStyle(FluentOutlineButtonStyle())
+                FluentButtonView("Borderless").buttonStyle(FluentBorderlessButtonStyle())
+                FluentButtonView("Copy", image: NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil))
+                FluentButtonView("", image: NSImage(systemSymbolName: "arrow.clockwise", accessibilityDescription: nil), imagePosition: .imageOnly)
+                    .accessibilityLabel("Refresh")
             }
-            .padding(NSEdgeInsets(top: 36, left: 42, bottom: 36, right: 42))
-        )
+            FluentHStack(spacing: 14) {
+                FluentToggleView("Updates", isOn: $notificationsEnabled)
+                    .toggleStyle(FluentMonochromeToggleStyle())
+                FluentSliderView(value: $sliderValue)
+                    .sliderStyle(FluentNeutralSliderStyle())
+                    .frame(width: 150)
+                FluentTextFieldView(text: $searchText, placeholder: "Underline style")
+                    .textFieldStyle(FluentUnderlineTextFieldStyle())
+                    .frame(width: 170)
+                FluentProgressBar(value: sliderValue * 100)
+                    .progressStyle(FluentNeutralProgressStyle())
+                    .frame(width: 210)
+            }
+            FluentHStack(spacing: 14) {
+                FluentCheckBoxView("Completed", isChecked: $showCompleted)
+                    .checkBoxStyle(FluentMonochromeCheckBoxStyle())
+                FluentSegmentedControl(["One", "Two"], selection: $selectedSegment)
+                    .segmentedStyle(FluentNeutralSegmentedStyle())
+            }
+            FluentRadioButtons(
+                ["Primary", "Secondary", "Disabled"],
+                selection: $primaryChoice,
+                header: "Radio buttons",
+                maxColumns: 3,
+                isEnabled: { $0 != "Disabled" }
+            )
+            FluentRatingControlView(value: $ratingValue, caption: "312 ratings")
+            FluentHStack(spacing: 14) {
+                FluentSecureField($secureText, placeholder: "Secure underline")
+                    .textFieldStyle(FluentUnderlineTextFieldStyle())
+                    .frame(width: 190)
+                FluentStepper("Items", value: $quantity, in: 1...9)
+                    .stepperStyle(FluentInlineStepperStyle())
+            }
+            FluentVStack(spacing: 6) {
+                FluentText("Elevated card", style: .headline)
+                FluentText("The card surface and content inset come from a reusable style.", style: .caption)
+            }
+            .cardStyle(FluentElevatedCardStyle())
+            FluentVStack(spacing: 8) {
+                FluentText("Compact high contrast", style: .headline)
+                FluentHStack(spacing: 8) {
+                    FluentButtonView("Primary").buttonStyle(FluentAccentButtonStyle())
+                    FluentButtonView("Secondary").buttonStyle(FluentOutlineButtonStyle())
+                }
+            }
+            .fluentDensity(.compact)
+            .fluentContrast(.high)
+        }
+        .padding(NSEdgeInsets(top: 36, left: 42, bottom: 36, right: 42))
     }
 }
 
 private struct GalleryTeachingTipSnapshot: FluentView {
     @FluentState private var isPresented = false
 
-    var body: FluentAnyView {
-        FluentAnyView(
-            FluentVStack(spacing: 18) {
-                FluentText("TeachingTip", style: .title)
-                FluentText(
-                    "WinUI target guidance with source-aligned content and dismissal semantics.",
-                    style: .body,
-                    color: FluentTheme.current.textSecondary
-                )
-                FluentButtonView("Show teaching tip") { isPresented = true }
-                    .teachingTip(
-                        isPresented: $isPresented,
-                        title: "Keyboard navigation",
-                        subtitle: "Move through the current group without leaving the keyboard.",
-                        systemImageName: "keyboard",
-                        placement: .bottomRight,
-                        shouldConstrainToRootBounds: false,
-                        size: NSSize(width: 320, height: 176),
-                        actionButtonTitle: "Show shortcuts",
-                        closeButtonTitle: "Got it"
-                    ) {
-                        FluentText(
-                            "Action commands keep the TeachingTip open.",
-                            style: .caption
-                        )
-                    }
-            }
-            .padding(NSEdgeInsets(top: 80, left: 120, bottom: 80, right: 120))
-        )
+    var body: some FluentView {
+        FluentVStack(spacing: 18) {
+            FluentText("TeachingTip", style: .title)
+            FluentText(
+                "WinUI target guidance with source-aligned content and dismissal semantics.",
+                style: .body,
+                color: FluentTheme.current.textSecondary
+            )
+            FluentButtonView("Show teaching tip") { isPresented = true }
+                .teachingTip(
+                    isPresented: $isPresented,
+                    title: "Keyboard navigation",
+                    subtitle: "Move through the current group without leaving the keyboard.",
+                    systemImageName: "keyboard",
+                    placement: .bottomRight,
+                    shouldConstrainToRootBounds: false,
+                    size: NSSize(width: 320, height: 176),
+                    actionButtonTitle: "Show shortcuts",
+                    closeButtonTitle: "Got it"
+                ) {
+                    FluentText(
+                        "Action commands keep the TeachingTip open.",
+                        style: .caption
+                    )
+                }
+        }
+        .padding(NSEdgeInsets(top: 80, left: 120, bottom: 80, right: 120))
     }
 }
 
@@ -335,11 +329,9 @@ private struct GalleryWindowTabDocumentView: FluentView {
 
     init(title: String) { self.title = title }
 
-    var body: FluentAnyView {
-        FluentAnyView(
-            FluentNativeView(
-                GalleryWindowTabDocumentNativeView(title: title, notes: $notes)
-            )
+    var body: some FluentView {
+        FluentNativeView(
+            GalleryWindowTabDocumentNativeView(title: title, notes: $notes)
         )
     }
 }

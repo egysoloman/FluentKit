@@ -49,14 +49,14 @@ Then add `FluentKit` to the dependencies of your application target. See
 
 ```swift
 struct SettingsView: FluentView {
-    var body: FluentAnyView {
-        FluentAnyView(FluentVStack(spacing: 14) {
+    var body: some FluentView {
+        FluentVStack(spacing: 14) {
             FluentText("Settings", size: 24, weight: .semibold)
             FluentNativeView(FluentTextField(placeholder: "Search"))
             FluentNativeView(FluentButton(title: "Save changes"))
             FluentNativeView(FluentToggle(title: "Use notifications", isOn: true))
             FluentNativeView(FluentProgressBar(value: 72))
-        })
+        }
     }
 }
 
