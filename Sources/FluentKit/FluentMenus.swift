@@ -22,6 +22,7 @@ public enum FluentMenuSelectionIndicator: Hashable, Sendable {
 public struct FluentMenuItem {
     public let title: String
     public let systemImageName: String?
+    public let icon: FluentIconSource?
     public let isEnabled: Bool
     public let state: FluentMenuItemState
     public let selectionIndicator: FluentMenuSelectionIndicator
@@ -36,6 +37,7 @@ public struct FluentMenuItem {
     public init(
         _ title: String,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
         isEnabled: Bool = true,
         state: FluentMenuItemState = .off,
         selectionIndicator: FluentMenuSelectionIndicator = .checkmark,
@@ -46,6 +48,7 @@ public struct FluentMenuItem {
     ) {
         self.title = title
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.isEnabled = isEnabled
         self.state = state
         self.selectionIndicator = selectionIndicator
@@ -59,6 +62,7 @@ public struct FluentMenuItem {
     private init(separator: Void) {
         title = ""
         systemImageName = nil
+        icon = nil
         isEnabled = false
         state = .off
         selectionIndicator = .checkmark
@@ -74,12 +78,14 @@ public struct FluentMenuItem {
     public static func submenu(
         _ title: String,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
         isEnabled: Bool = true,
         @FluentMenuBuilder items: () -> [FluentMenuItem]
     ) -> FluentMenuItem {
         FluentMenuItem(
             title,
             systemImageName: systemImageName,
+            icon: icon,
             isEnabled: isEnabled,
             submenu: items(),
             action: {}
@@ -125,14 +131,7 @@ func makeFluentMenu(items: [FluentMenuItem]) -> NSMenu {
         menuItem.isEnabled = item.isEnabled
         menuItem.state = item.state.nsState
         menuItem.keyEquivalentModifierMask = item.keyModifiers
-        if let systemImageName = item.systemImageName,
-           let symbol = NSImage(systemSymbolName: systemImageName, accessibilityDescription: item.title) {
-            let image = symbol.withSymbolConfiguration(
-                NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
-            ) ?? symbol
-            image.isTemplate = true
-            menuItem.image = image
-        }
+        menuItem.image = item.icon?.image(pointSize: 13)
         if item.hasSubmenu { menuItem.submenu = makeFluentMenu(items: item.submenu) }
         menu.addItem(menuItem)
     }
@@ -620,7 +619,7 @@ private final class FluentMenuPresenterView: NSView {
         setAccessibilityElement(true)
         setAccessibilityRole(.menu)
         let showsCheckPlaceholder = items.contains { !$0.isSeparator && $0.reservesCheckSlot }
-        let showsIconPlaceholder = items.contains { !$0.isSeparator && $0.systemImageName != nil }
+        let showsIconPlaceholder = items.contains { !$0.isSeparator && $0.icon != nil }
 
         var y: CGFloat = 2
         for (index, item) in items.enumerated() {
@@ -812,7 +811,7 @@ private final class FluentMenuPresenterView: NSView {
     static func preferredSize(for items: [FluentMenuItem], theme: FluentTheme, minimumWidth: CGFloat) -> NSSize {
         let font = theme.typography.font(for: .body)
         let placeholderCount = (items.contains { !$0.isSeparator && $0.reservesCheckSlot } ? 1 : 0)
-            + (items.contains { !$0.isSeparator && $0.systemImageName != nil } ? 1 : 0)
+            + (items.contains { !$0.isSeparator && $0.icon != nil } ? 1 : 0)
         let widest = items.filter { !$0.isSeparator }.reduce(CGFloat(0)) { result, item in
             let titleWidth = (item.title as NSString).size(withAttributes: [.font: font]).width
             let keyWidth = (Self.accelerator(for: item) as NSString).size(withAttributes: [.font: font]).width
@@ -889,17 +888,12 @@ private final class FluentMenuItemRow: NSControl {
                 ? "Opens a submenu"
                 : (accelerator.isEmpty ? nil : "Keyboard shortcut \(accelerator)")
         )
-        if showsIconPlaceholder, let systemImageName = item.systemImageName {
+        if showsIconPlaceholder, let icon = item.icon {
             iconView.identifier = NSUserInterfaceItemIdentifier("FluentKit.Menu.Item.Icon")
             iconView.imageScaling = .scaleProportionallyDown
             iconView.setAccessibilityElement(false)
-            if let symbol = NSImage(systemSymbolName: systemImageName, accessibilityDescription: item.title) {
-                let image = symbol.withSymbolConfiguration(
-                    NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
-                ) ?? symbol
-                image.isTemplate = true
-                iconView.image = image
-            }
+            iconView.image = icon.image(pointSize: 13, color: item.isEnabled ? theme.textPrimary : theme.textDisabled,
+                                        layoutDirection: userInterfaceLayoutDirection)
             addSubview(iconView)
         }
         if item.state == .on, item.selectionIndicator == .pill {
@@ -991,7 +985,8 @@ private final class FluentMenuItemRow: NSControl {
         }
         let foreground = theme.menuItemForeground(for: state)
         let acceleratorForeground = theme.menuAcceleratorForeground(for: state)
-        iconView.contentTintColor = foreground
+        iconView.contentTintColor = item.icon?.tint == .original ? nil : foreground
+        iconView.image = item.icon?.image(pointSize: 13, color: foreground, layoutDirection: userInterfaceLayoutDirection)
         let font = theme.typography.font(for: .body)
         let titleSize = (item.title as NSString).size(withAttributes: [.font: font])
 

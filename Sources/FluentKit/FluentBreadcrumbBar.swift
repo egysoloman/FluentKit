@@ -191,7 +191,7 @@ public final class FluentBreadcrumbBar: NSControl, FluentControlSizeConfigurable
         layer?.backgroundColor = NSColor.clear.cgColor
         setAccessibilityElement(true)
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Breadcrumb bar")
+        fluentSetDefaultAccessibilityLabel("Breadcrumb bar")
 
         ellipsisControl.owner = self
         ellipsisControl.fluentControlSize = fluentControlSize
@@ -589,8 +589,8 @@ final class FluentBreadcrumbItemControl: NSControl, FluentControlSizeConfigurabl
     private func updateAccessibility() {
         switch kind {
         case .ellipsis:
-            setAccessibilityLabel("More links")
-            setAccessibilityHelp("Shows hidden breadcrumb items")
+            fluentSetDefaultAccessibilityLabel("More links")
+            fluentSetDefaultAccessibilityHelp("Shows hidden breadcrumb items")
         case .item:
             setAccessibilityLabel(item?.title)
             setAccessibilityHelp(isCurrent ? "Current location" : "Breadcrumb item")

@@ -55,6 +55,9 @@ public protocol FluentControlSizeConfigurable: AnyObject {
 public enum FluentMaterial: Hashable, Sendable {
     case mica
     case acrylic
+    /// Explicit macOS visual-effect alternatives; appearance follows the operating system.
+    case nativeMica
+    case nativeAcrylic
     /// System-owned glass for transient presenters. Unlike acrylic, FluentKit does not tint or
     /// paint this material itself.
     case liquidGlass
@@ -159,6 +162,13 @@ public struct FluentDesignTokens: Sendable {
 }
 
 public enum FluentTextStyle: Hashable, Sendable {
+    case display
+    case titleLarge
+    case subtitle
+    case bodyLarge
+    case bodyStrong
+    case bodyLargeStrong
+    /// Compatibility alias for TitleLarge.
     case largeTitle
     case title
     case title2
@@ -169,28 +179,68 @@ public enum FluentTextStyle: Hashable, Sendable {
     case code
 }
 
-/// Semantic desktop typography with an application-configurable scale.
+/// Per-style metrics. A nil line height follows the selected font's natural line box,
+/// matching TextBlock's MaxHeight line stacking instead of inventing fixed resource values.
+public struct FluentTextMetrics: Sendable, Equatable {
+    public var size: CGFloat
+    public var weight: CGFloat
+    public var lineHeight: CGFloat?
+    public init(size: CGFloat, weight: NSFont.Weight = .regular, lineHeight: CGFloat? = nil) {
+        self.size = max(size, 1)
+        self.weight = weight.rawValue
+        self.lineHeight = lineHeight
+    }
+}
+
+public final class FluentFontProvider: @unchecked Sendable, Equatable {
+    private let resolve: @Sendable (FluentTextStyle, CGFloat, NSFont.Weight) -> NSFont?
+    public init(_ resolve: @escaping @Sendable (FluentTextStyle, CGFloat, NSFont.Weight) -> NSFont?) { self.resolve = resolve }
+    public static func == (lhs: FluentFontProvider, rhs: FluentFontProvider) -> Bool { lhs === rhs }
+    public func font(for style: FluentTextStyle, size: CGFloat, weight: NSFont.Weight) -> NSFont? { resolve(style, size, weight) }
+}
+
+/// WinUI TextBlock semantic scale; aliases: largeTitle → titleLarge, title2 → subtitle,
+/// headline → bodyStrong, callout → body. The native font is an explicit platform fallback.
 public struct FluentTypography: Sendable, Equatable {
     public let scale: CGFloat
+    public let overrides: [FluentTextStyle: FluentTextMetrics]
+    public let fontProvider: FluentFontProvider?
 
-    public init(scale: CGFloat = 1) {
+    public init(scale: CGFloat = 1, overrides: [FluentTextStyle: FluentTextMetrics] = [:], fontProvider: FluentFontProvider? = nil) {
         self.scale = min(max(scale, 0.75), 2)
+        self.overrides = overrides
+        self.fontProvider = fontProvider
+    }
+
+    public func metrics(for style: FluentTextStyle) -> FluentTextMetrics {
+        if let override = overrides[style] { return override }
+        switch style {
+        case .display: return .init(size: 68, weight: .semibold)
+        case .largeTitle, .titleLarge: return .init(size: 40, weight: .semibold)
+        case .title: return .init(size: 28, weight: .semibold)
+        case .title2, .subtitle: return .init(size: 20, weight: .semibold)
+        case .headline, .bodyStrong: return .init(size: 14, weight: .semibold)
+        case .body, .callout: return .init(size: 14)
+        case .bodyLarge: return .init(size: 18)
+        case .bodyLargeStrong: return .init(size: 18, weight: .semibold)
+        case .caption: return .init(size: 12)
+        case .code: return .init(size: 14)
+        }
     }
 
     public func font(for style: FluentTextStyle) -> NSFont {
-        let descriptor: (CGFloat, NSFont.Weight) = switch style {
-        case .largeTitle: (28, .semibold)
-        case .title: (22, .semibold)
-        case .title2: (18, .semibold)
-        case .headline: (15, .semibold)
-        case .body: (14, .regular)
-        case .callout: (13, .regular)
-        case .caption: (12, .regular)
-        case .code: (13, .regular)
-        }
-        let size = descriptor.0 * scale
-        if style == .code { return NSFont.monospacedSystemFont(ofSize: size, weight: descriptor.1) }
-        return NSFont.systemFont(ofSize: size, weight: descriptor.1)
+        let metrics = metrics(for: style)
+        let size = metrics.size * scale
+        let weight = NSFont.Weight(rawValue: metrics.weight)
+        if let font = fontProvider?.font(for: style, size: size, weight: weight) { return font }
+        if style == .code { return NSFont.monospacedSystemFont(ofSize: size, weight: weight) }
+        return NSFont.systemFont(ofSize: size, weight: weight)
+    }
+
+    public func lineHeight(for style: FluentTextStyle) -> CGFloat {
+        if let height = metrics(for: style).lineHeight { return height * scale }
+        let font = font(for: style)
+        return ceil(font.ascender - font.descender + font.leading)
     }
 }
 
@@ -313,8 +363,19 @@ public struct FluentTheme: Equatable {
     public func material(for role: FluentMaterialRole) -> FluentMaterial? {
         guard materialEffectsEnabled else { return nil }
         switch role {
-        case .window, .navigation: return .mica
-        case .transient: return .liquidGlass
+        case .window, .navigation:
+            switch material {
+            case .mica, .acrylic: return .mica
+            case .nativeMica, .nativeAcrylic: return .nativeMica
+            case .liquidGlass: return .liquidGlass
+            case .sidebar: return .sidebar
+            }
+        case .transient:
+            switch material {
+            case .mica, .acrylic: return .acrylic
+            case .nativeMica, .nativeAcrylic, .sidebar: return .nativeAcrylic
+            case .liquidGlass: return .liquidGlass
+            }
         }
     }
 

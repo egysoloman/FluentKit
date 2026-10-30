@@ -533,8 +533,7 @@ private final class FluentNavigationContentEntry: NSView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func update(content: FluentAnyView, context: FluentRenderContext) {
-        host.context = context
-        host.update(content)
+        host.update(content, context: context)
     }
 }
 

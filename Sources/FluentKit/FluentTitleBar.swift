@@ -118,6 +118,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
     private let title: String
     private let subtitle: String?
     private let systemImageName: String?
+    private let icon: FluentIconSource?
     private let heightMode: FluentTitleBarHeightMode
     private let backgroundStyle: FluentTitleBarBackgroundStyle
     private let windowControlsStyle: FluentWindowControlsStyle
@@ -139,6 +140,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         title: String,
         subtitle: String? = nil,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
         heightMode: FluentTitleBarHeightMode = .automatic,
         backgroundStyle: FluentTitleBarBackgroundStyle = .solid,
         windowControlsStyle: FluentWindowControlsStyle = .macOS,
@@ -157,6 +159,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             title: title,
             subtitle: subtitle,
             systemImageName: systemImageName,
+            icon: icon,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
             windowControlsStyle: windowControlsStyle,
@@ -180,6 +183,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         title: String,
         subtitle: String? = nil,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
         heightMode: FluentTitleBarHeightMode = .automatic,
         backgroundStyle: FluentTitleBarBackgroundStyle = .solid,
         windowControlsStyle: FluentWindowControlsStyle = .macOS,
@@ -201,6 +205,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             title: title,
             subtitle: subtitle,
             systemImageName: systemImageName,
+            icon: icon,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
             windowControlsStyle: windowControlsStyle,
@@ -224,6 +229,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         title: String,
         subtitle: String?,
         systemImageName: String?,
+        icon: FluentIconSource?,
         heightMode: FluentTitleBarHeightMode,
         backgroundStyle: FluentTitleBarBackgroundStyle,
         windowControlsStyle: FluentWindowControlsStyle,
@@ -244,6 +250,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
         self.title = title
         self.subtitle = subtitle
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.heightMode = heightMode
         self.backgroundStyle = backgroundStyle
         self.windowControlsStyle = windowControlsStyle
@@ -269,6 +276,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             title: title,
             subtitle: subtitle,
             systemImageName: systemImageName,
+            icon: icon,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
             windowControlsStyle: windowControlsStyle,
@@ -295,6 +303,7 @@ public struct FluentTitleBar: FluentUpdatablePrimitiveView {
             title: title,
             subtitle: subtitle,
             systemImageName: systemImageName,
+            icon: icon,
             heightMode: heightMode,
             backgroundStyle: backgroundStyle,
             windowControlsStyle: windowControlsStyle,
@@ -332,6 +341,7 @@ private final class FluentTitleBarHost: NSView {
     private var title: String
     private var subtitle: String?
     private var systemImageName: String?
+    private var icon: FluentIconSource?
     private var heightMode: FluentTitleBarHeightMode
     private var backgroundStyle: FluentTitleBarBackgroundStyle
     private var windowControlsStyle: FluentWindowControlsStyle
@@ -379,6 +389,7 @@ private final class FluentTitleBarHost: NSView {
         title: String,
         subtitle: String?,
         systemImageName: String?,
+        icon: FluentIconSource?,
         heightMode: FluentTitleBarHeightMode,
         backgroundStyle: FluentTitleBarBackgroundStyle,
         windowControlsStyle: FluentWindowControlsStyle,
@@ -400,6 +411,7 @@ private final class FluentTitleBarHost: NSView {
         self.title = title
         self.subtitle = subtitle
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.heightMode = heightMode
         self.backgroundStyle = backgroundStyle
         self.windowControlsStyle = windowControlsStyle
@@ -455,6 +467,7 @@ private final class FluentTitleBarHost: NSView {
         title: String,
         subtitle: String?,
         systemImageName: String?,
+        icon: FluentIconSource?,
         heightMode: FluentTitleBarHeightMode,
         backgroundStyle: FluentTitleBarBackgroundStyle,
         windowControlsStyle: FluentWindowControlsStyle,
@@ -478,6 +491,7 @@ private final class FluentTitleBarHost: NSView {
         self.title = title
         self.subtitle = subtitle
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.heightMode = heightMode
         self.backgroundStyle = backgroundStyle
         self.windowControlsStyle = windowControlsStyle
@@ -637,7 +651,7 @@ private final class FluentTitleBarHost: NSView {
         let centerSpacing = centerContentWidth > 0 ? Self.titleSpacing : 0
         let identityLimit = max(contentLimit - centerContentWidth - centerSpacing, leading)
 
-        let hasIcon = systemImageName?.isEmpty == false
+        let hasIcon = icon != nil
         iconView.isHidden = !hasIcon || identityLimit - leading < Self.iconWidth
         if !iconView.isHidden {
             iconView.frame = centeredRect(in: physicalFrame(logicalX: leading, width: Self.iconWidth), size: NSSize(width: 16, height: 16))
@@ -755,8 +769,7 @@ private final class FluentTitleBarHost: NSView {
             return
         }
         if let host {
-            host.context = context
-            host.update(content)
+            host.update(content, context: context)
         } else {
             let newHost = FluentViewHost(content, context: context)
             newHost.identifier = NSUserInterfaceItemIdentifier(identifier)
@@ -767,25 +780,19 @@ private final class FluentTitleBarHost: NSView {
     }
 
     private func refreshAppearance() {
+        fluentSetLocalization(locale: context.locale, bundle: context.localizationBundle)
         let theme = context.theme
         let activeAlpha: CGFloat = isWindowActive ? 1 : 0.5
         titleLabel.stringValue = title
         subtitleLabel.stringValue = subtitle ?? ""
         let titleFont = theme.typography.font(for: .caption)
-        titleLabel.font = NSFont.systemFont(ofSize: titleFont.pointSize, weight: .semibold)
+        titleLabel.font = titleFont
         subtitleLabel.font = titleFont
         titleLabel.textColor = isWindowActive ? theme.textPrimary : theme.textSecondary
         subtitleLabel.textColor = isWindowActive ? theme.textSecondary : theme.textDisabled
-        if let systemImageName,
-           let image = NSImage(systemSymbolName: systemImageName, accessibilityDescription: title) {
-            let size = NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
-            let color = NSImage.SymbolConfiguration(
-                hierarchicalColor: isWindowActive ? theme.textPrimary : theme.textSecondary
-            )
-            iconView.image = image.withSymbolConfiguration(size.applying(color))
-        } else {
-            iconView.image = nil
-        }
+        iconView.image = icon?.image(pointSize: 16, color: isWindowActive ? theme.textPrimary : theme.textSecondary,
+                                     layoutDirection: context.layoutDirection.appKitValue)
+        iconView.imageScaling = .scaleProportionallyDown
         backButton.update(
             theme: theme,
             layoutDirection: context.layoutDirection,
@@ -800,7 +807,7 @@ private final class FluentTitleBarHost: NSView {
             isEnabled: isForwardButtonEnabled,
             accessibilityValue: nil
         )
-        let paneValue = paneOpenBinding.map { $0.get() ? "Expanded" : "Collapsed" }
+        let paneValue = paneOpenBinding.map { fluentControlString($0.get() ? "Expanded" : "Collapsed") }
         paneToggleButton.update(
             theme: theme,
             layoutDirection: context.layoutDirection,
@@ -1025,6 +1032,9 @@ private final class FluentTitleBarButton: NSButton {
     ) {
         self.theme = theme
         self.layoutDirection = layoutDirection
+        let label: String = switch kind { case .back: "Back"; case .forward: "Forward"; case .pane: "Navigation" }
+        setAccessibilityTitle(fluentControlString(label))
+        toolTip = fluentControlString(label)
         isWindowActive = isActive
         self.isEnabled = isEnabled
         setAccessibilityEnabled(isEnabled)

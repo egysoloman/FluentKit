@@ -217,10 +217,10 @@ private final class FluentTableView<Row>: NSScrollView, NSTableViewDelegate {
         tableView.columnAutoresizingStyle = .lastColumnOnlyAutoresizingStyle
         tableView.allowsEmptySelection = true
         tableView.setAccessibilityRole(.table)
-        tableView.setAccessibilityLabel("Table")
+        tableView.fluentSetDefaultAccessibilityLabel("Table")
         documentView = tableView
         setAccessibilityRole(.table)
-        setAccessibilityLabel("Table")
+        fluentSetDefaultAccessibilityLabel("Table")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

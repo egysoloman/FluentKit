@@ -54,8 +54,7 @@ public struct FluentFlipView<Data: RandomAccessCollection, Content: FluentView>:
                     guard let host = nativeView as? FluentViewHost<FluentAnyView> else {
                         return false
                     }
-                    host.context = updateContext
-                    host.update(FluentAnyView(contentView))
+                    host.update(FluentAnyView(contentView), context: updateContext)
                     return true
                 }
             )
@@ -111,7 +110,7 @@ private final class FluentFlipViewHost: NSView {
         wantsLayer = true
         setAccessibilityElement(true)
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Flip view")
+        fluentSetDefaultAccessibilityLabel("Flip view")
 
         contentContainer.identifier = NSUserInterfaceItemIdentifier("FluentKit.FlipView.Content")
         contentContainer.wantsLayer = true
@@ -371,7 +370,7 @@ private final class FluentFlipViewHost: NSView {
 
     private func updateAccessibilityValue() {
         guard selectedIndex >= 0, selectedIndex < records.count else {
-            setAccessibilityValue("0 items")
+            fluentSetDefaultAccessibilityValue("0 items")
             return
         }
         setAccessibilityValue("\(selectedIndex + 1) of \(records.count)")

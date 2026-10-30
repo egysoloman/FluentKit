@@ -677,8 +677,7 @@ private final class FluentWindowSolidSurfaceHost: NSView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func update(content: FluentAnyView, context: FluentRenderContext) {
-        contentHost.context = context
-        contentHost.update(content)
+        contentHost.update(content, context: context)
         apply(theme: context.theme)
     }
 
@@ -737,8 +736,7 @@ private final class FluentWindowSharedChromeHost: NSView {
 
     func update(content: FluentAnyView, context: FluentRenderContext) {
         self.context = context
-        contentHost.context = context
-        contentHost.update(content)
+        contentHost.update(content, context: context)
         applyAppearance()
         needsLayout = true
     }
@@ -857,10 +855,8 @@ private final class FluentWindowChromeLayoutHost: NSView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func update(titleBar: FluentAnyView, content: FluentAnyView, context: FluentRenderContext) {
-        titleHost.context = context
-        contentHost.context = context
-        titleHost.update(titleBar)
-        contentHost.update(content)
+        titleHost.update(titleBar, context: context)
+        contentHost.update(content, context: context)
     }
 }
 
@@ -917,10 +913,8 @@ private final class FluentWindowPageLayoutHost: NSView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func update(header: FluentAnyView, content: FluentAnyView, context: FluentRenderContext) {
-        headerHost.context = context
-        contentHost.context = context
-        headerHost.update(header)
-        contentHost.update(content)
+        headerHost.update(header, context: context)
+        contentHost.update(content, context: context)
     }
 }
 
@@ -999,8 +993,7 @@ private final class FluentWindowContentSurfaceHost: NSView {
     ) {
         self.cornerStyle = cornerStyle
         self.context = context
-        contentHost.context = context
-        contentHost.update(content)
+        contentHost.update(content, context: context)
         applyAppearance()
         applyCornerGeometry()
     }

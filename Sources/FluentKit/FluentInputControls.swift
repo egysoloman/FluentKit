@@ -144,18 +144,21 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
         didSet {
             guard oldValue != theme else { return }
             textEditingSession.theme = theme
-            invalidateIntrinsicContentSize()
+            synchronizeContentAppearance()
+            if oldValue.density != theme.density { invalidateIntrinsicContentSize() }
             needsDisplay = true
         }
     }
-    public var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    public var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { synchronizeContentAppearance() } }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
+            guard oldValue != fluentControlSize else { return }
             controlSize = fluentControlSize.appKitSize
             invalidateIntrinsicContentSize()
             needsDisplay = true
         }
     }
+    private var appliedContentAppearance: FluentTextFieldAppearance?
     private var isPointerOver = false
     private var pointerTrackingArea: NSTrackingArea?
     private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: theme, isSecure: true)
@@ -174,8 +177,9 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
         font = .systemFont(ofSize: 14)
         wantsLayer = true
         setAccessibilityRole(.textField)
-        setAccessibilityLabel("Secure text field")
+        fluentSetDefaultAccessibilityLabel("Secure text field")
         _ = textEditingSession
+        synchronizeContentAppearance()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -200,17 +204,20 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
     public override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
         isPointerOver = true
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
     public override func mouseExited(with event: NSEvent) {
         isPointerOver = false
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
     public override func textDidBeginEditing(_ notification: Notification) {
         super.textDidBeginEditing(notification)
         textEditingSession.didBeginEditing()
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -222,6 +229,7 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
     public override func textDidEndEditing(_ notification: Notification) {
         super.textDidEndEditing(notification)
         textEditingSession.didEndEditing()
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -231,13 +239,29 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
         }
     }
 
+    public override func layout() {
+        synchronizeContentAppearance()
+        super.layout()
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil { textEditingSession.didEndEditing() }
+    }
+
+    private func synchronizeContentAppearance() {
+        let appearance = resolvedFluentAppearance(focused: fluentTextControlHasFocus(self), pointerOver: isPointerOver)
+        if let font = appearance.font, self.font != font { self.font = font }
+        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
+        if appliedContentAppearance != appearance { needsDisplay = true }
+        appliedContentAppearance = appearance
+    }
+
     public override func draw(_ dirtyRect: NSRect) {
         let appearance = resolvedFluentAppearance(
             focused: fluentTextControlHasFocus(self),
             pointerOver: isPointerOver
         )
-        if let resolvedFont = appearance.font, font != resolvedFont { font = resolvedFont }
-        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
         drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .background)
         super.draw(dirtyRect)
         drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .borderAndFocus)
@@ -258,18 +282,21 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
         didSet {
             guard oldValue != theme else { return }
             textEditingSession.theme = theme
-            invalidateIntrinsicContentSize()
+            synchronizeContentAppearance()
+            if oldValue.density != theme.density { invalidateIntrinsicContentSize() }
             needsDisplay = true
         }
     }
-    public var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    public var fluentStyle: any FluentTextFieldStyle = FluentAutomaticTextFieldStyle() { didSet { synchronizeContentAppearance() } }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
+            guard oldValue != fluentControlSize else { return }
             controlSize = fluentControlSize.appKitSize
             invalidateIntrinsicContentSize()
             needsDisplay = true
         }
     }
+    private var appliedContentAppearance: FluentTextFieldAppearance?
     private var isPointerOver = false
     private var pointerTrackingArea: NSTrackingArea?
     private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: theme, isSecure: false)
@@ -290,6 +317,7 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
         setAccessibilityRole(.textField)
         setAccessibilityLabel(placeholder.isEmpty ? "Search" : placeholder)
         _ = textEditingSession
+        synchronizeContentAppearance()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -314,17 +342,20 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
     public override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
         isPointerOver = true
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
     public override func mouseExited(with event: NSEvent) {
         isPointerOver = false
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
     public override func textDidBeginEditing(_ notification: Notification) {
         super.textDidBeginEditing(notification)
         textEditingSession.didBeginEditing()
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -336,6 +367,7 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
     public override func textDidEndEditing(_ notification: Notification) {
         super.textDidEndEditing(notification)
         textEditingSession.didEndEditing()
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -353,13 +385,29 @@ public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
         }
     }
 
+    public override func layout() {
+        synchronizeContentAppearance()
+        super.layout()
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil { textEditingSession.didEndEditing() }
+    }
+
+    private func synchronizeContentAppearance() {
+        let appearance = resolvedFluentAppearance(focused: fluentTextControlHasFocus(self), pointerOver: isPointerOver)
+        if let font = appearance.font, self.font != font { self.font = font }
+        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
+        if appliedContentAppearance != appearance { needsDisplay = true }
+        appliedContentAppearance = appearance
+    }
+
     public override func draw(_ dirtyRect: NSRect) {
         let appearance = resolvedFluentAppearance(
             focused: fluentTextControlHasFocus(self),
             pointerOver: isPointerOver
         )
-        if let resolvedFont = appearance.font, font != resolvedFont { font = resolvedFont }
-        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
         drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .background)
         super.draw(dirtyRect)
         drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .borderAndFocus)
@@ -456,7 +504,7 @@ private final class FluentBoundSecureField: NSView, NSTextFieldDelegate {
         super.init(frame: .zero)
         field.theme = theme
         field.fluentStyle = style
-        field.stringValue = binding.get()
+        field.stringValue = FluentDependencyTracking.withoutTracking { binding.get() }
         field.delegate = self
         field.target = self
         field.action = #selector(commit)
@@ -471,7 +519,7 @@ private final class FluentBoundSecureField: NSView, NSTextFieldDelegate {
 
     func update(binding: FluentBinding<String>, placeholder: String, theme: FluentTheme, style: any FluentTextFieldStyle) {
         bindingCoordinator.update(binding: binding)
-        if field.placeholderString != placeholder { field.placeholderString = placeholder }
+        if (field.placeholderAttributedString?.string ?? field.placeholderString) != placeholder { field.placeholderString = placeholder }
         if field.theme != theme { field.theme = theme }
         field.fluentStyle = style
     }
@@ -515,7 +563,7 @@ private final class FluentBoundSearchField: NSView, NSSearchFieldDelegate {
         super.init(frame: .zero)
         field.theme = theme
         field.fluentStyle = style
-        field.stringValue = binding.get()
+        field.stringValue = FluentDependencyTracking.withoutTracking { binding.get() }
         field.delegate = self
         field.target = self
         field.action = #selector(submit)
@@ -543,7 +591,7 @@ private final class FluentBoundSearchField: NSView, NSSearchFieldDelegate {
     ) {
         bindingCoordinator.update(binding: binding)
         self.onSubmit = onSubmit
-        if field.placeholderString != placeholder { field.placeholderString = placeholder }
+        if (field.placeholderAttributedString?.string ?? field.placeholderString) != placeholder { field.placeholderString = placeholder }
         if field.theme != theme { field.theme = theme }
         field.fluentStyle = style
     }
@@ -1077,7 +1125,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         comboBox.tracksPointerInteractions = false
         comboBox.delegate = self
         comboBox.setAccessibilityRole(.comboBox)
-        comboBox.setAccessibilityHelp("Shows the available options")
+        comboBox.fluentSetDefaultAccessibilityHelp("Shows the available options")
         comboBox.onFocusChange = { [weak self] focused in
             self?.updateFocusPill(focused: focused, animated: false)
             self?.applyButtonChrome(animated: true)
@@ -1114,7 +1162,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         editableField.isHidden = mode != .editable
         editableField.identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBox.EditableText")
         editableField.setAccessibilityRole(.comboBox)
-        editableField.setAccessibilityHelp("Edits a value or shows the available options")
+        editableField.fluentSetDefaultAccessibilityHelp("Edits a value or shows the available options")
         editableField.onFocusChange = { [weak self] focused in
             self?.updateFocusPill(focused: focused, animated: false)
             self?.applyButtonChrome(animated: true)

@@ -133,7 +133,7 @@ private final class FluentNavigationSearchHost: NSView, NSSearchFieldDelegate {
         compactButton.target = self
         compactButton.action = #selector(requestExpandedSearch)
         compactButton.setAccessibilityRole(.button)
-        compactButton.setAccessibilityLabel("Search")
+        compactButton.fluentSetDefaultAccessibilityLabel("Search")
         addSubview(compactButton)
 
         suggestionsStack.orientation = .vertical
@@ -201,7 +201,7 @@ private final class FluentNavigationSearchHost: NSView, NSSearchFieldDelegate {
         submit = onSubmit
         self.context = context
         field.theme = context.theme
-        if field.placeholderString != placeholder { field.placeholderString = placeholder }
+        if (field.placeholderAttributedString?.string ?? field.placeholderString) != placeholder { field.placeholderString = placeholder }
         if field.stringValue != query.get() { field.stringValue = query.get() }
         installObserver()
         updateSuggestions()

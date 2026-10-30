@@ -2,6 +2,8 @@ import AppKit
 
 public enum FluentMaterialBackend: String, Hashable, Sendable {
     case nativeGlass
+    /// Deterministic opaque approximation of the WinUI material base colors (no desktop sampling).
+    case fluentRecipe
     case visualEffect
     case opaque
 }
@@ -35,7 +37,7 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     public var fallbackColor: NSColor = .windowBackgroundColor {
-        didSet { fallbackLayer.backgroundColor = fallbackColor.cgColor }
+        didSet { applySurfaceColor() }
     }
 
     public var tintColor: NSColor? {
@@ -58,6 +60,7 @@ public final class FluentMaterialView: NSVisualEffectView {
     private var isApplyingMaterial = false
     private var glassBackendView: NSView?
     private var displayOptionsObserver: NSObjectProtocol?
+    private var activeWindowObservers: [NSObjectProtocol] = []
 
     public override var intrinsicContentSize: NSSize {
         NSSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
@@ -127,26 +130,27 @@ public final class FluentMaterialView: NSVisualEffectView {
         let usesOpaqueFallback = !isMaterialEnabled
             || NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
         let usesNativeGlass = !usesOpaqueFallback
-            && (materialStyle == .mica || materialStyle == .liquidGlass)
+            && materialStyle == .liquidGlass
             && Self.isNativeGlassAvailable
+        let usesFluentRecipe = !usesOpaqueFallback && (materialStyle == .mica || materialStyle == .acrylic)
         resolvedBackend = usesOpaqueFallback
             ? .opaque
-            : (usesNativeGlass ? .nativeGlass : .visualEffect)
-        fallbackLayer.backgroundColor = fallbackColor.cgColor
-        fallbackLayer.opacity = usesOpaqueFallback ? 1 : 0
+            : (usesFluentRecipe ? .fluentRecipe : (usesNativeGlass ? .nativeGlass : .visualEffect))
+        applySurfaceColor()
+        fallbackLayer.opacity = usesOpaqueFallback || usesFluentRecipe ? 1 : 0
         let glassView = usesNativeGlass ? resolveGlassBackendView() : glassBackendView
         glassView?.isHidden = !usesNativeGlass
         glassView?.frame = bounds
         applyResolvedTint()
         blendingMode = .behindWindow
         material = switch materialStyle {
-        case .mica: .underWindowBackground
-        case .acrylic: .hudWindow
+        case .mica, .nativeMica: .underWindowBackground
+        case .acrylic, .nativeAcrylic: .hudWindow
         case .liquidGlass: .popover
         case .sidebar: .sidebar
         }
-        tintLayer.isHidden = usesOpaqueFallback || usesNativeGlass || materialStyle == .liquidGlass
-        if usesNativeGlass || usesOpaqueFallback {
+        tintLayer.isHidden = usesOpaqueFallback || usesFluentRecipe || usesNativeGlass || materialStyle == .liquidGlass
+        if usesNativeGlass || usesOpaqueFallback || usesFluentRecipe {
             // Keep the native view alive for content and accessibility, but make its effect
             // contribution inert while the glass or opaque backend owns the surface.
             blendingMode = .withinWindow
@@ -155,9 +159,38 @@ public final class FluentMaterialView: NSVisualEffectView {
         state = .followsWindowActiveState
     }
 
+    private func applySurfaceColor() {
+        if resolvedBackend == .fluentRecipe {
+            let dark = (fluentTheme ?? .current).isDark
+            let active = window?.isKeyWindow ?? true
+            // Fixed base/fallback colors. Desktop wallpaper sampling is intentionally unavailable
+            // here; callers can explicitly choose nativeMica/nativeAcrylic for AppKit effects.
+            let component: CGFloat = materialStyle == .mica
+                ? (dark ? (active ? 32 : 40) : (active ? 243 : 249))
+                : (dark ? 44 : 252)
+            fallbackLayer.backgroundColor = NSColor(calibratedWhite: component / 255, alpha: 1).cgColor
+        } else {
+            fallbackLayer.backgroundColor = fallbackColor.cgColor
+        }
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        activeWindowObservers.forEach(NotificationCenter.default.removeObserver)
+        activeWindowObservers.removeAll()
+        if let window {
+            for name in [NSWindow.didBecomeKeyNotification, NSWindow.didResignKeyNotification] {
+                activeWindowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] _ in
+                    self?.applySurfaceColor()
+                })
+            }
+        }
+        applySurfaceColor()
+    }
+
     private var resolvedTintColor: NSColor? {
         if let tintColor { return tintColor }
-        guard materialStyle == .mica else { return nil }
+        guard materialStyle == .mica || materialStyle == .nativeMica else { return nil }
         return (fluentTheme ?? .current).micaTint
     }
 
@@ -203,6 +236,7 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     deinit {
+        activeWindowObservers.forEach(NotificationCenter.default.removeObserver)
         if let displayOptionsObserver { NotificationCenter.default.removeObserver(displayOptionsObserver) }
     }
 }
@@ -305,8 +339,7 @@ private final class FluentMaterialSurfaceHost: NSView {
     override var intrinsicContentSize: NSSize { contentHost.fittingSize }
 
     func update(content: FluentAnyView, context: FluentRenderContext) {
-        contentHost.context = context
-        contentHost.update(content)
+        contentHost.update(content, context: context)
         apply(context: context)
         invalidateIntrinsicContentSize()
     }

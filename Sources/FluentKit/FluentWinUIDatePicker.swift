@@ -567,7 +567,7 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
             layer?.addSublayer(focus)
         }
         setAccessibilityRole(.popUpButton)
-        setAccessibilityLabel("Date")
+        fluentSetDefaultAccessibilityLabel("Date")
         updateFont()
         updateAccessibilityMetadata()
         updateAppearance()
@@ -713,7 +713,7 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         if let selectedDate {
             setAccessibilityValue(FluentWinUIDatePickerControl.accessibilityDateString(selectedDate))
         } else {
-            setAccessibilityValue("No date selected")
+            fluentSetDefaultAccessibilityValue("No date selected")
         }
         setAccessibilityExpanded(pickerPopover?.isShown == true)
     }

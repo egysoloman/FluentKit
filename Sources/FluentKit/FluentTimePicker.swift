@@ -427,7 +427,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         focusOuterLayer.name = "FluentKit.TimePicker.FocusOuter"
         focusInnerLayer.name = "FluentKit.TimePicker.FocusInner"
         setAccessibilityRole(.popUpButton)
-        setAccessibilityLabel("Time")
+        fluentSetDefaultAccessibilityLabel("Time")
         updateFont()
         updateAccessibilityMetadata()
         updateAppearance()

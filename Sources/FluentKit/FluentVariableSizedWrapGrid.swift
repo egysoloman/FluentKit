@@ -620,7 +620,7 @@ private final class FluentVariableSizedWrapGridHost: NSView {
         setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Variable sized wrap grid")
+        fluentSetDefaultAccessibilityLabel("Variable sized wrap grid")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

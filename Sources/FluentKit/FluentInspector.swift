@@ -99,10 +99,10 @@ private final class FluentInspectorHost: NSView, NSSplitViewDelegate {
         super.init(frame: .zero)
 
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Content with inspector")
+        fluentSetDefaultAccessibilityLabel("Content with inspector")
         inspectorMaterial.blendingMode = .withinWindow
         inspectorMaterial.setAccessibilityRole(.group)
-        inspectorMaterial.setAccessibilityLabel("Inspector")
+        inspectorMaterial.fluentSetDefaultAccessibilityLabel("Inspector")
         inspectorMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
         inspectorMaterial.fluentTheme = context.theme
         inspectorMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
@@ -175,10 +175,8 @@ private final class FluentInspectorHost: NSView, NSSplitViewDelegate {
         self.maximumWidth = maximumWidth
         self.context = context
         lastVisibleWidth = clampedWidth(lastVisibleWidth)
-        contentHost.context = context
-        contentHost.update(content)
-        inspectorHost.context = context
-        inspectorHost.update(inspector)
+        contentHost.update(content, context: context)
+        inspectorHost.update(inspector, context: context)
         inspectorMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
         inspectorMaterial.fluentTheme = context.theme
         inspectorMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled

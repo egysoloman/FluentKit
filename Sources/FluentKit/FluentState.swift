@@ -5,6 +5,7 @@ public final class FluentObservable<Value> {
 
     private var storedValue: Value
     private let lock = NSLock()
+    private let areEquivalent: ((Value, Value) -> Bool)?
 
     public var value: Value {
         get {
@@ -15,15 +16,31 @@ public final class FluentObservable<Value> {
         }
         set {
             lock.lock()
+            if areEquivalent?(storedValue, newValue) == true {
+                lock.unlock()
+                return
+            }
             storedValue = newValue
+            let snapshot = Array(observers.values)
             lock.unlock()
-            notifyObservers()
+            snapshot.forEach { deliver($0, value: newValue) }
         }
     }
 
     private var observers: [UUID: Observer] = [:]
 
-    public init(_ value: Value) { storedValue = value }
+    /// Supply a comparator for custom values; Equatable values deduplicate by default.
+    public init(_ value: Value, areEquivalent: ((Value, Value) -> Bool)? = nil) {
+        storedValue = value
+        self.areEquivalent = areEquivalent
+    }
+
+    public convenience init(_ value: Value) where Value: Equatable {
+        self.init(value, areEquivalent: ==)
+    }
+
+    /// Explicitly publishes the current value even when it has not changed.
+    public func send() { notifyObservers() }
 
     @discardableResult
     public func observe(_ observer: @escaping Observer, notifyImmediately: Bool = true) -> UUID {
@@ -86,6 +103,13 @@ enum FluentDependencyTracking {
         return (operation(), collector.dependencies)
     }
 
+    static func withoutTracking<Result>(_ operation: () -> Result) -> Result {
+        let previous = currentCollector
+        currentCollector = nil
+        defer { currentCollector = previous }
+        return operation()
+    }
+
     static func register<Value>(_ observable: FluentObservable<Value>) {
         guard let collector = currentCollector else { return }
         let id = ObjectIdentifier(observable)
@@ -103,6 +127,7 @@ public struct FluentBinding<Value> {
     let observe: ((@escaping (Value) -> Void) -> UUID)?
     let removeObserver: ((UUID) -> Void)?
     let observationIdentity: ObjectIdentifier?
+    var textInputConfiguration = FluentTextInputConfiguration()
 
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
         self.get = get
@@ -159,7 +184,13 @@ public struct FluentBinding<Value> {
 public final class FluentState<Value> {
     private let observable: FluentObservable<Value>
 
-    public init(wrappedValue: Value) { observable = FluentObservable(wrappedValue) }
+    public init(wrappedValue: Value, areEquivalent: ((Value, Value) -> Bool)? = nil) {
+        observable = FluentObservable(wrappedValue, areEquivalent: areEquivalent)
+    }
+
+    public convenience init(wrappedValue: Value) where Value: Equatable {
+        self.init(wrappedValue: wrappedValue, areEquivalent: ==)
+    }
 
     public var wrappedValue: Value {
         get { observable.value }

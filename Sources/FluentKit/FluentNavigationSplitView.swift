@@ -213,15 +213,15 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
         super.init(frame: .zero)
 
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Navigation split view")
+        fluentSetDefaultAccessibilityLabel("Navigation split view")
         sidebarMaterial.setAccessibilityRole(.group)
-        sidebarMaterial.setAccessibilityLabel("Navigation sidebar")
+        sidebarMaterial.fluentSetDefaultAccessibilityLabel("Navigation sidebar")
         sidebarMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
         sidebarMaterial.fluentTheme = context.theme
         sidebarMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
         sidebarMaterial.fallbackColor = context.theme.layerFill
         detailHost.setAccessibilityRole(.group)
-        detailHost.setAccessibilityLabel("Navigation detail")
+        detailHost.fluentSetDefaultAccessibilityLabel("Navigation detail")
 
         splitView.isVertical = true
         splitView.dividerStyle = .thin
@@ -305,9 +305,7 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
         sidebarMaterial.fallbackColor = context.theme.layerFill
 
         sanitizeSelectionIfNeeded()
-        sidebarHost.context = context
-        sidebarHost.update(makeSidebar())
-        detailHost.context = context
+        sidebarHost.update(makeSidebar(), context: context)
         updateDetail()
         installObservers()
         applySidebarVisibility()
@@ -331,7 +329,7 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
 
     private func updateDetail() {
         let selected = Self.resolveSelection(items: items, id: id, selectedID: selection.get())
-        detailHost.update(selected.map(detail) ?? placeholder())
+        detailHost.update(selected.map(detail) ?? placeholder(), context: context)
     }
 
     private func sanitizeSelectionIfNeeded() {

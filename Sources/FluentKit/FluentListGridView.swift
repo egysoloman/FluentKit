@@ -16,6 +16,13 @@ public struct FluentListView<ItemID: Hashable, Content: FluentView>: FluentUpdat
     private let isEnabled: (ItemID) -> Bool
     private let itemStyle: any FluentCollectionItemStyle
     private let content: (ItemID) -> Content
+    private var contentVersion: ((ItemID) -> AnyHashable)?
+
+    public func contentVersion(_ version: @escaping (ItemID) -> AnyHashable) -> Self {
+        var copy = self
+        copy.contentVersion = version
+        return copy
+    }
 
     public init(
         _ itemIDs: [ItemID],
@@ -107,6 +114,7 @@ public struct FluentListView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                     isEnabled: isEnabled,
                     itemStyle: itemStyle
                 ) { item in FluentAnyView(content(item)) }
+                .withOptionalContentVersion(contentVersion)
             )
         }
         return FluentAnyView(
@@ -124,6 +132,7 @@ public struct FluentListView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                 isEnabled: isEnabled,
                 itemStyle: itemStyle
             ) { item in FluentAnyView(content(item)) }
+                .withOptionalContentVersion(contentVersion)
         )
     }
 }
@@ -145,6 +154,13 @@ public struct FluentGridView<ItemID: Hashable, Content: FluentView>: FluentUpdat
     private let isEnabled: (ItemID) -> Bool
     private let itemStyle: any FluentCollectionItemStyle
     private let content: (ItemID) -> Content
+    private var contentVersion: ((ItemID) -> AnyHashable)?
+
+    public func contentVersion(_ version: @escaping (ItemID) -> AnyHashable) -> Self {
+        var copy = self
+        copy.contentVersion = version
+        return copy
+    }
 
     public init(
         _ itemIDs: [ItemID],
@@ -241,6 +257,7 @@ public struct FluentGridView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                     isEnabled: isEnabled,
                     itemStyle: itemStyle
                 ) { item in FluentAnyView(content(item)) }
+                .withOptionalContentVersion(contentVersion)
             )
         }
         return FluentAnyView(
@@ -258,6 +275,14 @@ public struct FluentGridView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                 isEnabled: isEnabled,
                 itemStyle: itemStyle
             ) { item in FluentAnyView(content(item)) }
+                .withOptionalContentVersion(contentVersion)
         )
+    }
+}
+
+private extension FluentCollection {
+    func withOptionalContentVersion(_ version: ((ItemID) -> AnyHashable)?) -> Self {
+        if let version { return contentVersion(version) }
+        return self
     }
 }

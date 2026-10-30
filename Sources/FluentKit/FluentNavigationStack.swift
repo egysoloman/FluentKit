@@ -456,7 +456,7 @@ private final class FluentNavigationStackHost: NSView {
 
         backButton.theme = context.theme
         backButton.onClick = { [weak self] in self?.pop() }
-        backButton.setAccessibilityLabel("Back")
+        backButton.fluentSetDefaultAccessibilityLabel("Back")
         header.addArrangedSubview(backButton)
         titleLabel.font = .systemFont(ofSize: 16, weight: .semibold)
         titleLabel.textColor = context.theme.textPrimary

@@ -173,7 +173,7 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.MenuBar")
         setAccessibilityElement(true)
         setAccessibilityRole(.menuBar)
-        setAccessibilityTitle("Menu bar")
+        fluentSetDefaultAccessibilityTitle("Menu bar")
         rebuildItems()
     }
 

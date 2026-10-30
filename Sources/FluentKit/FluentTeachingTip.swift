@@ -365,8 +365,7 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         self.configuration = configuration
         self.context = context
         animationCoordinator.reduceMotion = context.reduceMotion
-        tipHost?.context = context
-        tipHost?.update(tipContent)
+        tipHost?.update(tipContent, context: context)
         chrome?.update(configuration: configuration, context: context)
         panel?.appearance = fluentAppKitAppearance(for: context.theme)
         panel?.allowsKey = configuration.isLightDismissEnabled
@@ -1084,8 +1083,7 @@ private final class FluentTeachingTipChrome: NSView {
     private func updateHero(_ heroContent: FluentAnyView?) {
         if let heroContent {
             if let heroHost {
-                heroHost.context = context
-                heroHost.update(heroContent)
+                heroHost.update(heroContent, context: context)
             } else {
                 let host = FluentViewHost(heroContent, context: context)
                 host.identifier = NSUserInterfaceItemIdentifier("FluentKit.TeachingTip.HeroContent")
@@ -1319,7 +1317,7 @@ private final class FluentTeachingTipHeaderCloseButton: NSButton {
         action = #selector(invoke)
         wantsLayer = true
         layer?.cornerRadius = FluentTheme.current.designTokens.controlCornerRadius
-        setAccessibilityLabel("Close")
+        fluentSetDefaultAccessibilityLabel("Close")
         addTrackingArea(NSTrackingArea(
             rect: .zero,
             options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],

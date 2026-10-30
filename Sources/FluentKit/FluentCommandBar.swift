@@ -211,7 +211,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.CommandBar")
         setAccessibilityElement(true)
         setAccessibilityRole(.toolbar)
-        setAccessibilityTitle("Command bar")
+        fluentSetDefaultAccessibilityTitle("Command bar")
         setAccessibilityExpanded(false)
         moreButton.onInvoke = { [weak self] in self?.toggleOverflow() }
         addSubview(moreButton)
@@ -269,6 +269,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private func configure(button: FluentAppBarButton, item: FluentCommandBarItem) {
         button.labelPosition = item.labelPosition
         button.defaultLabelPosition = defaultLabelPosition
+        button.icon = item.icon
         button.dynamicOverflowOrder = item.dynamicOverflowOrder
         button.keyboardAcceleratorTextOverride = item.accelerator
         button.isEnabled = item.isEnabled
@@ -688,7 +689,7 @@ private final class FluentCommandBarMoreButton: NSControl {
         layer?.addSublayer(surface)
         surface.cornerCurve = .continuous
         setAccessibilityRole(.button)
-        setAccessibilityTitle("More")
+        fluentSetDefaultAccessibilityTitle("More")
         setAccessibilityExpanded(false)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -754,7 +755,8 @@ private final class FluentCommandBarMoreButton: NSControl {
             NSImage.SymbolConfiguration(pointSize: 20, weight: .regular).applying(.init(hierarchicalColor: color))
         ) ?? image
         configured.draw(
-            in: CGRect(x: bounds.midX - 10, y: bounds.midY - 10, width: 20, height: 20),
+            in: FluentIconSource.systemSymbol("ellipsis").fittedRect(imageSize: configured.size,
+                in: CGRect(x: bounds.midX - 10, y: bounds.midY - 10, width: 20, height: 20)),
             from: .zero,
             operation: .sourceOver,
             fraction: 1,
@@ -805,7 +807,7 @@ private final class FluentCommandBarOverflowPresenter: NSView {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.CommandBar.OverflowPresenter")
         setAccessibilityElement(true)
         setAccessibilityRole(.menu)
-        setAccessibilityTitle("Command bar overflow")
+        fluentSetDefaultAccessibilityTitle("Command bar overflow")
         for control in controls {
             control.removeFromSuperview()
             addSubview(control)

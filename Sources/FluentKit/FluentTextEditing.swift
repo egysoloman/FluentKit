@@ -25,16 +25,17 @@ final class FluentTextEditingSession {
     private weak var editor: NSTextView?
     private var flyout: FluentTextCommandFlyout?
     private var rightClickMonitor: Any?
+    static private(set) var activeRightClickMonitorCount = 0
     private var editorConfigurationScheduled = false
 
     init(control: NSTextField, theme: FluentTheme, isSecure: Bool) {
         self.control = control
         self.theme = theme
         self.isSecure = isSecure
-        installRightClickMonitor()
     }
 
     func didBeginEditing() {
+        installRightClickMonitor()
         editor = control?.currentEditor() as? NSTextView
         configureEditor()
         // AppKit reapplies its field-editor defaults after the control begins editing. Reassert
@@ -48,6 +49,7 @@ final class FluentTextEditingSession {
     }
 
     func didEndEditing() {
+        removeRightClickMonitor()
         guard flyout?.isPresented != true else { return }
         editor = nil
     }
@@ -165,7 +167,7 @@ final class FluentTextEditingSession {
         if !isSecure, editable, hasSelection {
             commands.append(FluentTextCommand(
                 kind: .cut,
-                title: "Cut",
+                title: control.fluentControlString("Cut"),
                 accelerator: "\u{2318}X",
                 systemImageName: "scissors",
                 action: { [weak editor] in editor?.cut(nil) },
@@ -175,7 +177,7 @@ final class FluentTextEditingSession {
         if !isSecure, hasSelection {
             commands.append(FluentTextCommand(
                 kind: .copy,
-                title: "Copy",
+                title: control.fluentControlString("Copy"),
                 accelerator: "\u{2318}C",
                 systemImageName: "doc.on.doc",
                 action: { [weak editor] in editor?.copy(nil) },
@@ -185,7 +187,7 @@ final class FluentTextEditingSession {
         if canPaste {
             commands.append(FluentTextCommand(
                 kind: .paste,
-                title: "Paste",
+                title: control.fluentControlString("Paste"),
                 accelerator: "\u{2318}V",
                 systemImageName: "doc.on.clipboard",
                 action: { [weak editor] in editor?.paste(nil) },
@@ -195,7 +197,7 @@ final class FluentTextEditingSession {
         if !isSecure, editable, editor.undoManager?.canUndo == true {
             commands.append(FluentTextCommand(
                 kind: .undo,
-                title: "Undo",
+                title: control.fluentControlString("Undo"),
                 accelerator: "\u{2318}Z",
                 systemImageName: "arrow.uturn.backward",
                 action: { [weak editor] in editor?.undoManager?.undo() },
@@ -205,7 +207,7 @@ final class FluentTextEditingSession {
         if !isSecure, editable, editor.undoManager?.canRedo == true {
             commands.append(FluentTextCommand(
                 kind: .redo,
-                title: "Redo",
+                title: control.fluentControlString("Redo"),
                 accelerator: "\u{21E7}\u{2318}Z",
                 systemImageName: "arrow.uturn.forward",
                 action: { [weak editor] in editor?.undoManager?.redo() },
@@ -217,7 +219,7 @@ final class FluentTextEditingSession {
         // remains visible but disabled instead of making the entire flyout disappear.
         commands.append(FluentTextCommand(
             kind: .selectAll,
-            title: "Select All",
+            title: control.fluentControlString("Select All"),
             accelerator: "\u{2318}A",
             systemImageName: nil,
             action: { [weak editor] in editor?.selectAll(nil) },
@@ -228,6 +230,8 @@ final class FluentTextEditingSession {
     }
 
     private func installRightClickMonitor() {
+        guard rightClickMonitor == nil, control?.window != nil else { return }
+        Self.activeRightClickMonitorCount += 1
         rightClickMonitor = NSEvent.addLocalMonitorForEvents(matching: .rightMouseDown) { [weak self] event in
             guard let self,
                   let control = self.control,
@@ -239,8 +243,16 @@ final class FluentTextEditingSession {
         }
     }
 
+    private func removeRightClickMonitor() {
+        if let rightClickMonitor {
+            NSEvent.removeMonitor(rightClickMonitor)
+            self.rightClickMonitor = nil
+            Self.activeRightClickMonitorCount -= 1
+        }
+    }
+
     deinit {
-        if let rightClickMonitor { NSEvent.removeMonitor(rightClickMonitor) }
+        removeRightClickMonitor()
         flyout?.dismiss(animated: false)
     }
 }

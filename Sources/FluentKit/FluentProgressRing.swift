@@ -425,7 +425,7 @@ public final class FluentProgressRing: NSView {
         if isIndeterminate {
             setAccessibilityMinValue(nil)
             setAccessibilityMaxValue(nil)
-            setAccessibilityValue("Indeterminate")
+            fluentSetDefaultAccessibilityValue("Indeterminate")
         } else {
             setAccessibilityMinValue(progressMinimum)
             setAccessibilityMaxValue(progressMaximum)

@@ -1025,7 +1025,7 @@ private final class FluentRelativePanelHost: NSView {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.RelativePanel")
         translatesAutoresizingMaskIntoConstraints = false
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Relative panel")
+        fluentSetDefaultAccessibilityLabel("Relative panel")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

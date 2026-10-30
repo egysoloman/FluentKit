@@ -266,7 +266,7 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         context: FluentRenderContext
     ) {
         bindingCoordinator.update(binding: text)
-        if field.placeholderString != placeholder { field.placeholderString = placeholder }
+        if (field.placeholderAttributedString?.string ?? field.placeholderString) != placeholder { field.placeholderString = placeholder }
         updateClearButton()
         if theme != context.theme {
             theme = context.theme
@@ -324,7 +324,10 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
             userTypedText = value
             selectedIndex = -1
             updateClearButton()
-            scheduleSuggestionRefresh()
+            if bindingCoordinator.currentBinding.textInputConfiguration.commitPolicy != .committedText
+                || (field.currentEditor() as? NSTextView)?.hasMarkedText() != true {
+                scheduleSuggestionRefresh()
+            }
         }
     }
 

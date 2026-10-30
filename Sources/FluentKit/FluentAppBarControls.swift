@@ -44,6 +44,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     public var systemImageName: String? {
         didSet { guard oldValue != systemImageName else { return }; invalidateIntrinsicContentSize(); needsDisplay = true }
     }
+    public var icon: FluentIconSource? { didSet { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    /// Optional application density for horizontal/compact commands. WinUI's default remains 48.
+    public var commandHeight: CGFloat? { didSet { invalidateIntrinsicContentSize(); needsLayout = true; needsDisplay = true } }
+    private var resolvedIcon: FluentIconSource? { icon ?? systemImageName.map(FluentIconSource.systemSymbol) }
     public var isCompact = false {
         didSet { presentationDidChange(oldValue != isCompact) }
     }
@@ -66,6 +70,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
     public var flyoutItems: [FluentMenuItem]? {
         didSet {
+            if (oldValue?.isEmpty == false) != (flyoutItems?.isEmpty == false) {
+                invalidateIntrinsicContentSize()
+                needsLayout = true
+            }
             if flyoutItems?.isEmpty != false { dismissFlyout(animated: false) }
             updateAccessibilityMetadata()
             needsDisplay = true
@@ -153,15 +161,15 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         case .fullSize:
             return NSSize(width: Self.defaultWidth * scale, height: Self.fullSizeHeight * scale)
         case .compact, .labelCollapsed:
-            return NSSize(width: Self.defaultWidth * scale, height: Self.compactHeight * scale)
+            return NSSize(width: Self.defaultWidth * scale, height: max(commandHeight ?? Self.compactHeight * scale, 24 * scale))
         case .labelOnRight:
             let labelWidth = ceil((label as NSString).size(withAttributes: [.font: overflowFont]).width)
-            return NSSize(width: max(Self.defaultWidth * scale, labelWidth + 48 * scale), height: Self.compactHeight * scale)
+            return NSSize(width: max(Self.defaultWidth * scale, labelWidth + (resolvedIcon == nil ? 24 : 48) * scale + flyoutChevronSpace), height: max(commandHeight ?? Self.compactHeight * scale, 24 * scale))
         case .overflow:
             let labelWidth = ceil((label as NSString).size(withAttributes: [.font: overflowFont]).width)
             let accelerator = ceil((keyboardAcceleratorTextOverride as NSString).size(withAttributes: [.font: labelFont]).width)
             let leading = overflowLeadingInset
-            return NSSize(width: max(160 * scale, leading + labelWidth + (accelerator > 0 ? 24 * scale + accelerator : 0) + 12 * scale), height: 40 * scale)
+            return NSSize(width: max(160 * scale, leading + labelWidth + (accelerator > 0 ? 24 * scale + accelerator : 0) + 12 * scale + flyoutChevronSpace), height: 40 * scale)
         }
     }
 
@@ -289,12 +297,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             drawIcon(in: CGRect(x: (bounds.width - 16) / 2, y: 16, width: 16, height: 16), color: foreground)
             drawAttachedFlyoutChevron(color: foreground, overflow: false)
         case .labelOnRight:
-            let rtl = userInterfaceLayoutDirection == .rightToLeft
-            let iconX = rtl ? bounds.maxX - 28 : 12
-            drawIcon(in: CGRect(x: iconX, y: 16, width: 16, height: 16), color: foreground)
-            let textX: CGFloat = rtl ? 12 : 36
-            let textWidth = max(0, bounds.width - 48)
-            drawLabel(in: CGRect(x: textX, y: 14, width: textWidth, height: 20), font: overflowFont, color: foreground, alignment: rtl ? .right : .left)
+            let geometry = horizontalContentGeometry
+            drawIcon(in: geometry.icon, color: foreground)
+            drawLabel(in: geometry.label, font: overflowFont, color: foreground,
+                      alignment: userInterfaceLayoutDirection == .rightToLeft ? .right : .left)
             drawAttachedFlyoutChevron(color: foreground, overflow: false)
         case .overflow:
             drawOverflowContent(color: foreground)
@@ -398,8 +404,8 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     private var overflowLeadingInset: CGFloat {
         let scale = fluentControlSize.metricScale
-        if reservesOverflowToggleSlot && systemImageName != nil { return 76 * scale }
-        if reservesOverflowToggleSlot || systemImageName != nil { return 38 * scale }
+        if reservesOverflowToggleSlot && resolvedIcon != nil { return 76 * scale }
+        if reservesOverflowToggleSlot || resolvedIcon != nil { return 38 * scale }
         return 12 * scale
     }
 
@@ -492,19 +498,24 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         needsDisplay = true
     }
 
+    var flyoutChevronSpace: CGFloat {
+        flyoutItems?.isEmpty == false ? (useOverflowStyle ? 24 : 16) * fluentControlSize.metricScale : 0
+    }
+
+    var horizontalContentGeometry: (icon: CGRect, label: CGRect, chevron: CGRect) {
+        let scale = fluentControlSize.metricScale
+        let rtl = userInterfaceLayoutDirection == .rightToLeft
+        let leading: CGFloat = resolvedIcon == nil ? 12 : 36
+        let label = CGRect(x: leading * scale, y: bounds.midY - 10 * scale,
+                           width: max(0, bounds.width - (leading + 12) * scale - flyoutChevronSpace), height: 20 * scale)
+        let icon = CGRect(x: 12 * scale, y: bounds.midY - 8 * scale, width: 16 * scale, height: 16 * scale)
+        let chevron = CGRect(x: bounds.maxX - 20 * scale, y: bounds.midY - 4 * scale, width: 8 * scale, height: 8 * scale)
+        func mirror(_ r: CGRect) -> CGRect { rtl ? CGRect(x: bounds.maxX - r.maxX, y: r.minY, width: r.width, height: r.height) : r }
+        return (mirror(icon), mirror(label), mirror(chevron))
+    }
+
     private func drawIcon(in rect: CGRect, color: NSColor) {
-        guard let systemImageName,
-              let image = NSImage(systemSymbolName: systemImageName, accessibilityDescription: label) else { return }
-        let config = NSImage.SymbolConfiguration(pointSize: 16 * fluentControlSize.metricScale, weight: .regular)
-            .applying(.init(hierarchicalColor: color))
-        (image.withSymbolConfiguration(config) ?? image).draw(
-            in: rect,
-            from: .zero,
-            operation: .sourceOver,
-            fraction: 1,
-            respectFlipped: true,
-            hints: nil
-        )
+        resolvedIcon?.draw(in: rect, color: color, layoutDirection: userInterfaceLayoutDirection)
     }
 
     private func drawLabel(in rect: CGRect, font: NSFont, color: NSColor, alignment: NSTextAlignment) {
@@ -521,7 +532,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             let x = rtl ? bounds.maxX - 26 * scale : 12 * scale
             drawSystemGlyph("checkmark", in: CGRect(x: x, y: 13 * scale, width: 14 * scale, height: 14 * scale), color: color, pointSize: 14 * scale)
         }
-        if systemImageName != nil {
+        if resolvedIcon != nil {
             let x: CGFloat
             if rtl {
                 x = bounds.maxX - (reservesOverflowToggleSlot ? 54 : 28) * scale
@@ -533,15 +544,15 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         let leading = overflowLeadingInset
         let acceleratorWidth = (keyboardAcceleratorTextOverride as NSString).size(withAttributes: [.font: labelFont]).width
         let acceleratorSpace = keyboardAcceleratorTextOverride.isEmpty ? 0 : acceleratorWidth + 24 * scale
-        let textX = rtl ? 12 * scale + acceleratorSpace : leading
+        let textX = rtl ? 12 * scale + acceleratorSpace + flyoutChevronSpace : leading
         drawLabel(
-            in: CGRect(x: textX, y: 10 * scale, width: max(0, bounds.width - leading - 12 * scale - acceleratorSpace), height: 20 * scale),
+            in: CGRect(x: textX, y: 10 * scale, width: max(0, bounds.width - leading - 12 * scale - acceleratorSpace - flyoutChevronSpace), height: 20 * scale),
             font: overflowFont,
             color: color,
             alignment: rtl ? .right : .left
         )
         if !keyboardAcceleratorTextOverride.isEmpty {
-            let x = rtl ? 12 * scale : bounds.maxX - 12 * scale - acceleratorWidth
+            let x = rtl ? 12 * scale + flyoutChevronSpace : bounds.maxX - 12 * scale - acceleratorWidth - flyoutChevronSpace
             drawLabel(in: CGRect(x: x, y: 11 * scale, width: acceleratorWidth, height: 18 * scale), font: labelFont, color: interactionState == .pressed ? theme.textTertiary : theme.textSecondary, alignment: rtl ? .left : .right)
         }
         drawAttachedFlyoutChevron(color: color, overflow: true)
@@ -556,7 +567,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         if overflow {
             rect = CGRect(x: rtl ? 12 : bounds.maxX - 28, y: bounds.midY - size / 2, width: size, height: size)
         } else {
-            rect = CGRect(x: bounds.maxX - 17, y: 20, width: size, height: size)
+            rect = horizontalContentGeometry.chevron
         }
         drawSystemGlyph(symbol, in: rect, color: color, pointSize: size)
     }
@@ -564,7 +575,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     private func drawSystemGlyph(_ name: String, in rect: CGRect, color: NSColor, pointSize: CGFloat) {
         guard let image = NSImage(systemSymbolName: name, accessibilityDescription: nil) else { return }
         let configured = image.withSymbolConfiguration(.init(pointSize: pointSize, weight: .regular).applying(.init(hierarchicalColor: color))) ?? image
-        configured.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
+        configured.draw(in: FluentIconSource.systemSymbol(name).fittedRect(imageSize: configured.size, in: rect), from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
     }
 
     private func invoke() {
@@ -694,6 +705,8 @@ public final class FluentAppBarSeparator: NSView, FluentControlSizeConfigurable 
 public struct FluentAppBarButtonView: FluentUpdatablePrimitiveView {
     public let label: String
     public let systemImageName: String?
+    public let icon: FluentIconSource?
+    public let commandHeight: CGFloat?
     public let isCompact: Bool
     public let useOverflowStyle: Bool
     public let labelPosition: FluentCommandBarLabelPosition
@@ -705,6 +718,8 @@ public struct FluentAppBarButtonView: FluentUpdatablePrimitiveView {
     public init(
         _ label: String,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
+        commandHeight: CGFloat? = nil,
         isCompact: Bool = false,
         useOverflowStyle: Bool = false,
         labelPosition: FluentCommandBarLabelPosition = .default,
@@ -715,6 +730,8 @@ public struct FluentAppBarButtonView: FluentUpdatablePrimitiveView {
     ) {
         self.label = label
         self.systemImageName = systemImageName
+        self.icon = icon
+        self.commandHeight = commandHeight
         self.isCompact = isCompact
         self.useOverflowStyle = useOverflowStyle
         self.labelPosition = labelPosition
@@ -740,6 +757,8 @@ public struct FluentAppBarButtonView: FluentUpdatablePrimitiveView {
         return true
     }
     private func apply(to button: FluentAppBarButton, context: FluentRenderContext) {
+        button.icon = icon
+        button.commandHeight = commandHeight
         button.isCompact = isCompact
         button.useOverflowStyle = useOverflowStyle
         button.labelPosition = labelPosition

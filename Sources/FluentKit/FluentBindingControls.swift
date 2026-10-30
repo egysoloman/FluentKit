@@ -1,5 +1,36 @@
 import AppKit
 
+/// Controls whether marked (IME composition) text is published to the model.
+public enum FluentTextCommitPolicy: Sendable {
+    case continuous
+    case committedText
+}
+
+public struct FluentTextEditingChange: Equatable {
+    public let text: String
+    public let isComposing: Bool
+}
+
+public struct FluentTextInputConfiguration {
+    public var commitPolicy: FluentTextCommitPolicy
+    public var onEditingChange: ((FluentTextEditingChange) -> Void)?
+
+    public init(commitPolicy: FluentTextCommitPolicy = .continuous,
+                onEditingChange: ((FluentTextEditingChange) -> Void)? = nil) {
+        self.commitPolicy = commitPolicy
+        self.onEditingChange = onEditingChange
+    }
+}
+
+public extension FluentBinding where Value == String {
+    /// Applies to TextBox, PasswordBox, SearchField and AutoSuggestBox bindings.
+    func textInput(_ configuration: FluentTextInputConfiguration) -> FluentBinding<String> {
+        var copy = self
+        copy.textInputConfiguration = configuration
+        return copy
+    }
+}
+
 final class FluentStringBindingCoordinator {
     private weak var field: NSTextField?
     private var binding: FluentBinding<String>
@@ -8,13 +39,26 @@ final class FluentStringBindingCoordinator {
     private var deliveryGeneration: UInt = 0
     private var publicationGeneration: UInt = 0
     private var publicationScheduled = false
+    private var lastModelValue: String?
+    private var pendingExternalValue: String?
+    private var isPublishing = false
+    private var lastEditingChange: FluentTextEditingChange?
+    private weak var observedEditor: NSTextView?
+    private var editingObservers: [NSObjectProtocol] = []
+    private var editorObservers: [NSObjectProtocol] = []
     var currentBinding: FluentBinding<String> { binding }
 
     init(field: NSTextField, binding: FluentBinding<String>) {
         self.field = field
         self.binding = binding
         installObserver()
-        synchronizeExternalValue(binding.get())
+        synchronizeExternalValue(self.modelValue())
+        for name in [NSControl.textDidBeginEditingNotification, NSControl.textDidEndEditingNotification] {
+            editingObservers.append(NotificationCenter.default.addObserver(forName: name, object: field, queue: .main) { [weak self] notification in
+                if notification.name == NSControl.textDidBeginEditingNotification { self?.observeEditorChanges() }
+                else { self?.removeEditorObservers() }
+            })
+        }
     }
 
     func update(binding newBinding: FluentBinding<String>) {
@@ -28,7 +72,7 @@ final class FluentStringBindingCoordinator {
         if !reusesObservation {
             installObserver()
         }
-        synchronizeExternalValue(newBinding.get())
+        synchronizeExternalValue(FluentDependencyTracking.withoutTracking { newBinding.get() })
     }
 
     func publishCurrentValue() {
@@ -37,6 +81,15 @@ final class FluentStringBindingCoordinator {
     }
 
     func scheduleCurrentValuePublication() {
+        guard let field else { return }
+        observeEditorChanges()
+        let change = FluentTextEditingChange(text: field.stringValue,
+            isComposing: (field.currentEditor() as? NSTextView)?.hasMarkedText() == true)
+        if change != lastEditingChange {
+            lastEditingChange = change
+            binding.textInputConfiguration.onEditingChange?(change)
+        }
+        // Coalesce model writes, but never lose the latest composition event in the same turn.
         guard !publicationScheduled else { return }
         publicationScheduled = true
         let publication = publicationGeneration
@@ -51,9 +104,29 @@ final class FluentStringBindingCoordinator {
 
     private func publishFieldValue() {
         guard let field else { return }
+        let editor = field.currentEditor() as? NSTextView
+        if let pendingExternalValue {
+            guard editor?.hasMarkedText() != true else { return }
+            self.pendingExternalValue = nil
+            applyExternalValue(pendingExternalValue, to: field)
+            return
+        }
+        // A closure binding may have changed without an observation callback.
+        let modelValue = modelValue()
+        if let lastModelValue, modelValue != lastModelValue {
+            synchronizeExternalValue(modelValue)
+            return
+        }
+        if binding.textInputConfiguration.commitPolicy == .committedText,
+           editor?.hasMarkedText() == true { return }
         let value = field.stringValue
-        guard binding.get() != value else { return }
+        lastModelValue = value
+        guard modelValue != value else { return }
+        isPublishing = true
         binding.set(value)
+        isPublishing = false
+        // A validating setter can transform the value synchronously.
+        synchronizeExternalValue(self.modelValue())
     }
 
     private func cancelScheduledPublication() {
@@ -76,8 +149,8 @@ final class FluentStringBindingCoordinator {
             guard let self,
                   subscription == self.subscriptionGeneration,
                   delivery == self.deliveryGeneration,
-                  self.binding.get() == value else { return }
-            self.synchronizeExternalValue(value)
+                  self.modelValue() == value else { return }
+            self.synchronizeExternalValue(value, force: true)
         }
         if Thread.isMainThread {
             apply()
@@ -86,12 +159,57 @@ final class FluentStringBindingCoordinator {
         }
     }
 
-    private func synchronizeExternalValue(_ value: String) {
-        guard let field,
-              !fluentTextControlHasFocus(field),
-              field.stringValue != value else { return }
-        field.stringValue = value
+    private func synchronizeExternalValue(_ value: String, force: Bool = false) {
+        guard !isPublishing, let field else { return }
+        guard force || lastModelValue != value else { return }
+        lastModelValue = value
+        cancelScheduledPublication()
+        if (field.currentEditor() as? NSTextView)?.hasMarkedText() == true {
+            // External updates win after the composition ends; do not interrupt the IME.
+            pendingExternalValue = value
+            return
+        }
+        pendingExternalValue = nil
+        applyExternalValue(value, to: field)
     }
+
+    private func applyExternalValue(_ value: String, to field: NSTextField) {
+        let editor = field.currentEditor() as? NSTextView
+        let selection = editor?.selectedRange()
+        if field.stringValue != value { field.stringValue = value }
+        if let editor, editor.string != value { editor.string = value }
+        if let editor, let selection {
+            let length = value.utf16.count
+            let location = min(selection.location, length)
+            editor.setSelectedRange(NSRange(location: location, length: min(selection.length, length - location)))
+        }
+    }
+
+    private func observeEditorChanges() {
+        guard let editor = field?.currentEditor() as? NSTextView, editor !== observedEditor else { return }
+        removeEditorObservers()
+        observedEditor = editor
+        editorObservers.append(NotificationCenter.default.addObserver(forName: NSText.didChangeNotification, object: editor, queue: .main) { [weak self] _ in
+            self?.scheduleCurrentValuePublication()
+        })
+        // AppKit can update the field editor during undo/redo without forwarding a control
+        // delegate change. Listen to this editor's undo manager, never all application edits.
+        if let undoManager = editor.undoManager {
+            for name in [Notification.Name.NSUndoManagerDidUndoChange, Notification.Name.NSUndoManagerDidRedoChange] {
+                editorObservers.append(NotificationCenter.default.addObserver(forName: name, object: undoManager, queue: .main) { [weak self] _ in
+                    self?.scheduleCurrentValuePublication()
+                })
+            }
+        }
+    }
+
+    private func removeEditorObservers() {
+        editorObservers.forEach(NotificationCenter.default.removeObserver)
+        editorObservers.removeAll()
+        observedEditor = nil
+    }
+
+    private func modelValue() -> String { FluentDependencyTracking.withoutTracking { binding.get() } }
 
     private func removeObserver() {
         subscriptionGeneration &+= 1
@@ -101,6 +219,8 @@ final class FluentStringBindingCoordinator {
     }
 
     deinit {
+        editingObservers.forEach(NotificationCenter.default.removeObserver)
+        removeEditorObservers()
         cancelScheduledPublication()
         removeObserver()
     }
@@ -126,7 +246,6 @@ public final class FluentBoundTextField: NSView {
         field.target = self
         field.action = #selector(commitValue)
         field.delegate = self
-        field.stringValue = binding.get()
         bindingCoordinator = FluentStringBindingCoordinator(field: field, binding: binding)
     }
 

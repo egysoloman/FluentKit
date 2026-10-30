@@ -115,6 +115,16 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
     private let content: (ItemID) -> FluentAnyView
     private let header: ((SectionID) -> FluentAnyView)?
 
+    private var contentVersion: ((ItemID) -> AnyHashable)?
+
+    /// Opt in to skipping unchanged row content. Include every captured row dependency in the
+    /// version. Without a version, visible rows update conservatively on each parent render.
+    public func contentVersion(_ version: @escaping (ItemID) -> AnyHashable) -> Self {
+        var copy = self
+        copy.contentVersion = version
+        return copy
+    }
+
     public init<Content: FluentView>(
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout = .list(),
@@ -246,6 +256,7 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
             isEnabled: isEnabled,
             itemStyle: itemStyle,
             content: content,
+            contentVersion: contentVersion,
             header: header,
             context: context
         )
@@ -267,6 +278,7 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
             isEnabled: isEnabled,
             itemStyle: itemStyle,
             content: content,
+            contentVersion: contentVersion,
             header: header,
             context: context
         )
@@ -453,7 +465,7 @@ private final class FluentCollectionNativeView: NSCollectionView {
     }
 }
 
-private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>:
+final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>:
     NSScrollView, NSCollectionViewDelegate, NSDraggingSource, FluentFillWidthProviding {
     // Keep the initial flow-layout geometry valid while the scroll host is still being mounted.
     private let collectionView = FluentCollectionNativeView(frame: NSRect(x: 0, y: 0, width: 16, height: 16))
@@ -475,6 +487,9 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
     private var selectionsObserverID: UUID?
     private var content: ((ItemID) -> FluentAnyView)?
     private var header: ((SectionID) -> FluentAnyView)?
+    private var contentVersion: ((ItemID) -> AnyHashable)?
+    private var availableIDs = Set<AnyHashable>()
+    private(set) var snapshotApplicationCount = 0
     private var context = FluentRenderContext()
     private var theme: FluentTheme
     private var isApplyingSelection = false
@@ -596,7 +611,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         }
         if metrics.usable, needsInitialSnapshot {
             needsInitialSnapshot = false
-            applySnapshot(reloadingContent: false, animatingDifferences: false)
+            applySnapshot(animatingDifferences: false)
         }
     }
 
@@ -606,7 +621,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         needsLayout = true
     }
 
-    func setData(
+    fileprivate func setData(
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout,
         selectionMode: FluentListViewSelectionMode,
@@ -619,6 +634,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         isEnabled: @escaping (ItemID) -> Bool,
         itemStyle: any FluentCollectionItemStyle,
         content: @escaping (ItemID) -> FluentAnyView,
+        contentVersion: ((ItemID) -> AnyHashable)?,
         header: ((SectionID) -> FluentAnyView)?,
         context: FluentRenderContext
     ) {
@@ -634,6 +650,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         isItemEnabled = isEnabled
         self.itemStyle = itemStyle
         self.content = content
+        self.contentVersion = contentVersion
         self.header = header
         self.context = context
         theme = context.theme
@@ -644,13 +661,13 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         updateIncrementalLoadingState()
         if hasUsableViewport {
             needsInitialSnapshot = false
-            applySnapshot(reloadingContent: false, animatingDifferences: false)
+            applySnapshot(animatingDifferences: false)
         } else {
             needsInitialSnapshot = true
         }
     }
 
-    func update(
+    fileprivate func update(
         snapshot: FluentCollectionSnapshot<SectionID, ItemID>,
         layout: FluentCollectionLayout,
         selectionMode: FluentListViewSelectionMode,
@@ -663,10 +680,16 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         isEnabled: @escaping (ItemID) -> Bool,
         itemStyle: any FluentCollectionItemStyle,
         content: @escaping (ItemID) -> FluentAnyView,
+        contentVersion: ((ItemID) -> AnyHashable)?,
         header: ((SectionID) -> FluentAnyView)?,
         context: FluentRenderContext
     ) {
         let structureChanged = self.snapshot != snapshot
+        let environmentChanged = self.context.theme != context.theme
+            || self.context.locale != context.locale
+            || self.context.localizationBundle != context.localizationBundle
+            || self.context.layoutDirection != context.layoutDirection
+            || self.context.reduceMotion != context.reduceMotion
         let layoutChanged = layoutSpec != layout
         let headerVisibilityChanged = (self.header == nil) != (header == nil)
         self.snapshot = snapshot
@@ -681,6 +704,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         isItemEnabled = isEnabled
         self.itemStyle = itemStyle
         self.content = content
+        self.contentVersion = contentVersion
         self.header = header
         self.context = context
         theme = context.theme
@@ -694,8 +718,13 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
             needsLayout = true
             return
         }
+        let mustApply = structureChanged || needsInitialSnapshot
         needsInitialSnapshot = false
-        applySnapshot(reloadingContent: !structureChanged, animatingDifferences: structureChanged && window != nil)
+        if mustApply {
+            applySnapshot(animatingDifferences: structureChanged && window != nil && !context.reduceMotion)
+        }
+        refreshVisibleContent(force: environmentChanged)
+        if !mustApply { applySelection() }
     }
 
     private func configureLayout() {
@@ -760,9 +789,9 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
     private func updateAccessibilityRole() {
         let role: NSAccessibility.Role = layoutSpec.kind == .list ? .list : .grid
         setAccessibilityRole(role)
-        setAccessibilityLabel("Collection")
+        fluentSetDefaultAccessibilityLabel("Collection")
         collectionView.setAccessibilityRole(role)
-        collectionView.setAccessibilityLabel("Collection")
+        collectionView.fluentSetDefaultAccessibilityLabel("Collection")
     }
 
     private func nativeSnapshot() -> NSDiffableDataSourceSnapshot<AnyHashable, AnyHashable> {
@@ -775,12 +804,10 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         return native
     }
 
-    private func applySnapshot(reloadingContent: Bool, animatingDifferences: Bool) {
-        var native = nativeSnapshot()
-        if reloadingContent {
-            let existingSections = Set(diffableDataSource.snapshot().sectionIdentifiers)
-            native.reloadSections(native.sectionIdentifiers.filter(existingSections.contains))
-        }
+    private func applySnapshot(animatingDifferences: Bool) {
+        let native = nativeSnapshot()
+        availableIDs = Set(native.itemIdentifiers)
+        snapshotApplicationCount += 1
         diffableDataSource.apply(
             native,
             animatingDifferences: animatingDifferences
@@ -796,31 +823,49 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         at indexPath: IndexPath
     ) -> NSCollectionViewItem {
         let item = collectionView.makeItem(withIdentifier: fluentSectionedItemIdentifier, for: indexPath)
-        guard let host = item as? FluentSectionedCollectionItem,
-              snapshot.sectionIdentifiers.indices.contains(indexPath.section),
-              let content else { return item }
-        let sectionID = snapshot.sectionIdentifiers[indexPath.section]
-        let sectionItems = snapshot.itemIdentifiers(inSection: sectionID)
-        guard sectionItems.indices.contains(indexPath.item) else { return item }
-        let itemID = sectionItems[indexPath.item]
-        let selected = collectionView.selectionIndexPaths.contains(indexPath)
+        if let host = item as? FluentSectionedCollectionItem {
+            configureItem(host, at: indexPath, forceContent: true)
+        }
+        return item
+    }
+
+    private func configureItem(_ host: FluentSectionedCollectionItem, at indexPath: IndexPath, forceContent: Bool) {
+        guard let itemID = itemID(at: indexPath), let content else { return }
+        let version = contentVersion?(itemID)
+        let updateContent = forceContent || version == nil || host.contentVersion != version
+            || host.configuredItemID != AnyHashable(itemID)
         host.update(
-            content: content(itemID),
+            content: updateContent ? content(itemID) : nil,
             context: context,
             theme: theme,
             layoutKind: layoutSpec.kind,
             itemStyle: itemStyle,
             enabled: isItemEnabled(itemID),
-            selected: selected,
+            selected: collectionView.selectionIndexPaths.contains(indexPath),
             focused: indexPath == focusedIndexPath && isKeyboardFocusVisible,
             showsSelectionCheckmark: showsSelectionCheckmark,
             reduceMotion: context.reduceMotion,
-            onAccessibilityPress: { [weak self] in
-                self?.performAccessibilityPress(at: indexPath) ?? false
-            }
+            onAccessibilityPress: { [weak self] in self?.performAccessibilityPress(at: indexPath) ?? false }
         )
+        host.contentVersion = version
+        host.configuredItemID = AnyHashable(itemID)
         host.view.setAccessibilityLabel("Item \(indexPath.item + 1)")
-        return host
+    }
+
+    private func refreshVisibleContent(force: Bool) {
+        for item in collectionView.visibleItems() {
+            guard let host = item as? FluentSectionedCollectionItem,
+                  let indexPath = collectionView.indexPath(for: item) else { continue }
+            configureItem(host, at: indexPath, forceContent: force)
+        }
+        if let header {
+            for view in collectionView.visibleSupplementaryViews(ofKind: NSCollectionView.elementKindSectionHeader) {
+                guard let host = view as? FluentSectionedCollectionHeader,
+                      let section = host.sectionIndex,
+                      snapshot.sectionIdentifiers.indices.contains(section) else { continue }
+                host.update(content: header(snapshot.sectionIdentifiers[section]), context: context)
+            }
+        }
     }
 
     private func makeHeader(
@@ -837,6 +882,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
             for: indexPath
         )
         guard let host = view as? FluentSectionedCollectionHeader else { return nil }
+        host.sectionIndex = indexPath.section
         host.update(content: header(snapshot.sectionIdentifiers[indexPath.section]), context: context)
         host.setAccessibilityRole(.group)
         host.setAccessibilityLabel("Section \(indexPath.section + 1)")
@@ -860,7 +906,6 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
         isApplyingSelection = true
         defer { isApplyingSelection = false }
         let previousIndexPaths = collectionView.selectionIndexPaths
-        let availableIDs = Set(snapshot.itemIdentifiers.map(AnyHashable.init))
         var selectedIDs: Set<AnyHashable>
         switch selectionMode {
         case .none:
@@ -1024,7 +1069,7 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
             return false
         }
         snapshot = next
-        applySnapshot(reloadingContent: false, animatingDifferences: !context.reduceMotion)
+        applySnapshot(animatingDifferences: !context.reduceMotion)
         resetReorderVisuals()
         onItemsReordered(next)
         context.invalidate?()
@@ -1460,6 +1505,13 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
     private func adjacentKeyboardTarget(for keyCode: UInt16) -> IndexPath? {
         let enabled = orderedEnabledIndexPaths
         guard !enabled.isEmpty else { return nil }
+        if layoutSpec.kind == .list, keyCode == 125 || keyCode == 126 {
+            guard let current = focusedIndexPath ?? collectionView.selectionIndexPaths.sorted(by: indexPathPrecedes).first,
+                  let index = enabled.firstIndex(of: current) else { return keyCode == 125 ? enabled.first : enabled.last }
+            let next = index + (keyCode == 125 ? 1 : -1)
+            return enabled.indices.contains(next) ? enabled[next] : current
+        }
+        collectionView.layoutSubtreeIfNeeded()
         guard let current = focusedIndexPath
             ?? collectionView.selectionIndexPaths.sorted(by: indexPathPrecedes).first,
               let currentAttributes = collectionView.layoutAttributesForItem(at: current) else {
@@ -1532,6 +1584,8 @@ private final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: H
 }
 
 private final class FluentSectionedCollectionItem: NSCollectionViewItem {
+    var contentVersion: AnyHashable?
+    var configuredItemID: AnyHashable?
     private var cellView: FluentSectionedCollectionCell { view as! FluentSectionedCollectionCell }
 
     override func loadView() {
@@ -1539,7 +1593,7 @@ private final class FluentSectionedCollectionItem: NSCollectionViewItem {
     }
 
     func update(
-        content: FluentAnyView,
+        content: FluentAnyView?,
         context: FluentRenderContext,
         theme: FluentTheme,
         layoutKind: FluentCollectionLayout.Kind,
@@ -1562,7 +1616,7 @@ private final class FluentSectionedCollectionItem: NSCollectionViewItem {
             reduceMotion: reduceMotion,
             onAccessibilityPress: onAccessibilityPress
         )
-        cellView.update(content: content, context: context)
+        if let content { cellView.update(content: content, context: context) }
     }
 
     func setSelected(_ selected: Bool, animated: Bool) {
@@ -2128,6 +2182,7 @@ private final class FluentSectionedCollectionCell: NSView {
 }
 
 private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewElement {
+    var sectionIndex: Int?
     private var contentView: NSView?
 
     override init(frame frameRect: NSRect) {

@@ -244,7 +244,7 @@ private final class FluentWindowsWindowControlsView: NSView {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.WindowControls.Windows")
         translatesAutoresizingMaskIntoConstraints = false
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Window controls")
+        setAccessibilityLabel(fluentControlString("Window controls"))
         [minimizeButton, maximizeButton, closeButton].forEach(addSubview)
         refresh()
     }
@@ -378,8 +378,8 @@ private final class FluentWindowsCaptionButton: NSButton {
             accessibilityDescription: label
         )?.withSymbolConfiguration(configuration)
         image?.isTemplate = true
-        setAccessibilityLabel(label)
-        toolTip = label
+        setAccessibilityLabel(fluentControlString(label))
+        toolTip = fluentControlString(label)
         needsDisplay = true
     }
 

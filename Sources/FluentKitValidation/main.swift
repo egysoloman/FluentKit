@@ -3,6 +3,9 @@ import FluentKit
 import Darwin
 import UniformTypeIdentifiers
 
+// Deterministic English fixture labels; Chinese resources and per-host overrides have their own tests.
+UserDefaults.standard.setVolatileDomain(["AppleLanguages": ["en"], "AppleLocale": "en_US"], forName: UserDefaults.argumentDomain)
+
 @inline(__always)
 func require(_ condition: @autoclosure () -> Bool, _ message: String) {
     guard condition() else {
@@ -498,11 +501,11 @@ require(
 let defaultContextTheme = FluentRenderContext(theme: FluentTheme()).theme
 require(defaultContextTheme.colorScheme != .system, "render contexts never pass an unresolved System theme to controls")
 require(
-    theme.material(for: .transient) == .liquidGlass
+    theme.material(for: .transient) == .acrylic
         && theme.material(for: .navigation) == .mica
         && theme.material(for: .window) == .mica
         && theme.materialEffectsEnabled,
-    "theme keeps Liquid Glass transient while persistent navigation and window surfaces use Mica"
+    "theme defaults to stable Acrylic transient and Mica persistent surfaces"
 )
 let expectedLiquidGlassBackend: FluentMaterialBackend = if NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency {
     .opaque
@@ -530,12 +533,12 @@ micaProbe.fluentTheme = micaProbeTheme
 micaProbe.frame = NSRect(x: 0, y: 0, width: 180, height: 80)
 micaProbe.layoutSubtreeIfNeeded()
 require(
-    micaProbe.resolvedBackend == expectedLiquidGlassBackend
+    micaProbe.resolvedBackend == (NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency ? .opaque : .fluentRecipe)
         && micaProbe.state == .followsWindowActiveState
         && micaProbe.tintColor == nil
         && firstLayer(named: "FluentKit.Material.MicaTint", in: micaProbe)?.backgroundColor != nil
         && (micaProbe.resolvedBackend != .visualEffect || micaProbe.material == .underWindowBackground),
-    "Mica selects Glass at runtime or underWindowBackground without a version check and supplies its theme tint"
+    "Mica uses deterministic base colors without substituting native Liquid Glass"
 )
 micaProbe.isMaterialEnabled = false
 require(
@@ -2933,13 +2936,13 @@ struct ThemeStoreProbe: FluentView {
 }
 let themeStoreHost = FluentViewHost(ThemeStoreProbe(store: themeStore))
 let nativeThemeLabel = firstLabel(in: themeStoreHost)
-require(nativeThemeLabel?.font?.pointSize == 22, "semantic text style resolves through the theme typography")
+require(nativeThemeLabel?.font?.pointSize == 28, "semantic text style resolves through the theme typography")
 themeStore.theme = themeStore.theme
     .with(colorScheme: .dark)
     .with(typography: FluentTypography(scale: 1.5))
 drainMainQueue()
 require(firstLabel(in: themeStoreHost) === nativeThemeLabel, "theme store updates preserve native label identity")
-require((nativeThemeLabel?.font?.pointSize ?? 0) > 30, "theme store typography updates semantic text in place")
+require(nativeThemeLabel?.font?.pointSize == 42, "theme store typography updates semantic text in place")
 let semanticTextRed = nativeThemeLabel?.textColor?.usingColorSpace(.deviceRGB)?.redComponent ?? 0
 require(semanticTextRed > 0.8, "theme store color scheme updates semantic text color")
 
@@ -3343,7 +3346,7 @@ let searchView = FluentSearchField(
     onSubmit: { searchSubmits += 1 }
 )._mount(in: FluentRenderContext())
 let searchField = firstSearchField(in: searchView)
-require(searchField?.placeholderString == "Filter", "search field preserves its placeholder")
+require((searchField?.placeholderAttributedString?.string ?? searchField?.placeholderString) == "Filter", "search field preserves its placeholder")
 require((searchField as? FluentSearchTextField)?.fluentStyle is ValidationTextFieldStyle, "search field receives the shared text field style")
 require(
     searchField?.usesSingleLineMode == true
@@ -3505,9 +3508,9 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
        }) {
         let commandSurface = commandPanel.contentView.flatMap(firstMaterialView)
         require(
-            commandSurface?.materialStyle == .liquidGlass
+            commandSurface?.materialStyle == .acrylic
                 && commandSurface?.isMaterialEnabled == true,
-            "TextCommandBarFlyout uses the global Liquid Glass transient surface"
+            "TextCommandBarFlyout uses the default Acrylic transient surface"
         )
         let overlayCornerRadius = (searchField as? FluentSearchTextField)?.theme.designTokens.cardCornerRadius ?? 8
         require(
@@ -3824,9 +3827,9 @@ if let comboPanelContent = comboFlyoutWindow.childWindows?.first?.contentView {
     comboPanelContent.layoutSubtreeIfNeeded()
     require(firstView(withAccessibilityRole: .menu, in: comboPanelContent) != nil, "combo box popup exposes its dedicated menu semantics")
     require(
-        firstMaterialView(in: comboPanelContent)?.materialStyle == .liquidGlass
+        firstMaterialView(in: comboPanelContent)?.materialStyle == .acrylic
             && firstMaterialView(in: comboPanelContent)?.isMaterialEnabled == true,
-        "ComboBox popup uses the global Liquid Glass transient surface"
+        "ComboBox popup uses the default Acrylic transient surface"
     )
     require(
         comboFlyoutWindow.childWindows?.first?.hasShadow == false,
@@ -5645,10 +5648,10 @@ let collapsedCommandBarChildren = (commandBarPresenter?.accessibilityChildren() 
 require(
     commandBarFlyout.isPresented
         && commandBarPresenter?.identifier?.rawValue == "FluentKit.CommandBarFlyout"
-        && firstMaterialView(in: commandBarContent ?? NSView())?.materialStyle == .liquidGlass
+        && firstMaterialView(in: commandBarContent ?? NSView())?.materialStyle == .acrylic
         && Set(collapsedCommandBarChildren.compactMap { $0.accessibilityTitle() }) == Set(["Favorite", "Bold", "More"])
         && collapsedCommandBarChildren.allSatisfy { abs($0.frame.width - 40) < 0.001 },
-    "CommandBarFlyout opens its compact primary bar on the shared Liquid Glass presenter"
+    "CommandBarFlyout opens its compact primary bar on the shared Acrylic presenter"
 )
 require(
     collapsedCommandBarChildren.first { $0.accessibilityTitle() == "Bold" }?.accessibilityValue() as? String == "On"
@@ -6082,9 +6085,9 @@ require(
 )
 if let rootMenuContent = rootMenuPanel?.contentView {
     require(
-        firstMaterialView(in: rootMenuContent)?.materialStyle == .liquidGlass
+        firstMaterialView(in: rootMenuContent)?.materialStyle == .acrylic
             && firstMaterialView(in: rootMenuContent)?.isMaterialEnabled == true,
-        "MenuFlyout uses the global Liquid Glass transient surface"
+        "MenuFlyout uses the default Acrylic transient surface"
     )
 }
 require(
@@ -7230,7 +7233,7 @@ require(
     "ContentDialog preserves its model frame and visual center while installing the 1.05 opening scale"
 )
 require(
-    contentDialogMaterial.materialStyle == .liquidGlass
+    contentDialogMaterial.materialStyle == .acrylic
         && contentDialogMaterial.isMaterialEnabled
         && contentDialogMaterial.layer?.cornerRadius == 0
         && contentDialogSurface.layer?.cornerRadius == 8
@@ -7951,7 +7954,7 @@ require(
     appearanceCommitSelection.wrappedValue == "Dark"
         && appearanceCommitCoordinator.theme.colorScheme == .dark
         && appearanceCommitWindow.childWindows?.isEmpty != false,
-    "ComboBox survives a synchronous window-appearance change from its popup row and dismisses once"
+    "ComboBox survives a synchronous window-appearance change from its popup row and dismisses once (selection: \(String(describing: appearanceCommitSelection.wrappedValue)), theme: \(appearanceCommitCoordinator.theme.colorScheme), children: \(appearanceCommitWindow.childWindows?.count ?? 0))"
 )
 appearanceCommitWindow.orderOut(nil)
 
@@ -10169,12 +10172,12 @@ require(
         && shellMaterials.count == 1
         && shellPaneMaterials.isEmpty
         && shellMaterial?.materialStyle == .mica
-        && shellMaterial?.resolvedBackend == expectedLiquidGlassBackend
+        && shellMaterial?.resolvedBackend == (NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency ? .opaque : .fluentRecipe)
         && shellMaterial?.state == .followsWindowActiveState
         && shellMaterial?.tintColor?.isEqual(FluentTheme.current.micaTint) == true
         && firstLayer(named: "FluentKit.Material.MicaTint", in: shellMaterial ?? NSView()) != nil
         && firstLayer(named: "FluentKit.WindowShell.SharedChromeTint", in: settingsShellHost) != nil,
-    "WindowShell owns one tinted Mica while ContentSurface solely owns its fill and top-leading clip"
+    "WindowShell owns one stable Mica base while ContentSurface solely owns its fill and top-leading clip"
 )
 require(
     shellTitleBar?.layer?.backgroundColor == nil

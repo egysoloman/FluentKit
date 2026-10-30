@@ -393,11 +393,11 @@ public final class FluentButton: NSButton {
                 guard let self, self.commandBarFlyoutPresenter === presented else { return }
                 self.commandBarFlyoutPresenter = nil
                 self.controlState = self.isPointerOver ? .pointerOver : .normal
-                self.setAccessibilityValue("Closed")
+                self.fluentSetDefaultAccessibilityValue("Closed")
                 self.needsDisplay = true
             }
             controlState = isPointerOver ? .pointerOver : .normal
-            setAccessibilityValue("Open")
+            fluentSetDefaultAccessibilityValue("Open")
             presented.present(relativeTo: self, at: NSPoint(x: bounds.midX, y: bounds.minY))
             return
         }
@@ -412,11 +412,11 @@ public final class FluentButton: NSButton {
             guard let self, self.menuFlyout === presented else { return }
             self.menuFlyout = nil
             self.controlState = self.isPointerOver ? .pointerOver : .normal
-            self.setAccessibilityValue("Closed")
+            self.fluentSetDefaultAccessibilityValue("Closed")
             self.needsDisplay = true
         }
         controlState = isPointerOver ? .pointerOver : .normal
-        setAccessibilityValue("Open")
+        fluentSetDefaultAccessibilityValue("Open")
         presented.present(relativeTo: self, placement: flyoutPlacement)
     }
 
@@ -443,7 +443,7 @@ public final class FluentButton: NSButton {
     private func restoreAfterFlyoutDismissal() {
         guard menuFlyout == nil, commandBarFlyoutPresenter == nil else { return }
         controlState = isEnabled ? (isPointerOver ? .pointerOver : .normal) : .disabled
-        setAccessibilityValue("Closed")
+        fluentSetDefaultAccessibilityValue("Closed")
     }
 
     private func updateAttachedFlyoutAccessibility() {

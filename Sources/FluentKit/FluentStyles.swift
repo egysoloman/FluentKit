@@ -724,7 +724,7 @@ public struct FluentTextFieldStyleConfiguration {
     }
 }
 
-public struct FluentTextFieldAppearance {
+public struct FluentTextFieldAppearance: Equatable {
     public let backgroundColor: NSColor
     public let textColor: NSColor
     public let borderColor: NSColor

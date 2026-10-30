@@ -340,9 +340,9 @@ private final class FluentListNativeView<Row: FluentView>: NSScrollView, NSColle
         ]
 
         setAccessibilityRole(.list)
-        setAccessibilityLabel("List")
+        fluentSetDefaultAccessibilityLabel("List")
         collectionView.setAccessibilityRole(.list)
-        collectionView.setAccessibilityLabel("List")
+        collectionView.fluentSetDefaultAccessibilityLabel("List")
         collectionView.keyHandler = { [weak self] event in self?.handleKey(event) ?? false }
     }
 
@@ -1145,7 +1145,7 @@ public class FluentDropDownButton: NSButton {
         layer?.addSublayer(chevronLayer)
         setAccessibilityRole(.popUpButton)
         setAccessibilityTitle(title)
-        setAccessibilityValue("Closed")
+        fluentSetDefaultAccessibilityValue("Closed")
         target = self
         action = #selector(showMenu)
         addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
@@ -1208,7 +1208,7 @@ public class FluentDropDownButton: NSButton {
                 menuFlyout = nil
                 isPressed = false
                 isTrackingPointerPress = false
-                setAccessibilityValue("Closed")
+                fluentSetDefaultAccessibilityValue("Closed")
             }
             refreshAppearance(animated: true)
         }
@@ -1279,7 +1279,7 @@ public class FluentDropDownButton: NSButton {
             menuFlyout = nil
             isTrackingPointerPress = false
             isPressed = false
-            setAccessibilityValue("Closed")
+            fluentSetDefaultAccessibilityValue("Closed")
             refreshAppearance(animated: true)
             return
         }
@@ -1322,7 +1322,7 @@ public class FluentDropDownButton: NSButton {
         if menuItems.isEmpty, menuFlyout != nil {
             menuFlyout?.dismiss(animated: false)
             menuFlyout = nil
-            setAccessibilityValue("Closed")
+            fluentSetDefaultAccessibilityValue("Closed")
         }
         setAccessibilityTitle(title)
         invalidateIntrinsicContentSize()
@@ -1333,7 +1333,7 @@ public class FluentDropDownButton: NSButton {
         if menuFlyout?.isPresented == true {
             menuFlyout?.dismiss(animated: true)
             menuFlyout = nil
-            setAccessibilityValue("Closed")
+            fluentSetDefaultAccessibilityValue("Closed")
             return
         }
         DispatchQueue.main.async { [weak self] in self?.presentMenu() }
@@ -1347,11 +1347,11 @@ public class FluentDropDownButton: NSButton {
             guard let self, self.menuFlyout === flyout else { return }
             self.menuFlyout = nil
             self.isPressed = false
-            self.setAccessibilityValue("Closed")
+            self.fluentSetDefaultAccessibilityValue("Closed")
             self.refreshAppearance(animated: true)
         }
         isPressed = false
-        setAccessibilityValue("Open")
+        fluentSetDefaultAccessibilityValue("Open")
         refreshAppearance(animated: true)
         flyout.present(relativeTo: self, placement: .below)
     }

@@ -703,7 +703,7 @@ public final class FluentNumberBoxControl: NSControl, NSTextFieldDelegate, Fluen
         popupIndicator.target = self
         popupIndicator.action = #selector(focusInputBox)
         popupIndicator.identifier = NSUserInterfaceItemIdentifier("FluentKit.NumberBox.PopupIndicator")
-        popupIndicator.toolTip = "Show spin buttons"
+        popupIndicator.fluentSetDefaultToolTip("Show spin buttons")
         addSubview(popupIndicator)
 
         let numberTextField = activeTextField

@@ -156,7 +156,7 @@ private final class FluentSelectorBarHost<Value: Hashable>: NSView, FluentContro
         layer?.masksToBounds = false
         userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         setAccessibilityRole(.radioGroup)
-        setAccessibilityLabel("View selector")
+        fluentSetDefaultAccessibilityLabel("View selector")
         reconcileItemViews(animatedReposition: false)
         installSelectionObserver()
         syncSelectionFromBinding(animated: false, writeCorrection: true)

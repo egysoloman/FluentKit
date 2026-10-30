@@ -148,6 +148,8 @@ final class FluentComboBoxPopup: NSObject {
         transitionHost.frame = NSRect(origin: .zero, size: size)
         transitionHost.autoresizingMask = [.width, .height]
         popup.contentView = transitionHost
+        // Establish row hit regions before presentation, independently of the material backend.
+        transitionHost.layoutSubtreeIfNeeded()
         popup.setFrameOrigin(origin)
         anchorWindow.addChildWindow(popup, ordered: .above)
         panel = popup
@@ -400,7 +402,7 @@ private final class FluentComboBoxPopupView: NSView {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBoxPopup.ItemsPresenter")
         setAccessibilityElement(true)
         setAccessibilityRole(.menu)
-        setAccessibilityLabel("ComboBox options")
+        fluentSetDefaultAccessibilityLabel("ComboBox options")
         scrollView.identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBoxPopup.ScrollView")
         scrollView.drawsBackground = false
         scrollView.borderType = .noBorder

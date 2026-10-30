@@ -69,7 +69,7 @@ private final class FluentPopoverContentController<Content: FluentView>: NSViewC
         material.fallbackColor = context.theme.flyoutSurfaceFill
         material.identifier = NSUserInterfaceItemIdentifier("FluentKit.Popover.Content")
         material.setAccessibilityRole(.group)
-        material.setAccessibilityLabel("Popover")
+        material.fluentSetDefaultAccessibilityLabel("Popover")
         surface.addSubview(host)
         host.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -96,8 +96,7 @@ private final class FluentPopoverContentController<Content: FluentView>: NSViewC
 
     func update(content: Content, size: NSSize, context: FluentRenderContext) {
         self.content = content
-        host.context = context
-        host.update(content)
+        host.update(content, context: context)
         material.fluentTheme = context.theme
         material.materialStyle = context.theme.material(for: .transient) ?? .liquidGlass
         material.isMaterialEnabled = context.theme.materialEffectsEnabled
@@ -879,8 +878,7 @@ private final class FluentSheetWindowController<Content: FluentView>: NSWindowCo
     }
 
     func update(content: Content, context: FluentRenderContext) {
-        host.context = context
-        host.update(content)
+        host.update(content, context: context)
         apply(context: context)
     }
 

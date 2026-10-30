@@ -166,8 +166,7 @@ private final class FluentToolbarCoordinator: NSObject, NSToolbarDelegate {
             guard item.systemIdentifier == nil, let content = item.content else { continue }
             let id = toolbarIdentifier(for: item)
             if let host = itemHosts[id] {
-                host.context = context
-                host.update(content)
+                host.update(content, context: context)
             } else {
                 itemHosts[id] = FluentViewHost(content, context: context)
             }

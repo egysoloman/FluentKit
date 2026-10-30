@@ -105,10 +105,10 @@ private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineView
         outlineView.allowsEmptySelection = true
         outlineView.focusRingType = .none
         outlineView.setAccessibilityRole(.outline)
-        outlineView.setAccessibilityLabel("Outline")
+        outlineView.fluentSetDefaultAccessibilityLabel("Outline")
         documentView = outlineView
         setAccessibilityRole(.outline)
-        setAccessibilityLabel("Outline")
+        fluentSetDefaultAccessibilityLabel("Outline")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

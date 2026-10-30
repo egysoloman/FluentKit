@@ -797,8 +797,8 @@ private final class FluentInfoBarCloseButton: NSButton {
         target = self
         action = #selector(invoke)
         setAccessibilityRole(.button)
-        setAccessibilityTitle("Close")
-        toolTip = "Close"
+        fluentSetDefaultAccessibilityTitle("Close")
+        fluentSetDefaultToolTip("Close")
         addTrackingArea(NSTrackingArea(
             rect: .zero,
             options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],

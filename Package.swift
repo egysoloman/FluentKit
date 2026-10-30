@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "FluentKit",
+    defaultLocalization: "en",
     platforms: [.macOS(.v12)],
     products: [
         .library(name: "FluentKit", targets: ["FluentKit"]),
@@ -10,7 +11,7 @@ let package = Package(
         .executable(name: "FluentKitValidation", targets: ["FluentKitValidation"])
     ],
     targets: [
-        .target(name: "FluentKit"),
+        .target(name: "FluentKit", resources: [.process("Resources")]),
         .executableTarget(name: "FluentGallery", dependencies: ["FluentKit"]),
         .executableTarget(name: "FluentKitValidation", dependencies: ["FluentKit"]),
         .testTarget(name: "FluentKitTests", dependencies: ["FluentKit"])

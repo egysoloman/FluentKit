@@ -9,6 +9,7 @@ public enum FluentCommandBarItemKind: Hashable, Sendable {
 public struct FluentCommandBarItem {
     public let title: String
     public let systemImageName: String?
+    public let icon: FluentIconSource?
     public let isEnabled: Bool
     public let kind: FluentCommandBarItemKind
     public let keyEquivalent: String
@@ -22,6 +23,7 @@ public struct FluentCommandBarItem {
     public init(
         _ title: String,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
         isEnabled: Bool = true,
         keyEquivalent: String = "",
         keyModifiers: NSEvent.ModifierFlags = [.command],
@@ -31,6 +33,7 @@ public struct FluentCommandBarItem {
     ) {
         self.title = title
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.isEnabled = isEnabled
         kind = .button
         self.keyEquivalent = keyEquivalent
@@ -43,6 +46,7 @@ public struct FluentCommandBarItem {
     private init(
         title: String,
         systemImageName: String?,
+        icon: FluentIconSource? = nil,
         isEnabled: Bool,
         kind: FluentCommandBarItemKind,
         keyEquivalent: String,
@@ -53,6 +57,7 @@ public struct FluentCommandBarItem {
     ) {
         self.title = title
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.isEnabled = isEnabled
         self.kind = kind
         self.keyEquivalent = keyEquivalent
@@ -65,6 +70,7 @@ public struct FluentCommandBarItem {
     public static func toggle(
         _ title: String,
         systemImageName: String? = nil,
+        icon: FluentIconSource? = nil,
         isOn: Bool,
         isEnabled: Bool = true,
         keyEquivalent: String = "",
@@ -76,6 +82,7 @@ public struct FluentCommandBarItem {
         FluentCommandBarItem(
             title: title,
             systemImageName: systemImageName,
+            icon: icon,
             isEnabled: isEnabled,
             kind: .toggle(isOn: isOn),
             keyEquivalent: keyEquivalent,
@@ -218,12 +225,13 @@ public final class FluentCommandBarFlyout {
                 title: item.title,
                 accelerator: item.accelerator,
                 systemImageName: item.systemImageName,
+                icon: item.icon,
                 action: item.action,
                 isPrimary: isPrimary,
                 isEnabled: item.isEnabled,
                 isChecked: item.isChecked,
                 isSeparator: item.isSeparator,
-                showsSecondaryIcon: !isPrimary && item.systemImageName != nil
+                showsSecondaryIcon: !isPrimary && item.icon != nil
             )
         }
     }
@@ -244,6 +252,7 @@ struct FluentTextCommand {
     let title: String
     let accelerator: String
     let systemImageName: String?
+    let icon: FluentIconSource?
     let action: () -> Void
     let isPrimary: Bool
     let isEnabled: Bool
@@ -256,6 +265,7 @@ struct FluentTextCommand {
         title: String,
         accelerator: String,
         systemImageName: String?,
+        icon: FluentIconSource? = nil,
         action: @escaping () -> Void,
         isPrimary: Bool,
         isEnabled: Bool = true,
@@ -267,6 +277,7 @@ struct FluentTextCommand {
         self.title = title
         self.accelerator = accelerator
         self.systemImageName = systemImageName
+        self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
         self.action = action
         self.isPrimary = isPrimary
         self.isEnabled = isEnabled
@@ -989,15 +1000,8 @@ private final class FluentTextCommandButton: NSButton {
     private func updateImage() { updateImage(systemImageName: command.systemImageName) }
 
     private func updateImage(systemImageName: String?) {
-        guard let systemImageName,
-              let symbol = NSImage(systemSymbolName: systemImageName, accessibilityDescription: accessibilityTitle()) else {
-            image = nil
-            return
-        }
-        image = symbol.withSymbolConfiguration(
-            NSImage.SymbolConfiguration(pointSize: 17, weight: .medium)
-        ) ?? symbol
-        image?.isTemplate = true
+        image = command.icon?.image(pointSize: 17, color: theme.textPrimary, layoutDirection: userInterfaceLayoutDirection)
+        image?.isTemplate = command.icon?.tint == .template
     }
 
     private var resolvedVisualState: FluentControlState {
@@ -1083,19 +1087,9 @@ private final class FluentTextCommandRow: NSButton {
             titleX += 28
         }
         if reservesIconSlot {
-            if command.showsSecondaryIcon,
-               let name = command.systemImageName,
-               let symbol = NSImage(systemSymbolName: name, accessibilityDescription: command.title) {
-                let image = symbol.withSymbolConfiguration(
-                    NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
-                        .applying(.init(hierarchicalColor: foreground))
-                ) ?? symbol
-                image.draw(
-                    in: NSRect(x: titleX, y: bounds.midY - 8, width: 16, height: 16),
-                    from: .zero,
-                    operation: .sourceOver,
-                    fraction: 1
-                )
+            if command.showsSecondaryIcon {
+                command.icon?.draw(in: NSRect(x: titleX, y: bounds.midY - 8, width: 16, height: 16),
+                                   color: foreground, layoutDirection: userInterfaceLayoutDirection)
             }
             titleX += 28
         }

@@ -44,6 +44,7 @@ public struct FluentNavigationItem<ID: Hashable> {
     public let id: ID
     public let title: String
     public let systemImageName: String
+    public let icon: FluentIconSource
     public let isEnabled: Bool
     public let children: [FluentNavigationItem<ID>]
     public let selectsOnInvoked: Bool
@@ -53,7 +54,8 @@ public struct FluentNavigationItem<ID: Hashable> {
     public init(
         id: ID,
         title: String,
-        systemImageName: String,
+        systemImageName: String = "",
+        icon: FluentIconSource? = nil,
         isEnabled: Bool = true,
         children: [FluentNavigationItem<ID>] = [],
         selectsOnInvoked: Bool = true,
@@ -62,6 +64,7 @@ public struct FluentNavigationItem<ID: Hashable> {
         self.id = id
         self.title = title
         self.systemImageName = systemImageName
+        self.icon = icon ?? .systemSymbol(systemImageName)
         self.isEnabled = isEnabled
         self.children = children
         self.selectsOnInvoked = selectsOnInvoked
@@ -73,7 +76,8 @@ public struct FluentNavigationItem<ID: Hashable> {
     public init<InfoBadge: FluentView>(
         id: ID,
         title: String,
-        systemImageName: String,
+        systemImageName: String = "",
+        icon: FluentIconSource? = nil,
         isEnabled: Bool = true,
         children: [FluentNavigationItem<ID>] = [],
         selectsOnInvoked: Bool = true,
@@ -83,6 +87,7 @@ public struct FluentNavigationItem<ID: Hashable> {
         self.id = id
         self.title = title
         self.systemImageName = systemImageName
+        self.icon = icon ?? .systemSymbol(systemImageName)
         self.isEnabled = isEnabled
         self.children = children
         self.selectsOnInvoked = selectsOnInvoked
@@ -487,7 +492,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
         identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView")
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Navigation view")
+        fluentSetDefaultAccessibilityLabel("Navigation view")
 
         // The presenter is manually arranged. Keep its autoresizing-mask constraints disabled
         // until the first non-empty Arrange slot so AppKit cannot turn the construction-time
@@ -684,8 +689,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             return
         }
         if let paneHeaderHost {
-            paneHeaderHost.context = context
-            paneHeaderHost.update(paneHeader)
+            paneHeaderHost.update(paneHeader, context: context)
         } else {
             let host = FluentViewHost(paneHeader, context: context)
             host.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.PaneHeader")
@@ -702,8 +706,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             return
         }
         if let headerHost {
-            headerHost.context = context
-            headerHost.update(header)
+            headerHost.update(header, context: context)
         } else {
             let host = FluentViewHost(header, context: context)
             host.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Header")
@@ -1933,9 +1936,9 @@ private final class FluentNavigationPaneToggleButton: NSButton {
         focusRingType = .none
         target = self
         action = #selector(invoke)
-        toolTip = "Toggle navigation pane"
+        fluentSetDefaultToolTip("Toggle navigation pane")
         setAccessibilityRole(.button)
-        setAccessibilityTitle("Toggle navigation pane")
+        fluentSetDefaultAccessibilityTitle("Toggle navigation pane")
         addTrackingArea(
             NSTrackingArea(
                 rect: .zero,
@@ -2048,8 +2051,7 @@ private final class FluentNavigationInfoBadgePresenter: NSView {
         }
         isHidden = false
         if let host {
-            host.context = context
-            host.update(content)
+            host.update(content, context: context)
         } else {
             let host = FluentViewHost(content, context: context)
             host.translatesAutoresizingMaskIntoConstraints = true
@@ -2180,6 +2182,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     private(set) var itemID: ID
     private var itemTitle: String
     private var systemImageName: String
+    private var icon: FluentIconSource
     private var selected = false
     private var expanded = true
     private var top = false
@@ -2213,6 +2216,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         itemID = item.id
         itemTitle = item.title
         systemImageName = item.systemImageName
+        icon = item.icon
         super.init(frame: .zero)
         isBordered = false
         focusRingType = .none
@@ -2257,6 +2261,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         itemID = item.id
         itemTitle = item.title
         systemImageName = item.systemImageName
+        icon = item.icon
         let expansionChanged = self.itemExpanded != itemExpanded
         self.selected = selected
         self.expanded = expanded
@@ -2395,13 +2400,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         }
         let isRTL = layoutDirection == .rightToLeft
         let geometry = horizontalGeometry
-        if let image = NSImage(systemSymbolName: systemImageName, accessibilityDescription: itemTitle) {
-            let point = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
-            let tint = NSImage.SymbolConfiguration(hierarchicalColor: color)
-            image.withSymbolConfiguration(point.applying(tint))?.draw(
-                in: geometry.iconFrame
-            )
-        }
+        icon.draw(in: geometry.iconFrame, color: color, layoutDirection: userInterfaceLayoutDirection)
 
         if expanded || top {
             let font = fluentTheme.typography.font(for: .body)
@@ -2497,9 +2496,9 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
         target = self
         action = #selector(showOverflow)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Overflow")
-        toolTip = "More navigation items"
+        fluentSetDefaultToolTip("More navigation items")
         setAccessibilityRole(.popUpButton)
-        setAccessibilityTitle("More")
+        fluentSetDefaultAccessibilityTitle("More")
         addTrackingArea(
             NSTrackingArea(
                 rect: .zero,
@@ -2614,6 +2613,7 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
             FluentMenuItem(
                 item.title,
                 systemImageName: item.systemImageName,
+                icon: item.icon,
                 isEnabled: item.isEnabled,
                 state: item.id == selectedID ? .on : .off
             ) { [weak self] in self?.onSelect?(item.id) }

@@ -19,7 +19,7 @@ public struct FluentCollectionSnapshot<SectionID: Hashable, ItemID: Hashable>: E
     public var sectionIdentifiers: [SectionID] { sections }
     public var itemIdentifiers: [ItemID] { sections.flatMap { itemsBySection[$0] ?? [] } }
     public var numberOfSections: Int { sections.count }
-    public var numberOfItems: Int { itemIdentifiers.count }
+    public var numberOfItems: Int { itemsBySection.values.reduce(0) { $0 + $1.count } }
 
     public func itemIdentifiers(inSection section: SectionID) -> [ItemID] {
         itemsBySection[section] ?? []

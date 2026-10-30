@@ -339,11 +339,26 @@ public func FluentHStack(spacing: CGFloat = 12, alignment: NSLayoutConstraint.At
     FluentHStackView(spacing: spacing, alignment: alignment, content: content())
 }
 
-public struct FluentNativeView: FluentPrimitiveView {
+public struct FluentNativeView: FluentUpdatablePrimitiveView {
     private let make: () -> NSView
+    private let update: (NSView, FluentRenderContext) -> Bool
+    private let configuresOnMount: Bool
 
     public init(_ view: @autoclosure @escaping () -> NSView) {
         make = view
+        update = { mounted, _ in mounted === view() }
+        configuresOnMount = false
+    }
+
+    /// Creates a native view once and configures the retained instance on each render.
+    public init<View: NSView>(make: @escaping () -> View, update: @escaping (View, FluentRenderContext) -> Void) {
+        self.make = make
+        configuresOnMount = true
+        self.update = { view, context in
+            guard let view = view as? View else { return false }
+            update(view, context)
+            return true
+        }
     }
 
     public var body: NeverFluentView { NeverFluentView() }
@@ -351,7 +366,12 @@ public struct FluentNativeView: FluentPrimitiveView {
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let view = make()
         view.translatesAutoresizingMaskIntoConstraints = false
+        if configuresOnMount { _ = update(view, context) }
         return view
+    }
+
+    public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
+        update(view, context)
     }
 }
 
@@ -401,6 +421,7 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
         if let locale { nested.locale = locale }
         if let localizationBundle { nested.localizationBundle = localizationBundle }
         let view = content._mount(in: nested)
+        if locale != nil || localizationBundle != nil { view.fluentSetLocalization(locale: nested.locale, bundle: nested.localizationBundle) }
         if layoutDirection != nil { view.fluentApplyLayoutDirection(nested.layoutDirection, establishesOverride: true) }
         return view
     }
@@ -415,6 +436,7 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
         if let layoutDirection { nested.layoutDirection = layoutDirection }
         if let locale { nested.locale = locale }
         if let localizationBundle { nested.localizationBundle = localizationBundle }
+        if locale != nil || localizationBundle != nil { view.fluentSetLocalization(locale: nested.locale, bundle: nested.localizationBundle) }
         let updated = content._update(view, in: nested)
         if updated, layoutDirection != nil {
             view.fluentApplyLayoutDirection(nested.layoutDirection, establishesOverride: true)
@@ -641,11 +663,10 @@ protocol FluentAppearanceHost: AnyObject {
 public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearanceHost {
     public private(set) var content: Content
     public var context: FluentRenderContext {
-        didSet {
-            userInterfaceLayoutDirection = context.layoutDirection.appKitValue
-            update(content)
-        }
+        get { renderContext }
+        set { update(content, context: newValue) }
     }
+    private var renderContext: FluentRenderContext
 
     private var mountedView: NSView?
     private var isRendering = false
@@ -662,10 +683,11 @@ public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearance
 
     public init(_ content: Content, context: FluentRenderContext = .init()) {
         self.content = content
-        self.context = context
+        self.renderContext = context
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         userInterfaceLayoutDirection = context.layoutDirection.appKitValue
+        fluentSetLocalization(locale: context.locale, bundle: context.localizationBundle)
         mount(content)
     }
 
@@ -723,8 +745,17 @@ public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearance
     }
 
     public func update(_ content: Content) {
+        refreshScheduled = false
         self.content = content
         refresh(content)
+    }
+
+    /// Commits content and environment together, without rendering the previous content first.
+    public func update(_ content: Content, context: FluentRenderContext) {
+        renderContext = context
+        fluentSetLocalization(locale: context.locale, bundle: context.localizationBundle)
+        userInterfaceLayoutDirection = context.layoutDirection.appKitValue
+        update(content)
     }
 
     private func mount(_ content: Content) {
@@ -744,6 +775,7 @@ public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearance
         view.fluentApplyLayoutDirection(context.layoutDirection)
         mountedView = view
         addSubview(view)
+        view.fluentRefreshDefaultLocalization()
         view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             view.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -773,6 +805,7 @@ public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearance
             return
         }
         mountedView?.fluentApplyLayoutDirection(context.layoutDirection)
+        mountedView?.fluentRefreshDefaultLocalization()
         updateDependencies(dependencies)
         invalidateIntrinsicContentSize()
         needsLayout = true
@@ -782,7 +815,7 @@ public final class FluentViewHost<Content: FluentView>: NSView, FluentAppearance
         guard !refreshScheduled else { return }
         refreshScheduled = true
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
+            guard let self, self.refreshScheduled else { return }
             self.refreshScheduled = false
             self.refresh(self.content)
         }
@@ -835,6 +868,7 @@ public struct FluentTextView: FluentUpdatablePrimitiveView {
         label.font = resolvedFont(in: context)
         label.textColor = color ?? context.theme.textPrimary
         label.lineBreakMode = .byTruncatingTail
+        if let textStyle { fluentApplySemanticText(label, text: value, style: textStyle, color: color ?? context.theme.textPrimary, typography: context.theme.typography) }
         return label
     }
 
@@ -843,6 +877,7 @@ public struct FluentTextView: FluentUpdatablePrimitiveView {
         label.stringValue = value
         label.font = resolvedFont(in: context)
         label.textColor = color ?? context.theme.textPrimary
+        if let textStyle { fluentApplySemanticText(label, text: value, style: textStyle, color: color ?? context.theme.textPrimary, typography: context.theme.typography) }
         return true
     }
 

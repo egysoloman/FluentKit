@@ -123,7 +123,7 @@ private final class FluentCanvasHost: NSView {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.Canvas")
         translatesAutoresizingMaskIntoConstraints = false
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Canvas")
+        fluentSetDefaultAccessibilityLabel("Canvas")
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -246,7 +246,7 @@ private final class FluentViewboxHost: NSView {
         setContentHuggingPriority(.defaultLow, for: .horizontal)
         setContentHuggingPriority(.defaultLow, for: .vertical)
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Viewbox")
+        fluentSetDefaultAccessibilityLabel("Viewbox")
         contentView.wantsLayer = true
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)

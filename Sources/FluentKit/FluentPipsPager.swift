@@ -354,7 +354,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         layer?.backgroundColor = NSColor.clear.cgColor
         setAccessibilityElement(true)
         setAccessibilityRole(.menu)
-        setAccessibilityLabel("Pips pager")
+        fluentSetDefaultAccessibilityLabel("Pips pager")
 
         viewport.drawsBackground = false
         viewport.documentView = itemsHost
@@ -372,8 +372,8 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
                 self?.handleNavigationKey(keyCode, from: self?.storedSelectedPageIndex ?? 0) ?? false
             }
         }
-        previousButton.setAccessibilityLabel("Previous page")
-        nextButton.setAccessibilityLabel("Next page")
+        previousButton.fluentSetDefaultAccessibilityLabel("Previous page")
+        nextButton.fluentSetDefaultAccessibilityLabel("Next page")
 
         updateInfiniteItemCount()
         rebuildRealizedPips()

@@ -449,7 +449,7 @@ private final class FluentTabViewHost: NSView, FluentFillWidthProviding {
         wantsLayer = true
         userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         setAccessibilityRole(.radioGroup)
-        setAccessibilityLabel("Tabs")
+        fluentSetDefaultAccessibilityLabel("Tabs")
 
         tabViewport.identifier = NSUserInterfaceItemIdentifier("FluentKit.TabView.TabStrip")
         contentContainer.identifier = NSUserInterfaceItemIdentifier("FluentKit.TabView.Content")
@@ -460,18 +460,18 @@ private final class FluentTabViewHost: NSView, FluentFillWidthProviding {
         addSubview(scrollIncreaseButton)
         registerForDraggedTypes([fluentTabPasteboardType])
 
-        addButton.setAccessibilityLabel("Add new tab")
-        addButton.setAccessibilityTitle("Add new tab")
+        addButton.fluentSetDefaultAccessibilityLabel("Add new tab")
+        addButton.fluentSetDefaultAccessibilityTitle("Add new tab")
         addButton.onInvoke = { [weak self] in self?.configuration.onAddTabButtonClick?() }
         addButton.onCycleSelection = { [weak self] forward in self?.cycleSelection(forward: forward) }
         addButton.onCloseCurrent = { [weak self] in
             guard let self, self.configuration.items.indices.contains(self.selectedIndex) else { return }
             self.requestClose(self.selectedIndex)
         }
-        scrollDecreaseButton.setAccessibilityLabel("Scroll tabs left")
-        scrollDecreaseButton.setAccessibilityTitle("Scroll tabs left")
-        scrollIncreaseButton.setAccessibilityLabel("Scroll tabs right")
-        scrollIncreaseButton.setAccessibilityTitle("Scroll tabs right")
+        scrollDecreaseButton.fluentSetDefaultAccessibilityLabel("Scroll tabs left")
+        scrollDecreaseButton.fluentSetDefaultAccessibilityTitle("Scroll tabs left")
+        scrollIncreaseButton.fluentSetDefaultAccessibilityLabel("Scroll tabs right")
+        scrollIncreaseButton.fluentSetDefaultAccessibilityTitle("Scroll tabs right")
         scrollDecreaseButton.onInvoke = { [weak self] in self?.scrollByPage(forward: false) }
         scrollIncreaseButton.onInvoke = { [weak self] in self?.scrollByPage(forward: true) }
         scrollDecreaseButton.onCycleSelection = { [weak self] forward in self?.cycleSelection(forward: forward) }
@@ -633,8 +633,7 @@ private final class FluentTabViewHost: NSView, FluentFillWidthProviding {
         for (index, item) in configuration.items.enumerated() {
             let id = nextIDs[index]
             if let host = contentHosts[id] {
-                host.context = context
-                host.update(item.content)
+                host.update(item.content, context: context)
             } else {
                 let host = FluentViewHost(item.content, context: context)
                 host.identifier = NSUserInterfaceItemIdentifier("FluentKit.TabView.Content.\(index)")
@@ -683,8 +682,7 @@ private final class FluentTabViewHost: NSView, FluentFillWidthProviding {
             return nil
         }
         if let existing {
-            existing.context = context
-            existing.update(content)
+            existing.update(content, context: context)
             return existing
         }
         let host = FluentViewHost(content, context: context)

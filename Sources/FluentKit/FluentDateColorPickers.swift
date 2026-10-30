@@ -115,7 +115,7 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
         action = #selector(valueChanged)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.CalendarDatePicker")
         setAccessibilityRole(.popUpButton)
-        setAccessibilityLabel("Date")
+        fluentSetDefaultAccessibilityLabel("Date")
         visualStateCoordinator.reduceMotion = reduceMotion
         configureElevationBorder()
         installObserver()

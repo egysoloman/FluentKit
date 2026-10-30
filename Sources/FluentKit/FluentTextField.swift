@@ -363,15 +363,16 @@ public class FluentTextField: NSTextField {
         didSet {
             guard oldValue != theme else { return }
             textEditingSession.theme = theme
-            needsDisplay = true
-            invalidateIntrinsicContentSize()
+            synchronizeContentAppearance()
+            if oldValue.density != theme.density { invalidateIntrinsicContentSize() }
         }
     }
-    public var fluentStyle: (any FluentTextFieldStyle)? { didSet { needsDisplay = true; invalidateIntrinsicContentSize() } }
+    public var fluentStyle: (any FluentTextFieldStyle)? { didSet { synchronizeContentAppearance() } }
     /// Composite controls such as NumberBox can own one outer chrome while reusing this editor.
-    public var drawsFluentChrome = true { didSet { needsDisplay = true } }
+    public var drawsFluentChrome = true { didSet { synchronizeContentAppearance(); needsDisplay = true } }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
+            guard oldValue != fluentControlSize else { return }
             controlSize = fluentControlSize.appKitSize
             font = .systemFont(ofSize: fluentControlSize.fontSize + 1)
             invalidateIntrinsicContentSize()
@@ -380,6 +381,7 @@ public class FluentTextField: NSTextField {
     }
     var onFluentPointerChange: ((Bool) -> Void)?
     private(set) var isFluentPointerOver = false
+    private var appliedContentAppearance: FluentTextFieldAppearance?
     private var fluentPointerTrackingArea: NSTrackingArea?
     private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: theme, isSecure: false)
 
@@ -399,6 +401,7 @@ public class FluentTextField: NSTextField {
         wantsLayer = true
         setAccessibilityRole(.textField)
         _ = textEditingSession
+        synchronizeContentAppearance()
     }
 
     required init?(coder: NSCoder) { super.init(coder: coder) }
@@ -427,12 +430,14 @@ public class FluentTextField: NSTextField {
         guard isEnabled else { return }
         isFluentPointerOver = true
         onFluentPointerChange?(true)
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
     public override func mouseExited(with event: NSEvent) {
         isFluentPointerOver = false
         onFluentPointerChange?(false)
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -445,6 +450,7 @@ public class FluentTextField: NSTextField {
         drawsBackground = false
         super.textDidBeginEditing(notification)
         textEditingSession.didBeginEditing()
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -456,6 +462,7 @@ public class FluentTextField: NSTextField {
     public override func textDidEndEditing(_ notification: Notification) {
         super.textDidEndEditing(notification)
         textEditingSession.didEndEditing()
+        synchronizeContentAppearance()
         needsDisplay = true
     }
 
@@ -467,8 +474,6 @@ public class FluentTextField: NSTextField {
 
     public override func draw(_ dirtyRect: NSRect) {
         let appearance = resolvedAppearance()
-        if let font = appearance.font, self.font != font { self.font = font }
-        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
         if drawsFluentChrome {
             drawFluentTextFieldChrome(in: bounds, appearance: appearance, isFlipped: isFlipped, phase: .background)
         }
@@ -479,13 +484,32 @@ public class FluentTextField: NSTextField {
     }
 
     public override var isEnabled: Bool {
-        didSet { needsDisplay = true }
+        didSet { synchronizeContentAppearance(); needsDisplay = true }
     }
 
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
         fluentNotifyAppearanceCoordinator(from: self)
+        synchronizeContentAppearance()
         needsDisplay = true
+    }
+
+    public override func layout() {
+        synchronizeContentAppearance()
+        super.layout()
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil { textEditingSession.didEndEditing() }
+    }
+
+    private func synchronizeContentAppearance() {
+        let appearance = resolvedAppearance()
+        if let font = appearance.font, self.font != font { self.font = font }
+        applyFluentTextControlContentAppearance(self, appearance: appearance, theme: theme)
+        if appliedContentAppearance != appearance { needsDisplay = true }
+        appliedContentAppearance = appearance
     }
 
     private func resolvedAppearance() -> FluentTextFieldAppearance {

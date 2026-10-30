@@ -74,7 +74,7 @@ private final class FluentForEachHost: NSView {
         super.init(frame: .zero)
         setAccessibilityElement(true)
         setAccessibilityRole(.group)
-        setAccessibilityLabel("Items")
+        fluentSetDefaultAccessibilityLabel("Items")
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = spacing
@@ -121,14 +121,21 @@ private final class FluentForEachHost: NSView {
             }
         }
 
-        for arranged in stack.arrangedSubviews {
+        let retained = Set(nextViews.map(ObjectIdentifier.init))
+        for arranged in stack.arrangedSubviews where !retained.contains(ObjectIdentifier(arranged)) {
             stack.removeArrangedSubview(arranged)
-            if !nextViews.contains(where: { $0 === arranged }) {
-                arranged.removeFromSuperview()
-            }
+            arranged.removeFromSuperview()
         }
-        for view in nextViews {
-            stack.addArrangedSubview(view)
+        // An unchanged order performs no stack mutations. Only insertions and moves touch AppKit.
+        var arranged = stack.arrangedSubviews
+        for (index, view) in nextViews.enumerated() {
+            if index < arranged.count, arranged[index] === view { continue }
+            if let oldIndex = arranged.firstIndex(where: { $0 === view }) {
+                stack.removeArrangedSubview(view)
+                arranged.remove(at: oldIndex)
+            }
+            stack.insertArrangedSubview(view, at: index)
+            arranged.insert(view, at: index)
         }
 
         records = newRecords

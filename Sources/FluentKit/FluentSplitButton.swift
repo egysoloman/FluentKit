@@ -396,7 +396,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         primaryLayer.frame = primaryFrame
         secondaryLayer.frame = secondaryFrame
         let titleInsets = 11 * fluentControlSize.metricScale
-        let labelBounds = primaryFrame.insetBy(dx: titleInsets, dy: 0)
+        let labelBounds = primaryFrame.insetBy(dx: min(titleInsets, max(0, primaryFrame.width / 2)), dy: 0)
         let labelHeight = min(max(titleLabel.intrinsicContentSize.height, 0), labelBounds.height)
         titleLabel.frame = CGRect(
             x: labelBounds.minX,

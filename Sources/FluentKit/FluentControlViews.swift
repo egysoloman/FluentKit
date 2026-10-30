@@ -232,7 +232,7 @@ public struct FluentTextFieldView: FluentUpdatablePrimitiveView {
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let field = view as? FluentBoundTextField else { return false }
         field.update(binding: binding, theme: context.theme)
-        field.field.placeholderString = placeholder
+        if (field.field.placeholderAttributedString?.string ?? field.field.placeholderString) != placeholder { field.field.placeholderString = placeholder }
         field.field.fluentStyle = style
         return true
     }

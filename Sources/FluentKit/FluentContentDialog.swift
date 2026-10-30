@@ -536,8 +536,7 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
         let rebuildButtons = self.configuration != configuration
         self.configuration = configuration
         self.context = context
-        contentHost.update(content)
-        contentHost.context = context
+        contentHost.update(content, context: context)
         animationCoordinator.reduceMotion = context.reduceMotion
         apply(configuration: configuration, context: context, rebuildButtons: rebuildButtons)
         needsLayout = true

@@ -292,7 +292,7 @@ final class FluentKitTests: XCTestCase {
         XCTAssertEqual(indicator.strokeEnd, 0.5, accuracy: 0.001)
         XCTAssertEqual(ring.layer?.opacity ?? -1, 1, accuracy: 0.001)
         XCTAssertTrue(ring.isAccessibilityElement())
-        XCTAssertEqual(ring.accessibilityValue() as? String, "Indeterminate")
+        XCTAssertEqual(ring.accessibilityValue() as? String, FluentLocalization.controlString("Indeterminate"))
 
         ring.theme = FluentTheme(contrast: .high, colorScheme: .dark)
         XCTAssertEqual(NSColor(cgColor: try XCTUnwrap(track.strokeColor))?.alphaComponent ?? -1, 1, accuracy: 0.001)
@@ -523,7 +523,7 @@ final class FluentKitTests: XCTestCase {
         progress.isIndeterminate = true
         XCTAssertNil(progress.accessibilityMinValue())
         XCTAssertNil(progress.accessibilityMaxValue())
-        XCTAssertEqual(progress.accessibilityValue() as? String, "Indeterminate")
+        XCTAssertEqual(progress.accessibilityValue() as? String, FluentLocalization.controlString("Indeterminate"))
     }
 
     @MainActor
@@ -839,7 +839,7 @@ final class FluentKitTests: XCTestCase {
         let selectAll = try XCTUnwrap(
             (presenter.accessibilityChildren() ?? [])
                 .compactMap { $0 as? NSView }
-                .first { $0.accessibilityTitle() == "Select All" }
+                .first { $0.accessibilityTitle() == field.fluentControlString("Select All") }
         )
         XCTAssertFalse(try XCTUnwrap(selectAll as? NSControl).isEnabled)
         window.orderOut(nil)
@@ -4755,7 +4755,7 @@ final class FluentKitTests: XCTestCase {
         )
         let picker = try XCTUnwrap(host.subviews.first as? FluentWinUIDatePickerControl)
         XCTAssertEqual(picker.accessibilityLabel(), "Pick a date")
-        XCTAssertEqual(picker.accessibilityValue() as? String, "No date selected")
+        XCTAssertEqual(picker.accessibilityValue() as? String, FluentLocalization.controlString("No date selected"))
         XCTAssertEqual(picker.accessibilityRole(), .popUpButton)
 
         var calendar = Calendar(identifier: .gregorian)

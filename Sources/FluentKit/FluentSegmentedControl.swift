@@ -604,7 +604,7 @@ private final class FluentSegmentedControlNative: NSSegmentedControl, FluentCont
         controlSize = fluentControlSize.appKitSize
         font = appearance.font
         if segmentStyle != appearance.segmentStyle { segmentStyle = appearance.segmentStyle }
-        setAccessibilityLabel("Segmented control")
+        fluentSetDefaultAccessibilityLabel("Segmented control")
         updateLabels()
         updateSelectionIndicatorAppearance(appearance)
         selectionIndicatorView.layer?.cornerRadius = max(appearance.cornerRadius - 2, 0)

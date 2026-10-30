@@ -31,7 +31,10 @@ extension FluentTextField: FluentUpdatablePrimitiveView {
         field.theme = context.theme
         field.fluentStyle = fluentStyle
         field.fluentControlSize = fluentControlSize
-        field.placeholderString = placeholderString
+        let placeholder = placeholderAttributedString?.string ?? placeholderString
+        if (field.placeholderAttributedString?.string ?? field.placeholderString) != placeholder {
+            field.placeholderString = placeholder
+        }
         return true
     }
 }
@@ -217,7 +220,10 @@ extension FluentBoundTextField: FluentUpdatablePrimitiveView {
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let field = view as? FluentBoundTextField else { return false }
         field.update(binding: binding, theme: context.theme)
-        field.field.placeholderString = self.field.placeholderString
+        let placeholder = self.field.placeholderAttributedString?.string ?? self.field.placeholderString
+        if (field.field.placeholderAttributedString?.string ?? field.field.placeholderString) != placeholder {
+            field.field.placeholderString = placeholder
+        }
         field.field.fluentStyle = self.field.fluentStyle
         field.field.fluentControlSize = self.field.fluentControlSize
         return true
