@@ -19,6 +19,11 @@ for row in collections:
     assert row['textChanges'] == 10, row
     assert row['rowMakes'] == 0 and row['nativeAttachments'] == 0, row
     assert row['textChanges'] <= row['rowUpdates'] <= 30 * row['textChanges'], row
+layout_log = (root / 'CollectionAudit.log').read_text()
+for diagnostic in ('UICollectionViewFlowLayout is not defined', 'item width must be less',
+                   'Conflicting constraints', 'Unable to simultaneously satisfy constraints'):
+    if diagnostic in layout_log:
+        raise SystemExit(f'Collection audit emitted a layout diagnostic: {diagnostic}')
 editing = load('EditingAudit')
 assert editing['editorPresent'] is True
 assert all(editing[key] == 'external reset' for key in ('focusedModel', 'focusedField', 'blurredModel', 'blurredField')), editing

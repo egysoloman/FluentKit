@@ -1,0 +1,97 @@
+Building for debugging...
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[54 / 93]
+[55 / 94] FluentKit
+[66 / 171]
+[72 / 171]
+[77 / 171]
+[79 / 171]
+[85 / 171]
+[88 / 171]
+[95 / 171]
+[98 / 171]
+[100 / 171]
+[101 / 171]
+[112 / 171]
+[115 / 171]
+[118 / 171]
+[119 / 171]
+[131 / 171] FluentKit
+[133 / 171] FluentKit
+[138 / 171] FluentKit
+[146 / 173] FluentGallery-product
+[150 / 177] FluentGallery-product
+[151 / 177] FluentKit
+[157 / 178] FluentKitTests-product
+[158 / 178] FluentKitTests-product
+[162 / 190]
+[162 / 190] FluentGallery-product
+[164 / 190] FluentGallery-product
+[166 / 190]
+[167 / 190]
+[169 / 190]
+[174 / 190] FluentKitTests-product
+[179 / 190] FluentKitTests-product
+[181 / 190] FluentKitTests-product
+[185 / 190] FluentKitValidation-product
+[186 / 190] FluentKitValidation-product
+[188 / 190] FluentKitValidation-product
+Build complete! (57.47秒)
+Test Suite 'Selected tests' started at 2026-10-30 23:31:00.435.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-30 23:31:00.436.
+Test Suite 'AuditRegressionTests' started at 2026-10-30 23:31:00.436.
+Test Case '-[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization]' started.
+2026-10-30 23:31:00.578 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:00.578 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:00.578 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:00.578 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+2026-10-30 23:31:00.582 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:00.582 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:00.582 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:00.582 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+2026-10-30 23:31:00.591 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:00.591 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:00.591 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:00.591 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:396: warning: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : Conflicting constraints detected: <private>.
+
+Will attempt to recover by breaking <private>.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+2026-10-30 23:31:01.886 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:01.886 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:01.886 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:01.886 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+2026-10-30 23:31:01.903 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:01.903 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:01.903 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:01.903 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+2026-10-30 23:31:01.911 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:01.911 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:01.911 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:01.911 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+2026-10-30 23:31:01.928 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:01.928 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:01.928 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:01.928 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+2026-10-30 23:31:01.945 xctest[63265:455869] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 23:31:01.945 xctest[63265:455869] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 23:31:01.945 xctest[63265:455869] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7490a20500>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x105533480>.
+2026-10-30 23:31:01.945 xctest[63265:455869] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+/private/tmp/fluentkit-layout-baseline/Tests/FluentKitTests/AuditRegressionTests.swift:400: error: -[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization] : XCTAssertEqualWithAccuracy failed: ("2002.0") is not equal to ("127994.0") +/- ("1.0")
+Test Case '-[FluentKitTests.AuditRegressionTests testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization]' failed (1.524 seconds).
+Test Suite 'AuditRegressionTests' failed at 2026-10-30 23:31:01.960.
+	 Executed 1 test, with 9 failures (0 unexpected) in 1.524 (1.524) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-30 23:31:01.960.
+	 Executed 1 test, with 9 failures (0 unexpected) in 1.524 (1.524) seconds
+Test Suite 'Selected tests' failed at 2026-10-30 23:31:01.960.
+	 Executed 1 test, with 9 failures (0 unexpected) in 1.524 (1.525) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

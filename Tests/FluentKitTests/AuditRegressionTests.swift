@@ -376,6 +376,98 @@ final class AuditRegressionTests: XCTestCase {
         XCTAssertEqual(collection.snapshotApplicationCount, 1)
     }
 
+    @MainActor func testCollectionResizePreservesSingleColumnScrollPositionAndVirtualization() async throws {
+        let counters = AuditCounters()
+        let host = FluentViewHost(FluentListView(Array(0..<5000), rowHeight: 32) { _ in AuditRow(counters: counters) },
+                                  context: .init(reduceMotion: true))
+        let window = window(host, width: 300)
+        defer { window.close() }
+        let native = try XCTUnwrap(descendants(host).compactMap { $0 as? NSCollectionView }.first)
+        let scroll = try XCTUnwrap(native.enclosingScrollView)
+        let layout = try XCTUnwrap(native.collectionViewLayout as? NSCollectionViewFlowLayout)
+        await drain()
+        native.scrollToItems(at: [IndexPath(item: 4000, section: 0)], scrollPosition: .top)
+        await drain()
+        let initialOffset = scroll.contentView.bounds.minY
+        XCTAssertGreaterThan(initialOffset, 100_000)
+        for style in [NSScroller.Style.legacy, .overlay] {
+            scroll.scrollerStyle = style
+            for width: CGFloat in [40, 1200, 80, 640, 300] {
+                window.setContentSize(NSSize(width: width, height: 600))
+                host.layoutSubtreeIfNeeded()
+                await drain()
+                XCTAssertEqual(native.bounds.width, scroll.contentView.bounds.width, accuracy: 0.01)
+                XCTAssertEqual(scroll.contentView.bounds.minY, initialOffset, accuracy: 1)
+                let first = try XCTUnwrap(layout.layoutAttributesForItem(at: IndexPath(item: 4000, section: 0)))
+                let next = try XCTUnwrap(layout.layoutAttributesForItem(at: IndexPath(item: 4001, section: 0)))
+                XCTAssertEqual(first.frame.minX, next.frame.minX, accuracy: 0.01)
+                XCTAssertEqual(next.frame.minY - first.frame.minY, 32, accuracy: 0.01)
+                XCTAssertEqual(layout.collectionViewContentSize.height, 5000 * 32 + 10, accuracy: 1)
+                XCTAssertFalse(native.visibleItems().isEmpty)
+                XCTAssertLessThan(native.visibleItems().count, 32)
+                XCTAssertLessThan(counters.makes, 80, "A width change must not briefly realize a multi-column list")
+                for item in native.visibleItems() {
+                    for view in descendants(item.view) {
+                        XCTAssertTrue(view.frame.width.isFinite && view.frame.height.isFinite)
+                        XCTAssertGreaterThanOrEqual(view.frame.width, 0)
+                        XCTAssertGreaterThanOrEqual(view.frame.height, 0)
+                    }
+                }
+            }
+        }
+    }
+
+    @MainActor func testGridResizeFitsRowsAndSectionHeadersInBothDirections() async throws {
+        for direction in [FluentLayoutDirection.leftToRight, .rightToLeft] {
+            let snapshot = FluentCollectionSnapshot(section: 0, items: Array(0..<500))
+            let host = FluentViewHost(FluentCollection(snapshot: snapshot,
+                layout: .adaptiveGrid(minimumItemWidth: 120, itemHeight: 60, spacing: 8),
+                content: { FluentText("Item \($0)") },
+                header: { _ in FluentText("A long section heading that must fit the current viewport") }),
+                context: .init(reduceMotion: true, layoutDirection: direction))
+            let window = window(host, width: 600)
+            defer { window.close() }
+            let native = try XCTUnwrap(descendants(host).compactMap { $0 as? NSCollectionView }.first)
+            let scroll = try XCTUnwrap(native.enclosingScrollView)
+            scroll.scrollerStyle = .legacy
+            for width: CGFloat in [40, 1200, 180, 320] {
+                window.setContentSize(NSSize(width: width, height: 600))
+                host.layoutSubtreeIfNeeded()
+                await drain()
+                let headers = native.visibleSupplementaryViews(ofKind: NSCollectionView.elementKindSectionHeader)
+                XCTAssertFalse(headers.isEmpty)
+                for header in headers {
+                    for label in descendants(header).compactMap({ $0 as? NSTextField }) {
+                        XCTAssertLessThanOrEqual(label.alignmentRect(forFrame: label.frame).width, max(0, header.bounds.width - 12) + 0.01)
+                        XCTAssertGreaterThanOrEqual(label.frame.width, 0)
+                    }
+                }
+                for item in native.visibleItems() {
+                    XCTAssertGreaterThanOrEqual(item.view.frame.minX, -0.01)
+                    XCTAssertLessThanOrEqual(item.view.frame.maxX, native.bounds.width + 0.01)
+                }
+                XCTAssertFalse(native.visibleItems().isEmpty)
+                XCTAssertLessThan(native.visibleItems().count, 150)
+            }
+        }
+    }
+
+    @MainActor func testCollectionSurvivesCollapsingAndRestoringAWindowlessViewport() async throws {
+        let host = FluentViewHost(FluentListView(Array(0..<1000)) { FluentText("Item \($0)") })
+        let native = try XCTUnwrap(descendants(host).compactMap { $0 as? NSCollectionView }.first)
+        for width: CGFloat in [300, 0, 0.5, 2, 160, 0, 600] {
+            host.frame = NSRect(x: 0, y: 0, width: width, height: 400)
+            host.layoutSubtreeIfNeeded()
+            await drain()
+            if width > 4 {
+                XCTAssertFalse(native.visibleItems().isEmpty)
+                XCTAssertEqual(native.bounds.width, native.enclosingScrollView!.contentView.bounds.width, accuracy: 0.01)
+            }
+        }
+        let layout = try XCTUnwrap(native.collectionViewLayout as? NSCollectionViewFlowLayout)
+        XCTAssertEqual(layout.collectionViewContentSize.height, 40_010, accuracy: 1)
+    }
+
     @MainActor func testFrameworkLocalizationFollowsHostAndAllowsBundleOverride() throws {
         _ = NSApplication.shared
         let child = FluentTextField()

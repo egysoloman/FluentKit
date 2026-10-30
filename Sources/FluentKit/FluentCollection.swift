@@ -426,6 +426,24 @@ private func fluentCollectionIndexPathPrecedes(_ lhs: IndexPath, _ rhs: IndexPat
 }
 
 private final class FluentCollectionNativeView: NSCollectionView {
+    // AppKit prepares flow layout inside native resizing, before NSScrollView.layout and
+    // bounds-change notifications. Resolve item metrics before that work sees the new width.
+    var prepareForWidth: ((CGFloat) -> Void)?
+
+    override func setFrameSize(_ newSize: NSSize) {
+        let widthChanged = newSize.width != frame.width
+        if widthChanged { prepareForWidth?(newSize.width) }
+        super.setFrameSize(newSize)
+        if widthChanged { collectionViewLayout?.invalidateLayout() }
+    }
+
+    override func setBoundsSize(_ newSize: NSSize) {
+        let widthChanged = newSize.width != bounds.width
+        if widthChanged { prepareForWidth?(newSize.width) }
+        super.setBoundsSize(newSize)
+        if widthChanged { collectionViewLayout?.invalidateLayout() }
+    }
+
     var onFocusVisibilityChange: (() -> Void)?
     var handleKeyDown: ((NSEvent) -> Bool)?
     var handleMouseDown: ((NSEvent) -> Bool)?
@@ -550,9 +568,15 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
             forSupplementaryViewOfKind: NSCollectionView.elementKindSectionHeader,
             withIdentifier: fluentSectionedHeaderIdentifier
         )
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.prepareForWidth = { [weak self] width in
+            _ = self?.updateLayoutMetrics(viewportWidth: width)
+        }
+        // The clip view resizes its document synchronously. A width Auto Layout constraint
+        // arrives after flow layout has already used the old item width during a resize.
+        collectionView.translatesAutoresizingMaskIntoConstraints = true
+        collectionView.autoresizingMask = [.width]
+        collectionView.setFrameSize(NSSize(width: contentView.bounds.width, height: collectionView.frame.height))
         documentView = collectionView
-        collectionView.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
         loadingIndicator.style = .spinning
         loadingIndicator.controlSize = .small
         loadingIndicator.isDisplayedWhenStopped = false
@@ -564,7 +588,9 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
             object: contentView,
             queue: .main
         ) { [weak self] _ in
-            self?.maybeRequestMoreItems()
+            guard let self else { return }
+            self.updateLayoutMetrics()
+            self.maybeRequestMoreItems()
         }
 
         diffableDataSource = NSCollectionViewDiffableDataSource<AnyHashable, AnyHashable>(
@@ -745,11 +771,13 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
     }
 
     @discardableResult
-    private func updateLayoutMetrics() -> (usable: Bool, changed: Bool) {
-        let insets = flowLayout.sectionInset
-        let viewportWidth = contentView.bounds.width
-        guard viewportWidth > insets.left + insets.right + 1 else { return (false, false) }
-        let availableWidth = viewportWidth - insets.left - insets.right
+    private func updateLayoutMetrics(viewportWidth proposedWidth: CGFloat? = nil) -> (usable: Bool, changed: Bool) {
+        let viewportWidth = max(0, proposedWidth ?? contentView.bounds.width)
+        // Retain a valid one-point layout slot while a viewport collapses; the clip view
+        // still owns visibility. Horizontal padding yields before the item becomes negative.
+        let horizontalInset = min(2, max(0, (viewportWidth - 1) / 2))
+        let insets = NSEdgeInsets(top: 2, left: horizontalInset, bottom: 8, right: horizontalInset)
+        let availableWidth = viewportWidth > 0 ? viewportWidth - insets.left - insets.right : 1
         let itemWidth: CGFloat
         let columns: Int
         switch layoutSpec.kind {
@@ -762,7 +790,8 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
             itemWidth = (availableWidth - CGFloat(columns - 1) * layoutSpec.spacing) / CGFloat(columns)
         }
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1
-        let alignedItemWidth = floor(itemWidth * max(scale, 1)) / max(scale, 1)
+        let pixelScale = max(scale, 1)
+        let alignedItemWidth = max(min(itemWidth, 1 / pixelScale), floor(itemWidth * pixelScale) / pixelScale)
         let itemSize = NSSize(width: alignedItemWidth, height: layoutSpec.itemHeight)
         let headerSize = header == nil
             ? NSSize.zero
@@ -774,17 +803,15 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
         if changed {
             lastViewportWidth = viewportWidth
             lastResolvedColumnCount = columns
+            flowLayout.sectionInset = insets
             flowLayout.itemSize = itemSize
             flowLayout.headerReferenceSize = headerSize
             flowLayout.invalidateLayout()
         }
-        return (true, changed)
+        return (viewportWidth > 0, changed)
     }
 
-    private var hasUsableViewport: Bool {
-        let insets = flowLayout.sectionInset
-        return contentView.bounds.width > insets.left + insets.right + 1
-    }
+    private var hasUsableViewport: Bool { contentView.bounds.width > 0 }
 
     private func updateAccessibilityRole() {
         let role: NSAccessibility.Role = layoutSpec.kind == .list ? .list : .grid
@@ -2074,11 +2101,20 @@ private final class FluentSectionedCollectionCell: NSView {
         guard let contentView else { return }
         NSLayoutConstraint.deactivate(contentConstraints)
         let insets = (appearance ?? resolvedAppearance()).contentInsets
+        let trailing = contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right)
+        let bottom = contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
+        // WinUI clamps the available content size at zero when padding consumes the slot.
+        // Keep the leading/top inset, and allow the trailing/bottom inset to yield before
+        // requesting a negative content size from AppKit.
+        trailing.priority = .init(999)
+        bottom.priority = .init(999)
         contentConstraints = [
             contentView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: insets.left),
-            contentView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right),
+            trailing,
             contentView.topAnchor.constraint(equalTo: topAnchor, constant: insets.top),
-            contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -insets.bottom)
+            bottom,
+            contentView.widthAnchor.constraint(greaterThanOrEqualToConstant: 0),
+            contentView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0)
         ]
         NSLayoutConstraint.activate(contentConstraints)
     }

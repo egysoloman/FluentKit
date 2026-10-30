@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Fixed CollectionView resize ordering: list rows stay in one column and retain their scroll
+  offset as legacy scrollbars and window widths change. Tiny/collapsed viewports recover without
+  negative content constraints or stale flow-layout extents. Release audits now reject collection
+  width and constraint diagnostics.
+
 - Added atomic host updates, stable native-view configuration, focused external text resets,
   composition commit policy and editor undo/redo synchronization. Stable ForEach ordering no
   longer rebuilds its arranged-subview list, and Equatable state can suppress duplicate emissions.
