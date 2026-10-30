@@ -12,6 +12,8 @@ as ordinary files so a package consumer can inspect them without a special snaps
 | Application | Dark | `.snapshots/application-dark.png` | 980 x 680 |
 | Controls | Light | `.snapshots/controls-light.png` | 980 x 680 |
 | Controls | Dark | `.snapshots/controls-dark.png` | 980 x 680 |
+| Button image content | Light | `.snapshots/button-content-light.png` | 980 x 680 |
+| Button image content | Dark | `.snapshots/button-content-dark.png` | 980 x 680 |
 | Collections | Light | `.snapshots/collections-light.png` | 980 x 680 |
 | Collections | Dark | `.snapshots/collections-dark.png` | 980 x 680 |
 | Inputs and forms | Light | `.snapshots/inputs-light.png` | 980 x 680 |
@@ -59,3 +61,30 @@ toggle inside the pane.
 The validation executable checks every listed file for its expected dimensions and non-empty pixel
 variation. Visual review remains required for intentional design changes; the check is a regression
 gate against missing, blank, or incorrectly sized captures rather than a substitute for design review.
+
+Button image-content captures set `FLUENTKIT_SNAPSHOT_SCENE=styles` and a light or dark
+`FLUENTKIT_GALLERY_SCHEME`. The first row includes both image-plus-label and image-only buttons.
+
+
+## Audit state pixel comparison
+
+`.snapshots/audit-states/` contains a reviewed light/dark native rendering pair at 2080 × 1300,
+with its OS/build/scale in `visual-environment.json`. It covers Button and TextBox interaction
+states, AppBar and More normal/hover/pressed/disabled, fixed material colors and four icon sources.
+The focus column activates the TextBox editor; it does not claim an AppBar/More focus check.
+These are regression references created on macOS, not Windows reference captures. The older
+Gallery PNGs above remain historical captures and were not silently regenerated during repair.
+
+Generate candidate images outside the baseline, then compare (Python Pillow required):
+
+```sh
+./audits/2026-10-30/run-repairs.sh /tmp/fluentkit-audit-candidate
+python3 tools/compare_snapshots.py .snapshots/audit-states /tmp/fluentkit-audit-candidate/visual
+```
+
+The gate rejects different environment metadata, dimensions, mean channel error above 0.25/255,
+or more than 0.5% of pixels differing by over 8 channel levels. It emits per-image metrics and
+writes diff images on failure; it never updates the baseline. A deliberate design/OS change needs
+new visual review. These tolerances are initial regression thresholds, not a perceptual parity score.
+The release audit CI step additionally verifies deterministic update counts and sample registration;
+pixel comparison is opt-in with `AUDIT_VISUAL_BASELINE` on a matching capture machine.

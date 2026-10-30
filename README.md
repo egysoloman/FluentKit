@@ -5,7 +5,30 @@
 
 A declarative desktop UI framework inspired by Fluent Design, implemented in native Swift and AppKit.
 
-FluentKit provides a composable foundation for desktop interfaces: Fluent theme tokens, adaptive light and dark appearance, native macOS materials, state-aware controls, single- and multiline text editing, localized view updates, and a Swift-native declarative view tree. It deliberately has no markup compatibility layer.
+FluentKit provides a composable foundation for desktop interfaces: Fluent theme tokens, adaptive light and dark appearance, explicit Fluent base-color recipes and opt-in macOS materials, state-aware controls, single- and multiline text editing, localized view updates, and a Swift-native declarative view tree. It deliberately has no markup compatibility layer.
+
+## Button content and document toolbars
+
+Buttons support native images as content, including image-only, leading/trailing, and vertical
+placements. Leading/trailing placement follows the reading direction; physical left/right does not.
+Image content participates in measurement and survives declarative updates and flyout modifiers:
+
+```swift
+FluentButtonView(
+    "Copy",
+    image: NSImage(systemSymbolName: "doc.on.doc", accessibilityDescription: nil),
+    imagePosition: .imageLeading
+)
+```
+
+`FluentCommandBar` retains WinUI's default trailing primary-command area and leading content area.
+Document toolbars can opt into `bar.primaryCommandAlignment = .leading`, or pass
+`primaryCommandAlignment: .leading` to `FluentCommandBarView`. This is an explicit FluentKit
+extension, not a change to WinUI's default. In leading mode, More follows the command strip and
+custom content uses the remaining trailing space; both arrangements mirror in RTL.
+
+Extended `FluentWindowShell` instances anchor page content below the title bar and fill the
+remaining viewport, including embedded `FluentNativeView` trees without an intrinsic height.
 
 ## Installation
 
@@ -32,7 +55,7 @@ struct SettingsView: FluentView {
             FluentNativeView(FluentTextField(placeholder: "Search"))
             FluentNativeView(FluentButton(title: "Save changes"))
             FluentNativeView(FluentToggle(title: "Use notifications", isOn: true))
-            FluentNativeView(FluentProgressBar(value: 0.72))
+            FluentNativeView(FluentProgressBar(value: 72))
         })
     }
 }
@@ -272,12 +295,13 @@ The framework is built in layers. Milestones 1-13, 16, 18, 20, and 21 are comple
 continue to expand text and presentation depth. Milestones 17 and 19 remain in visual acceptance:
 their behavior foundations exist, while transient-surface fidelity and the long-tail control set are
 still being audited and implemented. The primary Button, ToggleSwitch, Slider, CheckBox, RadioButton,
-SegmentedControl, ProgressBar, and MenuFlyout state/motion foundations are now covered by shared
+RatingControl, PipsPager, BreadcrumbBar, Expander, SegmentedControl, ProgressBar, and MenuFlyout state/motion
+foundations are now covered by shared
 visual-state or presentation contracts and executable validation.
 
 1. Declarative tree, AppKit host, reconciliation, state, bindings, and environment values.
 2. Fluent materials, theme tokens, layout containers, native controls, lists, menus, overlays, drag/drop, lifecycle, focus, and accessibility.
-3. Scoped keyboard commands, DisclosureGroup, SegmentedControl, DatePicker, ColorPicker, and value-driven navigation.
+3. Scoped keyboard commands, source-aligned Expander (`DisclosureGroup` compatibility), SegmentedControl, DatePicker, ColorPicker, and value-driven navigation.
 4. Gallery and executable smoke validation, including native bitmap snapshots for visual regression checks.
 5. Native app entry point with single-window scenes, multi-window groups, stable IDs, placement policies, window commands, and lifecycle callbacks.
 6. Window frame restoration with opt-out policy, deferred utility windows, and runtime window coordination.
@@ -293,7 +317,7 @@ visual-state or presentation contracts and executable validation.
 16. Display-driven values, springs, keyframes, Reduce Motion, composable branch transitions, visual transforms, and namespace-scoped matched geometry.
 17. Observable application themes, semantic density, contrast, color schemes and typography, plus reusable button, toggle, slider, progress, text-field, and card styles.
 18. Scene-specific cubic-bezier motion tokens and Fluent control/presentation choreography.
-19. Liquid Glass application flyouts and context menus while preserving the native macOS main menu.
+19. Fluent transient surfaces with opt-in Liquid Glass and a native macOS main menu.
 20. Accessibility and localization depth, including RTL behavior and automated semantic audits.
 21. Application services such as settings, open events, printing, sharing, and import/export.
 22. Production hardening, snapshot baselines, performance/leak tests, documentation, and compatibility policy.
@@ -431,13 +455,28 @@ FluentHStack(spacing: 8) {
 
 FluentToggleButtonView("Pin", isOn: $isPinned)
 
+// HyperlinkButton uses WinUI's subtle 83ms hover/pressed surface.
+FluentHyperlinkButtonView("Learn more", action: openHelp)
+
+// SplitButton reserves a 35pt trailing MenuFlyout region.
+FluentSplitButtonView("Save", action: save) {
+    FluentMenuItem("Save as…", action: saveAs)
+    FluentMenuItem("Save a copy", action: saveCopy)
+}
+
+// Only the primary region toggles; the secondary region opens the MenuFlyout.
+FluentToggleSplitButtonView("Favorite", isChecked: $isFavorite) {
+    FluentMenuItem("Manage favorites", action: manageFavorites)
+}
+
 FluentToggleView("Notifications", isOn: $notifications)
     .toggleStyle(FluentMonochromeToggleStyle())
 
 FluentSliderView(value: $volume)
     .sliderStyle(FluentNeutralSliderStyle())
 
-FluentProgressBar(value: downloadFraction)
+// ProgressBar follows WinUI RangeBase semantics and defaults to 0...100.
+FluentProgressBar(value: downloadFraction * 100)
     .progressStyle(FluentNeutralProgressStyle())
 
 FluentCheckBoxView("Completed", isChecked: $completed)
@@ -445,6 +484,34 @@ FluentCheckBoxView("Completed", isChecked: $completed)
 
 FluentRadioButtonView("Primary", isSelected: $primary)
     .radioButtonStyle(FluentAutomaticRadioButtonStyle())
+
+// Prefer RadioButtons when several options form one source-compatible selection group.
+FluentRadioButtons(
+    ["Primary", "Secondary", "Tertiary"],
+    selection: $selectedPriority,
+    header: "Priority",
+    maxColumns: 3
+)
+
+FluentRatingControlView(
+    value: $rating,
+    placeholderValue: 3.5,
+    caption: "312 ratings"
+)
+
+FluentPipsPagerView(
+    selectedPageIndex: $pageIndex,
+    numberOfPages: pages.count,
+    maxVisiblePips: 5,
+    previousButtonVisibility: .visibleOnPointerOver,
+    nextButtonVisibility: .visibleOnPointerOver,
+    wrapMode: .wrap
+)
+
+FluentBreadcrumbBarView(items: breadcrumbPath) { _, index in
+    breadcrumbPath = Array(breadcrumbPath.prefix(index + 1))
+}
+.frame(width: 360, height: 32)
 
 FluentSegmentedControl(["One", "Two"], selection: $mode)
     .segmentedStyle(FluentNeutralSegmentedStyle())
@@ -482,6 +549,15 @@ FluentComboBox(
 
 FluentDatePicker(selection: $dueDate, range: allowedDates)
     .textFieldStyle(FluentUnderlineTextFieldStyle())
+
+// TimePicker keeps a nullable, date-independent time-of-day value. MinuteIncrement accepts
+// WinUI's 0...59 range; zero represents a single `00` minute entry.
+FluentTimePickerView(
+    selection: $departureTime,
+    minuteIncrement: 5,
+    clockIdentifier: .twelveHour,
+    header: "Departure time"
+)
 
 FluentNumberBox(
     "Items",
@@ -525,6 +601,29 @@ commits once and release outside cancels. CheckBox draws and clears its stable c
 source AnimatedAccept 19-frame/four-frame curves. RadioButton uses a 20pt outer circle with
 12/14/10/14 dot states and a separate pressed-feedback dot for an unselected press. Both support
 RTL, keyboard focus, accessibility activation, external-binding cancellation, and Reduce Motion.
+Independent RadioButton values can opt into mutual exclusion with `groupName`; the recommended
+`FluentRadioButtons` container owns one optional selection, lays items out column-major, skips
+disabled choices, contains arrow navigation at group boundaries, and follows WinUI's
+Control+Arrow focus-without-selection behavior.
+
+RatingControl preserves WinUI's `-1` unset sentinel, fractional programmatic and placeholder
+values, 16pt star geometry with 8pt spacing, pointer-proximity scaling, preview-before-commit,
+click-current-to-clear, drag-to-start-edge clearing, and the fractional keyboard rounding rules.
+Left/Right follow layout direction while Up/Down retain logical increase/decrease semantics;
+read-only and accessibility adjustment paths share the same bound value lifecycle.
+
+PipsPager preserves WinUI's zero-based selection, `-1` unbounded-page mode, five-pip default
+viewport, 4pt normal and 6pt selected/hover glyphs, 12x24 horizontal and 24x12 vertical hit areas,
+and 24pt navigation buttons. Finite collections virtualize around the visible range; the selected
+pip is centered with source-style scrolling, while edge hiding, pointer-only visibility, Wrap,
+RTL mirroring, focus-without-selection arrow navigation, and Selection accessibility remain part
+of the same bound control lifecycle.
+
+BreadcrumbBar preserves WinUI's suffix-overflow layout: the current final item always remains
+visible, earlier items collapse behind an ellipsis only when required, and the flyout lists the
+hidden prefix from nearest to farthest. `ItemClicked` reports the original zero-based source index;
+the same controls provide Left/Right focus traversal, RTL mirroring, current-location semantics,
+keyboard invocation, and an accessibility-only view of the visible path.
 
 Combo-box fields keep a native `NSComboBox` option/accessibility bridge while FluentKit owns the
 visible 32pt host, trailing glyph column, focus visuals, popup, and item template. Selection mode
@@ -1080,28 +1179,44 @@ FluentButtonView("Details") { showingDetails = true }
     }
 ```
 
-`teachingTip` presents a directional, application-owned Liquid Glass child panel next to its anchor.
-The panel preserves the anchor identity, provides a close command and accessibility group, dismisses
-on Escape or outside clicks, synchronizes its binding, and uses distinct entrance/exit motion while
-honoring Reduce Motion:
+`teachingTip` presents a target-relative WinUI TeachingTip in an application-owned child panel. The
+default non-light-dismiss presenter uses a solid tertiary surface, does not steal focus, and remains
+open when the user clicks outside. Opting into `isLightDismissEnabled` switches to a transient
+material, modal accessibility semantics, and outside-click dismissal. Title, subtitle, icon, Hero
+content, action/close buttons, tail visibility, all thirteen WinUI placements, RTL mirroring, root
+boundary fallback, cancellable `onClosing`, and close reasons are binding-driven while the anchor
+keeps its native identity:
 
 ```swift
 FluentButtonView("Help")
     .teachingTip(
         isPresented: $showHelp,
+        title: "Keyboard navigation",
+        subtitle: "Move through the current group without leaving the keyboard.",
+        systemImageName: "keyboard",
         placement: .top,
-        size: NSSize(width: 300, height: 126)
+        size: NSSize(width: 320, height: 150),
+        actionButtonTitle: "Show shortcuts",
+        closeButtonTitle: "Got it"
     ) {
-        FluentVStack(spacing: 6) {
-            FluentText("Keyboard navigation", style: .headline)
-            FluentText("Use arrow keys to move between items.", style: .body)
-        }
-    }
+        FluentText("Use arrow keys to move between items.", style: .body)
+}
+```
+
+Attach `toolTip` for short, non-interactive help. Pointer-triggered directional placements are
+anchored to the current pointer, keyboard-triggered placements use the target bounds, and only one
+automatic ToolTip is active application-wide. The presenter follows WinUI's pointer delay,
+owner-to-popup safe zone, 320pt width limit, fixed 4pt corner, 1px flyout stroke, RTL placement, and
+five-second fallback duration while preserving the anchor's native identity and accessibility help:
+
+```swift
+FluentButtonView("Save")
+    .toolTip("Save changes", placement: .top)
 ```
 
 The macOS application menu deliberately remains an `NSMenu`. In-application button flyouts,
 DropDownButtons, and `contextMenu` use the custom `FluentMenuFlyout` panel. Its transient surface uses
-the global Liquid Glass setting with one opaque fallback edge owner. Item spacing, state fills,
+the global material setting with one opaque fallback edge owner. Item spacing, state fills,
 checkmarks, system-icon placeholders, separators, accelerators, keyboard navigation, and dismissal
 remain controlled by FluentKit rather than the system menu renderer. Menu items can declare icons,
 shortcuts, and nested flyouts without leaving the Swift API:
@@ -1163,3 +1278,54 @@ according to [SECURITY.md](SECURITY.md) rather than disclosing them in a public 
 ## License
 
 FluentKit is released under the MIT License. See [LICENSE](LICENSE).
+
+
+## Audit-driven rendering and input contracts
+
+The 2026-10-30 repairs and remaining acceptance limits are recorded in
+[audits/2026-10-30/REMEDIATION.md](audits/2026-10-30/REMEDIATION.md). Passing tests is not evidence
+of complete visual parity with Windows.
+
+- Use `host.update(content, context: context)` to commit a new tree and environment in one pass.
+  `FluentNativeView(existingView)` retains that instance; for creation plus configuration use
+  `FluentNativeView(make:update:)`. The factory runs once per mount, and the update receives the retained native view.
+- External text values replace active unmarked text and survive blur. An external value received
+  during IME composition is deferred until composition finishes, then wins. Native undo/redo
+  publishes the editor's resulting value. To defer search or validation until IME commit, use
+  `$query.textInput(.init(commitPolicy: .committedText, onEditingChange: { change in /* text, isComposing */ }))`.
+  The compatibility default remains `.continuous`. Closure-only bindings are checked when updated or committed;
+  use an observable binding for immediate external delivery.
+- Collections apply native snapshots only for structural changes. Without a content version, only
+  visible rows update conservatively. Opt in with `.contentVersion { id in model[id].revision }`
+  on `FluentCollection`, `FluentListView` or `FluentGridView` to skip unchanged row content.
+  Include every captured content dependency in that version. Theme and environment changes still
+  refresh visible content; offscreen rows use the latest provider when mounted. Building a new ID
+  array and comparing structure still costs O(n); this API does not promise constant-time arbitrary data updates.
+- `FluentObservable` and `FluentState` deduplicate concrete Equatable values. Custom values can
+  supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
+- Typography uses Caption 12, Body 14, BodyLarge 18, Subtitle 20, Title 28, TitleLarge 40 and Display 68.
+  Legacy aliases map `largeTitle` to `titleLarge`, `title2` to `subtitle`, `headline` to `bodyStrong`
+  and `callout` to `body`. `FluentTypography(overrides:fontProvider:)` supports per-style size, weight,
+  optional line height and application-supplied fonts. The default font remains the macOS system font;
+  FluentKit does not bundle Segoe fonts or claim matching glyph metrics.
+- `FluentIconSource` supports symbols, glyphs, NSImage and CGPath. Menu items, navigation items,
+  title bars, AppBar buttons and CommandBar items accept `icon:`. Sources preserve aspect ratio,
+  expose alignment and RTL mirroring, and distinguish template tint from original image colors.
+  Existing `systemImageName:` and button `image:` APIs remain available.
+- `.mica` and `.acrylic` now use deterministic opaque base colors (`.fluentRecipe` backend).
+  They do not sample desktop wallpaper or reproduce Windows composition. Choose `.nativeMica`
+  or `.nativeAcrylic` for OS-dependent AppKit effects, or `.liquidGlass` for explicit native glass.
+  Default transient surfaces use Acrylic. Material-disabled and reduced-transparency modes keep
+  an opaque fallback. These are explicit rendering choices, not a claim of exact Mica/Acrylic parity.
+- AppBar horizontal labels reserve a separate chevron slot in LTR and RTL. `commandHeight: 32`
+  on `FluentAppBarButtonView` (or `commandHeight` on the native button) opts into a denser application
+  command; the default WinUI AppBar height remains 48. Hover and expanded backgrounds follow that geometry.
+- Framework defaults are resolved from the host's locale, first through the application's
+  `FluentKit.strings`, then the bundled English, Simplified Chinese and Traditional Chinese resources.
+  Keys use `FluentKit.Copy`, `FluentKit.Back`, etc. Applications can override the locale/bundle
+  through the render context or `view.fluentSetLocalization(locale:bundle:)` for native subtrees.
+
+Run `swift test` for behavior and work-count regressions, and
+`./audits/2026-10-30/run-repairs.sh` for Release raw data, registered Gallery sample mounting and
+controlled screenshots. `tools/compare_snapshots.py` compares reviewed image pairs without
+rewriting their baselines; capture OS, scale and fonts must match.

@@ -4,7 +4,28 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
-No unreleased changes yet.
+- Added atomic host updates, stable native-view configuration, focused external text resets,
+  composition commit policy and editor undo/redo synchronization. Stable ForEach ordering no
+  longer rebuilds its arranged-subview list, and Equatable state can suppress duplicate emissions.
+- Separated collection structure and visible content updates, with optional per-item content
+  versions. Added deterministic work-count regressions and reproducible Release audit gates.
+- Added WinUI semantic typography metrics and configurable fonts, shared aspect-preserving icon
+  sources, separate AppBar chevron measurement, and a dense command-height option.
+- Separated fixed Mica/Acrylic base colors from explicit native AppKit and Liquid Glass choices.
+  Added framework string resources and tracked localized accessibility defaults.
+- Linked Gallery coverage to an exhaustive sample registry, added audit-focused samples, and
+  introduced controlled state screenshots with a pixel-difference gate. Windows parity and
+  real IME/VoiceOver acceptance remain separate from these automated checks.
+
+- Fixed non-finite title-bar button frames during transient zero-height layout.
+
+- Fixed FluentButton image-only and image-plus-label rendering, intrinsic measurement, RTL
+  leading/trailing placement, and image preservation during declarative updates. Added optional
+  image content to FluentButtonView, including its style and flyout modifiers.
+- Fixed extended WindowShell viewport sizing so native AppKit content fills the remaining window
+  height and continues to resize below a fixed-height title bar.
+- Added opt-in leading primary-command alignment for document toolbars. CommandBar retains its
+  WinUI-standard trailing alignment by default; the leading variant mirrors in RTL.
 
 ## [0.1.0] - 2026-08-02
 
