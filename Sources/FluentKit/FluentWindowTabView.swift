@@ -86,6 +86,7 @@ public struct FluentWindowTabConfiguration {
 /// window. AppKit performs the drag session; this coordinator commits reorder, merge, and tear-out
 /// as one stable-ID transaction.
 public final class FluentWindowTabCoordinator: NSObject, NSWindowDelegate {
+    private static let tabStripHeight: CGFloat = 40
     public typealias AddTabHandler = (FluentWindowTabGroupID) -> FluentWindowTab?
     public typealias ContentWrapper = (FluentWindowTabGroupID, FluentAnyView) -> FluentAnyView
     public typealias WindowConfigurator = (NSWindow, FluentWindowTabGroupID) -> Void
@@ -408,7 +409,10 @@ public final class FluentWindowTabCoordinator: NSObject, NSWindowDelegate {
         window.titleVisibility = .hidden
         window.isMovableByWindowBackground = true
         window.delegate = self
-        window.applyFluentWindowControlsStyle(configuration.windowControlsStyle)
+        window.applyFluentWindowControlsStyle(
+            configuration.windowControlsStyle,
+            titleBarHeight: Self.tabStripHeight
+        )
 
         let groupView = FluentAnyView(FluentWindowTabGroupView(coordinator: self, groupID: record.id))
         let wrappedContent = contentWrapper?(record.id, groupView) ?? groupView

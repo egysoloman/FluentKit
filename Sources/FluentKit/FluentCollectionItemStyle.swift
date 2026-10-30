@@ -30,6 +30,7 @@ public struct FluentCollectionItemStyleConfiguration {
 public struct FluentCollectionItemAppearance {
     public let backgroundColor: NSColor
     public let contentInsets: NSEdgeInsets
+    public let containerOpacity: CGFloat
     public let contentOpacity: CGFloat
     public let cornerRadius: CGFloat
     public let selectionIndicatorColor: NSColor
@@ -46,6 +47,7 @@ public struct FluentCollectionItemAppearance {
     public init(
         backgroundColor: NSColor,
         contentInsets: NSEdgeInsets,
+        containerOpacity: CGFloat = 1,
         contentOpacity: CGFloat = 1,
         cornerRadius: CGFloat = 4,
         selectionIndicatorColor: NSColor = .clear,
@@ -61,6 +63,7 @@ public struct FluentCollectionItemAppearance {
     ) {
         self.backgroundColor = backgroundColor
         self.contentInsets = contentInsets
+        self.containerOpacity = min(max(containerOpacity, 0), 1)
         self.contentOpacity = min(max(contentOpacity, 0), 1)
         self.cornerRadius = max(cornerRadius, 0)
         self.selectionIndicatorColor = selectionIndicatorColor
@@ -136,7 +139,7 @@ public struct FluentAutomaticCollectionItemStyle: FluentCollectionItemStyle {
             contentInsets: isGrid
                 ? NSEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
                 : NSEdgeInsets(top: 0, left: 16, bottom: 0, right: 12),
-            contentOpacity: configuration.isEnabled ? 1 : 0.3,
+            containerOpacity: configuration.isEnabled ? 1 : 0.3,
             cornerRadius: 4,
             selectionIndicatorColor: configuration.isEnabled
                 ? theme.accentFillDefault

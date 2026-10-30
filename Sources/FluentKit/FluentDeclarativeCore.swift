@@ -165,18 +165,22 @@ public enum FluentViewBuilder {
     }
 }
 
+private final class FluentEmptyNativeView: NSView {
+    override var intrinsicContentSize: NSSize { .zero }
+}
+
 public struct FluentEmptyView: FluentUpdatablePrimitiveView {
     public init() {}
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let view = NSView()
+        let view = FluentEmptyNativeView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
-        type(of: view) == NSView.self
+        view is FluentEmptyNativeView
     }
 }
 

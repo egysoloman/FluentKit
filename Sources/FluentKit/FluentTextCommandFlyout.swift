@@ -13,6 +13,10 @@ public struct FluentCommandBarItem {
     public let kind: FluentCommandBarItemKind
     public let keyEquivalent: String
     public let keyModifiers: NSEvent.ModifierFlags
+    /// Values greater than zero move to overflow as ascending, equal-valued groups. Zero retains
+    /// WinUI's default right-most-first fallback after all ordered groups have moved.
+    public let dynamicOverflowOrder: Int
+    public let labelPosition: FluentCommandBarLabelPosition
     public let action: () -> Void
 
     public init(
@@ -21,6 +25,8 @@ public struct FluentCommandBarItem {
         isEnabled: Bool = true,
         keyEquivalent: String = "",
         keyModifiers: NSEvent.ModifierFlags = [.command],
+        dynamicOverflowOrder: Int = 0,
+        labelPosition: FluentCommandBarLabelPosition = .default,
         action: @escaping () -> Void
     ) {
         self.title = title
@@ -29,6 +35,8 @@ public struct FluentCommandBarItem {
         kind = .button
         self.keyEquivalent = keyEquivalent
         self.keyModifiers = keyModifiers
+        self.dynamicOverflowOrder = max(0, dynamicOverflowOrder)
+        self.labelPosition = labelPosition
         self.action = action
     }
 
@@ -39,6 +47,8 @@ public struct FluentCommandBarItem {
         kind: FluentCommandBarItemKind,
         keyEquivalent: String,
         keyModifiers: NSEvent.ModifierFlags,
+        dynamicOverflowOrder: Int,
+        labelPosition: FluentCommandBarLabelPosition,
         action: @escaping () -> Void
     ) {
         self.title = title
@@ -47,6 +57,8 @@ public struct FluentCommandBarItem {
         self.kind = kind
         self.keyEquivalent = keyEquivalent
         self.keyModifiers = keyModifiers
+        self.dynamicOverflowOrder = max(0, dynamicOverflowOrder)
+        self.labelPosition = labelPosition
         self.action = action
     }
 
@@ -57,6 +69,8 @@ public struct FluentCommandBarItem {
         isEnabled: Bool = true,
         keyEquivalent: String = "",
         keyModifiers: NSEvent.ModifierFlags = [.command],
+        dynamicOverflowOrder: Int = 0,
+        labelPosition: FluentCommandBarLabelPosition = .default,
         action: @escaping (Bool) -> Void
     ) -> FluentCommandBarItem {
         FluentCommandBarItem(
@@ -66,11 +80,19 @@ public struct FluentCommandBarItem {
             kind: .toggle(isOn: isOn),
             keyEquivalent: keyEquivalent,
             keyModifiers: keyModifiers,
+            dynamicOverflowOrder: dynamicOverflowOrder,
+            labelPosition: labelPosition,
             action: { action(!isOn) }
         )
     }
 
     public static var separator: FluentCommandBarItem {
+        separator()
+    }
+
+    public static func separator(
+        dynamicOverflowOrder: Int = 0
+    ) -> FluentCommandBarItem {
         FluentCommandBarItem(
             title: "",
             systemImageName: nil,
@@ -78,6 +100,8 @@ public struct FluentCommandBarItem {
             kind: .separator,
             keyEquivalent: "",
             keyModifiers: [],
+            dynamicOverflowOrder: dynamicOverflowOrder,
+            labelPosition: .default,
             action: {}
         )
     }
@@ -374,26 +398,37 @@ final class FluentTextCommandFlyout {
         commandView.needsLayout = true
         commandView.layoutSubtreeIfNeeded()
         panel = popup
-        if let animationLayer = animationRoot.layer {
-            animationCoordinator.animateTransition(
-                [
-                    FluentLayerAnimationChange(
-                        layer: animationLayer,
-                        key: "fluent.popup.textCommandBar.open.opacity",
-                        keyPath: "opacity",
-                        fromValue: 0,
-                        toValue: Float(1),
-                        applyModelValue: { animationLayer.opacity = 1 }
-                    )
-                ],
-                motion: FluentMotion.commandBarFlyoutOpen,
-                animated: true
-            )
-        }
-        // Attach the source OpeningOpacityStoryboard before AppKit can display the first panel
-        // frame. Ordering first can expose the fully opaque model layer for one refresh cycle.
+        let shouldAnimate = !reduceMotion
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        animationRoot.layer?.opacity = shouldAnimate ? 0 : 1
+        CATransaction.commit()
         parentWindow.addChildWindow(popup, ordered: .above)
         popup.orderFront(nil)
+        // A CAAnimation attached before a borderless child window is ordered never enters a live
+        // render tree. Commit the transparent first frame, then start WinUI's faster opacity
+        // storyboard on the next run-loop turn.
+        if shouldAnimate, let animationLayer = animationRoot.layer {
+            DispatchQueue.main.async { [weak self, weak popup, weak animationLayer] in
+                guard let self,
+                      self.panel === popup,
+                      let animationLayer else { return }
+                self.animationCoordinator.animateTransition(
+                    [
+                        FluentLayerAnimationChange(
+                            layer: animationLayer,
+                            key: "fluent.popup.textCommandBar.open.opacity",
+                            keyPath: "opacity",
+                            fromValue: 0,
+                            toValue: Float(1),
+                            applyModelValue: { animationLayer.opacity = 1 }
+                        )
+                    ],
+                    motion: FluentMotion.commandBarFlyoutOpen,
+                    animated: true
+                )
+            }
+        }
         installOutsideClickMonitor()
     }
 
@@ -405,11 +440,38 @@ final class FluentTextCommandFlyout {
             if let mask = rootLayer.mask { animatedLayers.append(mask) }
             animationCoordinator.cancelAll(on: animatedLayers)
         }
-        if let panel {
-            panel.parent?.removeChildWindow(panel)
-            panel.orderOut(nil)
+        guard let panel else {
+            if notify { onDismiss?() }
+            return
         }
-        panel = nil
+
+        if animated, !reduceMotion, let rootLayer = animationRoot?.layer {
+            animationCoordinator.animateTransition(
+                [
+                    FluentLayerAnimationChange(
+                        layer: rootLayer,
+                        key: "fluent.popup.textCommandBar.close.opacity",
+                        keyPath: "opacity",
+                        fromValue: rootLayer.presentation()?.opacity ?? rootLayer.opacity,
+                        toValue: Float(0),
+                        applyModelValue: { rootLayer.opacity = 0 }
+                    )
+                ],
+                motion: FluentMotion.commandBarFlyoutOpen,
+                animated: true
+            ) { [weak self, weak panel] in
+                guard let self, let panel, self.panel === panel else { return }
+                self.finishDismissal(panel: panel, notify: notify)
+            }
+            return
+        }
+        finishDismissal(panel: panel, notify: notify)
+    }
+
+    private func finishDismissal(panel: NSPanel, notify: Bool) {
+        panel.parent?.removeChildWindow(panel)
+        panel.orderOut(nil)
+        self.panel = nil
         view = nil
         materialView = nil
         animationRoot = nil

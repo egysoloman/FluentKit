@@ -69,6 +69,16 @@ func firstRadioButton(in view: NSView) -> FluentRadioButton? {
     return view.subviews.lazy.compactMap(firstRadioButton).first
 }
 
+func firstRatingControl(in view: NSView) -> FluentRatingControl? {
+    if let rating = view as? FluentRatingControl { return rating }
+    return view.subviews.lazy.compactMap(firstRatingControl).first
+}
+
+func firstPipsPager(in view: NSView) -> FluentPipsPager? {
+    if let pager = view as? FluentPipsPager { return pager }
+    return view.subviews.lazy.compactMap(firstPipsPager).first
+}
+
 func firstSegmentedControl(in view: NSView) -> NSSegmentedControl? {
     if let segmented = view as? NSSegmentedControl { return segmented }
     return view.subviews.lazy.compactMap(firstSegmentedControl).first
@@ -235,6 +245,10 @@ func firstView(withAccessibilityRole role: NSAccessibility.Role, in view: NSView
 func firstView(identifier: String, in view: NSView) -> NSView? {
     if view.identifier?.rawValue == identifier { return view }
     return view.subviews.lazy.compactMap { firstView(identifier: identifier, in: $0) }.first
+}
+
+func allViews(in view: NSView) -> [NSView] {
+    [view] + view.subviews.flatMap(allViews)
 }
 
 func firstMaterialView(in view: NSView) -> FluentMaterialView? {
@@ -859,7 +873,12 @@ let standardProgressAppearance = FluentAutomaticProgressStyle().appearance(
 let highContrastProgressAppearance = FluentAutomaticProgressStyle().appearance(
     for: FluentProgressStyleConfiguration(valueFraction: 0.5, theme: highContrastSelectionTheme)
 )
-require(highContrastProgressAppearance.trackHeight > standardProgressAppearance.trackHeight, "high contrast increases progress track emphasis")
+require(
+    highContrastProgressAppearance.trackHeight == standardProgressAppearance.trackHeight
+        && highContrastProgressAppearance.indicatorHeight == standardProgressAppearance.indicatorHeight
+        && highContrastProgressAppearance.borderWidth == 1,
+    "high contrast preserves WinUI ProgressBar geometry and adds its one-point boundary"
+)
 let standardCardAppearance = FluentAutomaticCardStyle().appearance(for: standardSelectionTheme)
 let highContrastCardAppearance = FluentAutomaticCardStyle().appearance(for: highContrastSelectionTheme)
 require(highContrastCardAppearance.strokeWidth > standardCardAppearance.strokeWidth, "high contrast increases card boundary emphasis")
@@ -2009,7 +2028,7 @@ drainMainQueue()
 require(firstFluentTextField(in: styledTextHost) === nativeStyledTextField, "styled text field updates preserve native identity")
 require(nativeStyledTextField?.stringValue == "updated", "styled text field binding updates native text")
 
-let styledProgressValue = FluentObservable(0.35)
+let styledProgressValue = FluentObservable(35.0)
 struct StyledProgressProbe: FluentView {
     let value: FluentObservable<Double>
 
@@ -2021,15 +2040,15 @@ let styledProgressHost = FluentViewHost(StyledProgressProbe(value: styledProgres
 let nativeStyledProgress = firstProgressBar(in: styledProgressHost)
 require(nativeStyledProgress?.fluentStyle is ValidationProgressStyle, "progress style mounts on the native progress bar")
 require(nativeStyledProgress?.intrinsicContentSize.height == 8, "progress style controls intrinsic track height")
-styledProgressValue.value = 0.8
+styledProgressValue.value = 80
 drainMainQueue()
 require(firstProgressBar(in: styledProgressHost) === nativeStyledProgress, "styled progress updates preserve native identity")
-require(abs((nativeStyledProgress?.value ?? 0) - 0.8) < 0.0001, "styled progress updates declarative value in place")
+require(abs((nativeStyledProgress?.value ?? 0) - 80) < 0.0001, "styled progress updates declarative value in place")
 let progressAccessibilityValue = (nativeStyledProgress?.accessibilityValue() as? NSNumber)?.doubleValue ?? -1
-require(abs(progressAccessibilityValue - 0.8) < 0.0001, "progress updates expose the current accessibility value")
+require(abs(progressAccessibilityValue - 80) < 0.0001, "progress updates expose the current accessibility value")
 
 let progressHost = FluentViewHost(
-    FluentProgressBar(value: 0.25),
+    FluentProgressBar(value: 25),
     context: FluentRenderContext(reduceMotion: false)
 )
 let progressWindow = NSWindow(
@@ -2055,7 +2074,7 @@ require(
         && abs(progressDeterminate.bounds.width - 60) < 0.001,
     "ProgressBar starts with source-derived 1pt track, 3pt indicator, and determinate width"
 )
-progress.value = 0.75
+progress.value = 75
 let progressValueAnimation = progressDeterminate.animation(forKey: "fluent.progress.value") as? CABasicAnimation
 require(
     abs((progressValueAnimation?.duration ?? 0) - 0.250) < 0.0001
@@ -2090,7 +2109,7 @@ require(
 )
 
 let reducedProgressHost = FluentViewHost(
-    FluentProgressBar(value: 0.5),
+    FluentProgressBar(value: 50),
     context: FluentRenderContext(reduceMotion: true)
 )
 reducedProgressHost.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
@@ -2099,7 +2118,7 @@ guard let reducedProgress = firstProgressBar(in: reducedProgressHost),
       let reducedProgressDeterminate = firstLayer(named: "FluentKit.ProgressBar.Determinate", in: reducedProgressHost) else {
     fatalError("Reduce Motion ProgressBar validation hierarchy did not mount")
 }
-reducedProgress.value = 0.9
+reducedProgress.value = 90
 reducedProgress.isIndeterminate = true
 require(
     reducedProgressDeterminate.animationKeys()?.isEmpty != false
@@ -2108,7 +2127,7 @@ require(
 )
 
 let rtlProgressHost = FluentViewHost(
-    FluentProgressBar(value: 0.25),
+    FluentProgressBar(value: 25),
     context: FluentRenderContext(reduceMotion: true, layoutDirection: .rightToLeft)
 )
 rtlProgressHost.frame = NSRect(x: 0, y: 0, width: 240, height: 32)
@@ -2370,17 +2389,28 @@ drainMainQueue()
 interactiveRadio.mouseDown(
     with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 55)
 )
+interactiveRadio.mouseDragged(
+    with: toggleMouseEvent(.leftMouseDragged, at: outsideChoicePoint, in: interactiveRadio, eventNumber: 56)
+)
+require(radioPressedDot.opacity == 0, "RadioButton drag-out cancels Pressed feedback")
+interactiveRadio.mouseDragged(
+    with: toggleMouseEvent(.leftMouseDragged, at: radioPoint, in: interactiveRadio, eventNumber: 57)
+)
+require(radioPressedDot.opacity == 1, "RadioButton drag-back restores Pressed feedback")
+interactiveRadio.mouseDragged(
+    with: toggleMouseEvent(.leftMouseDragged, at: outsideChoicePoint, in: interactiveRadio, eventNumber: 58)
+)
 interactiveRadio.mouseUp(
-    with: toggleMouseEvent(.leftMouseUp, at: outsideChoicePoint, in: interactiveRadio, eventNumber: 56)
+    with: toggleMouseEvent(.leftMouseUp, at: outsideChoicePoint, in: interactiveRadio, eventNumber: 59)
 )
 require(!interactiveRadioState.wrappedValue, "RadioButton release-outside cancels selection")
 interactiveRadio.mouseDown(
-    with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 57)
+    with: toggleMouseEvent(.leftMouseDown, at: radioPoint, in: interactiveRadio, eventNumber: 60)
 )
 interactiveRadioState.wrappedValue = true
 drainMainQueue()
 interactiveRadio.mouseUp(
-    with: toggleMouseEvent(.leftMouseUp, at: radioPoint, in: interactiveRadio, eventNumber: 58)
+    with: toggleMouseEvent(.leftMouseUp, at: radioPoint, in: interactiveRadio, eventNumber: 61)
 )
 require(
     interactiveRadioState.wrappedValue,
@@ -2390,8 +2420,18 @@ interactiveRadioState.wrappedValue = false
 drainMainQueue()
 interactiveRadioWindow.makeFirstResponder(interactiveRadio)
 require(radioFocus.opacity == 0, "RadioButton hides focus visuals after pointer focus")
-interactiveRadio.keyDown(with: sliderKeyEvent(49, in: interactiveRadio, eventNumber: 59))
-require(interactiveRadioState.wrappedValue && radioFocus.opacity == 1, "RadioButton Space selects through the keyboard path and reveals focus")
+interactiveRadio.keyDown(with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveRadio, eventNumber: 62))
+require(
+    !interactiveRadioState.wrappedValue && radioPressedDot.opacity == 1 && radioFocus.opacity == 1,
+    "RadioButton Space keyDown enters Pressed without committing and reveals keyboard focus"
+)
+interactiveRadio.keyUp(with: toggleButtonKeyEvent(.keyUp, keyCode: 49, in: interactiveRadio, eventNumber: 63))
+require(interactiveRadioState.wrappedValue && radioPressedDot.opacity == 0, "RadioButton Space commits on keyUp")
+interactiveRadioState.wrappedValue = false
+drainMainQueue()
+interactiveRadio.keyDown(with: toggleButtonKeyEvent(.keyDown, keyCode: 36, in: interactiveRadio, eventNumber: 64))
+interactiveRadio.keyUp(with: toggleButtonKeyEvent(.keyUp, keyCode: 36, in: interactiveRadio, eventNumber: 65))
+require(!interactiveRadioState.wrappedValue, "RadioButton ignores Return like WinUI")
 interactiveRadio.isEnabled = false
 require(
     radioDot.bounds.size == CGSize(width: 14, height: 14)
@@ -2472,6 +2512,121 @@ require(
         && reducedRadioDot.animationKeys()?.isEmpty != false,
     "RadioButton Reduce Motion reaches PointerOver geometry without allocating animations"
 )
+
+let ratingState = FluentState(wrappedValue: -1.0)
+let ratingHost = FluentViewHost(
+    FluentRatingControlView(
+        value: ratingState.projectedValue,
+        placeholderValue: 3.5,
+        caption: "312 ratings"
+    ),
+    context: FluentRenderContext(reduceMotion: true)
+)
+let ratingWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 210, height: 32),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+ratingWindow.contentView = ratingHost
+ratingHost.frame = NSRect(x: 0, y: 0, width: 210, height: 32)
+ratingHost.layoutSubtreeIfNeeded()
+guard let rating = firstRatingControl(in: ratingHost),
+      let firstRatingForeground = firstLayer(named: "FluentKit.RatingControl.Foreground.0", in: ratingHost),
+      let fourthRatingForeground = firstLayer(named: "FluentKit.RatingControl.Foreground.3", in: ratingHost),
+      let thirdRatingItem = firstLayer(named: "FluentKit.RatingControl.Item.2", in: ratingHost),
+      let firstRatingBackground = firstLayer(named: "FluentKit.RatingControl.Background.0", in: ratingHost) as? CAShapeLayer else {
+    fatalError("RatingControl validation hierarchy did not mount")
+}
+require(
+    firstRatingForeground.mask?.frame.width == 16
+        && fourthRatingForeground.mask?.frame.width == 8
+        && rating.intrinsicContentSize.height == 32,
+    "RatingControl renders source 16pt items and a fractional placeholder"
+)
+let ratingStarVertices = pathVertices(firstRatingBackground.path)
+require(
+    ratingStarVertices.first?.y ?? 0 > 8,
+    "RatingControl star points toward twelve o'clock in AppKit coordinates"
+)
+let ratingHoverPoint = NSPoint(x: 56, y: rating.bounds.midY)
+rating.mouseMoved(
+    with: toggleMouseEvent(.mouseMoved, at: ratingHoverPoint, in: rating, eventNumber: 61)
+)
+require(
+    abs(thirdRatingItem.transform.m11 - 1.6) < 0.001
+        && abs(thirdRatingItem.transform.m22 - 1.6) < 0.001,
+    "RatingControl applies the source pointer-proximity scale"
+)
+rating.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: ratingHoverPoint, in: rating, eventNumber: 62)
+)
+rating.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: ratingHoverPoint, in: rating, eventNumber: 63)
+)
+drainMainQueue()
+require(ratingState.wrappedValue == 3, "RatingControl pointer release commits the previewed item")
+rating.mouseDown(
+    with: toggleMouseEvent(.leftMouseDown, at: ratingHoverPoint, in: rating, eventNumber: 64)
+)
+rating.mouseUp(
+    with: toggleMouseEvent(.leftMouseUp, at: ratingHoverPoint, in: rating, eventNumber: 65)
+)
+drainMainQueue()
+require(
+    ratingState.wrappedValue == FluentRatingControl.unsetValue,
+    "RatingControl clicking the current item clears the rating"
+)
+ratingWindow.orderOut(nil)
+
+let pipsState = FluentState(wrappedValue: 2)
+let pipsHost = FluentViewHost(
+    FluentPipsPagerView(
+        selectedPageIndex: pipsState.projectedValue,
+        numberOfPages: 20,
+        maxVisiblePips: 5,
+        previousButtonVisibility: .visible,
+        nextButtonVisibility: .visible,
+        wrapMode: .wrap
+    ),
+    context: FluentRenderContext(reduceMotion: true)
+)
+let pipsWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 108, height: 24),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+pipsWindow.contentView = pipsHost
+pipsHost.frame = NSRect(x: 0, y: 0, width: 108, height: 24)
+pipsHost.layoutSubtreeIfNeeded()
+guard let pipsPager = firstPipsPager(in: pipsHost),
+      let pipsViewport = pipsPager.subviews.compactMap({ $0 as? NSClipView }).first,
+      let pipViews = pipsViewport.documentView?.subviews,
+      let selectedPip = pipViews.first(where: { $0.accessibilityLabel() == "Page 3" }),
+      let normalPip = pipViews.first(where: { $0.accessibilityLabel() == "Page 4" }),
+      let selectedGlyph = selectedPip.layer?.sublayers?[1] as? CAShapeLayer,
+      let normalGlyph = normalPip.layer?.sublayers?[1] as? CAShapeLayer else {
+    fatalError("PipsPager validation hierarchy did not mount")
+}
+require(
+    pipsViewport.frame.width == 60
+        && selectedGlyph.path?.boundingBox.width == 6
+        && normalGlyph.path?.boundingBox.width == 4,
+    "PipsPager renders the source viewport and 6pt/4pt glyph geometry"
+)
+require(
+    pipViews.count <= 9,
+    "PipsPager virtualizes finite page collections around the visible range"
+)
+_ = pipsPager.selectNextPage()
+drainMainQueue()
+require(pipsState.wrappedValue == 3, "PipsPager navigation updates the declarative selection")
+pipsPager.selectedPageIndex = 19
+_ = pipsPager.selectNextPage()
+drainMainQueue()
+require(pipsState.wrappedValue == 0, "PipsPager Wrap mode returns the final page to the first")
+pipsWindow.orderOut(nil)
 
 let styledSegmentState = FluentState(wrappedValue: 0)
 let styledSegmentHost = FluentViewHost(
@@ -3339,6 +3494,11 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
         waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
         "SearchBox replaces the AppKit context menu with an application-owned text command flyout"
     )
+    _ = waitUntil(timeout: 0.05) {
+        searchEditingWindow.childWindows?.first?.contentView?.layer?.animation(
+            forKey: "fluent.popup.textCommandBar.open.opacity"
+        ) != nil
+    }
     if let commandPanel = searchEditingWindow.childWindows?.first,
        let commandPresenter = commandPanel.contentView.flatMap({
            firstView(withAccessibilityRole: .menu, in: $0)
@@ -3656,8 +3816,10 @@ nativeComboBox.mouseUp(
         eventNumber: 70
     )
 )
-drainMainQueue()
-require(comboFlyoutWindow.childWindows?.count == 1, "combo box opens an application-owned flyout panel")
+require(
+    waitUntil(timeout: 0.20) { comboFlyoutWindow.childWindows?.count == 1 },
+    "combo box opens an application-owned flyout panel"
+)
 if let comboPanelContent = comboFlyoutWindow.childWindows?.first?.contentView {
     comboPanelContent.layoutSubtreeIfNeeded()
     require(firstView(withAccessibilityRole: .menu, in: comboPanelContent) != nil, "combo box popup exposes its dedicated menu semantics")
@@ -4806,8 +4968,9 @@ require(
     "GridViewItem selected state uses a 2pt accent edge and 1pt solid inner edge"
 )
 require(
-    disabledListAppearance.contentOpacity == 0.3,
-    "collection item disabled content uses the source 0.3 opacity"
+    disabledListAppearance.containerOpacity == 0.3
+        && disabledListAppearance.contentOpacity == 1,
+    "collection item disabled state applies source 0.3 opacity to the complete container"
 )
 
 var sectionedSnapshot = FluentCollectionSnapshot<String, Int>()
@@ -4933,8 +5096,9 @@ require(
 if let disabledGridItem = nativeSectionedCollection?.item(at: IndexPath(item: 0, section: 1)) {
     require(
         disabledGridItem.view.isAccessibilityEnabled() == false
-            && abs((disabledGridItem.view.subviews.first?.alphaValue ?? 1) - 0.3) < 0.001,
-        "disabled collection items retain native accessibility state and source content opacity"
+            && abs(disabledGridItem.view.alphaValue - 0.3) < 0.001
+            && abs((disabledGridItem.view.subviews.first?.alphaValue ?? 0) - 1) < 0.001,
+        "disabled collection items retain native accessibility state and fade the complete container"
     )
 }
 
@@ -5015,7 +5179,8 @@ require(
 if let disabledListItem = nativeVisualList.item(at: IndexPath(item: 2, section: 0)) {
     require(
         disabledListItem.view.isAccessibilityEnabled() == false
-            && abs((disabledListItem.view.subviews.first?.alphaValue ?? 1) - 0.3) < 0.001,
+            && abs(disabledListItem.view.alphaValue - 0.3) < 0.001
+            && abs((disabledListItem.view.subviews.first?.alphaValue ?? 0) - 1) < 0.001,
         "ListViewItem exposes disabled state without accepting pointer selection"
     )
 }
@@ -6291,6 +6456,7 @@ let teachingTipAnchor = FluentButtonView("Teaching tip anchor")
     .teachingTip(
         isPresented: teachingTipPresented.projectedValue,
         placement: .top,
+        shouldConstrainToRootBounds: false,
         size: NSSize(width: 280, height: 120),
         onDismiss: { teachingTipDismissals += 1 }
     ) {
@@ -6332,6 +6498,7 @@ let updatedTeachingTip = FluentButtonView("Teaching tip anchor")
     .teachingTip(
         isPresented: teachingTipPresented.projectedValue,
         placement: .bottom,
+        shouldConstrainToRootBounds: false,
         size: NSSize(width: 300, height: 128),
         onDismiss: { teachingTipDismissals += 1 }
     ) {
@@ -6358,6 +6525,7 @@ let animatedTeachingTipHost = FluentButtonView("Animated teaching tip anchor")
     .teachingTip(
         isPresented: animatedTeachingTipPresented.projectedValue,
         placement: .top,
+        shouldConstrainToRootBounds: false,
         size: NSSize(width: 280, height: 120),
         onDismiss: { animatedTeachingTipDismissals += 1 }
     ) {
@@ -6452,6 +6620,88 @@ require(
 )
 require(animatedTeachingTipDismissals == 1, "TeachingTip invokes onDismiss once for the completed close generation")
 animatedTeachingTipWindow.orderOut(nil)
+
+let toolTipHost = FluentButtonView("ToolTip anchor")
+    .toolTip("WinUI source-aligned help", placement: .top)
+    ._mount(in: FluentRenderContext(reduceMotion: true))
+let toolTipWindow = NSWindow(
+    contentRect: NSRect(x: 160, y: 160, width: 360, height: 180),
+    styleMask: [.titled],
+    backing: .buffered,
+    defer: false
+)
+toolTipWindow.contentView = toolTipHost
+toolTipWindow.orderFront(nil)
+toolTipHost.layoutSubtreeIfNeeded()
+guard let toolTipAnchor = firstView(identifier: "FluentKit.ToolTip.Anchor", in: toolTipHost) else {
+    require(false, "ToolTip mounts a stable anchor host")
+    fatalError("unreachable")
+}
+let toolTipButton = firstButton(in: toolTipAnchor)
+require(
+    toolTipButton?.accessibilityHelp() == "WinUI source-aligned help",
+    "ToolTip exposes hidden help text from its visible anchor"
+)
+toolTipAnchor.mouseEntered(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: toolTipAnchor.bounds.midX, y: toolTipAnchor.bounds.midY),
+        in: toolTipAnchor,
+        eventNumber: 118
+    )
+)
+require(
+    waitUntil(timeout: 1.05) {
+        toolTipWindow.childWindows?.first?.identifier?.rawValue == "FluentKit.ToolTip.Panel"
+    },
+    "ToolTip opens after the WinUI pointer delay"
+)
+guard let toolTipPanel = toolTipWindow.childWindows?.first,
+      let toolTipSurface = toolTipPanel.contentView,
+      let toolTipMaterial = firstMaterialView(in: toolTipSurface) else {
+    require(false, "ToolTip presents its Fluent surface in a child panel")
+    fatalError("unreachable")
+}
+require(
+    toolTipPanel.ignoresMouseEvents
+        && !toolTipPanel.canBecomeKey
+        && toolTipSurface.identifier?.rawValue == "FluentKit.ToolTip.Surface"
+        && toolTipSurface.accessibilityRole() == .helpTag,
+    "ToolTip remains non-interactive while exposing help semantics"
+)
+require(
+    abs(toolTipSurface.frame.width - min(toolTipSurface.frame.width, 320)) < 0.001
+        && toolTipMaterial.layer?.cornerRadius == 4
+        && toolTipMaterial.layer?.borderWidth == 1,
+    "ToolTip uses the WinUI 320pt maximum width, fixed 4pt corner, and 1px border"
+)
+let panelWhileInsideSafeZone = toolTipPanel
+toolTipAnchor.mouseExited(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: toolTipAnchor.bounds.midX, y: toolTipAnchor.bounds.midY),
+        in: toolTipAnchor,
+        eventNumber: 119
+    )
+)
+drainMainQueue()
+require(
+    toolTipWindow.childWindows?.first === panelWhileInsideSafeZone,
+    "ToolTip remains open while the pointer is in the owner-to-popup safe zone"
+)
+toolTipAnchor.mouseExited(
+    with: toggleMouseEvent(
+        .mouseMoved,
+        at: NSPoint(x: toolTipAnchor.bounds.maxX + 1_000, y: toolTipAnchor.bounds.maxY + 1_000),
+        in: toolTipAnchor,
+        eventNumber: 120
+    )
+)
+require(
+    waitUntil(timeout: 0.20) { toolTipWindow.childWindows?.isEmpty != false },
+    "ToolTip closes when the pointer leaves its owner-popup convex hull"
+)
+toolTipWindow.orderOut(nil)
 
 let popoverPresented = FluentState(wrappedValue: false)
 var popoverDismissals = 0
@@ -6945,11 +7195,13 @@ let contentDialogInitialPivot = CGPoint(
     x: contentDialogSurface.layer?.bounds.midX ?? 0,
     y: contentDialogSurface.layer?.bounds.midY ?? 0
 )
+let contentDialogInitialAnchorBounds = contentDialogSurface.layer?.bounds ?? .zero
+let contentDialogInitialAnchorPoint = contentDialogSurface.layer?.anchorPoint ?? .zero
 let contentDialogInitialAnchor = CGPoint(
-    x: (contentDialogSurface.layer?.bounds.minX ?? 0)
-        + (contentDialogSurface.layer?.bounds.width ?? 0) * (contentDialogSurface.layer?.anchorPoint.x ?? 0),
-    y: (contentDialogSurface.layer?.bounds.minY ?? 0)
-        + (contentDialogSurface.layer?.bounds.height ?? 0) * (contentDialogSurface.layer?.anchorPoint.y ?? 0)
+    x: contentDialogInitialAnchorBounds.minX
+        + contentDialogInitialAnchorBounds.width * contentDialogInitialAnchorPoint.x,
+    y: contentDialogInitialAnchorBounds.minY
+        + contentDialogInitialAnchorBounds.height * contentDialogInitialAnchorPoint.y
 )
 let contentDialogInitialTranslation = CGPoint(
     x: (contentDialogInitialPivot.x - contentDialogInitialAnchor.x) * (1 - 1.05),
@@ -7300,13 +7552,76 @@ require(
 )
 serializedPresentationWindow.orderOut(nil)
 
-let expanded = FluentState(wrappedValue: true)
-let disclosure = FluentDisclosureGroup("Advanced", isExpanded: expanded.projectedValue) {
+let expanded = FluentState(wrappedValue: false)
+var expanderEvents: [String] = []
+let disclosure = FluentExpander(
+    "Advanced",
+    isExpanded: expanded.projectedValue,
+    onExpanding: { expanderEvents.append("expanding") },
+    onCollapsed: { expanderEvents.append("collapsed") }
+) {
     FluentText("Advanced content")
 }
 let disclosureView = disclosure._mount(in: FluentRenderContext())
-require(disclosureView.subviews.count == 1, "disclosure group mounts a native host")
-require(expanded.wrappedValue, "disclosure binding starts expanded")
+disclosureView.frame = NSRect(x: 0, y: 0, width: 320, height: disclosureView.fittingSize.height)
+disclosureView.layoutSubtreeIfNeeded()
+let disclosureHeader = firstView(identifier: "FluentKit.Expander.Header", in: disclosureView)
+let disclosureClip = firstView(identifier: "FluentKit.Expander.ContentClip", in: disclosureView)
+require(
+    disclosureHeader?.frame.height == 48
+        && disclosureView.fittingSize.height == 48
+        && disclosureClip?.isHidden == true,
+    "Expander uses the WinUI 48pt collapsed header and removes content from layout"
+)
+require(
+    disclosureView.accessibilityRole() == .disclosureTriangle
+        && disclosureView.accessibilityValue() as? String == "Collapsed",
+    "Expander exposes one ExpandCollapse-style accessible root"
+)
+require(
+    disclosureView.accessibilityPerformPress()
+        && expanded.wrappedValue
+        && expanderEvents == ["expanding"],
+    "Expander raises Expanding before opening and writes through its binding"
+)
+disclosureView.frame.size.height = disclosureView.fittingSize.height
+disclosureView.layoutSubtreeIfNeeded()
+require(
+    disclosureView.fittingSize.height > 48
+        && disclosureClip?.isHidden == false
+        && disclosureHeader?.frame.minY == 0,
+    "down Expander joins its content surface immediately below the header"
+)
+require(
+    disclosureView.accessibilityPerformPress()
+        && !expanded.wrappedValue
+        && expanderEvents == ["expanding", "collapsed"],
+    "Expander raises Collapsed after starting its close state"
+)
+
+let upExpanded = FluentState(wrappedValue: true)
+let upExpanderView = FluentExpander(
+    "Upward",
+    isExpanded: upExpanded.projectedValue,
+    expandDirection: .up
+) {
+    FluentText("Upward content")
+}
+._mount(in: FluentRenderContext(layoutDirection: .rightToLeft))
+upExpanderView.frame = NSRect(x: 0, y: 0, width: 320, height: upExpanderView.fittingSize.height)
+upExpanderView.layoutSubtreeIfNeeded()
+let upHeader = firstView(identifier: "FluentKit.Expander.Header", in: upExpanderView)
+let upClip = firstView(identifier: "FluentKit.Expander.ContentClip", in: upExpanderView)
+require(
+    upHeader?.frame.minY == upClip?.frame.maxY
+        && upExpanderView.userInterfaceLayoutDirection == .rightToLeft,
+    "up Expander places content above the header and mirrors its logical layout in RTL"
+)
+require(
+    FluentMotion.expanderExpand.duration == 0.333
+        && FluentMotion.expanderCollapse.duration == 0.167,
+    "Expander uses the WinUI source expand and collapse durations"
+)
 
 let settingsToggleState = FluentState(wrappedValue: true)
 var settingsNavigationInvocations = 0
@@ -8109,8 +8424,13 @@ require(
     "CalendarDatePicker opens a native calendar popover from a primary click anywhere on its surface"
 )
 require(
-    datePickerWindow.childWindows?.first?.contentView?.subviews.contains { $0 is NSDatePicker } == true,
-    "CalendarDatePicker popover keeps native clock-and-calendar selection behavior"
+    datePickerWindow.childWindows?.first?.contentView?.subviews.contains {
+        $0.identifier?.rawValue == "FluentKit.CalendarDatePicker.Calendar"
+    } == true
+        && datePickerWindow.childWindows?.first?.contentView?.subviews.contains {
+            $0 is NSDatePicker
+        } == false,
+    "CalendarDatePicker popover renders a Fluent month editor instead of the system calendar control"
 )
 datePickerWindow.childWindows?.first?.performClose(nil)
 drainMainQueue()
@@ -8123,11 +8443,67 @@ if let nativeDatePicker = dateView as? NSDatePicker {
 }
 datePickerWindow.orderOut(nil)
 
+let pickedTime = FluentState<FluentTime?>(wrappedValue: nil)
+let timeView = FluentTimePickerView(
+    selection: pickedTime.projectedValue,
+    minuteIncrement: 15,
+    clockIdentifier: .twelveHour,
+    header: "Departure time"
+)._mount(in: FluentRenderContext(theme: dateTheme, reduceMotion: true))
+guard let nativeTimePicker = timeView as? FluentTimePicker else {
+    fatalError("TimePicker did not mount its native Fluent control")
+}
+nativeTimePicker.frame = NSRect(origin: .zero, size: nativeTimePicker.intrinsicContentSize)
+nativeTimePicker.layoutSubtreeIfNeeded()
+require(nativeTimePicker.intrinsicContentSize.width == 242, "TimePicker preserves WinUI's 242pt minimum width")
+require(nativeTimePicker.selectedTime == nil, "TimePicker preserves the nullable SelectedTime state")
+require(
+    firstLayer(named: "FluentKit.TimePicker.FirstDivider", in: nativeTimePicker)?.frame.width == 0.5,
+    "TimePicker resolves its one-pixel column divider on a Retina backing scale"
+)
+nativeTimePicker.selectedTime = FluentTime(hour: 10, minute: 59)
+require(
+    nativeTimePicker.selectedTime == FluentTime(hour: 10, minute: 45)
+        && pickedTime.wrappedValue == FluentTime(hour: 10, minute: 45),
+    "TimePicker coerces and binds SelectedTime to MinuteIncrement"
+)
+nativeTimePicker.minuteIncrement = 0
+require(nativeTimePicker.selectedTime == FluentTime(hour: 10, minute: 0), "TimePicker treats zero as WinUI's single 00 minute entry")
+nativeTimePicker.clockIdentifier = .twentyFourHour
+require(
+    firstLayer(named: "FluentKit.TimePicker.SecondDivider", in: nativeTimePicker)?.isHidden == true,
+    "TimePicker removes the period column in 24-hour mode"
+)
+
 let pickedColor = FluentState(wrappedValue: NSColor.systemBlue)
 let colorPicker = FluentColorPicker(selection: pickedColor.projectedValue, label: "Accent color")
 let colorView = colorPicker._mount(in: FluentRenderContext())
-require(colorView is NSColorWell, "color picker mounts native AppKit control")
-require((colorView as? NSColorWell)?.color == pickedColor.wrappedValue, "color picker reads selection binding")
+colorView.frame = NSRect(origin: .zero, size: colorView.intrinsicContentSize)
+colorView.layoutSubtreeIfNeeded()
+let colorEditorDescendants = allViews(in: colorView)
+require(
+    colorView.identifier?.rawValue == "FluentKit.ColorPicker.Editor"
+        && firstView(identifier: "FluentKit.ColorPicker.Spectrum", in: colorView) != nil,
+    "ColorPicker mounts the WinUI saturation/value spectrum instead of an AppKit color well"
+)
+require(
+    colorEditorDescendants.filter { $0 is FluentSlider }.count == 3,
+    "ColorPicker mounts independent Hue, Saturation, and Brightness sliders"
+)
+require(
+    colorView.intrinsicContentSize == NSSize(width: 320, height: 350),
+    "ColorPicker exposes the full inline editor size instead of collapsing to a color swatch"
+)
+let flyoutColorView = FluentColorPicker(
+    selection: pickedColor.projectedValue,
+    label: "Accent color",
+    presentation: .flyout
+)._mount(in: FluentRenderContext())
+require(
+    flyoutColorView.identifier?.rawValue == "FluentKit.ColorPicker.FlyoutButton"
+        && flyoutColorView.intrinsicContentSize == NSSize(width: 180, height: 32),
+    "ColorPicker exposes an explicit compact flyout presentation"
+)
 
 let groupedAccessibility = FluentVStack(spacing: 4) {
     FluentText("Group label")
@@ -12040,6 +12416,244 @@ require(
 )
 compactSearchButton?.performClick(nil)
 require(navigationPaneOpen.wrappedValue, "compact NavigationSearch requests the pane to expand")
+
+let breadcrumbItems = [
+    FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
+    FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
+    FluentBreadcrumbBarItem("Design", id: "design"),
+    FluentBreadcrumbBarItem("Northwind", id: "northwind"),
+    FluentBreadcrumbBarItem("Images", id: "images"),
+    FluentBreadcrumbBarItem("Folder 1", id: "folder-1")
+]
+var breadcrumbClickedIndex: Int?
+let breadcrumbBar = FluentBreadcrumbBar(items: breadcrumbItems)
+breadcrumbBar.onItemClicked = { _, index in breadcrumbClickedIndex = index }
+breadcrumbBar.frame = NSRect(x: 0, y: 0, width: 210, height: 32)
+breadcrumbBar.layoutSubtreeIfNeeded()
+let breadcrumbChildren = breadcrumbBar.accessibilityChildren() ?? []
+require(
+    (breadcrumbChildren.first as? NSView)?.accessibilityLabel() == "More links",
+    "BreadcrumbBar moves a hidden prefix behind the source ellipsis item"
+)
+require(
+    (breadcrumbChildren.last as? NSView)?.accessibilityLabel() == "Folder 1",
+    "BreadcrumbBar always preserves the current final item when width is constrained"
+)
+require(
+    (breadcrumbChildren.last as? NSView)?.accessibilityPerformPress() == true
+        && breadcrumbClickedIndex == breadcrumbItems.count - 1,
+    "BreadcrumbBar ItemClicked reports the original zero-based ItemsSource index"
+)
+breadcrumbBar.frame.size.width = breadcrumbBar.intrinsicContentSize.width
+breadcrumbBar.layoutSubtreeIfNeeded()
+require(
+    breadcrumbBar.accessibilityChildren()?.count == breadcrumbItems.count,
+    "BreadcrumbBar restores the complete path when the available width expands"
+)
+
+var hyperlinkInvocations = 0
+let hyperlink = FluentHyperlinkButton("Learn more") { hyperlinkInvocations += 1 }
+hyperlink.reduceMotion = true
+require(hyperlink.accessibilityRole() == .link, "HyperlinkButton exposes the link automation role")
+require(
+    hyperlink.accessibilityPerformPress() && hyperlinkInvocations == 1,
+    "HyperlinkButton automation invokes its application action"
+)
+
+var splitInvocations = 0
+let splitButton = FluentSplitButton(
+    "Save",
+    items: [FluentMenuItem("Save as…") {}]
+) { splitInvocations += 1 }
+splitButton.reduceMotion = true
+splitButton.invokePrimaryAction()
+require(splitInvocations == 1, "SplitButton primary invocation stays independent from its MenuFlyout")
+require(
+    FluentSplitButton.primaryMinimumWidth == 35
+        && FluentSplitButton.secondaryWidth == 35
+        && FluentSplitButton.separatorWidth == 1,
+    "SplitButton preserves WinUI's 35pt primary minimum, 35pt secondary region, and 1pt divider"
+)
+
+let toggleSplitState = FluentState(wrappedValue: false)
+let toggleSplit = FluentToggleSplitButton(
+    "Favorite",
+    isChecked: toggleSplitState.wrappedValue,
+    items: [FluentMenuItem("Manage favorites") {}]
+)
+toggleSplit.onIsCheckedChanged = { toggleSplitState.wrappedValue = $0 }
+toggleSplit.invokePrimaryAction()
+require(
+    toggleSplitState.wrappedValue && toggleSplit.isChecked,
+    "ToggleSplitButton primary invocation updates its Boolean state callback"
+)
+
+var appBarInvocations = 0
+let appBarButton = FluentAppBarButton("Save", systemImageName: "square.and.arrow.down") {
+    appBarInvocations += 1
+}
+appBarButton.reduceMotion = true
+appBarButton.frame = NSRect(origin: .zero, size: appBarButton.intrinsicContentSize)
+appBarButton.layoutSubtreeIfNeeded()
+require(
+    appBarButton.presentation == .fullSize
+        && appBarButton.intrinsicContentSize == NSSize(width: 68, height: 64),
+    "AppBarButton preserves WinUI's 68-by-64 full-size primary template"
+)
+appBarButton.isCompact = true
+require(
+    appBarButton.presentation == .compact
+        && appBarButton.intrinsicContentSize == NSSize(width: 68, height: 48),
+    "AppBarButton exposes the source 48-point compact branch"
+)
+appBarButton.useOverflowStyle = true
+require(
+    appBarButton.presentation == .overflow
+        && appBarButton.intrinsicContentSize.height == 40
+        && appBarButton.intrinsicContentSize.width >= 160,
+    "AppBarButton overflow is a dedicated 40-point row template"
+)
+require(
+    appBarButton.accessibilityPerformPress() && appBarInvocations == 1,
+    "AppBarButton automation invokes its application action"
+)
+
+let appBarToggle = FluentAppBarToggleButton("Pin", systemImageName: "pin")
+appBarToggle.useOverflowStyle = true
+appBarToggle.invokeAction()
+require(
+    appBarToggle.isChecked
+        && appBarToggle.accessibilityRole() == .checkBox
+        && appBarToggle.accessibilityValue() as? String == "On",
+    "AppBarToggleButton exposes checked automation semantics in the overflow branch"
+)
+
+let appBarSeparator = FluentAppBarSeparator()
+appBarSeparator.frame = NSRect(origin: .zero, size: appBarSeparator.intrinsicContentSize)
+appBarSeparator.layoutSubtreeIfNeeded()
+let primaryAppBarDivider = firstLayer(named: "FluentKit.AppBarSeparator.Divider", in: appBarSeparator)
+require(
+    appBarSeparator.intrinsicContentSize == NSSize(width: 5, height: 64)
+        && primaryAppBarDivider?.frame.height == 48,
+    "AppBarSeparator uses the vertical primary branch and source eight-point margins"
+)
+appBarSeparator.useOverflowStyle = true
+appBarSeparator.frame.size = appBarSeparator.intrinsicContentSize
+appBarSeparator.layoutSubtreeIfNeeded()
+require(
+    appBarSeparator.intrinsicContentSize == NSSize(width: 160, height: 9)
+        && primaryAppBarDivider?.frame.minY == 4,
+    "AppBarSeparator switches to the horizontal overflow branch"
+)
+
+var commandBarOverflowActions: [FluentCommandBarDynamicOverflowAction] = []
+let commandBar = FluentCommandBar(
+    primaryCommands: [
+        FluentCommandBarItem("Keep", systemImageName: "lock", labelPosition: .collapsed) {},
+        FluentCommandBarItem("Group A", systemImageName: "1.circle", dynamicOverflowOrder: 1, labelPosition: .collapsed) {},
+        FluentCommandBarItem("Group B", systemImageName: "1.circle.fill", dynamicOverflowOrder: 1, labelPosition: .collapsed) {},
+        FluentCommandBarItem("Fallback", systemImageName: "2.circle", labelPosition: .collapsed) {}
+    ],
+    secondaryCommands: [FluentCommandBarItem("Settings", systemImageName: "gear") {}]
+)
+commandBar.reduceMotion = true
+commandBar.onDynamicOverflowItemsChanging = { commandBarOverflowActions.append($0) }
+let commandBarPrimaryIdentity = commandBar.primaryCommandViews
+commandBar.frame = NSRect(x: 0, y: 0, width: 220, height: 48)
+commandBar.layoutSubtreeIfNeeded()
+require(
+    commandBar.overflowedPrimaryIndexes.contains(1)
+        && commandBar.overflowedPrimaryIndexes.contains(2)
+        && !commandBar.overflowedPrimaryIndexes.contains(0),
+    "CommandBar moves equal positive DynamicOverflowOrder values as a group before retained commands"
+)
+require(
+    commandBarOverflowActions.last == .addingToOverflow,
+    "CommandBar reports adding primary commands to dynamic overflow"
+)
+commandBar.frame.size.width = 500
+commandBar.layoutSubtreeIfNeeded()
+require(
+    commandBar.overflowedPrimaryIndexes.isEmpty
+        && commandBarOverflowActions.last == .removingFromOverflow,
+    "CommandBar restores dynamic overflow groups after width expands"
+)
+require(
+    commandBar.primaryCommandViews.indices.allSatisfy {
+        commandBar.primaryCommandViews[$0] === commandBarPrimaryIdentity[$0]
+    },
+    "CommandBar preserves primary command identity through overflow restoration"
+)
+commandBar.overflowButtonVisibility = .collapsed
+let commandBarValidationWindow = NSWindow(
+    contentRect: NSRect(x: 0, y: 0, width: 500, height: 100),
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+commandBarValidationWindow.contentView = commandBar
+commandBar.setOpen(true, animated: false)
+require(
+    commandBar.isOpen && commandBar.intrinsicContentSize.height == 64,
+    "CommandBar programmatic open remains available when the More invocation target is collapsed"
+)
+commandBar.setOpen(false, animated: false)
+require(
+    !commandBar.isOpen && commandBar.intrinsicContentSize.height == 48,
+    "CommandBar closes back to the source compact height"
+)
+commandBarValidationWindow.orderOut(nil)
+
+let menuBar = FluentMenuBar(items: [
+    FluentMenuBarItem(id: "file", "File", accessKey: "F") {
+        FluentMenuItem("New") {}
+        FluentMenuItem("Open") {}
+    },
+    FluentMenuBarItem(id: "disabled", "Disabled", isEnabled: false) {
+        FluentMenuItem("Never") {}
+    },
+    FluentMenuBarItem(id: "empty", "Empty", items: [])
+])
+menuBar.reduceMotion = true
+menuBar.frame = NSRect(x: 0, y: 0, width: 360, height: 40)
+let menuBarRoot = NSView(frame: NSRect(x: 0, y: 0, width: 360, height: 100))
+menuBarRoot.addSubview(menuBar)
+let menuBarWindow = NSWindow(
+    contentRect: menuBarRoot.bounds,
+    styleMask: [.borderless],
+    backing: .buffered,
+    defer: false
+)
+menuBarWindow.contentView = menuBarRoot
+menuBarWindow.makeKeyAndOrderFront(nil)
+menuBar.layoutSubtreeIfNeeded()
+require(
+    menuBar.intrinsicContentSize.height == 40
+        && menuBar.itemControlViews.allSatisfy { $0.frame.height == 32 }
+        && menuBar.accessibilityRole() == .menuBar,
+    "MenuBar uses the WinUI 40-point source geometry and menu-bar automation role"
+)
+require(
+    menuBar.itemControlViews[2].accessibilityPerformPress() && !menuBar.isFlyoutOpen,
+    "MenuBarItem with an empty Items collection does not create a popup"
+)
+require(
+    menuBar.performAccessKey("f") && menuBar.openItemIndex == 0,
+    "MenuBar resolves case-insensitive top-level access keys and opens the matching flyout"
+)
+menuBar.closeMenu()
+let menuBarItemIdentity = menuBar.itemControlViews[0]
+menuBar.items = [
+    FluentMenuBarItem(id: "file", "File menu") { FluentMenuItem("New document") {} },
+    FluentMenuBarItem(id: "disabled", "Disabled", isEnabled: false, items: []),
+    FluentMenuBarItem(id: "empty", "Empty", items: [])
+]
+require(
+    menuBar.itemControlViews[0] === menuBarItemIdentity
+        && menuBar.itemControlViews[0].accessibilityTitle() == "File menu",
+    "MenuBar preserves top-level native identity when stable item IDs update declaratively"
+)
+menuBarWindow.orderOut(nil)
 
 let packageRoot = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent()

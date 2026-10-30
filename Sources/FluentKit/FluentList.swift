@@ -121,7 +121,7 @@ public struct FluentList<Row: FluentView>: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let list = FluentListView<Row>(theme: context.theme, spacing: spacing, rowHeight: rowHeight)
+        let list = FluentListNativeView<Row>(theme: context.theme, spacing: spacing, rowHeight: rowHeight)
         list.setRows(
             rows,
             rowIDs: rowIDs,
@@ -135,7 +135,7 @@ public struct FluentList<Row: FluentView>: FluentUpdatablePrimitiveView {
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
-        guard let list = view as? FluentListView<Row> else { return false }
+        guard let list = view as? FluentListNativeView<Row> else { return false }
         list.update(
             rows: rows,
             rowIDs: rowIDs,
@@ -227,7 +227,7 @@ protocol FluentListRenderingSuspending: AnyObject {
     func setListRenderingSuspended(_ suspended: Bool)
 }
 
-private final class FluentListView<Row: FluentView>: NSScrollView, NSCollectionViewDataSource,
+private final class FluentListNativeView<Row: FluentView>: NSScrollView, NSCollectionViewDataSource,
     NSCollectionViewDelegateFlowLayout, FluentListRenderingSuspending {
     private let collectionView: FluentCollectionView
     private var theme: FluentTheme

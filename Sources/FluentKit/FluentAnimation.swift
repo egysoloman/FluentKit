@@ -91,6 +91,16 @@ public enum FluentMotion {
     public static let commandBarFlyoutOpen = FluentMotionToken(duration: 0.083, curve: .linear)
     public static let controlFast = FluentMotionToken(duration: 0.167, curve: .controlFastOutSlowIn)
     public static let controlNormal = FluentMotionToken(duration: 0.250, curve: .controlFastOutSlowIn)
+    /// WinUI Expander's `ExpandUp` / `ExpandDown` spline storyboard.
+    public static let expanderExpand = FluentMotionToken(
+        duration: 0.333,
+        curve: FluentCubicBezier(0, 0, 0, 1)
+    )
+    /// WinUI Expander's `CollapseUp` / `CollapseDown` spline storyboard.
+    public static let expanderCollapse = FluentMotionToken(
+        duration: 0.167,
+        curve: FluentCubicBezier(1, 1, 0, 1)
+    )
     public static let collectionSelectionOpacity = FluentMotionToken(duration: 0.083, curve: .linear)
     public static let collectionSelectionReveal = FluentMotionToken(
         duration: 0.167,

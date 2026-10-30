@@ -108,12 +108,86 @@ public final class FluentButton: NSButton {
         refreshAppearance(animated: false)
     }
 
+    public override var image: NSImage? {
+        didSet { invalidateIntrinsicContentSize(); needsDisplay = true }
+    }
+
+    public override var imagePosition: NSControl.ImagePosition {
+        didSet { invalidateIntrinsicContentSize(); needsDisplay = true }
+    }
+
+    private var measuredImageSize: NSSize {
+        guard let image, imagePosition != .noImage else { return .zero }
+        return image.size
+    }
+
+    private var resolvedImagePosition: NSControl.ImagePosition {
+        switch imagePosition {
+        case .imageLeading: return userInterfaceLayoutDirection == .rightToLeft ? .imageRight : .imageLeft
+        case .imageTrailing: return userInterfaceLayoutDirection == .rightToLeft ? .imageLeft : .imageRight
+        default: return imagePosition
+        }
+    }
+
+    private var contentInsets: NSEdgeInsets {
+        if imagePosition == .imageOnly {
+            let scale = fluentControlSize.metricScale
+            return NSEdgeInsets(top: 4 * scale, left: 8 * scale, bottom: 4 * scale, right: 8 * scale)
+        }
+        return resolvedAppearance().contentInsets
+    }
+
     public override var intrinsicContentSize: NSSize {
-        let textSize = (title as NSString).size(withAttributes: [.font: font as Any])
-        let appearance = resolvedAppearance()
-        let insets = appearance.contentInsets
-        let height = max(theme.controlHeight(for: fluentControlSize), textSize.height + insets.top + insets.bottom)
-        return NSSize(width: ceil(textSize.width + insets.left + insets.right), height: ceil(height))
+        let text = (title as NSString).size(withAttributes: [.font: font as Any])
+        let icon = measuredImageSize
+        let gap: CGFloat = icon != .zero && !title.isEmpty ? 8 : 0
+        let size: NSSize
+        switch resolvedImagePosition {
+        case .imageOnly: size = icon
+        case .imageLeft, .imageRight: size = NSSize(width: text.width + icon.width + gap, height: max(text.height, icon.height))
+        case .imageAbove, .imageBelow: size = NSSize(width: max(text.width, icon.width), height: text.height + icon.height + gap)
+        case .imageOverlaps: size = NSSize(width: max(text.width, icon.width), height: max(text.height, icon.height))
+        default: size = text
+        }
+        let insets = contentInsets
+        let height = max(theme.controlHeight(for: fluentControlSize), size.height + insets.top + insets.bottom)
+        return NSSize(width: ceil(size.width + insets.left + insets.right), height: ceil(height))
+    }
+
+    func contentRects(in bounds: NSRect) -> (image: NSRect, title: NSRect) {
+        let insets = contentInsets
+        let available = NSRect(x: bounds.minX + insets.left, y: bounds.minY + insets.bottom,
+                               width: max(0, bounds.width - insets.left - insets.right),
+                               height: max(0, bounds.height - insets.top - insets.bottom))
+        let natural = measuredImageSize
+        guard natural.width > 0, natural.height > 0 else { return (.zero, available) }
+        let scale = min(1, available.width / natural.width, available.height / natural.height)
+        let icon = NSSize(width: natural.width * scale, height: natural.height * scale)
+        let text = (title as NSString).size(withAttributes: [.font: font as Any])
+        let gap: CGFloat = title.isEmpty ? 0 : 8
+        var imageRect = NSRect(x: available.midX - icon.width / 2, y: available.midY - icon.height / 2, width: icon.width, height: icon.height)
+        var titleRect = available
+        switch resolvedImagePosition {
+        case .imageOnly: titleRect = .zero
+        case .imageLeft, .imageRight:
+            let textWidth = min(text.width, max(0, available.width - icon.width - gap))
+            let start = available.midX - (icon.width + gap + textWidth) / 2
+            if resolvedImagePosition == .imageLeft {
+                imageRect.origin.x = start
+                titleRect = NSRect(x: imageRect.maxX + gap, y: available.minY, width: textWidth, height: available.height)
+            } else {
+                titleRect = NSRect(x: start, y: available.minY, width: textWidth, height: available.height)
+                imageRect.origin.x = titleRect.maxX + gap
+            }
+        case .imageAbove, .imageBelow:
+            let textHeight = min(text.height, max(0, available.height - icon.height - gap))
+            let start = available.midY - (icon.height + gap + textHeight) / 2
+            let above = resolvedImagePosition == .imageAbove
+            imageRect.origin.y = above ? start + textHeight + gap : start
+            titleRect = NSRect(x: available.minX, y: above ? start : imageRect.maxY + gap, width: available.width, height: textHeight)
+        default: break
+        }
+        return (imageRect, titleRect)
     }
 
     public override func updateTrackingAreas() {
@@ -216,18 +290,26 @@ public final class FluentButton: NSButton {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
         paragraphStyle.lineBreakMode = .byTruncatingTail
-        let contentInsets = appearance.contentInsets
+        let content = contentRects(in: bounds)
+        if let image, !content.image.isEmpty {
+            let renderedImage: NSImage
+            if image.isTemplate {
+                renderedImage = NSImage(size: image.size, flipped: false) { rect in
+                    image.draw(in: rect)
+                    appearance.foregroundColor.setFill()
+                    rect.fill(using: .sourceAtop)
+                    return true
+                }
+            } else {
+                renderedImage = image
+            }
+            renderedImage.draw(in: content.image, from: .zero, operation: .sourceOver,
+                               fraction: isEnabled || image.isTemplate ? 1 : 0.4, respectFlipped: true, hints: nil)
+        }
+        guard imagePosition != .imageOnly else { return }
         let textRect = fluentSingleLineTextRect(
-            NSRect(
-                x: bounds.minX + contentInsets.left,
-                y: 0,
-                width: max(0, bounds.width - contentInsets.left - contentInsets.right),
-                height: bounds.height
-            ),
-            in: bounds,
-            font: font,
-            topInset: contentInsets.top,
-            bottomInset: contentInsets.bottom
+            content.title, in: content.title, font: font,
+            topInset: 0, bottomInset: 0
         )
         let attributedTitle = NSAttributedString(
             string: title,
@@ -279,6 +361,9 @@ public final class FluentButton: NSButton {
 
     func applyDeclarativeConfiguration(from source: FluentButton) {
         title = source.title
+        image = source.image
+        imagePosition = source.imagePosition
+        imageScaling = source.imageScaling
         role = source.role
         fluentControlSize = source.fluentControlSize
         font = source.font

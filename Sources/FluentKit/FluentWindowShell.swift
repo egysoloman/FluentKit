@@ -528,10 +528,7 @@ public struct FluentWindowShell<ID: Hashable>: FluentView {
         let navigation = navigationContent()
         guard configuration.titleBarStyle == .extended else { return navigation }
         return FluentAnyView(
-            FluentVStack(spacing: 0, alignment: .width) {
-                titleBar()
-                navigation
-            }
+            FluentWindowChromeLayout(titleBar: titleBar(), content: navigation)
         )
     }
 
@@ -808,6 +805,62 @@ private final class FluentWindowSharedChromeHost: NSView {
     deinit {
         windowObservers.forEach { NotificationCenter.default.removeObserver($0) }
         if let displayOptionsObserver { NotificationCenter.default.removeObserver(displayOptionsObserver) }
+    }
+}
+
+// Window content is a viewport, not an intrinsic-height stack item. Explicitly anchor it
+// below the title bar so arbitrary AppKit views receive all remaining window space.
+private struct FluentWindowChromeLayout: FluentUpdatablePrimitiveView {
+    let titleBar: FluentAnyView
+    let content: FluentAnyView
+
+    var body: NeverFluentView { NeverFluentView() }
+
+    func _makeView(in context: FluentRenderContext) -> NSView {
+        FluentWindowChromeLayoutHost(titleBar: titleBar, content: content, context: context)
+    }
+
+    func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
+        guard let host = view as? FluentWindowChromeLayoutHost else { return false }
+        host.update(titleBar: titleBar, content: content, context: context)
+        return true
+    }
+}
+
+private final class FluentWindowChromeLayoutHost: NSView {
+    private let titleHost: FluentViewHost<FluentAnyView>
+    private let contentHost: FluentViewHost<FluentAnyView>
+
+    override var isFlipped: Bool { true }
+
+    init(titleBar: FluentAnyView, content: FluentAnyView, context: FluentRenderContext) {
+        titleHost = FluentViewHost(titleBar, context: context)
+        contentHost = FluentViewHost(content, context: context)
+        super.init(frame: .zero)
+        titleHost.setContentHuggingPriority(.required, for: .vertical)
+        titleHost.setContentCompressionResistancePriority(.required, for: .vertical)
+        contentHost.setContentHuggingPriority(.defaultLow, for: .vertical)
+        contentHost.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        addSubview(titleHost)
+        addSubview(contentHost)
+        NSLayoutConstraint.activate([
+            titleHost.leadingAnchor.constraint(equalTo: leadingAnchor),
+            titleHost.trailingAnchor.constraint(equalTo: trailingAnchor),
+            titleHost.topAnchor.constraint(equalTo: topAnchor),
+            contentHost.leadingAnchor.constraint(equalTo: leadingAnchor),
+            contentHost.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentHost.topAnchor.constraint(equalTo: titleHost.bottomAnchor),
+            contentHost.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func update(titleBar: FluentAnyView, content: FluentAnyView, context: FluentRenderContext) {
+        titleHost.context = context
+        contentHost.context = context
+        titleHost.update(titleBar)
+        contentHost.update(content)
     }
 }
 

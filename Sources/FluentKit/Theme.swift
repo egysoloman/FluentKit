@@ -451,6 +451,15 @@ public struct FluentTheme: Equatable {
         return isDark ? accentLight2 : accentDark1
     }
 
+    /// WinUI `AccentTextFillColorDisabledBrush`. HyperlinkButton deliberately uses the
+    /// accent-text disabled token instead of the generic disabled text brush.
+    public var accentTextDisabled: NSColor {
+        if isHighContrast { return textDisabled }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 93.0 / 255.0)
+            : NSColor(calibratedWhite: 0, alpha: 92.0 / 255.0)
+    }
+
     public func accentFill(for state: FluentControlState) -> NSColor {
         switch state {
         case .pointerOver: return accentFillSecondary
@@ -514,6 +523,47 @@ public struct FluentTheme: Equatable {
             )
     }
 
+    /// WinUI `ControlOnImageFillColorDefaultBrush`, used by ItemContainer's selection checkbox
+    /// so the unchecked mark stays legible over arbitrary list/grid content.
+    public var controlOnImageFillDefault: NSColor {
+        if isHighContrast { return .controlBackgroundColor }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 201.0 / 255.0)
+            : NSColor(
+                calibratedRed: 28.0 / 255.0,
+                green: 28.0 / 255.0,
+                blue: 28.0 / 255.0,
+                alpha: 179.0 / 255.0
+            )
+    }
+
+    /// WinUI `ControlAltFillColor*` resources used by circular selection controls. These are
+    /// intentionally distinct from the opaque Button surface palette.
+    public var controlAltFillSecondary: NSColor {
+        if isHighContrast { return .controlBackgroundColor }
+        return isDark
+            ? NSColor(calibratedWhite: 0, alpha: 25.0 / 255.0)
+            : NSColor(calibratedWhite: 0, alpha: 6.0 / 255.0)
+    }
+
+    public var controlAltFillTertiary: NSColor {
+        if isHighContrast { return .selectedMenuItemTextColor }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 11.0 / 255.0)
+            : NSColor(calibratedWhite: 0, alpha: 15.0 / 255.0)
+    }
+
+    public var controlAltFillQuaternary: NSColor {
+        if isHighContrast { return .selectedMenuItemTextColor }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 18.0 / 255.0)
+            : NSColor(calibratedWhite: 0, alpha: 24.0 / 255.0)
+    }
+
+    public var controlAltFillDisabled: NSColor {
+        isHighContrast ? windowBackground : .clear
+    }
+
     /// WinUI's transparent subtle fill used by pointer-over list and flyout rows.
     public var subtleFillSecondary: NSColor {
         if isHighContrast { return controlFillSecondary }
@@ -528,6 +578,41 @@ public struct FluentTheme: Equatable {
         return isDark
             ? NSColor(calibratedWhite: 1, alpha: 10.0 / 255.0)
             : NSColor(calibratedWhite: 0, alpha: 6.0 / 255.0)
+    }
+
+    // MARK: LoopingSelector resources
+
+    /// WinUI `LoopingSelectorItemForeground`.
+    ///
+    /// Keep these aliases at the theme boundary instead of making the control infer its
+    /// brushes from generic text/fill tokens. The High Contrast selected state is deliberately
+    /// different from the ordinary primary foreground.
+    public var loopingSelectorItemForeground: NSColor {
+        isHighContrast ? .controlTextColor : textPrimary
+    }
+
+    /// WinUI `LoopingSelectorItemForegroundSelected`.
+    public var loopingSelectorItemSelectedForeground: NSColor {
+        isHighContrast ? .selectedMenuItemTextColor : textPrimary
+    }
+
+    /// WinUI `LoopingSelectorItemForegroundPressed`.
+    public var loopingSelectorItemPressedForeground: NSColor {
+        isHighContrast ? .selectedContentBackgroundColor : textSecondary
+    }
+
+    /// WinUI `LoopingSelectorItemBackgroundSelected`.
+    ///
+    /// In normal themes this is intentionally a low-alpha brush. Callers must preserve that
+    /// alpha when drawing it; promoting it to alpha 1 turns the selection band solid black in
+    /// Light and solid white in Dark.
+    public var loopingSelectorItemSelectedBackground: NSColor {
+        isHighContrast ? .selectedContentBackgroundColor : subtleFillSecondary
+    }
+
+    /// WinUI `LoopingSelectorItemBackgroundPressed`.
+    public var loopingSelectorItemPressedBackground: NSColor {
+        isHighContrast ? windowBackground : subtleFillTertiary
     }
 
     /// WinUI-derived ToggleSwitch track fills kept separate from generic control surfaces.
@@ -595,6 +680,176 @@ public struct FluentTheme: Equatable {
         return isDark
             ? NSColor(calibratedWhite: 1, alpha: 139.0 / 255.0)
             : NSColor(calibratedWhite: 0, alpha: 114.0 / 255.0)
+    }
+
+    public var controlStrokeStrongDisabled: NSColor {
+        if isHighContrast { return .disabledControlTextColor }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 40.0 / 255.0)
+            : NSColor(calibratedWhite: 0, alpha: 55.0 / 255.0)
+    }
+
+    /// RadioButton owns a High Contrast matrix in WinUI instead of resolving through the
+    /// generic accent and control brushes.
+    public func radioOuterFill(isSelected: Bool, state: FluentControlState) -> NSColor {
+        guard isHighContrast else {
+            if isSelected { return accentFill(for: state) }
+            return switch state {
+            case .pointerOver: controlAltFillTertiary
+            case .pressed: controlAltFillQuaternary
+            case .disabled: controlAltFillDisabled
+            default: controlAltFillSecondary
+            }
+        }
+
+        if isSelected {
+            return switch state {
+            case .pointerOver, .pressed: .controlBackgroundColor
+            case .disabled: windowBackground
+            default: .selectedMenuItemTextColor
+            }
+        }
+        return switch state {
+        case .pointerOver, .pressed: .selectedMenuItemTextColor
+        case .disabled: windowBackground
+        default: .controlBackgroundColor
+        }
+    }
+
+    public func radioOuterStroke(isSelected: Bool, state: FluentControlState) -> NSColor {
+        guard isHighContrast else {
+            if isSelected { return accentFill(for: state) }
+            return state == .pressed || state == .disabled
+                ? controlStrokeStrongDisabled
+                : controlStrokeStrong
+        }
+
+        if isSelected {
+            return switch state {
+            case .pointerOver: .controlTextColor
+            case .pressed: .controlBackgroundColor
+            case .disabled: .disabledControlTextColor
+            default: .selectedContentBackgroundColor
+            }
+        }
+        return switch state {
+        case .pointerOver: .selectedContentBackgroundColor
+        case .pressed: .selectedMenuItemTextColor
+        case .disabled: .disabledControlTextColor
+        default: .controlTextColor
+        }
+    }
+
+    public func radioDotFill(for state: FluentControlState) -> NSColor {
+        guard isHighContrast else { return textOnAccent }
+        return switch state {
+        case .pointerOver, .pressed: .controlTextColor
+        case .disabled: .disabledControlTextColor
+        default: .selectedContentBackgroundColor
+        }
+    }
+
+    /// WinUI RatingControl owns a distinct foreground family because placeholder stars and
+    /// pointer previews are semantically different from committed accent stars.
+    public var ratingUnselectedForeground: NSColor {
+        isHighContrast ? .secondaryLabelColor : textSecondary
+    }
+
+    public var ratingSelectedForeground: NSColor {
+        isHighContrast ? .selectedContentBackgroundColor : accentFillDefault
+    }
+
+    public var ratingPlaceholderForeground: NSColor {
+        isHighContrast ? .labelColor : textPrimary
+    }
+
+    public var ratingPointerOverPlaceholderForeground: NSColor {
+        isHighContrast ? .secondaryLabelColor : controlAltFillTertiary
+    }
+
+    public var ratingPointerOverUnselectedForeground: NSColor {
+        ratingPointerOverPlaceholderForeground
+    }
+
+    public var ratingPointerOverSelectedForeground: NSColor {
+        ratingSelectedForeground
+    }
+
+    public var ratingDisabledSelectedForeground: NSColor {
+        isHighContrast ? .disabledControlTextColor : textDisabled
+    }
+
+    public var ratingCaptionForeground: NSColor { textSecondary }
+
+    /// WinUI PipsPager uses transparent chrome in standard themes and owns a separate
+    /// High Contrast color matrix for pips and navigation buttons.
+    public func pipsPagerIndicatorForeground(
+        selected: Bool,
+        state: FluentControlState
+    ) -> NSColor {
+        if isHighContrast {
+            return switch state {
+            case .pointerOver, .pressed:
+                .selectedMenuItemTextColor
+            case .disabled:
+                .disabledControlTextColor
+            case .selected where selected:
+                .selectedMenuItemTextColor
+            default:
+                .controlTextColor
+            }
+        }
+        return switch state {
+        case .pointerOver, .pressed: textSecondary
+        case .disabled: controlStrokeStrongDisabled
+        default: controlStrokeStrong
+        }
+    }
+
+    public func pipsPagerIndicatorBackground(
+        selected: Bool,
+        state: FluentControlState
+    ) -> NSColor {
+        guard isHighContrast else { return .clear }
+        return switch state {
+        case .pointerOver, .pressed: .selectedContentBackgroundColor
+        case .selected where selected: .selectedContentBackgroundColor
+        default: .controlBackgroundColor
+        }
+    }
+
+    public func pipsPagerNavigationForeground(for state: FluentControlState) -> NSColor {
+        if isHighContrast {
+            return switch state {
+            case .pointerOver, .pressed: .selectedContentBackgroundColor
+            case .disabled: .disabledControlTextColor
+            default: .controlTextColor
+            }
+        }
+        return switch state {
+        case .pointerOver, .pressed: textSecondary
+        case .disabled: controlStrokeStrongDisabled
+        default: controlStrokeStrong
+        }
+    }
+
+    public func pipsPagerNavigationBackground(for state: FluentControlState) -> NSColor {
+        isHighContrast ? .controlBackgroundColor : .clear
+    }
+
+    /// Breadcrumb items use WinUI's text-fill state ladder and intentionally keep transparent
+    /// chrome. The final item has a separate semantic resource family even though the standard
+    /// light/dark values currently resolve to the same colors.
+    public func breadcrumbForeground(current: Bool, state: FluentControlState) -> NSColor {
+        if isHighContrast {
+            return state == .disabled ? .disabledControlTextColor : .controlTextColor
+        }
+        return switch state {
+        case .pointerOver: textSecondary
+        case .pressed: textTertiary
+        case .disabled: textDisabled
+        default: textPrimary
+        }
     }
 
     /// The two stops used by WinUI's ControlElevationBorderBrush, in source brush order.
@@ -700,6 +955,30 @@ public struct FluentTheme: Equatable {
             : .white
     }
 
+    /// WinUI ToolTip's Acrylic fallback is `#2C2C2C` in dark mode and `#F9F9F9` in light mode.
+    public var toolTipSurfaceFill: NSColor {
+        if isHighContrast { return windowBackground }
+        return isDark
+            ? NSColor(calibratedWhite: 44.0 / 255.0, alpha: 1)
+            : NSColor(calibratedWhite: 249.0 / 255.0, alpha: 1)
+    }
+
+    /// TeachingTip's non-light-dismiss presenter uses SolidBackgroundFillColorTertiary rather
+    /// than Acrylic. Light-dismiss tips continue to use the transient material surface.
+    public var teachingTipBackground: NSColor {
+        if isHighContrast { return windowBackground }
+        return isDark
+            ? NSColor(calibratedWhite: 44.0 / 255.0, alpha: 1)
+            : NSColor(calibratedWhite: 249.0 / 255.0, alpha: 1)
+    }
+
+    /// TeachingTip's source template overlays a directional top-edge highlight above the regular
+    /// surface stroke; High Contrast deliberately relies on the system border alone.
+    public var teachingTipTopHighlight: NSColor {
+        if isHighContrast { return .clear }
+        return NSColor.white.withAlphaComponent(isDark ? 13.0 / 255.0 : 153.0 / 255.0)
+    }
+
     /// ContentDialog's title/content surface (`LayerFillColorDefault` over the presenter).
     public var contentDialogContentFill: NSColor {
         if isHighContrast { return windowBackground }
@@ -759,9 +1038,137 @@ public struct FluentTheme: Equatable {
             : NSColor(calibratedWhite: 1, alpha: 179.0 / 255.0)
     }
 
+    /// WinUI `CardBackgroundFillColorSecondary`, used by Expander's content surface.
+    public var cardFillSecondary: NSColor {
+        if isHighContrast { return windowBackground }
+        return isDark
+            ? NSColor(calibratedWhite: 1, alpha: 8.0 / 255.0)
+            : NSColor(
+                calibratedRed: 246.0 / 255.0,
+                green: 246.0 / 255.0,
+                blue: 246.0 / 255.0,
+                alpha: 128.0 / 255.0
+            )
+    }
+
     public var cardStroke: NSColor {
         if isHighContrast { return controlStrokeStrong }
         return NSColor(calibratedWhite: 0, alpha: isDark ? 25.0 / 255.0 : 15.0 / 255.0)
+    }
+
+    /// WinUI `SystemFillColor*BackgroundBrush` values used by InfoBar severity surfaces.
+    public func infoBarBackground(for severity: FluentInfoBarSeverity) -> NSColor {
+        if isHighContrast { return windowBackground }
+        if isDark {
+            return switch severity {
+            case .informational: NSColor(calibratedWhite: 1, alpha: 8.0 / 255.0)
+            case .success: NSColor(calibratedRed: 57.0 / 255.0, green: 61.0 / 255.0, blue: 27.0 / 255.0, alpha: 1)
+            case .warning: NSColor(calibratedRed: 67.0 / 255.0, green: 53.0 / 255.0, blue: 25.0 / 255.0, alpha: 1)
+            case .error: NSColor(calibratedRed: 68.0 / 255.0, green: 39.0 / 255.0, blue: 38.0 / 255.0, alpha: 1)
+            }
+        }
+        return switch severity {
+        case .informational: NSColor(calibratedWhite: 246.0 / 255.0, alpha: 128.0 / 255.0)
+        case .success: NSColor(calibratedRed: 223.0 / 255.0, green: 246.0 / 255.0, blue: 221.0 / 255.0, alpha: 1)
+        case .warning: NSColor(calibratedRed: 1, green: 244.0 / 255.0, blue: 206.0 / 255.0, alpha: 1)
+        case .error: NSColor(calibratedRed: 253.0 / 255.0, green: 231.0 / 255.0, blue: 233.0 / 255.0, alpha: 1)
+        }
+    }
+
+    /// WinUI `SystemFillColor*Brush` values used by the standard InfoBar status icon.
+    public func infoBarIconFill(for severity: FluentInfoBarSeverity) -> NSColor {
+        if isHighContrast { return textPrimary }
+        if severity == .informational { return isDark ? accentLight2 : accent }
+        if isDark {
+            return switch severity {
+            case .informational: accentLight2
+            case .success: NSColor(calibratedRed: 108.0 / 255.0, green: 203.0 / 255.0, blue: 95.0 / 255.0, alpha: 1)
+            case .warning: NSColor(calibratedRed: 252.0 / 255.0, green: 225.0 / 255.0, blue: 0, alpha: 1)
+            case .error: NSColor(calibratedRed: 1, green: 153.0 / 255.0, blue: 164.0 / 255.0, alpha: 1)
+            }
+        }
+        return switch severity {
+        case .informational: accent
+        case .success: NSColor(calibratedRed: 15.0 / 255.0, green: 123.0 / 255.0, blue: 15.0 / 255.0, alpha: 1)
+        case .warning: NSColor(calibratedRed: 157.0 / 255.0, green: 93.0 / 255.0, blue: 0, alpha: 1)
+        case .error: NSColor(calibratedRed: 196.0 / 255.0, green: 43.0 / 255.0, blue: 28.0 / 255.0, alpha: 1)
+        }
+    }
+
+    /// WinUI InfoBadge semantic styles map to the shared SystemFillColor resources.
+    public func infoBadgeBackground(for appearance: FluentInfoBadgeAppearance) -> NSColor {
+        if appearance == .accent { return accentFillDefault }
+        if isHighContrast { return textPrimary }
+        return switch appearance {
+        case .accent: accentFillDefault
+        case .attention: isDark ? accentLight2 : accent
+        case .informational:
+            NSColor(calibratedWhite: isDark ? 157.0 / 255.0 : 138.0 / 255.0, alpha: 1)
+        case .success:
+            NSColor(
+                calibratedRed: (isDark ? 108.0 : 15.0) / 255.0,
+                green: (isDark ? 203.0 : 123.0) / 255.0,
+                blue: (isDark ? 95.0 : 15.0) / 255.0,
+                alpha: 1
+            )
+        case .caution:
+            NSColor(
+                calibratedRed: (isDark ? 252.0 : 157.0) / 255.0,
+                green: (isDark ? 225.0 : 93.0) / 255.0,
+                blue: 0,
+                alpha: 1
+            )
+        case .critical:
+            NSColor(
+                calibratedRed: (isDark ? 255.0 : 196.0) / 255.0,
+                green: (isDark ? 153.0 : 43.0) / 255.0,
+                blue: (isDark ? 164.0 : 28.0) / 255.0,
+                alpha: 1
+            )
+        }
+    }
+
+    /// WinUI's `ProgressRingBackgroundThemeBrush`: transparent in standard themes and the
+    /// system background-base-low brush in High Contrast.
+    public var progressRingBackground: NSColor {
+        isHighContrast ? windowBackground : .clear
+    }
+
+    /// WinUI's `ProgressBarTrackColor`: a strong control stroke in standard themes and the
+    /// system window color in High Contrast.
+    public var progressBarTrack: NSColor {
+        isHighContrast ? windowBackground : controlStrokeStrong
+    }
+
+    /// WinUI's `ProgressBarPausedForeground`: `SystemFillColorCaution` in standard themes and
+    /// `SystemColorWindowTextColor` in High Contrast.
+    public var progressBarPausedForeground: NSColor {
+        guard !isHighContrast else { return textPrimary }
+        return NSColor(
+            calibratedRed: (isDark ? 252.0 : 157.0) / 255.0,
+            green: (isDark ? 225.0 : 93.0) / 255.0,
+            blue: 0,
+            alpha: 1
+        )
+    }
+
+    /// WinUI's `ProgressBarErrorForeground`: `SystemFillColorCritical` in standard themes and
+    /// `SystemColorHotlightColor` in High Contrast. AppKit's link color is the semantic macOS
+    /// counterpart of the system hot-link color.
+    public var progressBarErrorForeground: NSColor {
+        guard !isHighContrast else { return .linkColor }
+        return NSColor(
+            calibratedRed: (isDark ? 255.0 : 196.0) / 255.0,
+            green: (isDark ? 153.0 : 43.0) / 255.0,
+            blue: (isDark ? 164.0 : 28.0) / 255.0,
+            alpha: 1
+        )
+    }
+
+    /// WinUI keeps the same 1pt/3pt internal geometry in High Contrast and adds a one-point
+    /// system window-text border around the control instead.
+    public var progressBarBorder: NSColor {
+        isHighContrast ? textPrimary : .clear
     }
 
     public var layerFill: NSColor {

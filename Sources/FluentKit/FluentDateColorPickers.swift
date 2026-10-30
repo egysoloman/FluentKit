@@ -85,7 +85,7 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
     private var isPressed = false
     private var pointerTrackingArea: NSTrackingArea?
     private var calendarPopover: NSPopover?
-    private weak var calendarOverlayPicker: NSDatePicker?
+    private weak var calendarMonthView: FluentCalendarPickerEditorView?
     private let elevationBorderLayer = CAGradientLayer()
     private let elevationBorderMask = CAShapeLayer()
     private let visualStateCoordinator = FluentVisualStateCoordinator()
@@ -359,30 +359,21 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
 
     private func presentCalendarPopover() {
         guard isEnabled, window != nil else { return }
-        let overlayPicker = NSDatePicker(frame: .zero)
-        overlayPicker.datePickerStyle = .clockAndCalendar
-        overlayPicker.datePickerMode = .single
-        overlayPicker.datePickerElements = [.yearMonthDay]
-        overlayPicker.dateValue = dateValue
-        overlayPicker.minDate = minDate
-        overlayPicker.maxDate = maxDate
-        overlayPicker.calendar = calendar
-        overlayPicker.locale = locale
-        overlayPicker.timeZone = timeZone
-        overlayPicker.drawsBackground = false
-        overlayPicker.isBordered = false
-        overlayPicker.focusRingType = .none
-        overlayPicker.target = self
-        overlayPicker.action = #selector(calendarOverlayValueChanged(_:))
-        overlayPicker.setAccessibilityLabel("Calendar")
-        overlayPicker.sizeToFit()
+        let calendarMonthView = FluentCalendarPickerEditorView(
+            selectedDate: dateValue,
+            calendar: calendar ?? .current,
+            locale: locale ?? .current,
+            timeZone: timeZone ?? .current,
+            minDate: minDate,
+            maxDate: maxDate,
+            theme: theme,
+            onSelect: { [weak self] date in
+                self?.calendarOverlayValueChanged(date)
+            }
+        )
 
         let padding: CGFloat = 8
-        let pickerSize = overlayPicker.intrinsicContentSize
-        let contentSize = NSSize(
-            width: ceil(max(pickerSize.width, overlayPicker.frame.width) + padding * 2),
-            height: ceil(max(pickerSize.height, overlayPicker.frame.height) + padding * 2)
-        )
+        let contentSize = NSSize(width: 296, height: 280)
         let contentView = FluentMaterialView(
             frame: NSRect(origin: .zero, size: contentSize)
         )
@@ -391,13 +382,13 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
         contentView.isMaterialEnabled = theme.materialEffectsEnabled
         contentView.fallbackColor = theme.flyoutSurfaceFill
         contentView.identifier = NSUserInterfaceItemIdentifier("FluentKit.CalendarDatePicker.Popover")
-        contentView.addSubview(overlayPicker)
-        overlayPicker.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(calendarMonthView)
+        calendarMonthView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            overlayPicker.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            overlayPicker.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
-            overlayPicker.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
-            overlayPicker.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
+            calendarMonthView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+            calendarMonthView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            calendarMonthView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
+            calendarMonthView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -padding)
         ])
 
         let controller = NSViewController()
@@ -409,7 +400,7 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
         popover.contentViewController = controller
         popover.delegate = self
         calendarPopover = popover
-        calendarOverlayPicker = overlayPicker
+        self.calendarMonthView = calendarMonthView
         popover.show(relativeTo: bounds, of: self, preferredEdge: .minY)
         setAccessibilityValue(dateValue as NSDate)
     }
@@ -418,27 +409,24 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
         calendarPopover?.performClose(nil)
     }
 
-    @objc private func calendarOverlayValueChanged(_ sender: NSDatePicker) {
+    private func calendarOverlayValueChanged(_ date: Date) {
         isApplyingBinding = true
-        dateValue = sender.dateValue
+        dateValue = date
         isApplyingBinding = false
-        binding?.set(sender.dateValue)
-        setAccessibilityValue(sender.dateValue as NSDate)
+        binding?.set(date)
+        setAccessibilityValue(date as NSDate)
         needsDisplay = true
         dismissCalendarPopover()
     }
 
     private func syncCalendarOverlay() {
-        guard let calendarOverlayPicker else { return }
-        calendarOverlayPicker.dateValue = dateValue
-        calendarOverlayPicker.minDate = minDate
-        calendarOverlayPicker.maxDate = maxDate
+        calendarMonthView?.setSelectedDate(dateValue)
     }
 
     func popoverDidClose(_ notification: Notification) {
         guard notification.object as? NSPopover === calendarPopover else { return }
         calendarPopover = nil
-        calendarOverlayPicker = nil
+        calendarMonthView = nil
         isPressed = false
         refreshAppearance(animated: false)
     }
@@ -539,75 +527,291 @@ public func FluentDatePicker(
     FluentDatePickerView(selection: selection, date: date, range: range, style: style)
 }
 
-/// A native color well with a Fluent binding and accessibility metadata.
+/// Controls whether a ColorPicker is always expanded or presented from a compact flyout button.
+public enum FluentColorPickerPresentationMode: String, CaseIterable, Hashable, Sendable {
+    case inline
+    case flyout
+}
+
+/// A WinUI-style color editor with a Fluent binding and accessibility metadata.
 public struct FluentColorPickerView: FluentUpdatablePrimitiveView {
     fileprivate let binding: FluentBinding<NSColor>?
     fileprivate let color: NSColor
     fileprivate let label: String
+    fileprivate let presentation: FluentColorPickerPresentationMode
 
     public init(
         selection: FluentBinding<NSColor>? = nil,
         color: NSColor = .systemBlue,
-        label: String = "Color"
+        label: String = "Color",
+        presentation: FluentColorPickerPresentationMode = .inline
     ) {
         self.binding = selection
         self.color = color
         self.label = label
+        self.presentation = presentation
     }
 
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let well = FluentColorWellNative(color: binding?.get() ?? color, binding: binding, label: label)
-        well.theme = context.theme
-        return well
+        switch presentation {
+        case .inline:
+            let editor = FluentWinUIColorPickerEditorView(
+                color: binding?.get() ?? color,
+                theme: context.theme,
+                onChange: { value in binding?.set(value) }
+            )
+            editor.setAccessibilityRole(.group)
+            editor.setAccessibilityLabel(label)
+            return editor
+        case .flyout:
+            return FluentColorPickerFlyoutHost(
+                color: binding?.get() ?? color,
+                binding: binding,
+                label: label,
+                theme: context.theme,
+                reduceMotion: context.reduceMotion
+            )
+        }
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
-        guard let well = view as? FluentColorWellNative else { return false }
-        well.theme = context.theme
-        well.update(binding: binding, color: color, label: label)
-        return true
+        switch presentation {
+        case .inline:
+            guard let editor = view as? FluentWinUIColorPickerEditorView else { return false }
+            editor.setAccessibilityLabel(label)
+            editor.update(
+                color: binding?.get() ?? color,
+                theme: context.theme,
+                onChange: { value in binding?.set(value) }
+            )
+            return true
+        case .flyout:
+            guard let host = view as? FluentColorPickerFlyoutHost else { return false }
+            host.update(
+                color: binding?.get() ?? color,
+                binding: binding,
+                label: label,
+                theme: context.theme,
+                reduceMotion: context.reduceMotion
+            )
+            return true
+        }
     }
 }
 
-private final class FluentColorWellNative: NSColorWell {
-    var theme: FluentTheme = .current { didSet { needsDisplay = true } }
+public func FluentColorPicker(
+    selection: FluentBinding<NSColor>? = nil,
+    color: NSColor = .systemBlue,
+    label: String = "Color",
+    presentation: FluentColorPickerPresentationMode = .inline
+) -> FluentColorPickerView {
+    FluentColorPickerView(
+        selection: selection,
+        color: color,
+        label: label,
+        presentation: presentation
+    )
+}
+
+private final class FluentColorPickerFlyoutHost: NSControl, NSPopoverDelegate {
+    private var color: NSColor
     private var binding: FluentBinding<NSColor>?
+    private var label: String
+    private var theme: FluentTheme
+    private var reduceMotion: Bool
     private var observedBinding: FluentBinding<NSColor>?
     private var observerID: UUID?
-    private var isApplyingBinding = false
+    private var popover: NSPopover?
+    private weak var editor: FluentWinUIColorPickerEditorView?
+    private var trackingAreaReference: NSTrackingArea?
+    private var isPointerOver = false
+    private var isPressed = false
+    private let surfaceLayer = CALayer()
+    private let strokeLayer = CAShapeLayer()
+    private let swatchLayer = CALayer()
+    private let titleLabel = NSTextField(labelWithString: "")
+    private let chevronView = NSImageView()
 
-    init(color: NSColor, binding: FluentBinding<NSColor>?, label: String) {
-        self.binding = binding
-        super.init(frame: .zero)
+    override var acceptsFirstResponder: Bool { isEnabled }
+    override var intrinsicContentSize: NSSize { NSSize(width: 180, height: 32) }
+
+    init(
+        color: NSColor,
+        binding: FluentBinding<NSColor>?,
+        label: String,
+        theme: FluentTheme,
+        reduceMotion: Bool
+    ) {
         self.color = color
-        isBordered = false
-        setAccessibilityRole(.colorWell)
-        setAccessibilityLabel(label)
-        target = self
-        action = #selector(valueChanged)
+        self.binding = binding
+        self.label = label
+        self.theme = theme
+        self.reduceMotion = reduceMotion
+        super.init(frame: .zero)
+        identifier = NSUserInterfaceItemIdentifier("FluentKit.ColorPicker.FlyoutButton")
+        setAccessibilityRole(.popUpButton)
+        wantsLayer = true
+        layer?.masksToBounds = false
+        surfaceLayer.cornerCurve = .continuous
+        swatchLayer.cornerCurve = .continuous
+        layer?.addSublayer(surfaceLayer)
+        layer?.addSublayer(strokeLayer)
+        layer?.addSublayer(swatchLayer)
+        titleLabel.alignment = .natural
+        titleLabel.lineBreakMode = .byTruncatingTail
+        titleLabel.maximumNumberOfLines = 1
+        titleLabel.isEditable = false
+        titleLabel.isSelectable = false
+        titleLabel.isBordered = false
+        titleLabel.drawsBackground = false
+        titleLabel.setAccessibilityElement(false)
+        addSubview(titleLabel)
+        chevronView.imageScaling = .scaleProportionallyDown
+        chevronView.setAccessibilityElement(false)
+        addSubview(chevronView)
         installObserver()
-        applyTheme()
+        refreshAppearance()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     deinit {
+        popover?.close()
         if let observerID { observedBinding?.removeObserver?(observerID) }
     }
 
-    func update(binding: FluentBinding<NSColor>?, color: NSColor, label: String) {
-        self.binding = binding
-        setAccessibilityLabel(label)
-        let requested = binding?.get() ?? color
-        if self.color != requested {
-            isApplyingBinding = true
-            self.color = requested
-            isApplyingBinding = false
+    override func layout() {
+        super.layout()
+        let radius = theme.designTokens.controlCornerRadius
+        let swatchSize = min(20, max(0, bounds.height - 10))
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        surfaceLayer.frame = bounds
+        surfaceLayer.cornerRadius = radius
+        strokeLayer.frame = bounds
+        strokeLayer.path = CGPath(
+            roundedRect: bounds.insetBy(dx: 0.5, dy: 0.5),
+            cornerWidth: max(radius - 0.5, 0),
+            cornerHeight: max(radius - 0.5, 0),
+            transform: nil
+        )
+        strokeLayer.fillColor = NSColor.clear.cgColor
+        strokeLayer.lineWidth = 1
+        swatchLayer.frame = CGRect(
+            x: userInterfaceLayoutDirection == .rightToLeft ? bounds.maxX - 10 - swatchSize : 10,
+            y: floor(bounds.midY - swatchSize / 2),
+            width: swatchSize,
+            height: swatchSize
+        )
+        swatchLayer.cornerRadius = 4
+        CATransaction.commit()
+        let isRTL = userInterfaceLayoutDirection == .rightToLeft
+        let textLeading: CGFloat = isRTL ? 30 : 40
+        let textTrailing: CGFloat = isRTL ? 40 : 30
+        let labelHeight = min(titleLabel.intrinsicContentSize.height, bounds.height)
+        titleLabel.frame = CGRect(
+            x: textLeading,
+            y: floor(bounds.midY - labelHeight / 2),
+            width: max(0, bounds.width - textLeading - textTrailing),
+            height: labelHeight
+        )
+        chevronView.frame = CGRect(
+            x: isRTL ? 12 : bounds.maxX - 22,
+            y: floor(bounds.midY - 5),
+            width: 10,
+            height: 10
+        )
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let trackingAreaReference { removeTrackingArea(trackingAreaReference) }
+        let area = NSTrackingArea(
+            rect: bounds,
+            options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        trackingAreaReference = area
+        addTrackingArea(area)
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        guard isEnabled else { return }
+        isPointerOver = true
+        refreshAppearance()
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        isPointerOver = false
+        refreshAppearance()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard isEnabled else { return }
+        FluentFocusVisibility.markPointerInteraction(in: window)
+        window?.makeFirstResponder(self)
+        isPressed = true
+        refreshAppearance()
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard isEnabled else { return }
+        let inside = bounds.contains(convert(event.locationInWindow, from: nil))
+        isPressed = false
+        refreshAppearance()
+        if inside { togglePopover() }
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        bounds.contains(point) ? self : nil
+    }
+
+    override func keyDown(with event: NSEvent) {
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        switch event.keyCode {
+        case 36, 49: togglePopover()
+        case 53: popover?.performClose(nil)
+        default: super.keyDown(with: event)
         }
+    }
+
+    override func performClick(_ sender: Any?) {
+        guard isEnabled else { return }
+        togglePopover()
+    }
+
+    override func accessibilityPerformPress() -> Bool {
+        guard isEnabled else { return false }
+        togglePopover()
+        return true
+    }
+
+    override var isEnabled: Bool {
+        didSet {
+            if !isEnabled { popover?.performClose(nil) }
+            refreshAppearance()
+        }
+    }
+
+    func update(
+        color: NSColor,
+        binding: FluentBinding<NSColor>?,
+        label: String,
+        theme: FluentTheme,
+        reduceMotion: Bool
+    ) {
+        self.color = color
+        self.binding = binding
+        self.label = label
+        self.theme = theme
+        self.reduceMotion = reduceMotion
+        editor?.update(color: color, theme: theme, onChange: { [weak self] in self?.commit($0) })
         installObserver()
-        applyTheme()
+        refreshAppearance()
+        needsLayout = true
     }
 
     private func installObserver() {
@@ -615,30 +819,94 @@ private final class FluentColorWellNative: NSColorWell {
         observedBinding = binding
         observerID = binding?.observe? { [weak self] value in
             DispatchQueue.main.async { [weak self] in
-                guard let self, !self.isApplyingBinding, self.color != value else { return }
-                self.isApplyingBinding = true
+                guard let self else { return }
                 self.color = value
-                self.isApplyingBinding = false
+                self.editor?.updateColor(value)
+                self.refreshAppearance()
             }
         }
     }
 
-    @objc private func valueChanged() {
-        guard !isApplyingBinding, let binding else { return }
-        binding.set(color)
-        setAccessibilityValue(color)
+    private func commit(_ value: NSColor) {
+        color = value
+        binding?.set(value)
+        refreshAppearance()
     }
 
-    private func applyTheme() {
-        setAccessibilityValue(color)
+    private func togglePopover() {
+        if popover?.isShown == true {
+            popover?.performClose(nil)
+            return
+        }
+        guard isEnabled, window != nil else { return }
+        let editor = FluentWinUIColorPickerEditorView(
+            color: color,
+            theme: theme,
+            onChange: { [weak self] in self?.commit($0) }
+        )
+        let padding: CGFloat = 12
+        let contentSize = NSSize(width: 344, height: 374)
+        let content = FluentMaterialView(frame: CGRect(origin: .zero, size: contentSize))
+        content.materialStyle = theme.material(for: .transient) ?? .liquidGlass
+        content.fluentTheme = theme
+        content.isMaterialEnabled = theme.materialEffectsEnabled
+        content.fallbackColor = theme.flyoutSurfaceFill
+        content.identifier = NSUserInterfaceItemIdentifier("FluentKit.ColorPicker.Popover")
+        content.addSubview(editor)
+        editor.frame = content.bounds.insetBy(dx: padding, dy: padding)
+        editor.autoresizingMask = [.width, .height]
+        let controller = NSViewController()
+        controller.view = content
+        let popover = NSPopover()
+        popover.behavior = .transient
+        popover.animates = !reduceMotion
+        popover.contentSize = contentSize
+        popover.contentViewController = controller
+        popover.delegate = self
+        self.popover = popover
+        self.editor = editor
+        popover.show(relativeTo: bounds, of: self, preferredEdge: .minY)
+        refreshAppearance()
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        guard notification.object as? NSPopover === popover else { return }
+        popover = nil
+        editor = nil
+        refreshAppearance()
+    }
+
+    private func refreshAppearance() {
+        let state: FluentControlState = !isEnabled ? .disabled : (isPressed ? .pressed : (isPointerOver ? .pointerOver : .normal))
+        let fill: NSColor
+        switch state {
+        case .disabled: fill = theme.controlFillDisabled
+        case .pressed: fill = theme.controlFillTertiary
+        case .pointerOver: fill = theme.controlFillSecondary
+        default: fill = theme.controlFill
+        }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        surfaceLayer.backgroundColor = fill.cgColor
+        strokeLayer.strokeColor = theme.controlStrokeDefault.cgColor
+        swatchLayer.backgroundColor = color.cgColor
+        swatchLayer.borderColor = theme.controlStroke.cgColor
+        swatchLayer.borderWidth = 1
+        CATransaction.commit()
+        titleLabel.stringValue = label
+        titleLabel.font = theme.typography.font(for: .body)
+        titleLabel.textColor = isEnabled ? theme.textPrimary : theme.textDisabled
+        titleLabel.userInterfaceLayoutDirection = userInterfaceLayoutDirection
+        let image = NSImage(systemSymbolName: "chevron.down", accessibilityDescription: "Choose color")
+        let point = NSImage.SymbolConfiguration(pointSize: 10, weight: .semibold)
+        let tint = NSImage.SymbolConfiguration(
+            hierarchicalColor: isEnabled ? theme.textSecondary : theme.textDisabled
+        )
+        chevronView.image = image?.withSymbolConfiguration(point.applying(tint))
+        setAccessibilityLabel(label)
+        setAccessibilityValue(String(describing: color))
+        setAccessibilityExpanded(popover?.isShown == true)
         needsDisplay = true
+        needsLayout = true
     }
-}
-
-public func FluentColorPicker(
-    selection: FluentBinding<NSColor>? = nil,
-    color: NSColor = .systemBlue,
-    label: String = "Color"
-) -> FluentColorPickerView {
-    FluentColorPickerView(selection: selection, color: color, label: label)
 }

@@ -167,7 +167,12 @@ final class FluentComboBoxPopup: NSObject {
             edge: revealEdge,
             baselineFromTop: entranceBaselineFromTop
         )
-        popup.makeKeyAndOrderFront(nil)
+        // Ordering an application-owned transient panel must also work in tests, snapshots and
+        // inactive auxiliary windows. `makeKeyAndOrderFront` immediately hides a panel whose
+        // `hidesOnDeactivate` flag is set while NSApp is inactive. Keep the panel attached and
+        // visible first; only transfer key-window status when the application can actually own it.
+        popup.orderFront(nil)
+        if NSApp.isActive { popup.makeKey() }
         popup.makeFirstResponder(root)
         installOutsideClickMonitors()
     }

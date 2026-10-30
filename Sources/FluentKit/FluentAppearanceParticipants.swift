@@ -47,6 +47,34 @@ extension FluentDropDownButton: FluentAppearanceParticipant {
     func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
 }
 
+extension FluentHyperlinkButton: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
+extension FluentSplitButton: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
+extension FluentTimePicker: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
+extension FluentAppBarButton: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
+extension FluentAppBarSeparator: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
+extension FluentCommandBar: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
+extension FluentMenuBar: FluentAppearanceParticipant {
+    func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
+}
+
 extension FluentCheckBox: FluentAppearanceParticipant {
     func applyFluentAppearance(_ theme: FluentTheme) { self.theme = theme }
 }

@@ -400,9 +400,17 @@ public final class FluentBoundRadioButton: NSView {
     private var observer: UUID?
     private var isApplyingBinding = false
 
-    public init(_ binding: FluentBinding<Bool>, title: String = "Radio button") {
+    public init(
+        _ binding: FluentBinding<Bool>,
+        title: String = "Radio button",
+        groupName: String? = nil
+    ) {
         self.binding = binding
-        radioButton = FluentRadioButton(title: title, isSelected: binding.get())
+        radioButton = FluentRadioButton(
+            title: title,
+            isSelected: binding.get(),
+            groupName: groupName
+        )
         super.init(frame: .zero)
         addSubview(radioButton)
         radioButton.translatesAutoresizingMaskIntoConstraints = false
@@ -427,13 +435,15 @@ public final class FluentBoundRadioButton: NSView {
         binding: FluentBinding<Bool>,
         theme: FluentTheme,
         reduceMotion: Bool,
-        layoutDirection: FluentLayoutDirection
+        layoutDirection: FluentLayoutDirection,
+        groupName: String? = nil
     ) {
         if let observer { self.binding.removeObserver?(observer) }
         self.binding = binding
         radioButton.theme = theme
         radioButton.reduceMotion = reduceMotion
         radioButton.fluentLayoutDirection = layoutDirection
+        radioButton.groupName = groupName
         let value = binding.get()
         if radioButton.isSelected != value {
             isApplyingBinding = true

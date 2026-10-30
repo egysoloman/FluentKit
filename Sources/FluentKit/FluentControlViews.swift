@@ -1,6 +1,8 @@
 import AppKit
 
 public struct FluentButtonView: FluentUpdatablePrimitiveView {
+    public let image: NSImage?
+    public let imagePosition: NSControl.ImagePosition
     public let title: String
     public let role: FluentButtonRole
     public let action: (() -> Void)?
@@ -16,8 +18,12 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
         style: (any FluentButtonStyle)? = nil,
         flyoutItems: [FluentMenuItem]? = nil,
         flyoutPlacement: FluentMenuPlacement = .below,
-        commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration? = nil
+        commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration? = nil,
+        image: NSImage? = nil,
+        imagePosition: NSControl.ImagePosition = .imageLeading
     ) {
+        self.image = image
+        self.imagePosition = imagePosition
         self.title = title
         self.role = role
         self.action = action
@@ -31,6 +37,8 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let button = FluentButton(title: title, role: role)
+        button.image = image
+        button.imagePosition = image == nil ? .noImage : imagePosition
         button.theme = context.theme
         button.reduceMotion = context.reduceMotion
         button.onClick = action
@@ -45,6 +53,8 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
         guard let button = view as? FluentButton else { return false }
         button.title = title
         button.role = role
+        button.image = image
+        button.imagePosition = image == nil ? .noImage : imagePosition
         button.theme = context.theme
         button.reduceMotion = context.reduceMotion
         button.onClick = action
@@ -65,7 +75,9 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
             style: style,
             flyoutItems: flyoutItems,
             flyoutPlacement: flyoutPlacement,
-            commandBarFlyoutConfiguration: commandBarFlyoutConfiguration
+            commandBarFlyoutConfiguration: commandBarFlyoutConfiguration,
+            image: image,
+            imagePosition: imagePosition
         )
     }
 
@@ -82,7 +94,9 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
             style: style,
             flyoutItems: items(),
             flyoutPlacement: placement,
-            commandBarFlyoutConfiguration: nil
+            commandBarFlyoutConfiguration: nil,
+            image: image,
+            imagePosition: imagePosition
         )
     }
 
@@ -103,7 +117,9 @@ public struct FluentButtonView: FluentUpdatablePrimitiveView {
                 primaryCommands: primaryCommands(),
                 secondaryCommands: secondaryCommands(),
                 alwaysExpanded: alwaysExpanded
-            )
+            ),
+            image: image,
+            imagePosition: imagePosition
         )
     }
 }

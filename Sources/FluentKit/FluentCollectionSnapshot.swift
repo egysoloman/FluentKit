@@ -99,6 +99,40 @@ public struct FluentCollectionSnapshot<SectionID: Hashable, ItemID: Hashable>: E
         moveItem(item, relativeTo: destination, offset: 1)
     }
 
+    /// Moves a stable, ordered group of items to an insertion index in a section.
+    ///
+    /// `destinationIndex` is expressed in the destination section before the moved items are
+    /// removed. Items retain their visual ordering, matching ListView/GridView reorder semantics.
+    public mutating func moveItems(
+        _ identifiers: [ItemID],
+        toSection destinationSection: SectionID,
+        at destinationIndex: Int
+    ) {
+        guard itemsBySection[destinationSection] != nil else {
+            preconditionFailure("Cannot move items to an unknown Fluent collection section")
+        }
+        let requested = Set(identifiers)
+        guard requested.count == identifiers.count,
+              requested.isSubset(of: Set(itemIdentifiers)) else {
+            preconditionFailure("Cannot move unknown or duplicate Fluent collection items")
+        }
+        let ordered = itemIdentifiers.filter(requested.contains)
+        let destinationItems = itemsBySection[destinationSection] ?? []
+        let clampedDestination = min(max(destinationIndex, 0), destinationItems.count)
+        let removedBeforeDestination = destinationItems[..<clampedDestination]
+            .reduce(into: 0) { count, item in
+                if requested.contains(item) { count += 1 }
+            }
+        for section in sections {
+            itemsBySection[section]?.removeAll(where: requested.contains)
+        }
+        let adjustedDestination = min(
+            max(clampedDestination - removedBeforeDestination, 0),
+            itemsBySection[destinationSection]?.count ?? 0
+        )
+        itemsBySection[destinationSection]?.insert(contentsOf: ordered, at: adjustedDestination)
+    }
+
     /// Returns the native Swift difference for section ordering, including inferred moves.
     public func sectionDifference(
         from previous: FluentCollectionSnapshot

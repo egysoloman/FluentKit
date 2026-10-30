@@ -157,10 +157,18 @@ extension FluentRadioButton: FluentUpdatablePrimitiveView {
 
 extension FluentProgressRing: FluentUpdatablePrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
-    public func _makeView(in context: FluentRenderContext) -> NSView { theme = context.theme; return self }
+
+    public func _makeView(in context: FluentRenderContext) -> NSView {
+        theme = context.theme
+        reduceMotion = context.reduceMotion
+        return self
+    }
+
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let ring = view as? FluentProgressRing else { return false }
         ring.theme = context.theme
+        ring.reduceMotion = context.reduceMotion
+        ring.applyDeclarativeConfiguration(from: self)
         return true
     }
 }

@@ -378,6 +378,15 @@ public final class FluentCheckBox: NSControl {
 
 extension FluentCheckBox: FluentControlSizeConfigurable {}
 
+protocol FluentRadioButtonGrouping: AnyObject {
+    func radioButtonRequestedSelection(_ radioButton: FluentRadioButton)
+    func radioButton(
+        _ radioButton: FluentRadioButton,
+        handleNavigationKey keyCode: UInt16,
+        modifiers: NSEvent.ModifierFlags
+    ) -> Bool
+}
+
 public final class FluentRadioButton: NSControl {
     public var theme: FluentTheme = .current {
         didSet {
@@ -414,11 +423,22 @@ public final class FluentRadioButton: NSControl {
             needsDisplay = true
         }
     }
+    /// Radio buttons with the same non-empty name are mutually exclusive across their window.
+    /// With no explicit name, siblings in the same declarative stack form an implicit group.
+    public var groupName: String? {
+        didSet {
+            guard oldValue != groupName else { return }
+            if isSelected { enforceExclusiveSelection() }
+            updateGroupAccessibility()
+        }
+    }
     public var isSelected: Bool {
         didSet {
             guard oldValue != isSelected else { return }
+            if isSelected, groupingCoordinator == nil { enforceExclusiveSelection() }
             setAccessibilityValue(isSelected ? "On" : "Off")
             refreshAppearance(animated: true)
+            updateGroupAccessibility()
             guard !suppressesValueNotification else { return }
             sendAction(action, to: target)
             onValueChanged?(isSelected)
@@ -435,8 +455,12 @@ public final class FluentRadioButton: NSControl {
 
     private var isPointerOver = false
     private var isPressed = false
+    private var isPointerPressActive = false
+    private var isSpaceKeyDown = false
     private var suppressesValueNotification = false
-    private let focusLayer = CALayer()
+    weak var groupingCoordinator: (any FluentRadioButtonGrouping)?
+    private let focusLayer = CAShapeLayer()
+    private let focusInnerLayer = CAShapeLayer()
     private let outerLayer = CALayer()
     private let dotLayer = CALayer()
     private let pressedDotLayer = CALayer()
@@ -447,9 +471,14 @@ public final class FluentRadioButton: NSControl {
 
     public override var acceptsFirstResponder: Bool { isEnabled }
 
-    public init(title: String = "Radio button", isSelected: Bool = false) {
+    public init(
+        title: String = "Radio button",
+        isSelected: Bool = false,
+        groupName: String? = nil
+    ) {
         self.title = title
         self.isSelected = isSelected
+        self.groupName = groupName
         super.init(frame: .zero)
         configureView()
     }
@@ -457,6 +486,7 @@ public final class FluentRadioButton: NSControl {
     required init?(coder: NSCoder) {
         title = "Radio button"
         isSelected = false
+        groupName = nil
         super.init(coder: coder)
         configureView()
     }
@@ -464,8 +494,9 @@ public final class FluentRadioButton: NSControl {
     public override var intrinsicContentSize: NSSize {
         let appearance = resolvedAppearance()
         let text = (title as NSString).size(withAttributes: [.font: appearance.labelFont])
+        let scale = theme.density.metricScale * fluentControlSize.metricScale
         return NSSize(
-            width: appearance.diameter + appearance.labelSpacing + text.width + 6,
+            width: max(120 * scale, appearance.diameter + appearance.labelSpacing + ceil(text.width)),
             height: max(theme.controlHeight(for: fluentControlSize), appearance.diameter + 2)
         )
     }
@@ -505,37 +536,47 @@ public final class FluentRadioButton: NSControl {
 
     public override func mouseEntered(with event: NSEvent) {
         isPointerOver = true
+        if isPointerPressActive { isPressed = true }
         refreshAppearance(animated: true)
     }
 
     public override func mouseExited(with event: NSEvent) {
         isPointerOver = false
+        if isPointerPressActive { isPressed = false }
         refreshAppearance(animated: true)
     }
 
     public override func mouseDown(with event: NSEvent) {
-        guard isEnabled else { return }
+        let point = convert(event.locationInWindow, from: nil)
+        guard isEnabled, !isSpaceKeyDown, bounds.contains(point) else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
-        isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
-        isPressed = true
+        isPointerOver = true
+        isPointerPressActive = true
+        isPressed = isPointerOver
         refreshAppearance(animated: true)
     }
 
     public override func mouseDragged(with event: NSEvent) {
-        guard isPressed else { return }
-        isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
-        refreshAppearance(animated: false)
+        guard isPointerPressActive else { return }
+        let inside = bounds.insetBy(dx: -0.05, dy: -0.05)
+            .contains(convert(event.locationInWindow, from: nil))
+        guard isPointerOver != inside || isPressed != inside else { return }
+        isPointerOver = inside
+        isPressed = inside
+        refreshAppearance(animated: true)
     }
 
     public override func mouseUp(with event: NSEvent) {
-        guard isPressed else { return }
+        guard isPointerPressActive else { return }
         let point = convert(event.locationInWindow, from: nil)
         let inside = bounds.contains(point)
+        let shouldSelect = isPressed && inside && !isSelected
+        isPointerPressActive = false
         isPressed = false
         isPointerOver = inside
-        if inside, !isSelected {
-            isSelected = true
+        if shouldSelect {
+            requestSelection()
         } else {
             refreshAppearance(animated: true)
         }
@@ -546,15 +587,42 @@ public final class FluentRadioButton: NSControl {
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         updateFocusRing()
         switch event.keyCode {
-        case 36, 49:
-            guard !event.isARepeat else { return }
-            cancelInteraction(refresh: false)
-            if !isSelected { isSelected = true }
+        case 49:
+            guard !event.isARepeat, !isPointerPressActive, !isSpaceKeyDown else { return }
+            isSpaceKeyDown = true
+            isPressed = true
+            refreshAppearance(animated: true)
+        case 36:
+            // WinUI RadioButton explicitly opts out of Return/Enter activation.
+            return
+        case 123, 124, 125, 126:
+            cancelInteraction()
+            if groupingCoordinator?.radioButton(
+                self,
+                handleNavigationKey: event.keyCode,
+                modifiers: event.modifierFlags
+            ) == true || handleImplicitGroupNavigation(event) {
+                return
+            }
+            super.keyDown(with: event)
         case 53:
             cancelInteraction()
         default:
+            if isSpaceKeyDown { cancelInteraction() }
             super.keyDown(with: event)
         }
+    }
+
+    public override func keyUp(with event: NSEvent) {
+        guard event.keyCode == 49, isSpaceKeyDown else {
+            super.keyUp(with: event)
+            return
+        }
+        let shouldSelect = isPressed && !isSelected
+        isSpaceKeyDown = false
+        isPressed = false
+        if shouldSelect { requestSelection() }
+        else { refreshAppearance(animated: true) }
     }
 
     public override func cancelOperation(_ sender: Any?) { cancelInteraction() }
@@ -564,7 +632,7 @@ public final class FluentRadioButton: NSControl {
     public override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
         cancelInteraction(refresh: false)
-        if !isSelected { isSelected = true }
+        if !isSelected { requestSelection() }
         return true
     }
 
@@ -584,13 +652,24 @@ public final class FluentRadioButton: NSControl {
 
     public override func resignFirstResponder() -> Bool {
         let result = super.resignFirstResponder()
-        if result { updateFocusRing() }
+        if result {
+            cancelInteraction(refresh: false)
+            refreshAppearance(animated: true)
+        }
         return result
     }
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if isSelected, groupingCoordinator == nil { enforceExclusiveSelection() }
+        updateGroupAccessibility()
         updateFocusRing()
+    }
+
+    public override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        if isSelected, groupingCoordinator == nil { enforceExclusiveSelection() }
+        updateGroupAccessibility()
     }
 
     public override func viewDidChangeEffectiveAppearance() {
@@ -629,11 +708,17 @@ public final class FluentRadioButton: NSControl {
         setAccessibilityEnabled(isEnabled)
 
         focusLayer.name = "FluentKit.RadioButton.FocusRing"
+        focusInnerLayer.name = "FluentKit.RadioButton.FocusRing.Inner"
         outerLayer.name = "FluentKit.RadioButton.Outer"
         dotLayer.name = "FluentKit.RadioButton.Dot"
         pressedDotLayer.name = "FluentKit.RadioButton.PressedDot"
-        focusLayer.opacity = 0
+        layer?.masksToBounds = false
+        for focus in [focusLayer, focusInnerLayer] {
+            focus.fillColor = NSColor.clear.cgColor
+            focus.opacity = 0
+        }
         layer?.addSublayer(focusLayer)
+        layer?.addSublayer(focusInnerLayer)
         layer?.addSublayer(outerLayer)
         layer?.addSublayer(dotLayer)
         layer?.addSublayer(pressedDotLayer)
@@ -661,25 +746,31 @@ public final class FluentRadioButton: NSControl {
         applyModelAppearance(appearance)
 
         if animated, !reduceMotion {
-            let motion = isEnabled && (isPointerOver || isPressed)
-                ? FluentMotion.controlNormal
-                : FluentMotion.controlFast
-            addGeometryAnimation(
-                to: dotLayer,
-                key: "fluent.radio.dot.bounds",
-                keyPath: "bounds",
-                from: NSValue(rect: oldDotBounds),
-                to: NSValue(rect: dotLayer.bounds),
-                motion: motion
-            )
-            addGeometryAnimation(
-                to: dotLayer,
-                key: "fluent.radio.dot.cornerRadius",
-                keyPath: "cornerRadius",
-                from: oldDotCornerRadius,
-                to: dotLayer.cornerRadius,
-                motion: motion
-            )
+            let motion: FluentMotionToken? = if !isEnabled {
+                FluentMotion.controlFast
+            } else if isPointerOver || isPressed {
+                FluentMotion.controlNormal
+            } else {
+                nil
+            }
+            if let motion {
+                addGeometryAnimation(
+                    to: dotLayer,
+                    key: "fluent.radio.dot.bounds",
+                    keyPath: "bounds",
+                    from: NSValue(rect: oldDotBounds),
+                    to: NSValue(rect: dotLayer.bounds),
+                    motion: motion
+                )
+                addGeometryAnimation(
+                    to: dotLayer,
+                    key: "fluent.radio.dot.cornerRadius",
+                    keyPath: "cornerRadius",
+                    from: oldDotCornerRadius,
+                    to: dotLayer.cornerRadius,
+                    motion: motion
+                )
+            }
             if shouldAnimatePressedDot {
                 addGeometryAnimation(
                     to: pressedDotLayer,
@@ -724,19 +815,33 @@ public final class FluentRadioButton: NSControl {
         pressedDotLayer.position = CGPoint(x: circle.midX, y: circle.midY)
         pressedDotLayer.bounds = CGRect(x: 0, y: 0, width: pressedDiameter, height: pressedDiameter)
         pressedDotLayer.cornerRadius = pressedDiameter / 2
-        pressedDotLayer.backgroundColor = appearance.dotColor.cgColor
+        pressedDotLayer.backgroundColor = appearance.pressedFeedbackColor.cgColor
         pressedDotLayer.opacity = pressedVisible ? 1 : 0
-        let focusRect = bounds.insetBy(dx: 0.5, dy: 2.5)
-        focusLayer.frame = focusRect
-        focusLayer.cornerRadius = 5
-        focusLayer.borderColor = theme.accent.cgColor
-        focusLayer.borderWidth = theme.focusStrokeWidth
+        let focusRect = bounds.insetBy(dx: -7, dy: -3)
+        focusLayer.frame = bounds
+        focusLayer.path = CGPath(
+            roundedRect: focusRect,
+            cornerWidth: theme.designTokens.controlCornerRadius + 3,
+            cornerHeight: theme.designTokens.controlCornerRadius + 3,
+            transform: nil
+        )
+        focusLayer.strokeColor = theme.focusStrokeOuter.cgColor
+        focusLayer.lineWidth = 2
+        focusInnerLayer.frame = bounds
+        focusInnerLayer.path = CGPath(
+            roundedRect: focusRect.insetBy(dx: 1.5, dy: 1.5),
+            cornerWidth: theme.designTokens.controlCornerRadius + 1.5,
+            cornerHeight: theme.designTokens.controlCornerRadius + 1.5,
+            transform: nil
+        )
+        focusInnerLayer.strokeColor = theme.focusStrokeInner.cgColor
+        focusInnerLayer.lineWidth = 1
         CATransaction.commit()
     }
 
     private func circleRect(for appearance: FluentRadioButtonAppearance) -> NSRect {
         NSRect(
-            x: isRTL ? bounds.maxX - appearance.diameter - 1 : 1,
+            x: isRTL ? bounds.maxX - appearance.diameter : 0,
             y: (bounds.height - appearance.diameter) / 2,
             width: appearance.diameter,
             height: appearance.diameter
@@ -765,16 +870,104 @@ public final class FluentRadioButton: NSControl {
     }
 
     private func cancelInteraction(refresh: Bool = true) {
-        guard isPressed else { return }
+        guard isPressed || isPointerPressActive || isSpaceKeyDown else { return }
         isPressed = false
+        isPointerPressActive = false
+        isSpaceKeyDown = false
         if refresh { refreshAppearance(animated: true) }
     }
 
     private func updateFocusRing() {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
+        let opacity: Float = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
+        focusLayer.opacity = opacity
+        focusInnerLayer.opacity = opacity
         CATransaction.commit()
+    }
+
+    private func requestSelection() {
+        guard !isSelected else { return }
+        if let groupingCoordinator {
+            groupingCoordinator.radioButtonRequestedSelection(self)
+        } else {
+            isSelected = true
+        }
+    }
+
+    private func enforceExclusiveSelection() {
+        for peer in semanticGroupMembers() where peer !== self && peer.isSelected {
+            peer.isSelected = false
+        }
+    }
+
+    private func handleImplicitGroupNavigation(_ event: NSEvent) -> Bool {
+        let members = semanticGroupMembers().filter(\.isEnabled)
+        guard members.count > 1, let currentIndex = members.firstIndex(where: { $0 === self }) else {
+            return false
+        }
+        guard [123, 124, 125, 126].contains(event.keyCode) else { return false }
+        let movesForward = event.keyCode == 124 || event.keyCode == 125
+        let targetIndex = (currentIndex + (movesForward ? 1 : -1) + members.count) % members.count
+        let target = members[targetIndex]
+        _ = window?.makeFirstResponder(target)
+        if !event.modifierFlags.contains(.control) { target.requestSelection() }
+        // Independent WinUI RadioButtons use group tab order for every arrow and wrap at both ends.
+        return true
+    }
+
+    private func semanticGroupMembers() -> [FluentRadioButton] {
+        if let explicitName = normalizedGroupName {
+            guard let root = window?.contentView ?? rootSuperview else { return [self] }
+            return Self.radioButtons(in: root).filter { $0.normalizedGroupName == explicitName }
+        }
+        guard let container = implicitGroupContainer else { return [self] }
+        let children = (container as? NSStackView)?.arrangedSubviews ?? container.subviews
+        let members = children.compactMap(Self.directWrappedRadioButton(in:))
+            .filter { $0.normalizedGroupName == nil }
+        return members.contains(where: { $0 === self }) ? members : [self]
+    }
+
+    private var normalizedGroupName: String? {
+        guard let name = groupName?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
+            return nil
+        }
+        return name
+    }
+
+    private var implicitGroupContainer: NSView? {
+        if superview is NSStackView { return superview }
+        return superview?.superview
+    }
+
+    private var rootSuperview: NSView? {
+        var root: NSView? = self
+        while let parent = root?.superview { root = parent }
+        return root
+    }
+
+    private func updateGroupAccessibility() {
+        // A RadioButtons container owns position-in-set metadata for its column-major layout.
+        guard groupingCoordinator == nil else { return }
+        let members = semanticGroupMembers()
+        guard members.count > 1 else {
+            setAccessibilityHelp(nil)
+            return
+        }
+        for (index, member) in members.enumerated() {
+            member.setAccessibilityHelp("Option \(index + 1) of \(members.count)")
+        }
+    }
+
+    private static func directWrappedRadioButton(in view: NSView) -> FluentRadioButton? {
+        if let radio = view as? FluentRadioButton { return radio }
+        guard view.subviews.count == 1 else { return nil }
+        return view.subviews[0] as? FluentRadioButton
+    }
+
+    private static func radioButtons(in root: NSView) -> [FluentRadioButton] {
+        let own = (root as? FluentRadioButton).map { [$0] } ?? []
+        return own + root.subviews.flatMap(radioButtons(in:))
     }
 
     @discardableResult
@@ -785,49 +978,3 @@ public final class FluentRadioButton: NSControl {
 }
 
 extension FluentRadioButton: FluentControlSizeConfigurable {}
-
-public final class FluentProgressRing: NSView {
-    public var theme: FluentTheme = .current { didSet { needsDisplay = true } }
-    public var isAnimating: Bool = false {
-        didSet { isAnimating ? startAnimating() : stopAnimating() }
-    }
-
-    private var rotation: CGFloat = 0
-    private var timer: Timer?
-
-    public init(isAnimating: Bool = true) {
-        self.isAnimating = isAnimating
-        super.init(frame: .zero)
-        wantsLayer = true
-        setAccessibilityRole(.progressIndicator)
-        if isAnimating { startAnimating() }
-    }
-
-    required init?(coder: NSCoder) { super.init(coder: coder) }
-
-    deinit { timer?.invalidate() }
-
-    public override var intrinsicContentSize: NSSize { NSSize(width: 24, height: 24) }
-
-    public override func draw(_ dirtyRect: NSRect) {
-        let rect = bounds.insetBy(dx: 3, dy: 3)
-        let path = NSBezierPath()
-        path.appendArc(withCenter: NSPoint(x: rect.midX, y: rect.midY), radius: rect.width / 2, startAngle: rotation, endAngle: rotation + 250, clockwise: false)
-        path.lineWidth = 3
-        path.lineCapStyle = .round
-        theme.accentFillDefault.setStroke()
-        path.stroke()
-    }
-
-    private func startAnimating() {
-        timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1 / 60, repeats: true) { [weak self] _ in
-            guard let self, self.isAnimating else { return }
-            self.rotation += 6
-            if self.rotation >= 360 { self.rotation -= 360 }
-            self.needsDisplay = true
-        }
-    }
-
-    private func stopAnimating() { timer?.invalidate(); timer = nil; needsDisplay = true }
-}

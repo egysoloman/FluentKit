@@ -112,12 +112,9 @@ private final class FluentSearchFieldCell: NSSearchFieldCell {
     }
 
     private func editorRect(forBounds rect: NSRect) -> NSRect {
-        var result = searchTextRect(forBounds: rect)
-        // NSSearchField inserts its editor through a flipped keyboard-focus clip view. In that
-        // coordinate space a one-point negative adjustment brings the screen-space caret back to
-        // the same baseline as the cell's drawing rect.
-        result.origin.y -= 1
-        return result
+        // Use exactly the same geometry for inactive drawing and the live field editor. A focus-
+        // only vertical correction makes the placeholder/text jump when first responder changes.
+        searchTextRect(forBounds: rect)
     }
 }
 

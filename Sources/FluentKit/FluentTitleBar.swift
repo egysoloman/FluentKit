@@ -1,15 +1,116 @@
 import AppKit
 
 /// Controls the visible height of a `FluentTitleBar`.
-public enum FluentTitleBarHeightMode: String, CaseIterable, Hashable, Sendable {
+public enum FluentTitleBarHeightMode: CaseIterable, RawRepresentable, Hashable, Sendable {
     case automatic
     case compact
     case expanded
+    case fixed(CGFloat)
+
+    public static let allCases: [FluentTitleBarHeightMode] = [.automatic, .compact, .expanded]
+
+    public init?(rawValue: String) {
+        switch rawValue {
+        case "automatic": self = .automatic
+        case "compact": self = .compact
+        case "expanded": self = .expanded
+        default:
+            guard rawValue.hasPrefix("fixed:"),
+                  let value = Double(rawValue.dropFirst("fixed:".count)) else { return nil }
+            self = .fixed(CGFloat(value))
+        }
+    }
+
+    public var rawValue: String {
+        switch self {
+        case .automatic: return "automatic"
+        case .compact: return "compact"
+        case .expanded: return "expanded"
+        case let .fixed(value): return "fixed:\(value)"
+        }
+    }
 }
 
 public enum FluentTitleBarBackgroundStyle: String, CaseIterable, Hashable, Sendable {
     case solid
     case transparent
+}
+
+private protocol FluentTitleBarPrimaryProviding: AnyObject {
+    var isFluentTitleBarPrimary: Bool { get }
+}
+
+/// Marks one title-bar component as the primary item. The title bar keeps that item centered in
+/// the complete window rather than centering it only in the space left by app identity content.
+public struct FluentTitleBarPrimaryView<Content: FluentView>: FluentUpdatablePrimitiveView {
+    fileprivate let content: Content
+    fileprivate let isPrimary: Bool
+
+    public var body: NeverFluentView { NeverFluentView() }
+
+    public func _makeView(in context: FluentRenderContext) -> NSView {
+        let host = FluentTitleBarPrimaryHost(isPrimary: isPrimary)
+        host.setContent(content._mount(in: context))
+        return host
+    }
+
+    public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
+        guard let host = view as? FluentTitleBarPrimaryHost,
+              let child = host.subviews.first else { return false }
+        host.isPrimary = isPrimary
+        let updated = content._update(child, in: context)
+        if updated { host.contentDidUpdate() }
+        return updated
+    }
+}
+
+public extension FluentView {
+    /// Gives this component primary placement when it is mounted inside a Fluent title bar.
+    func titleBarPrimary(_ value: Bool = true) -> FluentTitleBarPrimaryView<Self> {
+        FluentTitleBarPrimaryView(content: self, isPrimary: value)
+    }
+}
+
+private final class FluentTitleBarPrimaryHost: NSView, FluentTitleBarPrimaryProviding {
+    var isPrimary: Bool
+    var isFluentTitleBarPrimary: Bool { isPrimary }
+
+    init(isPrimary: Bool) {
+        self.isPrimary = isPrimary
+        super.init(frame: .zero)
+        identifier = NSUserInterfaceItemIdentifier("FluentKit.TitleBar.Primary")
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override var intrinsicContentSize: NSSize {
+        guard let child = subviews.first else { return .zero }
+        let intrinsic = child.intrinsicContentSize
+        let fitting = child.fittingSize
+        return NSSize(
+            width: intrinsic.width == NSView.noIntrinsicMetric ? fitting.width : intrinsic.width,
+            height: intrinsic.height == NSView.noIntrinsicMetric ? fitting.height : intrinsic.height
+        )
+    }
+
+    override func layout() {
+        super.layout()
+        subviews.first?.frame = bounds
+    }
+
+    func setContent(_ view: NSView) {
+        subviews.forEach { $0.removeFromSuperview() }
+        addSubview(view)
+        view.translatesAutoresizingMaskIntoConstraints = true
+        view.frame = bounds
+        invalidateIntrinsicContentSize()
+    }
+
+    func contentDidUpdate() {
+        invalidateIntrinsicContentSize()
+        needsLayout = true
+        superview?.needsLayout = true
+    }
 }
 
 /// Native window chrome with selectable macOS or Windows-style system controls and Fluent content.
@@ -222,6 +323,7 @@ private final class FluentTitleBarHost: NSView {
     private static let buttonWidth: CGFloat = 40
     private static let iconWidth: CGFloat = 16
     private static let leftHeaderSpacing: CGFloat = 14
+    private static let leftHeaderNegativeInsetSpacing: CGFloat = 2
     private static let iconSpacing: CGFloat = 16
     private static let titleSpacing: CGFloat = 8
     private static let subtitleSpacing: CGFloat = 16
@@ -416,6 +518,12 @@ private final class FluentTitleBarHost: NSView {
         let leftInset = physicalLeftInset()
         let rightInset = windowControlsStyle.trailingTitleBarInset
         let availableWidth = max(bounds.width - leftInset - rightInset, 0)
+        let primaryHost = resolvedPrimaryHost
+
+        func isPrimary(_ host: NSView?) -> Bool {
+            guard let host, let primaryHost else { return false }
+            return host === primaryHost
+        }
 
         func physicalFrame(logicalX: CGFloat, width: CGFloat) -> NSRect {
             let x = direction == .rightToLeft
@@ -424,59 +532,108 @@ private final class FluentTitleBarHost: NSView {
             return NSRect(x: x, y: 0, width: max(width, 0), height: height)
         }
 
+        func captionButtonFrame(logicalX: CGFloat) -> NSRect {
+            var frame = physicalFrame(logicalX: logicalX, width: Self.buttonWidth)
+            // CGRect.insetBy returns CGRect.null (infinite origin) when a transient
+            // arrange slot is shorter than the margins. Keep zero-height layout finite.
+            frame.origin.y = min(2, max(0, height) / 2)
+            frame.size.height = max(0, height - 4)
+            return frame
+        }
+
+        // WinUI gives the 40-point title-bar buttons an external 2-point margin. The margin is
+        // part of the Grid column measurement, so adjacent button centers are 44 points apart;
+        // treating it as an internal inset makes the surfaces both too narrow and too close.
         var leading: CGFloat = 2
         backButton.isHidden = !isBackButtonVisible
         if isBackButtonVisible {
-            backButton.frame = physicalFrame(logicalX: leading, width: Self.buttonWidth)
-            leading += Self.buttonWidth
+            backButton.frame = captionButtonFrame(logicalX: leading)
+            leading += Self.buttonWidth + 4
         } else {
             backButton.frame = .zero
         }
         forwardButton.isHidden = !isForwardButtonVisible
         if isForwardButtonVisible {
-            forwardButton.frame = physicalFrame(logicalX: leading, width: Self.buttonWidth)
-            leading += Self.buttonWidth
+            forwardButton.frame = captionButtonFrame(logicalX: leading)
+            leading += Self.buttonWidth + 4
         } else {
             forwardButton.frame = .zero
         }
         paneToggleButton.isHidden = !isPaneToggleButtonVisible
         if isPaneToggleButtonVisible {
-            paneToggleButton.frame = physicalFrame(logicalX: leading, width: Self.buttonWidth)
-            leading += Self.buttonWidth
+            paneToggleButton.frame = captionButtonFrame(logicalX: leading)
+            leading += Self.buttonWidth + 4
         } else {
             paneToggleButton.frame = .zero
         }
 
-        let rightWidth = fittedWidth(rightHeaderHost, maximum: min(280, availableWidth * 0.34))
+        // Resolve the primary frame before measuring the application identity. The primary item
+        // stays centered on the physical window, but it is also an exclusion zone: title and
+        // subtitle must truncate before it instead of being painted underneath the search box.
+        var primaryLogicalStart: CGFloat?
+        if let primaryHost {
+            let centerX = bounds.midX
+            let symmetricWidth = max(
+                0,
+                2 * min(centerX - leftInset, bounds.width - rightInset - centerX)
+            )
+            let naturalWidth = fittedWidth(primaryHost, maximum: symmetricWidth)
+            let frame = centeredSlotFrame(
+                NSRect(
+                    x: floor(centerX - naturalWidth / 2),
+                    y: 0,
+                    width: naturalWidth,
+                    height: height
+                ),
+                host: primaryHost
+            )
+            primaryHost.frame = frame
+            primaryLogicalStart = direction == .rightToLeft
+                ? bounds.width - rightInset - frame.maxX
+                : frame.minX - leftInset
+        }
+
+        let rightWidth = isPrimary(rightHeaderHost)
+            ? 0
+            : fittedWidth(rightHeaderHost, maximum: min(280, availableWidth * 0.34))
         let rightStart = max(availableWidth - rightWidth, leading)
-        let contentLimit = max(
+        var contentLimit = max(
             rightStart - (rightWidth > 0 ? Self.minimumDragWidth : 0),
             leading
         )
-        if let rightHeaderHost {
+        if let primaryLogicalStart {
+            contentLimit = min(contentLimit, max(primaryLogicalStart - Self.titleSpacing, leading))
+        }
+        if let rightHeaderHost, !isPrimary(rightHeaderHost) {
             rightHeaderHost.frame = centeredSlotFrame(
                 physicalFrame(logicalX: rightStart, width: rightWidth),
                 host: rightHeaderHost
             )
         }
 
-        if let leftHeaderHost {
+        if let leftHeaderHost, !isPrimary(leftHeaderHost) {
             let width = min(fittedWidth(leftHeaderHost, maximum: 240), max(contentLimit - leading, 0))
             leftHeaderHost.frame = centeredSlotFrame(
                 physicalFrame(logicalX: leading, width: width),
                 host: leftHeaderHost
             )
             leading += width
-            if width > 0 { leading += min(Self.leftHeaderSpacing, max(contentLimit - leading, 0)) }
         }
+
+        // TitleBar::UpdateLeftHeaderSpacing has two source states. When Back and PaneToggle have
+        // equal visibility it keeps the regular 14-point column; when only one is visible it uses
+        // the 2-point negative-inset column. This column exists even without a custom LeftHeader.
+        let leftHeaderPadding = isBackButtonVisible == isPaneToggleButtonVisible
+            ? Self.leftHeaderSpacing
+            : Self.leftHeaderNegativeInsetSpacing
+        leading += min(leftHeaderPadding, max(contentLimit - leading, 0))
 
         // WinUI treats title-bar content as interactive chrome. Reserve its requested width before
         // fitting the optional app identity so a narrow window truncates the title instead of the
         // SearchBox or another center control.
-        let centerContentWidth = fittedWidth(
-            centerContentHost,
-            maximum: max(contentLimit - leading, 0)
-        )
+        let centerContentWidth = isPrimary(centerContentHost)
+            ? 0
+            : fittedWidth(centerContentHost, maximum: max(contentLimit - leading, 0))
         let centerSpacing = centerContentWidth > 0 ? Self.titleSpacing : 0
         let identityLimit = max(contentLimit - centerContentWidth - centerSpacing, leading)
 
@@ -504,7 +661,7 @@ private final class FluentTitleBarHost: NSView {
         leading += subtitleWidth
         if subtitleWidth > 0 { leading += min(Self.subtitleSpacing, max(identityLimit - leading, 0)) }
 
-        if let centerContentHost {
+        if let centerContentHost, !isPrimary(centerContentHost) {
             let contentWidth = min(
                 centerContentWidth,
                 max(contentLimit - leading, 0)
@@ -515,6 +672,7 @@ private final class FluentTitleBarHost: NSView {
                 host: centerContentHost
             )
         }
+
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -548,11 +706,32 @@ private final class FluentTitleBarHost: NSView {
         switch heightMode {
         case .compact: return Self.compactHeight
         case .expanded: return Self.expandedHeight
+        case let .fixed(height): return max(1, height)
         case .automatic:
-            return leftHeader == nil && centerContent == nil && rightHeader == nil
-                ? Self.compactHeight
-                : Self.expandedHeight
+            let slotHosts = [leftHeaderHost, centerContentHost, rightHeaderHost].compactMap { $0 }
+            guard !slotHosts.isEmpty else { return Self.compactHeight }
+            let fittedContentHeight = slotHosts.reduce(CGFloat(0)) { partial, host in
+                let height = host.fittingSize.height
+                return max(partial, height.isFinite ? height : 0)
+            }
+            return max(Self.expandedHeight, ceil(fittedContentHeight) + 12)
         }
+    }
+
+    /// Only one primary item participates in centered placement. Content is the natural default
+    /// priority, followed by the leading and trailing slots, making duplicate markers stable.
+    private var resolvedPrimaryHost: FluentViewHost<FluentAnyView>? {
+        [centerContentHost, leftHeaderHost, rightHeaderHost]
+            .compactMap { $0 }
+            .first(where: containsPrimaryMarker)
+    }
+
+    private func containsPrimaryMarker(_ view: NSView) -> Bool {
+        if let marker = view as? FluentTitleBarPrimaryProviding,
+           marker.isFluentTitleBarPrimary {
+            return true
+        }
+        return view.subviews.contains(where: containsPrimaryMarker)
     }
 
     private func configureLabel(_ label: NSTextField, identifier: String) {
@@ -805,7 +984,6 @@ private final class FluentTitleBarButton: NSButton {
     private var isWindowActive = true
     private var pointerOver = false
     private var pressed = false
-    private let chevronLayer = FluentChevronPrimitiveLayer()
 
     override var acceptsFirstResponder: Bool { isEnabled }
 
@@ -816,12 +994,6 @@ private final class FluentTitleBarButton: NSButton {
         focusRingType = .none
         wantsLayer = true
         layer?.masksToBounds = false
-        if kind != .pane {
-            chevronLayer.name = kind == .back
-                ? "FluentKit.TitleBar.BackChevron"
-                : "FluentKit.TitleBar.ForwardChevron"
-            layer?.addSublayer(chevronLayer)
-        }
         target = self
         action = #selector(invoke)
         setAccessibilityRole(.button)
@@ -858,43 +1030,28 @@ private final class FluentTitleBarButton: NSButton {
         setAccessibilityEnabled(isEnabled)
         setAccessibilityValue(accessibilityValue)
         needsDisplay = true
-        updateBackChevron(animated: false)
-    }
-
-    override func layout() {
-        super.layout()
-        updateBackChevron(animated: false)
-    }
-
-    override func viewDidChangeBackingProperties() {
-        super.viewDidChangeBackingProperties()
-        updateBackChevron(animated: false)
     }
 
     override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
         pointerOver = true
         needsDisplay = true
-        updateBackChevron(animated: true)
     }
 
     override func mouseExited(with event: NSEvent) {
         pointerOver = false
         pressed = false
         needsDisplay = true
-        updateBackChevron(animated: true)
     }
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         pressed = true
         needsDisplay = true
-        updateBackChevron(animated: true)
         super.mouseDown(with: event)
         pressed = false
         pointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
         needsDisplay = true
-        updateBackChevron(animated: true)
     }
 
     override func keyDown(with event: NSEvent) {
@@ -908,63 +1065,66 @@ private final class FluentTitleBarButton: NSButton {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let surface = bounds.insetBy(dx: 2, dy: 2)
+        // The view's frame is already the 40-point WinUI button after its external Margin=2 has
+        // been removed by layout. Its root surface therefore fills these bounds.
+        let surface = bounds
         let background: NSColor
         if !isEnabled {
             background = theme.buttonBackground(for: .disabled)
         } else if pressed {
-            background = theme.controlFillTertiary
+            background = theme.subtleFillTertiary
         } else if pointerOver {
-            background = theme.controlFillSecondary
+            background = theme.subtleFillSecondary
         } else {
             background = .clear
         }
         background.setFill()
         NSBezierPath(roundedRect: surface, xRadius: 4, yRadius: 4).fill()
 
-        let color = !isEnabled
-            ? theme.textDisabled
-            : (isWindowActive ? theme.textPrimary : theme.textSecondary)
-        if kind == .pane,
-           let image = NSImage(systemSymbolName: "line.3.horizontal", accessibilityDescription: accessibilityTitle()) {
-            let point = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
-            let tint = NSImage.SymbolConfiguration(hierarchicalColor: color)
-            image.withSymbolConfiguration(point.applying(tint))?.draw(
-                in: NSRect(x: bounds.midX - 8, y: bounds.midY - 8, width: 16, height: 16)
-            )
+        let color: NSColor
+        if !isEnabled {
+            color = theme.textDisabled
+        } else if pressed {
+            color = theme.textSecondary
+        } else {
+            color = isWindowActive ? theme.textPrimary : theme.textSecondary
         }
-        if window?.firstResponder === self {
+        color.setStroke()
+        let glyph = NSBezierPath()
+        glyph.lineWidth = 1.5
+        glyph.lineCapStyle = .round
+        glyph.lineJoinStyle = .round
+        let center = NSPoint(x: bounds.midX, y: bounds.midY)
+        switch kind {
+        case .pane:
+            // Segoe Fluent E700 / AnimatedGlobalNavigationButtonVisualSource fallback geometry.
+            for offset in [-5.0, 0, 5.0] {
+                glyph.move(to: NSPoint(x: center.x - 7, y: center.y + offset))
+                glyph.line(to: NSPoint(x: center.x + 7, y: center.y + offset))
+            }
+        case .back, .forward:
+            // WinUI E72B is a complete arrow with a horizontal stem. SF's chevron/arrow metrics
+            // are noticeably different at 16 points, so keep the Fluent fallback geometry here.
+            let pointsRight = (kind == .forward) != (layoutDirection == .rightToLeft)
+            let sign: CGFloat = pointsRight ? 1 : -1
+            let tipX = center.x + sign * 7
+            let tailX = center.x - sign * 7
+            glyph.move(to: NSPoint(x: tailX, y: center.y))
+            glyph.line(to: NSPoint(x: tipX, y: center.y))
+            glyph.move(to: NSPoint(x: tipX, y: center.y))
+            glyph.line(to: NSPoint(x: tipX - sign * 5, y: center.y - 5))
+            glyph.move(to: NSPoint(x: tipX, y: center.y))
+            glyph.line(to: NSPoint(x: tipX - sign * 5, y: center.y + 5))
+        }
+        glyph.stroke()
+        // AppKit may nominate the first title-bar key view while a window is becoming key. That
+        // must not look like a keyboard selection until the user actually navigates with keys.
+        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
             theme.accent.setStroke()
             let focus = NSBezierPath(roundedRect: surface.insetBy(dx: 1, dy: 1), xRadius: 3, yRadius: 3)
             focus.lineWidth = theme.focusStrokeWidth
             focus.stroke()
         }
-    }
-
-    private func updateBackChevron(animated: Bool) {
-        guard kind != .pane, bounds.width > 0, bounds.height > 0 else { return }
-        let state: FluentControlState = !isEnabled
-            ? .disabled
-            : (pressed ? .pressed : (pointerOver ? .pointerOver : .normal))
-        let color = !isEnabled
-            ? theme.textDisabled
-            : (isWindowActive ? theme.textPrimary : theme.textSecondary)
-        let direction: FluentChevronDirection
-        switch (kind, layoutDirection) {
-        case (.back, .rightToLeft), (.forward, .leftToRight), (.forward, .system):
-            direction = .right
-        default:
-            direction = .left
-        }
-        chevronLayer.update(
-            frame: NSRect(x: bounds.midX - 6, y: bounds.midY - 6, width: 12, height: 12),
-            color: color,
-            state: state,
-            visual: .directional,
-            direction: direction,
-            backingScale: window?.backingScaleFactor,
-            animated: animated && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-        )
     }
 
     @objc private func invoke() { if isEnabled { onInvoke?() } }

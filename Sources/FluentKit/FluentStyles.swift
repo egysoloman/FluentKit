@@ -1014,18 +1014,18 @@ public struct FluentAutomaticProgressStyle: FluentProgressStyle {
         let theme = configuration.theme
         let progressColor: NSColor = switch configuration.state {
         case .normal: theme.accentFillDefault
-        case .paused: theme.isHighContrast ? theme.controlStrokeStrong : .systemYellow
-        case .error: theme.isHighContrast ? NSColor.systemRed : .systemRed
+        case .paused: theme.progressBarPausedForeground
+        case .error: theme.progressBarErrorForeground
         }
         let scale = theme.density.metricScale
         return FluentProgressAppearance(
-            trackColor: theme.controlStrokeStrong,
+            trackColor: theme.progressBarTrack,
             progressColor: progressColor,
-            trackHeight: (theme.isHighContrast ? 2 : 1) * scale,
-            indicatorHeight: (theme.isHighContrast ? 4 : 3) * scale,
-            trackCornerRadius: (theme.isHighContrast ? 1 : 0.5) * scale,
-            cornerRadius: (theme.isHighContrast ? 2 : 1.5) * scale,
-            borderColor: theme.isHighContrast ? theme.controlStrokeStrong : .clear,
+            trackHeight: 1 * scale,
+            indicatorHeight: 3 * scale,
+            trackCornerRadius: 0.5 * scale,
+            cornerRadius: 1.5 * scale,
+            borderColor: theme.progressBarBorder,
             borderWidth: theme.isHighContrast ? 1 : 0
         )
     }
@@ -1038,18 +1038,20 @@ public struct FluentNeutralProgressStyle: FluentProgressStyle {
         let theme = configuration.theme
         let progressColor: NSColor = switch configuration.state {
         case .normal: theme.controlStrokeStrong
-        case .paused: .systemYellow
-        case .error: .systemRed
+        case .paused: theme.progressBarPausedForeground
+        case .error: theme.progressBarErrorForeground
         }
         let scale = theme.density.metricScale
         return FluentProgressAppearance(
-            trackColor: theme.controlStrokeStrong.withAlphaComponent(0.45),
+            trackColor: theme.isHighContrast
+                ? theme.progressBarTrack
+                : theme.controlStrokeStrong.withAlphaComponent(0.45),
             progressColor: progressColor,
-            trackHeight: (theme.isHighContrast ? 2 : 1) * scale,
-            indicatorHeight: (theme.isHighContrast ? 4 : 3) * scale,
-            trackCornerRadius: (theme.isHighContrast ? 1 : 0.5) * scale,
-            cornerRadius: (theme.isHighContrast ? 2 : 1.5) * scale,
-            borderColor: theme.isHighContrast ? theme.controlStrokeStrong : .clear,
+            trackHeight: 1 * scale,
+            indicatorHeight: 3 * scale,
+            trackCornerRadius: 0.5 * scale,
+            cornerRadius: 1.5 * scale,
+            borderColor: theme.progressBarBorder,
             borderWidth: theme.isHighContrast ? 1 : 0
         )
     }
@@ -1252,6 +1254,8 @@ public struct FluentRadioButtonAppearance {
     public let borderColor: NSColor
     public let borderWidth: CGFloat
     public let dotColor: NSColor
+    /// Fill used by WinUI's separate PressedCheckGlyph while an unchecked option is pressed.
+    public let pressedFeedbackColor: NSColor
     public let dotDiameter: CGFloat
     public let labelColor: NSColor
     public let labelFont: NSFont
@@ -1263,6 +1267,7 @@ public struct FluentRadioButtonAppearance {
         borderColor: NSColor,
         borderWidth: CGFloat = 1,
         dotColor: NSColor,
+        pressedFeedbackColor: NSColor? = nil,
         labelColor: NSColor,
         labelFont: NSFont,
         labelSpacing: CGFloat = 8,
@@ -1273,6 +1278,7 @@ public struct FluentRadioButtonAppearance {
         self.borderColor = borderColor
         self.borderWidth = max(borderWidth, 0)
         self.dotColor = dotColor
+        self.pressedFeedbackColor = pressedFeedbackColor ?? dotColor
         self.dotDiameter = min(max(dotDiameter ?? diameter * 0.6, 1), max(diameter, 1))
         self.labelColor = labelColor
         self.labelFont = labelFont
@@ -1299,12 +1305,6 @@ public struct FluentAutomaticRadioButtonStyle: FluentRadioButtonStyle {
         } else {
             .normal
         }
-        let uncheckedFill: NSColor = switch state {
-        case .pointerOver: theme.controlFillSecondary
-        case .pressed: theme.controlFillTertiary
-        case .disabled: theme.controlFill.withAlphaComponent(0.45)
-        default: theme.controlFill
-        }
         let dotDiameter: CGFloat = switch state {
         case .pointerOver, .disabled: 14
         case .pressed: 10
@@ -1313,18 +1313,15 @@ public struct FluentAutomaticRadioButtonStyle: FluentRadioButtonStyle {
         let bodyFont = theme.typography.font(for: .body)
         return FluentRadioButtonAppearance(
             diameter: 20 * scale,
-            fillColor: configuration.isSelected
-                ? theme.accentFill(for: state)
-                : uncheckedFill,
-            borderColor: configuration.isSelected && !theme.isHighContrast
-                ? theme.accentFill(for: state)
-                : theme.controlStrokeStrong.withAlphaComponent(state == .disabled ? 0.35 : 1),
-            borderWidth: theme.controlStrokeWidth,
-            dotColor: theme.textOnAccent,
+            fillColor: theme.radioOuterFill(isSelected: configuration.isSelected, state: state),
+            borderColor: theme.radioOuterStroke(isSelected: configuration.isSelected, state: state),
+            borderWidth: 1,
+            dotColor: theme.radioDotFill(for: state),
+            pressedFeedbackColor: theme.radioDotFill(for: .normal),
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
             labelSpacing: 8 * scale,
-            dotDiameter: (theme.isHighContrast ? dotDiameter + 2 : dotDiameter) * scale
+            dotDiameter: dotDiameter * scale
         )
     }
 }
@@ -1360,12 +1357,13 @@ public struct FluentMonochromeRadioButtonStyle: FluentRadioButtonStyle {
             diameter: 20 * scale,
             fillColor: (configuration.isSelected ? theme.controlStrokeStrong : uncheckedFill).withAlphaComponent(alpha),
             borderColor: theme.controlStrokeStrong.withAlphaComponent(alpha),
-            borderWidth: theme.controlStrokeWidth,
+            borderWidth: 1,
             dotColor: theme.windowBackground,
+            pressedFeedbackColor: theme.windowBackground,
             labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
             labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
             labelSpacing: 8 * scale,
-            dotDiameter: (theme.isHighContrast ? dotDiameter + 2 : dotDiameter) * scale
+            dotDiameter: dotDiameter * scale
         )
     }
 }

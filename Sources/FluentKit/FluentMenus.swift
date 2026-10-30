@@ -186,6 +186,9 @@ public final class FluentMenuFlyout {
     /// Called after the root presenter has been removed from its panel.
     /// Button-like controls use this to clear their open visual state.
     public var onDismiss: (() -> Void)?
+    /// MenuBar installs this on a root flyout so physical Left/Right can move between top-level
+    /// items. Ordinary MenuFlyout instances leave it nil and retain submenu close/open behavior.
+    var onRootHorizontalNavigation: ((Int) -> Void)?
 
     public init(
         items: [FluentMenuItem],
@@ -391,6 +394,7 @@ public final class FluentMenuFlyout {
         presenter.onSelection = { [weak self] index, row in self?.scheduleSubmenu(index: index, row: row) }
         presenter.onSubmenu = { [weak self] index, row in self?.openSubmenu(index: index, row: row) }
         presenter.onCloseSubmenu = { [weak self] in self?.closeFromKeyboard() }
+        presenter.onRootHorizontalNavigation = owner == nil ? onRootHorizontalNavigation : nil
         parentWindow = anchorWindow
         anchorWindow.addChildWindow(panel, ordered: .above)
         self.panel = panel
@@ -583,6 +587,7 @@ private final class FluentMenuPresenterView: NSView {
     var onSelection: ((Int, FluentMenuItemRow) -> Void)?
     var onSubmenu: ((Int, FluentMenuItemRow) -> Void)?
     var onCloseSubmenu: (() -> Void)?
+    var onRootHorizontalNavigation: ((Int) -> Void)?
 
     private let items: [FluentMenuItem]
     private var theme: FluentTheme
@@ -667,11 +672,8 @@ private final class FluentMenuPresenterView: NSView {
         case 126: moveSelection(by: -1)
         case 36, 49:
             if let selectedIndex { invoke(selectedIndex) }
-        case 124:
-            if let selectedIndex, let row = itemRows[selectedIndex], items[selectedIndex].hasSubmenu {
-                onSubmenu?(selectedIndex, row)
-            }
-        case 123: onCloseSubmenu?()
+        case 124: handleHorizontalNavigation(physicalOffset: 1)
+        case 123: handleHorizontalNavigation(physicalOffset: -1)
         case 115:
             if let first = enabledIndices.first { select(first, announce: true, keyboard: true) }
         case 119:
@@ -685,6 +687,24 @@ private final class FluentMenuPresenterView: NSView {
 
     private var enabledIndices: [Int] {
         items.indices.filter { !items[$0].isSeparator && items[$0].isEnabled }
+    }
+
+    private func handleHorizontalNavigation(physicalOffset: Int) {
+        let opensSubmenu = layoutDirection == .rightToLeft
+            ? physicalOffset < 0
+            : physicalOffset > 0
+        if opensSubmenu,
+           let selectedIndex,
+           let row = itemRows[selectedIndex],
+           items[selectedIndex].hasSubmenu {
+            onSubmenu?(selectedIndex, row)
+            return
+        }
+        if let onRootHorizontalNavigation {
+            onRootHorizontalNavigation(physicalOffset)
+        } else if !opensSubmenu {
+            onCloseSubmenu?()
+        }
     }
 
     private func moveSelection(by offset: Int) {

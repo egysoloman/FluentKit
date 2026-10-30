@@ -45,17 +45,24 @@ public struct FluentRadioButtonView: FluentUpdatablePrimitiveView {
     private let title: String
     private let binding: FluentBinding<Bool>
     private let style: (any FluentRadioButtonStyle)?
+    private let groupName: String?
 
-    public init(_ title: String, isSelected: FluentBinding<Bool>, style: (any FluentRadioButtonStyle)? = nil) {
+    public init(
+        _ title: String,
+        isSelected: FluentBinding<Bool>,
+        groupName: String? = nil,
+        style: (any FluentRadioButtonStyle)? = nil
+    ) {
         self.title = title
         self.binding = isSelected
+        self.groupName = groupName
         self.style = style
     }
 
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let bound = FluentBoundRadioButton(binding, title: title)
+        let bound = FluentBoundRadioButton(binding, title: title, groupName: groupName)
         bound.radioButton.theme = context.theme
         bound.radioButton.reduceMotion = context.reduceMotion
         bound.radioButton.fluentLayoutDirection = context.layoutDirection
@@ -69,7 +76,8 @@ public struct FluentRadioButtonView: FluentUpdatablePrimitiveView {
             binding: binding,
             theme: context.theme,
             reduceMotion: context.reduceMotion,
-            layoutDirection: context.layoutDirection
+            layoutDirection: context.layoutDirection,
+            groupName: groupName
         )
         bound.radioButton.title = title
         bound.radioButton.fluentStyle = style ?? FluentAutomaticRadioButtonStyle()
@@ -78,6 +86,6 @@ public struct FluentRadioButtonView: FluentUpdatablePrimitiveView {
     }
 
     public func radioButtonStyle(_ style: any FluentRadioButtonStyle) -> FluentRadioButtonView {
-        FluentRadioButtonView(title, isSelected: binding, style: style)
+        FluentRadioButtonView(title, isSelected: binding, groupName: groupName, style: style)
     }
 }

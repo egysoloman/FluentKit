@@ -48,6 +48,7 @@ public struct FluentNavigationItem<ID: Hashable> {
     public let children: [FluentNavigationItem<ID>]
     public let selectsOnInvoked: Bool
     public let isExpanded: Bool
+    public let infoBadge: FluentAnyView?
 
     public init(
         id: ID,
@@ -65,6 +66,28 @@ public struct FluentNavigationItem<ID: Hashable> {
         self.children = children
         self.selectsOnInvoked = selectsOnInvoked
         self.isExpanded = isExpanded
+        infoBadge = nil
+    }
+
+    /// Creates an item with content in WinUI's `NavigationViewItem.InfoBadge` presenter slot.
+    public init<InfoBadge: FluentView>(
+        id: ID,
+        title: String,
+        systemImageName: String,
+        isEnabled: Bool = true,
+        children: [FluentNavigationItem<ID>] = [],
+        selectsOnInvoked: Bool = true,
+        isExpanded: Bool = false,
+        @FluentViewBuilder infoBadge: () -> InfoBadge
+    ) {
+        self.id = id
+        self.title = title
+        self.systemImageName = systemImageName
+        self.isEnabled = isEnabled
+        self.children = children
+        self.selectsOnInvoked = selectsOnInvoked
+        self.isExpanded = isExpanded
+        self.infoBadge = FluentAnyView(infoBadge())
     }
 }
 
@@ -398,6 +421,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private var knownExpandableItemIDs: Set<ID> = []
     private var expansionAnimationGenerations: [ID: UInt64] = [:]
     private var pendingExpansionTargets: [ID: Bool] = [:]
+    private var itemConfigurationGeneration: UInt64 = 0
     private var deferredRemovalButtons: [FluentNavigationItemButton<ID>] = []
     private var deferredRemovalDocumentHeight: CGFloat?
     private let expansionAnimationCoordinator = FluentAnimationCoordinator()
@@ -516,6 +540,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         )
         sectionLabel.textColor = context.theme.textSecondary
         sectionLabel.lineBreakMode = .byTruncatingTail
+        sectionLabel.alignment = context.layoutDirection == .rightToLeft ? .right : .left
+        sectionLabel.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         sectionLabel.isSelectable = false
         sectionLabel.isEditable = false
         sectionLabel.isBordered = false
@@ -589,6 +615,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         context: FluentRenderContext
     ) {
         removeBindingObservers()
+        itemConfigurationGeneration &+= 1
         let nextExpandableItems = Self.flatten(items + footerItems).filter { !$0.children.isEmpty }
         let nextExpandableIDs = Set(nextExpandableItems.map(\.id))
         expandedItemIDs.formIntersection(nextExpandableIDs)
@@ -629,6 +656,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             weight: .semibold
         )
         sectionLabel.textColor = context.theme.textSecondary
+        sectionLabel.alignment = context.layoutDirection == .rightToLeft ? .right : .left
+        sectionLabel.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
 
         reconcileHeader()
         reconcilePaneHeader()
@@ -760,6 +789,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
             itemExpanded: expandedItemIDs.contains(item.id),
             theme: context.theme,
             layoutDirection: context.layoutDirection,
+            context: context,
+            configurationGeneration: itemConfigurationGeneration,
             onActivate: { [weak self] id in self?.activateNavigationItem(id) },
             onMoveFocus: { [weak self] id, move in self?.moveFocus(from: id, move: move) },
             onCancel: { [weak self] in self?.closeOverlayPaneIfNeeded() },
@@ -1370,7 +1401,8 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     }
 
     private func topButtonWidth(_ button: FluentNavigationItemButton<ID>) -> CGFloat {
-        min(max(button.titleWidth + 60, 64), 188)
+        let badgeReservation = button.infoBadgeWidth > 0 ? button.infoBadgeWidth + 8 : 0
+        return min(max(button.titleWidth + 60 + badgeReservation, 64), 188)
     }
 
     private func installObservers() {
@@ -1938,8 +1970,8 @@ private final class FluentNavigationPaneToggleButton: NSButton {
 
     override func draw(_ dirtyRect: NSRect) {
         let background: NSColor = pressed
-            ? fluentTheme.controlFillTertiary
-            : (pointerOver ? fluentTheme.controlFillSecondary : .clear)
+            ? fluentTheme.subtleFillTertiary
+            : (pointerOver ? fluentTheme.subtleFillSecondary : .clear)
         background.setFill()
         NSBezierPath(roundedRect: bounds, xRadius: 4, yRadius: 4).fill()
         let symbol = "line.3.horizontal"
@@ -1986,6 +2018,164 @@ private final class FluentNavigationPaneToggleButton: NSButton {
     @objc private func invoke() { onToggle?() }
 }
 
+private final class FluentNavigationInfoBadgePresenter: NSView {
+    private var host: FluentViewHost<FluentAnyView>?
+
+    override var intrinsicContentSize: NSSize {
+        guard let host else { return .zero }
+        let natural = host.intrinsicContentSize
+        return NSSize(
+            width: natural.width == NSView.noIntrinsicMetric ? 0 : max(natural.width, 0),
+            height: natural.height == NSView.noIntrinsicMetric ? 0 : max(natural.height, 0)
+        )
+    }
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Item.InfoBadge")
+        setAccessibilityElement(false)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func update(content: FluentAnyView?, context: FluentRenderContext) {
+        guard let content else {
+            host?.removeFromSuperview()
+            host = nil
+            isHidden = true
+            invalidateIntrinsicContentSize()
+            return
+        }
+        isHidden = false
+        if let host {
+            host.context = context
+            host.update(content)
+        } else {
+            let host = FluentViewHost(content, context: context)
+            host.translatesAutoresizingMaskIntoConstraints = true
+            addSubview(host)
+            self.host = host
+        }
+        invalidateIntrinsicContentSize()
+        needsLayout = true
+    }
+
+    override func layout() {
+        super.layout()
+        host?.frame = bounds
+        host?.layoutSubtreeIfNeeded()
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+}
+
+/// Horizontal slots from WinUI's left-pane `NavigationViewItemPresenter` template. Geometry is
+/// first resolved in logical left-to-right space, then mirrored as one unit for right-to-left
+/// layout. Mirroring individual glyphs while leaving the content rectangle unchanged lets text
+/// paint through the icon column.
+struct FluentNavigationItemHorizontalGeometry: Equatable {
+    let iconFrame: NSRect
+    let textFrame: NSRect
+    let infoBadgeFrame: NSRect?
+    let chevronFrame: NSRect?
+
+    static func resolve(
+        in bounds: NSRect,
+        top: Bool,
+        expanded: Bool,
+        depth: Int,
+        hasChildren: Bool,
+        rightToLeft: Bool,
+        infoBadgeSize: NSSize = .zero
+    ) -> Self {
+        let iconSize: CGFloat = 18
+        let indent = top ? 0 : CGFloat(depth) * 20
+        let logicalIconX: CGFloat = if top { 10 } else if expanded { 11 + indent } else {
+            bounds.midX - iconSize / 2
+        }
+        let logicalIcon = NSRect(
+            x: logicalIconX,
+            y: bounds.midY - iconSize / 2,
+            width: iconSize,
+            height: iconSize
+        )
+
+        let hasInfoBadge = infoBadgeSize.width > 0 && infoBadgeSize.height > 0
+        let logicalText: NSRect
+        let logicalInfoBadge: NSRect?
+        let logicalChevron: NSRect?
+        if expanded || top {
+            let contentLeading = 42 + indent
+            let contentEnd: CGFloat
+            if top {
+                logicalInfoBadge = hasInfoBadge
+                    ? NSRect(
+                        x: bounds.maxX - infoBadgeSize.width - 2,
+                        // WinUI's top presenter uses Margin="-16,0,2,13". The 13pt logical
+                        // bottom margin lifts the badge above the item's vertical center.
+                        y: max(bounds.minY + (bounds.height - infoBadgeSize.height - 13) / 2, bounds.minY),
+                        width: infoBadgeSize.width,
+                        height: infoBadgeSize.height
+                    )
+                    : nil
+                let trailingContentEdge = logicalInfoBadge.map { $0.minX - 8 } ?? bounds.maxX - 10
+                logicalChevron = hasChildren
+                    ? NSRect(x: trailingContentEdge - 18, y: bounds.midY - 6, width: 12, height: 12)
+                    : nil
+                contentEnd = logicalChevron.map { $0.minX - 8 } ?? trailingContentEdge
+            } else {
+                let baseContentEnd = bounds.maxX - (hasChildren ? 34 : 10)
+                logicalInfoBadge = hasInfoBadge
+                    ? NSRect(
+                        x: baseContentEnd - infoBadgeSize.width,
+                        y: bounds.midY - infoBadgeSize.height / 2,
+                        width: infoBadgeSize.width,
+                        height: infoBadgeSize.height
+                    )
+                    : nil
+                logicalChevron = hasChildren
+                    ? NSRect(x: bounds.maxX - 26, y: bounds.midY - 6, width: 12, height: 12)
+                    : nil
+                contentEnd = logicalInfoBadge.map { $0.minX - 8 } ?? baseContentEnd
+            }
+            logicalText = NSRect(
+                x: contentLeading,
+                y: bounds.minY,
+                width: max(contentEnd - contentLeading, 0),
+                height: bounds.height
+            )
+        } else {
+            logicalText = .zero
+            logicalInfoBadge = hasInfoBadge
+                ? NSRect(
+                    x: bounds.maxX - infoBadgeSize.width - 2,
+                    y: bounds.minY + 2,
+                    width: infoBadgeSize.width,
+                    height: infoBadgeSize.height
+                )
+                : nil
+            logicalChevron = nil
+        }
+
+        func physical(_ rect: NSRect) -> NSRect {
+            guard rightToLeft, !rect.isEmpty else { return rect }
+            return NSRect(
+                x: bounds.minX + bounds.maxX - rect.maxX,
+                y: rect.minY,
+                width: rect.width,
+                height: rect.height
+            )
+        }
+
+        return Self(
+            iconFrame: physical(logicalIcon),
+            textFrame: physical(logicalText),
+            infoBadgeFrame: logicalInfoBadge.map(physical),
+            chevronFrame: logicalChevron.map(physical)
+        )
+    }
+}
+
 private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     private(set) var itemID: ID
     private var itemTitle: String
@@ -1999,11 +2189,13 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     private var fluentTheme: FluentTheme = .current
     private var layoutDirection: FluentLayoutDirection = .leftToRight
     private var pointerState = FluentPointerInteractionState()
+    private var infoBadgeConfigurationGeneration: UInt64?
     private var onActivate: ((ID) -> Void)?
     private var onMoveFocus: ((ID, FluentNavigationFocusMove) -> Void)?
     private var onCancel: (() -> Void)?
     private var onHoverChange: ((FluentNavigationItemButton<ID>, Bool) -> Void)?
     private let chevronLayer = FluentChevronPrimitiveLayer()
+    private let infoBadgePresenter = FluentNavigationInfoBadgePresenter()
     private lazy var pointerTrackingAreaHost = FluentTrackingAreaHost(
         view: self,
         options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect]
@@ -2012,6 +2204,8 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     var titleWidth: CGFloat {
         (itemTitle as NSString).size(withAttributes: [.font: fluentTheme.typography.font(for: .body)]).width
     }
+
+    var infoBadgeWidth: CGFloat { infoBadgeSize.width }
 
     override var acceptsFirstResponder: Bool { isEnabled }
 
@@ -2026,6 +2220,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         layer?.masksToBounds = false
         chevronLayer.name = "FluentKit.NavigationView.ItemChevron"
         layer?.addSublayer(chevronLayer)
+        addSubview(infoBadgePresenter)
         target = self
         action = #selector(invoke)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.Item")
@@ -2052,6 +2247,8 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         itemExpanded: Bool,
         theme: FluentTheme,
         layoutDirection: FluentLayoutDirection,
+        context: FluentRenderContext,
+        configurationGeneration: UInt64,
         onActivate: @escaping (ID) -> Void,
         onMoveFocus: @escaping (ID, FluentNavigationFocusMove) -> Void,
         onCancel: @escaping () -> Void,
@@ -2069,6 +2266,7 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         self.itemExpanded = itemExpanded
         fluentTheme = theme
         self.layoutDirection = layoutDirection
+        userInterfaceLayoutDirection = layoutDirection.appKitValue
         self.onActivate = onActivate
         self.onMoveFocus = onMoveFocus
         self.onCancel = onCancel
@@ -2079,13 +2277,22 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         setAccessibilityTitle(item.title)
         setAccessibilitySelected(selected)
         setAccessibilityValue(selected ? "Selected" : "Not selected")
+        if infoBadgeConfigurationGeneration != configurationGeneration {
+            infoBadgePresenter.update(content: item.infoBadge, context: context)
+            infoBadgeConfigurationGeneration = configurationGeneration
+        }
         chevronLayer.isHidden = !hasChildren || (!expanded && !top)
         updateChevron(animated: expansionChanged)
+        needsLayout = true
         needsDisplay = true
     }
 
     override func layout() {
         super.layout()
+        let geometry = horizontalGeometry
+        infoBadgePresenter.frame = geometry.infoBadgeFrame ?? .zero
+        infoBadgePresenter.isHidden = geometry.infoBadgeFrame == nil
+        infoBadgePresenter.layoutSubtreeIfNeeded()
         updateChevron(animated: false)
     }
 
@@ -2156,41 +2363,43 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
 
     override func draw(_ dirtyRect: NSRect) {
         let background: NSColor
-        if !isEnabled {
-            background = selected ? fluentTheme.controlFillSecondary : .clear
+        if top, selected {
+            // WinUI keeps selected top-navigation items transparent; the
+            // selection indicator carries the selected visual state.
+            background = .clear
+        } else if !isEnabled {
+            background = selected ? fluentTheme.subtleFillSecondary : .clear
         } else if selected, pointerState.isPressed {
-            background = fluentTheme.controlFillSecondary
+            background = fluentTheme.subtleFillSecondary
         } else if selected, pointerState.isPointerOver {
-            background = fluentTheme.controlFillTertiary
+            background = fluentTheme.subtleFillTertiary
         } else if selected {
-            background = fluentTheme.controlFillSecondary
+            background = fluentTheme.subtleFillSecondary
         } else if pointerState.isPressed {
-            background = fluentTheme.controlFillTertiary
+            background = fluentTheme.subtleFillTertiary
         } else if pointerState.isPointerOver {
-            background = fluentTheme.controlFillSecondary
+            background = fluentTheme.subtleFillSecondary
         } else {
             background = .clear
         }
         background.setFill()
         NSBezierPath(roundedRect: bounds, xRadius: 4, yRadius: 4).fill()
 
-        let color = isEnabled ? fluentTheme.textPrimary : fluentTheme.textDisabled
-        let iconSize: CGFloat = 18
-        let isRTL = layoutDirection == .rightToLeft
-        let indent = top ? 0 : CGFloat(depth) * 20
-        let iconX: CGFloat
-        if top {
-            iconX = isRTL ? bounds.maxX - 28 : 10
-        } else if expanded {
-            iconX = isRTL ? bounds.maxX - 29 - indent : 11 + indent
+        let color: NSColor
+        if !isEnabled {
+            color = fluentTheme.textDisabled
+        } else if pointerState.isPressed {
+            color = fluentTheme.textSecondary
         } else {
-            iconX = bounds.midX - iconSize / 2
+            color = fluentTheme.textPrimary
         }
+        let isRTL = layoutDirection == .rightToLeft
+        let geometry = horizontalGeometry
         if let image = NSImage(systemSymbolName: systemImageName, accessibilityDescription: itemTitle) {
             let point = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)
             let tint = NSImage.SymbolConfiguration(hierarchicalColor: color)
             image.withSymbolConfiguration(point.applying(tint))?.draw(
-                in: NSRect(x: iconX, y: bounds.midY - iconSize / 2, width: iconSize, height: iconSize)
+                in: geometry.iconFrame
             )
         }
 
@@ -2199,12 +2408,11 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
             let textSize = (itemTitle as NSString).size(withAttributes: [.font: font])
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = isRTL ? .right : .left
-            let textX: CGFloat = isRTL ? 10 + (hasChildren ? 28 : 0) : 42 + indent
             (itemTitle as NSString).draw(
                 in: NSRect(
-                    x: textX,
+                    x: geometry.textFrame.minX,
                     y: bounds.midY - textSize.height / 2,
-                    width: max(bounds.width - textX - (hasChildren ? 34 : 10), 0),
+                    width: geometry.textFrame.width,
                     height: textSize.height
                 ),
                 withAttributes: [
@@ -2233,20 +2441,37 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
             ? .disabled
             : (pointerState.isPressed ? .pressed : (pointerState.isPointerOver ? .pointerOver : .normal))
         let color = isEnabled ? fluentTheme.textSecondary : fluentTheme.textDisabled
-        let isRTL = layoutDirection == .rightToLeft
+        let geometry = horizontalGeometry
+        guard let chevronFrame = geometry.chevronFrame else {
+            chevronLayer.isHidden = true
+            return
+        }
         chevronLayer.update(
-            frame: NSRect(
-                x: isRTL ? bounds.minX + 14 : bounds.maxX - 26,
-                y: bounds.midY - 6,
-                width: 12,
-                height: 12
-            ),
+            frame: chevronFrame,
             color: color,
             state: state,
             visual: .upDownSmall,
-            direction: itemExpanded ? .down : (isRTL ? .left : .right),
+            direction: itemExpanded ? .down : (layoutDirection == .rightToLeft ? .left : .right),
             backingScale: window?.backingScaleFactor,
             animated: animated && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        )
+    }
+
+    private var infoBadgeSize: NSSize {
+        let size = infoBadgePresenter.intrinsicContentSize
+        guard size.width > 0, size.height > 0 else { return .zero }
+        return NSSize(width: ceil(size.width), height: min(ceil(size.height), max(bounds.height - 4, 0)))
+    }
+
+    private var horizontalGeometry: FluentNavigationItemHorizontalGeometry {
+        FluentNavigationItemHorizontalGeometry.resolve(
+            in: bounds,
+            top: top,
+            expanded: expanded,
+            depth: depth,
+            hasChildren: hasChildren,
+            rightToLeft: layoutDirection == .rightToLeft,
+            infoBadgeSize: infoBadgeSize
         )
     }
 
@@ -2343,16 +2568,16 @@ private final class FluentNavigationOverflowButton<ID: Hashable>: NSButton {
         let containsSelection = selectedID.map(contains) ?? false
         let background: NSColor
         if pressed {
-            background = fluentTheme.controlFillTertiary
+            background = fluentTheme.subtleFillTertiary
         } else if pointerOver || containsSelection {
-            background = fluentTheme.controlFillSecondary
+            background = fluentTheme.subtleFillSecondary
         } else {
             background = .clear
         }
         background.setFill()
         NSBezierPath(roundedRect: bounds, xRadius: 4, yRadius: 4).fill()
 
-        let color = fluentTheme.textPrimary
+        let color = pressed ? fluentTheme.textSecondary : fluentTheme.textPrimary
         let rightToLeft = layoutDirection == .rightToLeft
         if let image = NSImage(systemSymbolName: "ellipsis", accessibilityDescription: "More") {
             let point = NSImage.SymbolConfiguration(pointSize: 15, weight: .regular)

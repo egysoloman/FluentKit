@@ -21,6 +21,15 @@ enum FluentFocusVisibility {
         return true
     }
 
+    /// Returns the input modality that most recently moved focus in this window. Compound
+    /// controls such as ToolTip use this to avoid treating a pointer click or an ordinary
+    /// programmatic `makeFirstResponder` call as keyboard navigation.
+    static func isKeyboardInteraction(in window: NSWindow?) -> Bool {
+        installIfNeeded()
+        guard let window else { return false }
+        return keyboardVisibilityByWindow.object(forKey: window)?.boolValue == true
+    }
+
     static func markKeyboardInteraction(in window: NSWindow?) {
         installIfNeeded()
         guard let window else { return }

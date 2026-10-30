@@ -58,7 +58,16 @@ final class FluentTextEditingSession {
             return false
         }
         if control.currentEditor() == nil {
-            _ = window.makeFirstResponder(control)
+            // `makeFirstResponder(_:)` can leave an NSTextField itself as first responder without
+            // installing the window-owned field editor. That is especially common for an empty,
+            // previously untouched field, and used to make its context flyout silently fail.
+            // `selectText(_:)` follows AppKit's real text-entry path and creates the editor while
+            // preserving the WinUI behavior that a context invocation also focuses TextBox.
+            control.selectText(nil)
+            if control.currentEditor() == nil {
+                _ = window.makeFirstResponder(control)
+                control.selectText(nil)
+            }
         }
         editor = control.currentEditor() as? NSTextView
         guard editor != nil else { return false }
@@ -84,7 +93,9 @@ final class FluentTextEditingSession {
             guard let self, self.flyout === presented else { return }
             self.flyout = nil
             guard let control = self.control, let window = control.window else { return }
-            window.makeKeyAndOrderFront(nil)
+            // Dismissing a transient editor menu must not resurrect a parent window that was
+            // closed or hidden while the 83ms fade-out was running.
+            guard window.isVisible, window.isKeyWindow else { return }
             _ = window.makeFirstResponder(control)
             self.didBeginEditing()
         }
@@ -201,16 +212,18 @@ final class FluentTextEditingSession {
                 isPrimary: false
             ))
         }
-        if hasText {
-            commands.append(FluentTextCommand(
-                kind: .selectAll,
-                title: "Select All",
-                accelerator: "\u{2318}A",
-                systemImageName: nil,
-                action: { [weak editor] in editor?.selectAll(nil) },
-                isPrimary: false
-            ))
-        }
+        // Keep a secondary command row even when the field and pasteboard are empty. This gives
+        // an empty TextBox the same right-click target as a populated one; the unavailable action
+        // remains visible but disabled instead of making the entire flyout disappear.
+        commands.append(FluentTextCommand(
+            kind: .selectAll,
+            title: "Select All",
+            accelerator: "\u{2318}A",
+            systemImageName: nil,
+            action: { [weak editor] in editor?.selectAll(nil) },
+            isPrimary: false,
+            isEnabled: hasText
+        ))
         return commands
     }
 

@@ -26,6 +26,7 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
     private var state: FluentControlState = .normal
     private var direction: FluentChevronDirection = .down
     private var visual: FluentChevronVisual = .directional
+    private var invertedPath = false
 
     override init() {
         super.init()
@@ -50,6 +51,7 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         state: FluentControlState,
         visual: FluentChevronVisual = .directional,
         direction: FluentChevronDirection = .down,
+        inverted: Bool = false,
         backingScale: CGFloat? = nil,
         animated: Bool
     ) {
@@ -60,7 +62,8 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         position = CGPoint(x: frame.midX, y: frame.midY)
         contentsScale = scale
         lineWidth = max(1 / scale, FluentPixelGeometry(backingScale: scale).align(1.35))
-        path = chevronPath(in: bounds, scale: scale, visual: visual)
+        invertedPath = inverted
+        path = chevronPath(in: bounds, scale: scale, visual: visual, inverted: inverted)
         CATransaction.commit()
 
         self.state = state
@@ -101,7 +104,8 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
     private func chevronPath(
         in bounds: CGRect,
         scale: CGFloat,
-        visual: FluentChevronVisual
+        visual: FluentChevronVisual,
+        inverted: Bool
     ) -> CGPath {
         let geometry = FluentPixelGeometry(backingScale: scale)
         let centerY = geometry.align(bounds.midY)
@@ -109,17 +113,22 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         let upperOffset: CGFloat = visual == .downSmall ? 1.5 : 1.75
         let lowerOffset: CGFloat = visual == .downSmall ? 2.2 : 2.0
         let path = CGMutablePath()
+        // The canonical path follows the control's actual visual axis. SplitButton's composite
+        // layer is hosted on a differently-oriented root, so it requests the inverted variant
+        // while every other control keeps the shared down-facing path.
+        let endpointY = inverted ? centerY + upperOffset : centerY - upperOffset
+        let pointY = inverted ? centerY - lowerOffset : centerY + lowerOffset
         path.move(to: CGPoint(
             x: geometry.align(bounds.minX + horizontalInset),
-            y: geometry.align(centerY - upperOffset)
+            y: geometry.align(endpointY)
         ))
         path.addLine(to: CGPoint(
             x: geometry.align(bounds.midX),
-            y: geometry.align(centerY + lowerOffset)
+            y: geometry.align(pointY)
         ))
         path.addLine(to: CGPoint(
             x: geometry.align(bounds.maxX - horizontalInset),
-            y: geometry.align(centerY - upperOffset)
+            y: geometry.align(endpointY)
         ))
         return path
     }
