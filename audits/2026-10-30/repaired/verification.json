@@ -1,0 +1,52 @@
+{
+  "completedUTC": "2026-10-30T14:30:45.746448+00:00",
+  "sourceManifest": "../repair-source-manifest.json",
+  "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.2.0",
+  "tests": {
+    "passed": true,
+    "tests": 132,
+    "newAuditTests": 16,
+    "warningsAsErrors": true,
+    "log": "tests.log"
+  },
+  "standaloneValidation": {
+    "passed": true,
+    "log": "validation.log"
+  },
+  "releaseWorkCountGates": {
+    "passed": true,
+    "log": "release-build-and-gates.log"
+  },
+  "gallery": {
+    "catalogEntries": 121,
+    "directSamples": 33,
+    "mountVariants": [
+      "light",
+      "dark",
+      "rtl"
+    ],
+    "passed": true,
+    "fullInteractionAcceptance": false
+  },
+  "pixelComparison": {
+    "passed": true,
+    "images": 2,
+    "meanError": 0.0,
+    "details": "pixel-comparison.json",
+    "rejectsSyntheticRegression": true
+  },
+  "resourceSyntax": {
+    "en": true,
+    "zh-Hans": true,
+    "zh-Hant": true
+  },
+  "diffWhitespaceCheck": true,
+  "knownUnclosed": [
+    "CollectionView transient item-width and extremely narrow-window constraint warnings",
+    "Complete Windows Mica/Acrylic composition",
+    "Per-control Windows screenshot comparison",
+    "Real Chinese IME candidate interactions",
+    "VoiceOver acceptance",
+    "Explorer host hidden-view refresh and optional compact command-height adoption"
+  ]
+}

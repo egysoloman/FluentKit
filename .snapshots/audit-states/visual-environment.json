@@ -1,0 +1,8 @@
+{
+  "locale": "fixed fixture strings",
+  "material": "fixed base colors",
+  "os": "Version 27.2 (Build 26B123)",
+  "purpose": "regression baseline, not Windows parity",
+  "scale": 2,
+  "systemFont": ".AppleSystemUIFont"
+}

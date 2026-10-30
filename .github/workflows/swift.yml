@@ -35,3 +35,6 @@ jobs:
 
       - name: Build release configuration
         run: swift build --configuration release -Xswiftc -warnings-as-errors
+
+      - name: Check release rendering and input work counts
+        run: ./audits/2026-10-30/run-repairs.sh "$RUNNER_TEMP/fluentkit-audit"

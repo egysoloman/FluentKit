@@ -1,0 +1,20 @@
+2026-10-30 21:19:32.759 CollectionAudit[17658:210412] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 21:19:32.759 CollectionAudit[17658:210412] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 21:19:32.759 CollectionAudit[17658:210412] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x78731c8f00>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x103579520>.
+2026-10-30 21:19:32.759 CollectionAudit[17658:210412] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+2026-10-30 21:19:32.764 CollectionAudit[17658:210412] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 21:19:32.764 CollectionAudit[17658:210412] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 21:19:32.764 CollectionAudit[17658:210412] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x78731c8f00>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x103579520>.
+2026-10-30 21:19:32.764 CollectionAudit[17658:210412] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+2026-10-30 21:19:32.867 CollectionAudit[17658:210412] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 21:19:32.867 CollectionAudit[17658:210412] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 21:19:32.867 CollectionAudit[17658:210412] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7873caef80>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x787256c500>.
+2026-10-30 21:19:32.867 CollectionAudit[17658:210412] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+2026-10-30 21:19:33.631 CollectionAudit[17658:210412] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 21:19:33.631 CollectionAudit[17658:210412] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 21:19:33.631 CollectionAudit[17658:210412] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x7873eaaa80>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x787256cf00>.
+2026-10-30 21:19:33.631 CollectionAudit[17658:210412] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.
+2026-10-30 21:19:33.779 CollectionAudit[17658:210412] The behavior of the UICollectionViewFlowLayout is not defined because:
+2026-10-30 21:19:33.779 CollectionAudit[17658:210412] the item width must be less than the width of the UICollectionView minus the section insets left and right values, minus the content insets left and right values.
+2026-10-30 21:19:33.779 CollectionAudit[17658:210412] The relevant UICollectionViewFlowLayout instance is <NSCollectionViewFlowLayout: 0x78731c8000>, and it is attached to <_TtC9FluentKitP33_EA10223604CA9E2830DC55FFBF3E223F26FluentCollectionNativeView: 0x787256ca00>.
+2026-10-30 21:19:33.779 CollectionAudit[17658:210412] Make a symbolic breakpoint at UICollectionViewFlowLayoutBreakForInvalidSizes to catch this in the debugger.

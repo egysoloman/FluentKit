@@ -1,0 +1,52 @@
+{
+  "catalogItems": 121,
+  "counts": {
+    "implemented": 37,
+    "partial": 51,
+    "platformAlternative": 17,
+    "notApplicable": 3,
+    "missing": 13
+  },
+  "interactiveSampleIDs": [
+    "BreadcrumbBar",
+    "Button",
+    "CalendarDatePicker",
+    "CheckBox",
+    "ColorPicker",
+    "ComboBox",
+    "ContentDialog",
+    "DatePicker",
+    "Expander",
+    "MenuFlyout",
+    "NumberBox",
+    "PasswordBox",
+    "PipsPager",
+    "ProgressBar",
+    "ProgressRing",
+    "RadioButton",
+    "RatingControl",
+    "SelectorBar",
+    "Slider",
+    "TextBox",
+    "ToggleSwitch",
+    "ToolTip"
+  ],
+  "implementedWithoutDirectSample": [
+    "Clipboard",
+    "CommandBarFlyout",
+    "Grid",
+    "InfoBadge",
+    "InfoBar",
+    "NavigationView",
+    "RepeatButton",
+    "RichEditBox",
+    "SplitView",
+    "StackPanel",
+    "StoragePickers",
+    "TabView",
+    "TeachingTip",
+    "TextBlock",
+    "TitleBar",
+    "ToggleButton"
+  ]
+}
