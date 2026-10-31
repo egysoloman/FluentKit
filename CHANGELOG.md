@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TimePicker's flyout now uses the shared Fluent looping selectors instead of the native time
+  editor, with locale-driven field order, localized period labels and digits, RTL ordering, and
+  Return/Escape/Tab keyboard transactions. TimePicker and DatePicker reject queued notifications
+  from replaced bindings, keep bound `nil` over fallbacks, write coerced values back, and apply
+  binding and configuration changes atomically. Gallery now has separate DatePicker,
+  CalendarDatePicker and TimePicker samples; DatePicker and TimePicker remain partial.
+
 - Added embedded CalendarView with single/multiple/no selection, blackout/range reconciliation,
   RTL keyboard navigation and 4×4 Year/Decade views; CalendarDatePicker shares the same grid.
   Fixed weekday ordering, time-zone-inconsistent date math and out-of-range month navigation.

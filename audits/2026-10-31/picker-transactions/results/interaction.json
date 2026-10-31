@@ -1,0 +1,362 @@
+[
+  {
+    "committed" : "09:35",
+    "height" : 32,
+    "state" : "closed",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "initial",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "draft",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:30",
+    "height" : 398,
+    "state" : "reconfigured",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "18:45",
+    "height" : 398,
+    "state" : "external",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "19:45",
+    "height" : 32,
+    "state" : "committed",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "empty",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "disabled",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 32,
+    "state" : "closed",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "initial",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "draft",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:30",
+    "height" : 398,
+    "state" : "reconfigured",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "18:45",
+    "height" : 398,
+    "state" : "external",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "19:45",
+    "height" : 32,
+    "state" : "committed",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "empty",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "disabled",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 32,
+    "state" : "closed",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "initial",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "draft",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:30",
+    "height" : 398,
+    "state" : "reconfigured",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "18:45",
+    "height" : 398,
+    "state" : "external",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "19:45",
+    "height" : 32,
+    "state" : "committed",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "empty",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "disabled",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 32,
+    "state" : "closed",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "initial",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "draft",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:30",
+    "height" : 398,
+    "state" : "reconfigured",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "18:45",
+    "height" : 398,
+    "state" : "external",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "19:45",
+    "height" : 32,
+    "state" : "committed",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "empty",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "disabled",
+    "variant" : "arabic",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 32,
+    "state" : "closed",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "initial",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:35",
+    "height" : 398,
+    "state" : "draft",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "09:30",
+    "height" : 398,
+    "state" : "reconfigured",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "18:45",
+    "height" : 398,
+    "state" : "external",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "19:45",
+    "height" : 32,
+    "state" : "committed",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "empty",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  },
+  {
+    "committed" : "nil",
+    "height" : 32,
+    "state" : "disabled",
+    "variant" : "24hour",
+    "voiceOver" : "pending",
+    "width" : 242,
+    "windowsComparison" : "pending"
+  }
+]

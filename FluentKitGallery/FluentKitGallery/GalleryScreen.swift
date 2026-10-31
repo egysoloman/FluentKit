@@ -31,6 +31,8 @@ struct GalleryScreen: FluentView {
     @FluentState private var numberValue = 3
     @FluentState private var selectorValue: String? = "Recent"
     @FluentState private var dateValue = Date()
+    @FluentState private var segmentedDate: Date?
+    @FluentState private var selectedTime: FluentTime? = FluentTime(hour: 9, minute: 30)
     @FluentState private var calendarDates: [Date] = []
     @FluentState private var colorValue = NSColor.systemBlue
     @FluentState private var reduceMotion = false
@@ -465,7 +467,18 @@ struct GalleryScreen: FluentView {
                 FluentSelectorBarItem(value: "Recent", title: "Recent", systemImage: "clock"),
                 FluentSelectorBarItem(value: "Favorites", title: "Favorites", systemImage: "star")
             ], selection: $selectorValue))
-        case .DatePicker, .CalendarDatePicker: return FluentAnyView(FluentDatePicker(selection: $dateValue).frame(width: 240))
+        case .DatePicker:
+            return FluentAnyView(FluentVStack(spacing: 12) {
+                FluentWinUIDatePickerView(selection: $segmentedDate).frame(width: 296)
+                FluentButtonView("Clear date") { segmentedDate = nil }
+            })
+        case .CalendarDatePicker:
+            return FluentAnyView(FluentDatePickerView(selection: $dateValue).frame(width: 240))
+        case .TimePicker:
+            return FluentAnyView(FluentVStack(spacing: 12) {
+                FluentTimePickerView(selection: $selectedTime, minuteIncrement: 5).frame(width: 242)
+                FluentButtonView("Clear time") { selectedTime = nil }
+            })
         case .CalendarView:
             return FluentAnyView(FluentVStack(spacing: 12) {
                 FluentCalendarView(selection: $calendarDates, selectionMode: .multiple)

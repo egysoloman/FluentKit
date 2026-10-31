@@ -8,7 +8,6 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         didSet {
             if let selectedDate, let clamped = clampedSelection(selectedDate), clamped != selectedDate {
                 self.selectedDate = clamped
-                return
             }
             guard oldValue != selectedDate else { return }
             if !isPropagatingDate {
@@ -29,9 +28,8 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         didSet {
             guard oldValue != date else { return }
             if !isPropagatingDate {
-                isPropagatingDate = true
                 selectedDate = date
-                isPropagatingDate = false
+                if date != selectedDate { date = selectedDate }
             }
             needsDisplay = true
         }
@@ -40,14 +38,14 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
     public var minYear: Date? {
         didSet {
             guard oldValue != minYear else { return }
-            coerceSelection()
+            if !isUpdatingConfiguration { coerceSelection() }
         }
     }
 
     public var maxYear: Date? {
         didSet {
             guard oldValue != maxYear else { return }
-            coerceSelection()
+            if !isUpdatingConfiguration { coerceSelection() }
         }
     }
 
@@ -75,7 +73,7 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
     public var calendarIdentifier: String? {
         didSet {
             guard oldValue != calendarIdentifier else { return }
-            coerceSelection()
+            if !isUpdatingConfiguration { coerceSelection() }
             needsDisplay = true
         }
     }
@@ -125,6 +123,8 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
     private var binding: FluentBinding<Date?>?
     private var observedBinding: FluentBinding<Date?>?
     private var observerID: UUID?
+    private var observationGeneration: UInt64 = 0
+    private var isUpdatingConfiguration = false
     private var isApplyingBinding = false
     private var isPropagatingDate = false
     private var isPointerOver = false
@@ -182,7 +182,7 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         header: String?
     ) {
         self.binding = binding
-        let value = binding?.get() ?? date
+        let value = binding.map { $0.get() } ?? date
         selectedDate = value
         self.date = value
         self.minYear = minYear
@@ -196,6 +196,7 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         super.init(frame: .zero)
         commonInit()
         coerceSelection()
+        synchronizeBinding()
         installObserver()
     }
 
@@ -437,6 +438,9 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         yearVisible: Bool,
         header: String?
     ) {
+        let requested = binding.map { $0.get() } ?? date
+        isApplyingBinding = true
+        isUpdatingConfiguration = true
         self.binding = binding
         self.minYear = minYear
         self.maxYear = maxYear
@@ -446,7 +450,7 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         self.calendarIdentifier = calendarIdentifier
         self.yearVisible = yearVisible
         self.header = header
-        let requested = binding?.get() ?? date
+        isUpdatingConfiguration = false
         if selectedDate != requested {
             isApplyingBinding = true
             selectedDate = requested
@@ -454,6 +458,8 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         } else {
             coerceSelection()
         }
+        isApplyingBinding = false
+        synchronizeBinding()
         installObserver()
     }
 
@@ -616,15 +622,28 @@ public final class FluentWinUIDatePickerControl: NSControl, FluentControlSizeCon
         CATransaction.commit()
     }
 
+    private func synchronizeBinding() {
+        guard let binding, !isApplyingBinding, binding.get() != selectedDate else { return }
+        isApplyingBinding = true
+        binding.set(selectedDate)
+        isApplyingBinding = false
+    }
+
     private func installObserver() {
+        observationGeneration &+= 1
+        let generation = observationGeneration
         if let observerID { observedBinding?.removeObserver(observerID) }
         observedBinding = binding
-        observerID = binding?.observe { [weak self] value in
+        observerID = binding?.observe { [weak self] _ in
             DispatchQueue.main.async { [weak self] in
-                guard let self, !self.isApplyingBinding, self.selectedDate != value else { return }
+                guard let self, self.observationGeneration == generation, !self.isApplyingBinding,
+                      let binding = self.binding else { return }
+                let value = binding.get()
+                guard self.selectedDate != value else { return }
                 self.isApplyingBinding = true
                 self.selectedDate = value
                 self.isApplyingBinding = false
+                self.synchronizeBinding()
             }
         }
     }
@@ -1247,6 +1266,23 @@ public final class FluentLoopingSelectorControl: NSControl {
             owner: self,
             userInfo: nil
         ))
+    }
+
+    /// Replace a selector's model without leaving a drag/snap from its previous model active.
+    func setItems(_ items: [String], selection: Int, looping: Bool) {
+        guard values != items || selectedIndex != selection || shouldLoop != looping else { return }
+        scrollSnapWorkItem?.cancel()
+        scrollSnapWorkItem = nil
+        isDragging = false
+        isPressed = false
+        contentOffset = 0
+        isSuppressingCallback = true
+        shouldLoop = looping
+        values = items
+        selectedIndex = selection
+        isSuppressingCallback = false
+        updateAccessibilityMetadata()
+        needsDisplay = true
     }
 
     public override func draw(_ dirtyRect: NSRect) {

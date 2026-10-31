@@ -4433,7 +4433,7 @@ final class FluentKitTests: XCTestCase {
             time: FluentTime(hour: 9, minute: 30),
             minuteIncrement: 5,
             clockIdentifier: .twelveHour,
-            locale: .current,
+            locale: Locale(identifier: "en_US"),
             theme: theme,
             onChange: { _ in }
         )

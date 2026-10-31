@@ -30,6 +30,18 @@ import FluentKit
                         view.subviews.forEach(verify)
                     }
                     verify(host)
+                    func descendants(_ view: NSView) -> [NSView] { [view] + view.subviews.flatMap(descendants) }
+                    let mountedViews = descendants(host)
+                    switch item.id {
+                    case "DatePicker":
+                        precondition(mountedViews.contains { $0 is FluentWinUIDatePickerControl })
+                        precondition(!mountedViews.contains { $0 is NSDatePicker })
+                    case "CalendarDatePicker":
+                        precondition(mountedViews.contains { $0 is NSDatePicker })
+                        precondition(!mountedViews.contains { $0 is FluentWinUIDatePickerControl })
+                    case "TimePicker": precondition(mountedViews.contains { $0 is FluentTimePicker })
+                    default: break
+                    }
                     window.close()
                     mounted.append(variant)
                 }

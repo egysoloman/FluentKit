@@ -39,7 +39,7 @@ public enum FluentClockIdentifier: Hashable, Sendable {
 
 /// A WinUI-style time picker with nullable selection, minute increments, and explicit 12/24-hour
 /// presentation. The closed surface follows WinUI's equal-column template; the flyout uses the
-/// native macOS time editor while retaining WinUI's confirm/dismiss transaction.
+/// shared Fluent looping selectors while retaining WinUI's confirm/dismiss transaction.
 public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, NSPopoverDelegate, NSDatePickerCellDelegate {
     public var selectedTime: FluentTime? {
         didSet {
@@ -51,6 +51,10 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
             updateAccessibilityMetadata()
             needsDisplay = true
             if !isApplyingBinding { binding?.set(selectedTime) }
+            if pickerPopover != nil, !isUpdatingConfiguration {
+                pendingTime = selectedTime ?? currentTime().adjusted(toMinuteIncrement: minuteIncrement)
+                syncEditor()
+            }
             onSelectedTimeChanged?(selectedTime)
         }
     }
@@ -60,8 +64,12 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         set {
             guard (0...59).contains(newValue) else { return }
             guard storedMinuteIncrement != newValue else { return }
+            let wasUpdating = isUpdatingConfiguration
+            isUpdatingConfiguration = true
             storedMinuteIncrement = newValue
-            selectedTime = selectedTime?.adjusted(toMinuteIncrement: newValue)
+            pendingTime = pendingTime?.adjusted(toMinuteIncrement: newValue)
+            if !wasUpdating { selectedTime = selectedTime?.adjusted(toMinuteIncrement: newValue) }
+            isUpdatingConfiguration = wasUpdating
             syncEditor()
         }
     }
@@ -73,6 +81,16 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
             secondDividerLayer.isHidden = !usesTwelveHourClock
             updateAccessibilityMetadata()
             needsDisplay = true
+        }
+    }
+
+    /// Controls numeric formatting, period labels and locale-dependent field order.
+    public var locale: Locale = .current {
+        didSet {
+            guard oldValue != locale else { return }
+            syncEditor()
+            updateAppearance()
+            updateAccessibilityMetadata()
         }
     }
 
@@ -92,6 +110,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
             guard oldValue != theme else { return }
             updateFont()
             updateAppearance()
+            syncEditor()
         }
     }
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
@@ -111,6 +130,8 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
     private var binding: FluentBinding<FluentTime?>?
     private var observedBinding: FluentBinding<FluentTime?>?
     private var observerID: UUID?
+    private var observationGeneration: UInt64 = 0
+    private var isUpdatingConfiguration = false
     private var isApplyingBinding = false
     private var isPointerOver = false
     private var isPressed = false
@@ -124,6 +145,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
     private let focusOuterLayer = CAShapeLayer()
     private let focusInnerLayer = CAShapeLayer()
     private var pickerPopover: NSPopover?
+    private var presentationGeneration: UInt64 = 0
     private weak var editorView: FluentTimePickerEditorView?
     private var pendingTime: FluentTime?
 
@@ -152,11 +174,12 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
     ) {
         storedMinuteIncrement = (0...59).contains(minuteIncrement) ? minuteIncrement : 1
         self.binding = binding
-        selectedTime = (binding?.get() ?? time)?.adjusted(toMinuteIncrement: storedMinuteIncrement)
+        selectedTime = (binding.map { $0.get() } ?? time)?.adjusted(toMinuteIncrement: storedMinuteIncrement)
         self.clockIdentifier = clockIdentifier
         self.header = header
         super.init(frame: .zero)
         commonInit()
+        synchronizeBinding()
         installObserver()
     }
 
@@ -346,16 +369,20 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         clockIdentifier: FluentClockIdentifier,
         header: String?
     ) {
+        let requested = binding.map { $0.get() } ?? time
+        let externalSelectionChanged = selectedTime != requested
+        isApplyingBinding = true
+        isUpdatingConfiguration = true
         self.binding = binding
         self.minuteIncrement = minuteIncrement
         self.clockIdentifier = clockIdentifier
         self.header = header
-        let value = (binding?.get() ?? time)?.adjusted(toMinuteIncrement: self.minuteIncrement)
-        if selectedTime != value {
-            isApplyingBinding = true
-            selectedTime = value
-            isApplyingBinding = false
-        }
+        isUpdatingConfiguration = !externalSelectionChanged
+        selectedTime = requested?.adjusted(toMinuteIncrement: self.minuteIncrement)
+        isUpdatingConfiguration = false
+        isApplyingBinding = false
+        synchronizeBinding()
+        syncEditor()
         installObserver()
     }
 
@@ -363,28 +390,11 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         CGRect(x: 0, y: 0, width: bounds.width, height: theme.controlHeight(for: fluentControlSize))
     }
 
-    private var usesTwelveHourClock: Bool {
-        switch clockIdentifier {
-        case .twelveHour: return true
-        case .twentyFourHour: return false
-        case .system:
-            let formatter = DateFormatter()
-            formatter.locale = .current
-            formatter.dateStyle = .none
-            formatter.timeStyle = .short
-            return formatter.dateFormat.contains("a")
-        }
-    }
-
-    private var displayColumns: [String] {
-        guard let selectedTime else {
-            return usesTwelveHourClock ? ["hour", "minute", "period"] : ["hour", "minute"]
-        }
-        if usesTwelveHourClock {
-            let hour = selectedTime.hour % 12 == 0 ? 12 : selectedTime.hour % 12
-            return [String(hour), String(format: "%02d", selectedTime.minute), selectedTime.hour < 12 ? "AM" : "PM"]
-        }
-        return [String(format: "%02d", selectedTime.hour), String(format: "%02d", selectedTime.minute)]
+    private var presentation: FluentTimePickerPresentation { .init(clock: clockIdentifier, locale: locale) }
+    private var usesTwelveHourClock: Bool { presentation.usesTwelveHour }
+    var displayColumns: [String] {
+        let style = presentation
+        return style.fields(rightToLeft: userInterfaceLayoutDirection == .rightToLeft).map { style.text(for: $0, time: selectedTime) }
     }
 
     var displayForegroundColor: NSColor {
@@ -460,17 +470,27 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         needsDisplay = true
     }
 
+    private func synchronizeBinding() {
+        guard let binding, !isApplyingBinding, binding.get() != selectedTime else { return }
+        isApplyingBinding = true
+        binding.set(selectedTime)
+        isApplyingBinding = false
+    }
+
     private func installObserver() {
+        observationGeneration &+= 1
+        let generation = observationGeneration
         if let observerID { observedBinding?.removeObserver(observerID) }
         observedBinding = binding
-        observerID = binding?.observe { [weak self] value in
+        observerID = binding?.observe { [weak self] _ in
             DispatchQueue.main.async { [weak self] in
-                guard let self else { return }
-                let adjusted = value?.adjusted(toMinuteIncrement: self.minuteIncrement)
-                guard self.selectedTime != adjusted else { return }
+                guard let self, self.observationGeneration == generation, !self.isApplyingBinding,
+                      let binding = self.binding else { return }
+                let adjusted = binding.get()?.adjusted(toMinuteIncrement: self.minuteIncrement)
                 self.isApplyingBinding = true
                 self.selectedTime = adjusted
                 self.isApplyingBinding = false
+                self.synchronizeBinding()
             }
         }
     }
@@ -485,17 +505,30 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
 
     private func presentPopover() {
         guard isEnabled, window != nil else { return }
+        presentationGeneration &+= 1
+        let generation = presentationGeneration
         pendingTime = selectedTime ?? currentTime().adjusted(toMinuteIncrement: minuteIncrement)
         let editorView = FluentTimePickerEditorView(
             time: pendingTime ?? FluentTime(hour: 0, minute: 0),
             minuteIncrement: minuteIncrement,
             clockIdentifier: clockIdentifier,
-            locale: resolvedLocale,
+            locale: locale,
             theme: theme
         ) { [weak self] time in
-            self?.pendingTime = time
+            guard let self, self.presentationGeneration == generation, self.isEnabled,
+                  self.pickerPopover?.isShown == true else { return }
+            self.pendingTime = time
         }
         self.editorView = editorView
+        editorView.userInterfaceLayoutDirection = userInterfaceLayoutDirection
+        editorView.onAccept = { [weak self] in
+            guard let self, self.presentationGeneration == generation else { return }
+            self.acceptPendingTime()
+        }
+        editorView.onDismiss = { [weak self] in
+            guard let self, self.presentationGeneration == generation else { return }
+            self.dismissPendingTime()
+        }
 
         let accept = FluentWinUIDatePickerFlyoutButton(iconName: "checkmark", label: "Accept")
         let dismiss = FluentWinUIDatePickerFlyoutButton(iconName: "xmark", label: "Dismiss")
@@ -503,8 +536,11 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         dismiss.theme = theme
         accept.target = self
         dismiss.target = self
-        accept.action = #selector(acceptPendingTime)
-        dismiss.action = #selector(dismissPendingTime)
+        accept.action = #selector(acceptPendingTime(_:))
+        dismiss.action = #selector(dismissPendingTime(_:))
+        editorView.followingKeyView = accept
+        editorView.lastFooterKeyView = dismiss
+        accept.nextKeyView = dismiss
 
         let content = FluentMaterialView(frame: CGRect(x: 0, y: 0, width: 242, height: 398))
         content.identifier = NSUserInterfaceItemIdentifier("FluentKit.TimePicker.Popover")
@@ -517,6 +553,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
             content.addSubview(view)
         }
         let separator = NSView()
+        separator.identifier = NSUserInterfaceItemIdentifier("FluentKit.TimePicker.FooterDivider")
         separator.translatesAutoresizingMaskIntoConstraints = false
         separator.wantsLayer = true
         separator.layer?.backgroundColor = theme.divider.cgColor
@@ -550,14 +587,19 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         popover.delegate = self
         pickerPopover = popover
         popover.show(relativeTo: buttonRect, of: self, preferredEdge: .minY)
+        editorView.focusFirstSelector()
+        updateAccessibilityMetadata()
     }
 
-    @objc private func acceptPendingTime() {
+    @objc private func acceptPendingTime(_ sender: NSControl? = nil) {
+        guard isEnabled, pickerPopover?.isShown == true else { return }
+        if let sender, sender.window !== editorView?.window { return }
         selectedTime = pendingTime
         pickerPopover?.performClose(nil)
     }
 
-    @objc private func dismissPendingTime() {
+    @objc private func dismissPendingTime(_ sender: NSControl? = nil) {
+        if let sender, sender.window !== editorView?.window { return }
         pickerPopover?.performClose(nil)
     }
 
@@ -572,6 +614,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
 
     public func popoverDidClose(_ notification: Notification) {
         guard notification.object as? NSPopover === pickerPopover else { return }
+        presentationGeneration &+= 1
         pickerPopover = nil
         editorView = nil
         pendingTime = nil
@@ -581,14 +624,19 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
     }
 
     private func syncEditor() {
-        editorView?.updateTheme(theme)
-    }
-
-    private var resolvedLocale: Locale {
-        switch clockIdentifier {
-        case .system: return .current
-        case .twelveHour: return Locale(identifier: "\(Locale.current.identifier)@hours=h12")
-        case .twentyFourHour: return Locale(identifier: "\(Locale.current.identifier)@hours=h23")
+        guard !isUpdatingConfiguration, let editorView, let pendingTime else { return }
+        if editorView.userInterfaceLayoutDirection != userInterfaceLayoutDirection {
+            editorView.userInterfaceLayoutDirection = userInterfaceLayoutDirection
+            editorView.needsLayout = true
+        }
+        editorView.update(time: pendingTime, minuteIncrement: minuteIncrement,
+            clockIdentifier: clockIdentifier, locale: locale, theme: theme)
+        if let content = pickerPopover?.contentViewController?.view as? FluentMaterialView {
+            content.fluentTheme = theme
+            content.isMaterialEnabled = theme.materialEffectsEnabled
+            content.fallbackColor = theme.flyoutSurfaceFill
+            for case let button as FluentWinUIDatePickerFlyoutButton in content.subviews { button.theme = theme }
+            content.subviews.first { $0.identifier?.rawValue == "FluentKit.TimePicker.FooterDivider" }?.layer?.backgroundColor = theme.divider.cgColor
         }
     }
 
@@ -649,6 +697,7 @@ public struct FluentTimePickerView: FluentUpdatablePrimitiveView {
             header: header
         )
         picker.theme = context.theme
+        picker.locale = context.locale
         picker.reduceMotion = context.reduceMotion
         return picker
     }
@@ -656,6 +705,7 @@ public struct FluentTimePickerView: FluentUpdatablePrimitiveView {
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let picker = view as? FluentTimePicker else { return false }
         picker.theme = context.theme
+        picker.locale = context.locale
         picker.reduceMotion = context.reduceMotion
         picker.update(
             binding: binding,
