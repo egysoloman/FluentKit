@@ -196,7 +196,7 @@ final class FlipViewInteractionTests: XCTestCase {
         let children = native.accessibilityChildren() as? [NSView] ?? []
         XCTAssertTrue(children.contains(container.subviews[0]))
         XCTAssertFalse(children.contains(container.subviews[1]))
-        XCTAssertFalse(children.contains(container.subviews[2]))
+        XCTAssertEqual(container.subviews.count, 2, "Only the current page and its neighbor are realized at the first page")
         native.keyDown(with: try key(119))
         XCTAssertEqual(native.accessibilityValue() as? String, "3 of 3")
         XCTAssertTrue(next.isHidden)

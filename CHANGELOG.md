@@ -4,6 +4,17 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- FlipView now lazily builds the current and adjacent pages, adds stable `id:` and vertical
+  `orientation:` initializers, and tracks phased gestures before settling one page. Existing calls
+  remain source-compatible; page-local state outside the cache is now released, so durable state
+  belongs in the model. Stable IDs preserve selection/native content on reorder. Binding setters
+  that reject, redirect or synchronously change data no longer leave displayed selection stale.
+- FlipView keeps dragged page positions across parent refreshes, preserves mounted editor focus
+  on stable-ID moves, and applies inherited disabled state to newly realized pages. Shared pan
+  velocity expires when a gesture pauses before release; Pivot regression coverage is retained.
+  A 1,000-page Release probe reduced 30 parent refreshes from 30,000 to 60 content evaluations.
+  Exact gesture physics, phased boundary chaining and real touch/VoiceOver acceptance remain open.
+
 - CalendarView and CalendarDatePicker now use continuous virtualized Month/Year/Decade grids.
   CalendarView adds the `numberOfWeeksInView` initializer argument (2–8, default 6). A bounded cell cache preserves
   dates under partial scrolling, mounted keyboard focus, and browsing during parent/model updates.

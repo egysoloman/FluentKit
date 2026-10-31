@@ -1,0 +1,121 @@
+Building for debugging...
+[Computing dependencies]
+[1 / 1]
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[7 / 19] FluentKit
+[9 / 19] FluentKit
+[13 / 18] FluentKitValidation-product
+[14 / 20] FluentGallery-product
+[15 / 20] FluentKitTests-product
+[17 / 22] FluentKitTests-product
+[20 / 23] FluentKitTests-product
+[22 / 26] FluentKitTests-product
+[25 / 26] FluentKitValidation-product
+Build complete! (9.10秒)
+Test Suite 'Selected tests' started at 2026-10-31 23:41:52.446.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 23:41:52.448.
+Test Suite 'FlipViewInteractionTests' started at 2026-10-31 23:41:52.448.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testCollapsedGeometryAndAccessibilityPaging]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testCollapsedGeometryAndAccessibilityPaging]' passed (0.150 seconds).
+Test Case '-[FluentKitTests.FlipViewInteractionTests testContentRebuiltWhileDisabledRestoresNewControlsAndPreservesIntrinsicDisabledState]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testContentRebuiltWhileDisabledRestoresNewControlsAndPreservesIntrinsicDisabledState]' passed (0.005 seconds).
+Test Case '-[FluentKitTests.FlipViewInteractionTests testDisabledCompositeRejectsInputAndRestoresCurrentBoundaryState]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testDisabledCompositeRejectsInputAndRestoresCurrentBoundaryState]' passed (0.044 seconds).
+Test Case '-[FluentKitTests.FlipViewInteractionTests testHorizontalWheelMirrorsInRTLButVerticalWheelRemainsLogical]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testHorizontalWheelMirrorsInRTLButVerticalWheelRemainsLogical]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.FlipViewInteractionTests testKeyboardFocusRevealsButtonsAndAccessibilityExcludesInactivePages]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testKeyboardFocusRevealsButtonsAndAccessibilityExcludesInactivePages]' passed (0.192 seconds).
+Test Case '-[FluentKitTests.FlipViewInteractionTests testSourceButtonGeometryVisibilityAndHoverTimeout]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testSourceButtonGeometryVisibilityAndHoverTimeout]' passed (6.176 seconds).
+Test Case '-[FluentKitTests.FlipViewInteractionTests testWheelBurstDirectionChangeIdleAndBoundaryChaining]' started.
+Test Case '-[FluentKitTests.FlipViewInteractionTests testWheelBurstDirectionChangeIdleAndBoundaryChaining]' passed (0.002 seconds).
+Test Suite 'FlipViewInteractionTests' passed at 2026-10-31 23:41:59.020.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 6.571 (6.572) seconds
+Test Suite 'FlipViewRegressionTests' started at 2026-10-31 23:41:59.020.
+Test Case '-[FluentKitTests.FlipViewRegressionTests testBoundContentRefreshPreservesActiveTransition]' started.
+Test Case '-[FluentKitTests.FlipViewRegressionTests testBoundContentRefreshPreservesActiveTransition]' passed (0.410 seconds).
+Test Case '-[FluentKitTests.FlipViewRegressionTests testItemRemovalEmptyAndRefillKeepSelectionModelInSync]' started.
+Test Case '-[FluentKitTests.FlipViewRegressionTests testItemRemovalEmptyAndRefillKeepSelectionModelInSync]' passed (0.051 seconds).
+Test Case '-[FluentKitTests.FlipViewRegressionTests testRapidNavigationLeavesOnlyCurrentPageVisible]' started.
+Test Case '-[FluentKitTests.FlipViewRegressionTests testRapidNavigationLeavesOnlyCurrentPageVisible]' passed (0.408 seconds).
+Test Case '-[FluentKitTests.FlipViewRegressionTests testRebindingDetachesOldSourceAndDiscardsQueuedNotifications]' started.
+Test Case '-[FluentKitTests.FlipViewRegressionTests testRebindingDetachesOldSourceAndDiscardsQueuedNotifications]' passed (0.125 seconds).
+Test Case '-[FluentKitTests.FlipViewRegressionTests testRTLTransitionAndArrowNavigationUseTheSameDirection]' started.
+Test Case '-[FluentKitTests.FlipViewRegressionTests testRTLTransitionAndArrowNavigationUseTheSameDirection]' passed (0.004 seconds).
+Test Suite 'FlipViewRegressionTests' passed at 2026-10-31 23:42:00.018.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.997 (0.998) seconds
+Test Suite 'FlipViewVirtualizationTests' started at 2026-10-31 23:42:00.018.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testAppendingPagesRetainsTheCurrentNativeContent]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testAppendingPagesRetainsTheCurrentNativeContent]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testEditingFocusSurvivesReorderAndMovesToControlWhenSelectedItemIsRemoved]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testEditingFocusSurvivesReorderAndMovesToControlWhenSelectedItemIsRemoved]' passed (0.133 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testInteractionCancellationPreventsStaleSelectionAfterResizeDisableOrDataRemoval]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testInteractionCancellationPreventsStaleSelectionAfterResizeDisableOrDataRemoval]' passed (0.004 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testLargeJumpsBuildOnlyDestinationNeighborsAndLatePagesTrackDependencies]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testLargeJumpsBuildOnlyDestinationNeighborsAndLatePagesTrackDependencies]' passed (0.039 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testLazyPagesInheritDisabledStateAndRecoverTheirOwnEnabledValues]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testLazyPagesInheritDisabledStateAndRecoverTheirOwnEnabledValues]' passed (0.038 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testOnlyViewportNeighborhoodBuildsAndUpdatesContent]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testOnlyViewportNeighborhoodBuildsAndUpdatesContent]' passed (0.006 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testPanGeometrySinglePageSettlingAndVerticalRTL]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testPanGeometrySinglePageSettlingAndVerticalRTL]' passed (0.021 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testParentRefreshKeepsPanAndLargeJumpKeepsOutgoingPageUntilCompletion]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testParentRefreshKeepsPanAndLargeJumpKeepsOutgoingPageUntilCompletion]' passed (0.927 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testPhasedTrackpadInputFollowsMotionIgnoresStaleVelocityAndOwnsMomentum]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testPhasedTrackpadInputFollowsMotionIgnoresStaleVelocityAndOwnsMomentum]' passed (0.007 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testRedirectedAndReentrantBindingWritesUseAcceptedCurrentState]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testRedirectedAndReentrantBindingWritesUseAcceptedCurrentState]' passed (0.022 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testRejectedSelectionDoesNotDivergeFromTheBinding]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testRejectedSelectionDoesNotDivergeFromTheBinding]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testStableIDsPreserveSelectedItemAndNativeIdentityAcrossEdits]' started.
+Test Case '-[FluentKitTests.FlipViewVirtualizationTests testStableIDsPreserveSelectedItemAndNativeIdentityAcrossEdits]' passed (0.004 seconds).
+Test Suite 'FlipViewVirtualizationTests' passed at 2026-10-31 23:42:01.225.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 1.205 (1.207) seconds
+Test Suite 'FluentKitTests' started at 2026-10-31 23:42:01.225.
+Test Case '-[FluentKitTests.FluentKitTests testFlipViewButtonsKeyboardAndBindingNavigation]' started.
+Test Case '-[FluentKitTests.FluentKitTests testFlipViewButtonsKeyboardAndBindingNavigation]' passed (0.145 seconds).
+Test Suite 'FluentKitTests' passed at 2026-10-31 23:42:01.370.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.145 (0.145) seconds
+Test Suite 'InputFoundationTests' started at 2026-10-31 23:42:01.370.
+Test Case '-[FluentKitTests.InputFoundationTests testDriverOwnsAxisDominantTrackpadPansAndReportsVelocity]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testDriverOwnsAxisDominantTrackpadPansAndReportsVelocity]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testEventsAreClassifiedLikeWinUIInputDeviceTypes]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testEventsAreClassifiedLikeWinUIInputDeviceTypes]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testHorizontalDriverMirrorsInRightToLeftAndDeclinedPansFallThrough]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testHorizontalDriverMirrorsInRightToLeftAndDeclinedPansFallThrough]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testRecordingPostsOnlyWhenTheWindowDeviceChanges]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testRecordingPostsOnlyWhenTheWindowDeviceChanges]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testReleaseAfterHoldingStillHasNoStaleVelocityAndResetDetaches]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testReleaseAfterHoldingStillHasNoStaleVelocityAndResetDetaches]' passed (0.000 seconds).
+Test Suite 'InputFoundationTests' passed at 2026-10-31 23:42:01.372.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'PivotGestureTests' started at 2026-10-31 23:42:01.372.
+Test Case '-[FluentKitTests.PivotGestureTests testAnimatedSettleCanBeInterruptedByANewPan]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testAnimatedSettleCanBeInterruptedByANewPan]' passed (0.479 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testCarouselHeadersFollowThePanAndWrap]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testCarouselHeadersFollowThePanAndWrap]' passed (0.006 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testClippedStaticHeadersInterpolateTheirShiftDuringAPan]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testClippedStaticHeadersInterpolateTheirShiftDuringAPan]' passed (0.006 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testDirectTouchRecognizerConfiguration]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testDirectTouchRecognizerConfiguration]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testDiscreteHorizontalWheelStepsOncePerBurst]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testDiscreteHorizontalWheelStepsOncePerBurst]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testLockedDisabledAndSingleItemPivotsDoNotPan]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testLockedDisabledAndSingleItemPivotsDoNotPan]' passed (0.006 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testPanPastHalfOrFlickCommitsOnceAndWritesTheBinding]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testPanPastHalfOrFlickCommitsOnceAndWritesTheBinding]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testRightToLeftMirrorsPhysicalMotion]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testRightToLeftMirrorsPhysicalMotion]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testShortPanFollowsTheFingerShowsTheNeighbourAndSnapsBack]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testShortPanFollowsTheFingerShowsTheNeighbourAndSnapsBack]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testTrackpadPhasesDriveThePanAndConsumeMomentum]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testTrackpadPhasesDriveThePanAndConsumeMomentum]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.PivotGestureTests testTravelIsLimitedToOneItemAndStaticEndsRubberBand]' started.
+Test Case '-[FluentKitTests.PivotGestureTests testTravelIsLimitedToOneItemAndStaticEndsRubberBand]' passed (0.003 seconds).
+Test Suite 'PivotGestureTests' passed at 2026-10-31 23:42:01.890.
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.517 (0.518) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-10-31 23:42:01.890.
+	 Executed 41 tests, with 0 failures (0 unexpected) in 9.437 (9.442) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 23:42:01.890.
+	 Executed 41 tests, with 0 failures (0 unexpected) in 9.437 (9.444) seconds

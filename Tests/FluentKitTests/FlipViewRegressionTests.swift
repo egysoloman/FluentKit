@@ -68,9 +68,9 @@ final class FlipViewRegressionTests: XCTestCase {
         next.performClick(nil)
         next.performClick(nil)
         // The first outgoing page is no longer part of the active transition.
-        XCTAssertTrue(container.subviews[0].isHidden)
+        XCTAssertTrue(container.subviews.first { $0.identifier?.rawValue == "FluentKit.FlipView.Page.0" }?.isHidden ?? true)
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.4))
-        XCTAssertEqual(container.subviews.filter { !$0.isHidden }, [container.subviews[2]])
+        XCTAssertEqual(container.subviews.filter { !$0.isHidden }.map { $0.identifier?.rawValue }, ["FluentKit.FlipView.Page.2"])
         XCTAssertEqual(native.accessibilityValue() as? String, "3 of 3")
     }
 

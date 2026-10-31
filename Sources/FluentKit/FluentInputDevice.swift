@@ -161,6 +161,22 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
         installTouchRecognizer()
     }
 
+    /// Cancel an interrupted control interaction without delivering a stale gesture end.
+    func reset(notify: Bool = true) {
+        let active = isActive
+        isActive = false; scrollState = .idle; samples.removeAll(); accumulated = 0; lastStep = nil
+        if let touchRecognizer { touchRecognizer.isEnabled = false; touchRecognizer.isEnabled = true }
+        if notify && active { onCancel() }
+    }
+    func detach() {
+        reset(notify: false)
+        if let touchRecognizer {
+            view?.removeGestureRecognizer(touchRecognizer)
+            touchRecognizer.target = nil; touchRecognizer.delegate = nil
+        }
+        touchRecognizer = nil
+    }
+
     private var sign: CGFloat {
         guard axis == .horizontal, view?.userInterfaceLayoutDirection == .rightToLeft else { return 1 }
         return -1
@@ -218,6 +234,7 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
             case .owned:
                 // Keep ownership until momentum ends so trailing momentum events are consumed.
                 isActive = false
+                samples.removeAll { event.timestamp - $0.time > Self.velocityWindow }
                 if event.phase.contains(.cancelled) { onCancel() } else { onEnd(sampledVelocity) }
                 return true
             case .rejected:

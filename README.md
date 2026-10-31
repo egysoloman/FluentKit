@@ -698,17 +698,26 @@ where valid. Coverage remains partial: optional snap points and scope-label/moti
 full multi-era calendar behavior, item templates/density indicators, Windows screenshot comparison,
 and real VoiceOver acceptance are pending.
 
-FlipView provides horizontal pages with buttons, Left/Right/Home/End keys and wheel input. Wheel
-bursts advance once until a 200 ms pause or direction reversal; eligible events at a boundary and
-Control+wheel chain to the parent. Horizontal input mirrors in RTL. The 16×38 navigation buttons
-have a 1pt margin, appear for pointer/keyboard interaction and hide after three idle seconds;
-hovering a button keeps it visible. Bound selection is clamped to the available range, or `-1`
-when empty. Disabled controls follow model changes while rejecting navigation input. Accessibility
-exposes the current page and increment/decrement actions; real VoiceOver acceptance is still pending.
+FlipView lazily mounts the current page and its neighbors (at most three idle pages, with one
+additional outgoing page during a distant animated jump). The default initializer identifies pages
+by position; pass `id: \.id` or `id: \.self` to retain mounted content and the selected item across
+insertions/reordering. IDs should be unique. Explicit IDs require an O(n) identity scan when the
+parent updates, but only cached page content is evaluated. Keep durable state in your model:
+pages outside the cache are unmounted.
 
-The Gallery sample supports last-page selection, removal to empty and reset. Coverage remains
-partial: pages are eagerly mounted, and finger-tracking drag/snap, vertical layout, complete WinUI
-item-container semantics and exact button glyph/material fidelity remain open.
+Pass `orientation: .vertical` for Up/Down navigation and top/bottom buttons; horizontal pages use
+Left/Right with RTL mirroring. Both support Home/End and single-page trackpad/direct-touch settling.
+Traditional wheel bursts advance once until a 200 ms pause or direction reversal; Control+wheel,
+cross-axis trackpad gestures and eligible traditional wheel events at a boundary chain to the parent.
+Same-axis phased gestures at a boundary currently return elastically rather than chaining.
+Navigation buttons are 16×38 horizontally and 38×16 vertically, with a 1pt margin and three-second
+idle hiding. Selection is clamped, or `-1` when empty; rejected or redirected binding setters are
+respected. Disabled lazy pages inherit and restore their own enabled state.
+
+The Gallery demonstrates 1,000 pages, orientation changes and stable-ID insertion/removal. Coverage
+remains partial: exact DirectManipulation physics and boundary chaining, complete item-container
+semantics, button glyph/material fidelity, Windows screenshots, physical touch and real VoiceOver
+acceptance remain open. Gesture settling is a local macOS adaptation of single-page snapping.
 
 BreadcrumbBar preserves WinUI's suffix-overflow layout: the current final item always remains
 visible, earlier items collapse behind an ellipsis only when required, and the flyout lists the

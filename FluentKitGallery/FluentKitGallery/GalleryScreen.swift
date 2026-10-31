@@ -14,8 +14,6 @@ struct GalleryScreen: FluentView {
     @FluentState private var radioValue = false
     @FluentState private var ratingValue = -1.0
     @FluentState private var pipsPage = 2
-    @FluentState private var flipPage = 0
-    @FluentState private var flipPages = ["Mountains", "Coast", "Forest"]
     @FluentState private var pivotSelection = 0
     @FluentState private var pivotLocked = false
     private let pivotSections = ["All", "Unread", "Flagged", "Urgent"]
@@ -429,32 +427,7 @@ struct GalleryScreen: FluentView {
                 )
             })
         case .FlipView:
-            return FluentAnyView(FluentVStack(spacing: 12) {
-                FluentText(flipPages.isEmpty ? "No pages" : "Page \(flipPage + 1) of \(flipPages.count)",
-                    style: .caption, color: theme.textSecondary)
-                FluentFlipView(flipPages, selection: $flipPage) { title in
-                    FluentVStack(spacing: 12) {
-                        FluentText(title, style: .title)
-                        FluentText("Use the arrows to explore each page.", style: .body,
-                            color: theme.textSecondary)
-                    }
-                    .padding(24)
-                    .frame(width: 420, height: 180)
-                    .background(theme.cardFill, cornerRadius: 8)
-                }
-                .frame(width: 420, height: 180)
-                FluentHStack(spacing: 8) {
-                    FluentButtonView("Last page") { flipPage = flipPages.count - 1 }
-                        .disabled(flipPages.isEmpty)
-                    FluentButtonView("Remove last") { if !flipPages.isEmpty { flipPages.removeLast() } }
-                        .disabled(flipPages.isEmpty)
-                    FluentButtonView("Reset") { flipPages = ["Mountains", "Coast", "Forest"]; flipPage = 0 }
-                }
-                FluentText("Move the pointer to reveal arrows. Scroll or press Left/Right to change pages.",
-                    style: .caption, color: theme.textSecondary)
-                FluentText("Home/End selects the first/last page. Horizontal navigation mirrors in RTL.",
-                    style: .caption, color: theme.textSecondary)
-            })
+            return FluentAnyView(FlipViewGallerySample(theme: theme))
         case .Pivot:
             return FluentAnyView(FluentVStack(spacing: 12) {
                 FluentPivot(pivotSections, selection: $pivotSelection, title: "EMAIL", isLocked: pivotLocked,

@@ -361,6 +361,11 @@ private final class FluentDisabledContainer: FluentLayoutContainer {
         isDisabled = disabled
     }
 
+    func applyInheritedDisabled(to subtree: NSView) {
+        guard isDisabled else { return }
+        snapshotEnabled(subtree); enforceDisabled(subtree)
+    }
+
     private func snapshotEnabled(_ view: NSView) {
         if let control = view as? NSControl, previousEnabled.object(forKey: control) == nil {
             previousEnabled.setObject(NSNumber(value: control.isEnabled), forKey: control)
@@ -380,6 +385,16 @@ private final class FluentDisabledContainer: FluentLayoutContainer {
     private func enforceDisabled(_ view: NSView) {
         view.subviews.forEach { enforceDisabled($0) }
         if let control = view as? NSControl { control.isEnabled = false }
+    }
+}
+
+/// Virtualized controls can mount children between parent renders. Capture their own enabled
+/// values in each disabled ancestor before applying that ancestor's inherited state.
+func fluentApplyInheritedDisabledState(to subtree: NSView) {
+    var ancestor = subtree.superview
+    while let current = ancestor {
+        (current as? FluentDisabledContainer)?.applyInheritedDisabled(to: subtree)
+        ancestor = current.superview
     }
 }
 

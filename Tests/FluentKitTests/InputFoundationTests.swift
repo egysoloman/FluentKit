@@ -92,4 +92,20 @@ final class InputFoundationTests: XCTestCase {
         XCTAssertFalse(driver.handleScrollWheel(scroll(-10, phase: 2, time: 2.01)))
         XCTAssertFalse(driver.isActive)
     }
+    @MainActor func testReleaseAfterHoldingStillHasNoStaleVelocityAndResetDetaches() {
+        _ = NSApplication.shared
+        let view = NSView(frame: NSRect(x:0, y:0, width:200, height:200))
+        let driver = FluentPanGestureDriver(view: view, axis: .horizontal)
+        var velocity: CGFloat?, cancellations = 0
+        driver.onEnd = { velocity = $0 }; driver.onCancel = { cancellations += 1 }
+        XCTAssertTrue(driver.handleScrollWheel(scroll(-80, phase:1, time:1)))
+        XCTAssertTrue(driver.handleScrollWheel(scroll(0, phase:4, time:2)))
+        XCTAssertEqual(velocity, 0)
+        XCTAssertTrue(driver.handleScrollWheel(scroll(-10, phase:1, time:3)))
+        driver.reset()
+        XCTAssertFalse(driver.isActive); XCTAssertEqual(cancellations, 1)
+        XCTAssertFalse(driver.handleScrollWheel(scroll(-10, phase:2, time:3.01)))
+        driver.detach(); XCTAssertTrue(view.gestureRecognizers.isEmpty)
+    }
+
 }
