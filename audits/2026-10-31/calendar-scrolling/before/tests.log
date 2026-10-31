@@ -1,0 +1,31 @@
+Building for debugging...
+[Planning 1 / 182]
+[Planning deferred tasks]
+[1 / 1]
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+[17 / 19] FluentKitTests-product
+Build complete! (2.40秒)
+Test Suite 'Selected tests' started at 2026-10-31 22:34:44.487.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 22:34:44.492.
+Test Suite 'CalendarScrollingTests' started at 2026-10-31 22:34:44.492.
+Test Case '-[FluentKitTests.CalendarScrollingTests testCalendarUsesContinuousViewportAndRetainsDayIdentityDuringPartialScroll]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarScrollingTests.swift:25: error: -[FluentKitTests.CalendarScrollingTests testCalendarUsesContinuousViewportAndRetainsDayIdentityDuringPartialScroll] : XCTUnwrap failed: expected non-nil value of type "NSScrollView"
+Test Case '-[FluentKitTests.CalendarScrollingTests testCalendarUsesContinuousViewportAndRetainsDayIdentityDuringPartialScroll]' failed (0.810 seconds).
+Test Case '-[FluentKitTests.CalendarScrollingTests testDefaultRangeUsesGregorianHundredYearBoundaries]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarScrollingTests.swift:50: error: -[FluentKitTests.CalendarScrollingTests testDefaultRangeUsesGregorianHundredYearBoundaries] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarScrollingTests.swift:51: error: -[FluentKitTests.CalendarScrollingTests testDefaultRangeUsesGregorianHundredYearBoundaries] : XCTAssertFalse failed
+Test Case '-[FluentKitTests.CalendarScrollingTests testDefaultRangeUsesGregorianHundredYearBoundaries]' failed (0.006 seconds).
+Test Case '-[FluentKitTests.CalendarScrollingTests testPageNavigationPreservesDayInsteadOfJumpingToFirst]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarScrollingTests.swift:41: error: -[FluentKitTests.CalendarScrollingTests testPageNavigationPreservesDayInsteadOfJumpingToFirst] : XCTAssertEqual failed: ("year: 2026 month: 2 day: 1 isLeapMonth: false ") is not equal to ("year: 2026 month: 2 day: 28 ")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CalendarScrollingTests.swift:43: error: -[FluentKitTests.CalendarScrollingTests testPageNavigationPreservesDayInsteadOfJumpingToFirst] : XCTAssertEqual failed: ("month: 1 day: 1 isLeapMonth: false ") is not equal to ("month: 1 day: 28 ")
+Test Case '-[FluentKitTests.CalendarScrollingTests testPageNavigationPreservesDayInsteadOfJumpingToFirst]' failed (0.009 seconds).
+Test Suite 'CalendarScrollingTests' failed at 2026-10-31 22:34:45.317.
+	 Executed 3 tests, with 5 failures (0 unexpected) in 0.825 (0.826) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 22:34:45.317.
+	 Executed 3 tests, with 5 failures (0 unexpected) in 0.825 (0.826) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 22:34:45.317.
+	 Executed 3 tests, with 5 failures (0 unexpected) in 0.825 (0.831) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

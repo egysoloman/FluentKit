@@ -4,6 +4,19 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CalendarView and CalendarDatePicker now use continuous virtualized Month/Year/Decade grids.
+  CalendarView adds the `numberOfWeeksInView` initializer argument (2–8, default 6). A bounded cell cache preserves
+  dates under partial scrolling, mounted keyboard focus, and browsing during parent/model updates.
+  Visible-scope headers and range-aware navigation follow the WinUI source; PageUp/PageDown and
+  level changes preserve smaller date fields where valid. Level changes after scrolling retain
+  the browsed location. The Gallery demonstrates compact scrolling and external selection updates.
+- Calendar behavior correction: omitted date bounds now use the current Gregorian year ±100
+  (January 1 through December 31 in the configured time zone), matching WinUI defaults. Specify
+  explicit bounds for a wider range. Out-of-range dates are excluded from the generated grid.
+  Continuous scrolling replaces the previous fixed-page wheel threshold; native macOS scrolling
+  remains the input mechanism. Snap points, scope labels/motion and real Windows/VoiceOver parity
+  are still pending.
+
 - FluentViewBuilder now compiles single-branch `if`, optional binding and nested conditionals
   through an additional concrete `buildOptional` overload; existing generic calls remain valid.
 

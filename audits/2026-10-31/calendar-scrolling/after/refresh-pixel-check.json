@@ -1,0 +1,62 @@
+[
+  {
+    "variant": "dark-ltr-decade",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "6d3ddeb4683305de4d052b160ff9827cdebc4f7784f8c8ef684f0112e7aeb731"
+  },
+  {
+    "variant": "dark-ltr-month",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "5f3597eed764075a4f40ccc3ed6d8dd6828d8f63215df2680bb044c6ef5280c5"
+  },
+  {
+    "variant": "dark-ltr-year",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "b704c6b418a03a41fbe9717e1bc3a4fbd3ae40010bd0c7f6962b98f0fd66bb6e"
+  },
+  {
+    "variant": "dark-rtl-decade",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "c0e4ec3ad67428f08db372b662766117719d68bc57c4fa3dd705f4e6a13eef9e"
+  },
+  {
+    "variant": "dark-rtl-month",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "4846f2bced2c85b53f964f308efe52964f6c74ca78f79c4039b198e3b3d708e9"
+  },
+  {
+    "variant": "dark-rtl-year",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "dd741ea98d12414895a093007a25395d127efbf8a9b201d3e3d1678ddd0de7f6"
+  },
+  {
+    "variant": "light-ltr-decade",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "04e25d5366fa2fce06576ab3df017da8d55f61ee0e3e1cbaafaa095d0ae8c60d"
+  },
+  {
+    "variant": "light-ltr-month",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "0218b65cfb00376ea0e2179648ac1498aa3e3e13f8366a03e450a975b4737212"
+  },
+  {
+    "variant": "light-ltr-year",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "c041296700e045f7ac511b38d9c19d946bf3440c2b35dc1925677e5d42a55850"
+  },
+  {
+    "variant": "light-rtl-decade",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "fc5f149c5a752b48de73d289ccb85355d241740ad41b219c2ff8a060ee4c9efc"
+  },
+  {
+    "variant": "light-rtl-month",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "b9a8b5689e53c74406b43322e1d56373cb1dd04028f921158559f04a2b3c3d70"
+  },
+  {
+    "variant": "light-rtl-year",
+    "farRefreshPixelsEqual": true,
+    "rgbaSha256": "330c2d0b41c8b105e34d6ee709ff413aa26d8f082ecc0f45b785c6009db99498"
+  }
+]

@@ -15,9 +15,28 @@ final class FluentCalendarButton: NSButton {
     var onFocus: (() -> Void)?
     var onKey: ((NSEvent) -> Bool)?
     private var pointerOver = false
+    private var reuseGeneration: UInt64 = 0
+    private var trackingGeneration: UInt64?
+
+    func clearPointerHover() {
+        if pointerOver { pointerOver = false; needsDisplay = true }
+    }
+
+    var representedDate: Date?
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        representedDate = nil
+        reuseGeneration &+= 1
+        pointerOver = false
+        highlight(false)
+        participatesInTabOrder = false
+        onInvoke = nil; onFocus = nil; onKey = nil
+    }
 
     init() {
         super.init(frame: .zero)
+        clipsToBounds = true
         isBordered = false
         setButtonType(.momentaryPushIn)
         focusRingType = .none
@@ -47,7 +66,8 @@ final class FluentCalendarButton: NSButton {
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         needsDisplay = true
-        defer { needsDisplay = true }
+        trackingGeneration = reuseGeneration
+        defer { trackingGeneration = nil; needsDisplay = true }
         super.mouseDown(with: event)
     }
     override func keyDown(with event: NSEvent) {
@@ -60,7 +80,10 @@ final class FluentCalendarButton: NSButton {
         onInvoke?()
         return true
     }
-    @objc private func invoke() { if isEnabled, !blackout { onInvoke?() } }
+    @objc private func invoke() {
+        guard isEnabled, !blackout, trackingGeneration == nil || trackingGeneration == reuseGeneration else { return }
+        onInvoke?()
+    }
 
     override func draw(_ dirtyRect: NSRect) {
         guard bounds.width > 0, bounds.height > 0 else { return }

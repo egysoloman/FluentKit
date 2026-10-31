@@ -672,8 +672,8 @@ of the same bound control lifecycle.
 
 CalendarView is an embedded Fluent calendar; CalendarDatePicker shares its grid inside an AppKit
 popover. It supports single/multiple/no selection, blackout dates, inclusive date ranges, and
-Month/Year/Decade navigation (4×4 in Year/Decade). Arrow keys move focus; Space/Enter activates;
-Home/End target the current scope; PageUp/PageDown change scopes; Ctrl+Up/Down change levels.
+continuous, virtualized Month/Year/Decade scrolling (4×4 in Year/Decade). Arrow keys move focus; Space/Enter activates;
+Home/End target the visible scope; PageUp/PageDown retain the day where valid; Ctrl+Up/Down change levels.
 
 ```swift
 @FluentState private var selectedDays: [Date] = []
@@ -684,11 +684,17 @@ FluentCalendarView(selection: $selectedDays, selectionMode: .multiple)
 ```
 
 Pass `calendar` to configure locale and time zone, and `firstWeekday` to override the week start.
+Pass `numberOfWeeksInView: 2` (2–8) to set the month viewport (default 6; values are clamped).
+An omitted minimum defaults to January 1 of the current Gregorian year minus 100; an omitted
+maximum defaults to December 31 of the current year plus 100, in the configured time zone.
+Specify both bounds for a range outside those defaults.
 Dates are compared by local calendar day. Activating a selected day removes it; in multiple mode,
 all equivalent duplicate entries are removed. Range/blackout/mode changes normalize the bound
 selection. CalendarDatePicker retains its nonoptional-date API and commits an already selected day.
 `displayDate`, `displayMode`, and unbound `selectedDates` apply initially and when their values
-change; unchanged parent values preserve browsing. Coverage remains partial: continuous scrolling,
+change; unchanged parent values preserve browsing and scroll position. Scroll headers follow the
+visible scope; switching levels retains the browsed location and preserves smaller date fields
+where valid. Coverage remains partial: optional snap points and scope-label/motion parity,
 full multi-era calendar behavior, item templates/density indicators, Windows screenshot comparison,
 and real VoiceOver acceptance are pending.
 

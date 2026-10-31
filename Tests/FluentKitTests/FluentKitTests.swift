@@ -4348,22 +4348,19 @@ final class FluentKitTests: XCTestCase {
         }
         XCTAssertTrue(descendants(in: editor).filter { $0 is NSDatePicker }.isEmpty)
         let dayButtons = descendants(in: editor).compactMap { $0 as? NSButton }
-        XCTAssertEqual(dayButtons.count, 45)
-        let calendarCells = dayButtons.filter {
-            $0.identifier?.rawValue.hasPrefix("FluentKit.CalendarDatePicker.Day.") == true
-        }
+        let grid = try XCTUnwrap(descendants(in: editor).first { $0 is FluentCalendarGridView } as? FluentCalendarGridView)
+        let calendarCells = grid.visibleCells
         XCTAssertEqual(calendarCells.count, 42)
+        XCTAssertLessThanOrEqual(dayButtons.count, 73, "Only the viewport and a bounded cache should exist")
         let firstCalendarRow = Array(calendarCells.prefix(7))
         let secondCalendarRow = Array(calendarCells.dropFirst(7).prefix(7))
         XCTAssertGreaterThan(
-            firstCalendarRow.map(\.frame.minY).min() ?? 0,
-            secondCalendarRow.map(\.frame.minY).max() ?? 0,
-            "calendar rows must read top-to-bottom in AppKit's non-flipped coordinate system"
+            firstCalendarRow.map { $0.convert($0.bounds, to: editor).minY }.min() ?? 0,
+            secondCalendarRow.map { $0.convert($0.bounds, to: editor).minY }.max() ?? 0,
+            "Calendar rows must read top-to-bottom after converting the flipped document coordinates"
         )
         XCTAssertFalse(calendarCells.contains { $0.title == "..." })
-        let day = try XCTUnwrap(
-            dayButtons.first { $0.identifier?.rawValue == "FluentKit.CalendarDatePicker.Day.10" }
-        )
+        let day = try XCTUnwrap(grid.cell(for: DateComponents(calendar: .current, year: 2026, month: 8, day: 5).date!))
         day.performClick(nil)
         XCTAssertEqual(selectedDates.count, 1)
         let selectedComponents = Calendar.current.dateComponents([.year, .month], from: selectedDates[0])
@@ -4374,26 +4371,16 @@ final class FluentKitTests: XCTestCase {
             dayButtons.first { $0.identifier?.rawValue == "FluentKit.CalendarDatePicker.Header" }
         )
         let originalHeader = header.title
-        func calendarScrollEvent(deltaY: Int32) throws -> NSEvent {
-            let event = try XCTUnwrap(CGEvent(
-                scrollWheelEvent2Source: nil,
-                units: .pixel,
-                wheelCount: 1,
-                wheel1: deltaY,
-                wheel2: 0,
-                wheel3: 0
-            ))
-            event.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
-            return try XCTUnwrap(NSEvent(cgEvent: event))
-        }
-        editor.scrollWheel(with: try calendarScrollEvent(deltaY: -11))
-        XCTAssertEqual(header.title, originalHeader, "partial trackpad movement is accumulated")
-        editor.scrollWheel(with: try calendarScrollEvent(deltaY: -11))
-        XCTAssertNotEqual(header.title, originalHeader, "CalendarDatePicker scrolls to the adjacent month")
+        let initialOffset = grid.contentView.bounds.minY
+        grid.contentView.scroll(to: NSPoint(x: 0, y: initialOffset + 11))
+        grid.reflectScrolledClipView(grid.contentView)
+        XCTAssertEqual(header.title, originalHeader, "A partial row scroll must not jump to an adjacent month")
+        grid.scroll(to: DateComponents(calendar: .current, year: 2026, month: 9, day: 1).date!, leading: true)
+        XCTAssertNotEqual(header.title, originalHeader, "The header follows the visible month")
 
         header.performClick(nil)
         editor.layoutSubtreeIfNeeded()
-        let visibleMonthCells = calendarCells.filter { !$0.isHidden && !$0.title.isEmpty }
+        let visibleMonthCells = grid.visibleCells
         XCTAssertEqual(visibleMonthCells.count, 16)
         XCTAssertEqual(Set(visibleMonthCells.map(\.frame.minX)).count, 4)
         XCTAssertEqual(Set(visibleMonthCells.map(\.frame.minY)).count, 4)

@@ -1,0 +1,16 @@
+Building for debugging...
+[1 / 1]
+Build complete! (0.43秒)
+Test Suite 'Selected tests' started at 2026-10-31 22:55:15.278.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 22:55:15.280.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-10-31 22:55:15.280.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' passed (1.305 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen]' passed (0.244 seconds).
+Test Suite 'AutoSuggestInteractionTests' passed at 2026-10-31 22:55:16.829.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 1.549 (1.549) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-10-31 22:55:16.829.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 1.549 (1.549) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 22:55:16.829.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 1.549 (1.551) seconds

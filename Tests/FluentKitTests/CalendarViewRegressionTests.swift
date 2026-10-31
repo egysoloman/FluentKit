@@ -34,7 +34,7 @@ final class CalendarViewRegressionTests: XCTestCase {
             calendar: utc, locale: Locale(identifier: "en_US"), timeZone: local.timeZone,
             onSelect: { selections.append($0) })
         let first = try XCTUnwrap(buttons(editor).first {
-            $0.identifier?.rawValue.hasPrefix("FluentKit.CalendarDatePicker.Day.") == true && $0.title == "1"
+            ($0 as? FluentCalendarButton)?.representedDate.map { local.isDate($0, inSameDayAs: date(2025, 12, 1, calendar: local)) } == true
         })
         first.performClick(nil)
         let selected = try XCTUnwrap(selections.first)
@@ -55,8 +55,11 @@ final class CalendarViewRegressionTests: XCTestCase {
     }
 
     private func day(_ number: Int, in view: NSView) throws -> NSButton {
-        try XCTUnwrap(buttons(view).first {
-            $0.identifier?.rawValue.contains(".Day.") == true && !$0.isHidden && $0.title == String(number)
+        let native = try XCTUnwrap(view as? FluentCalendarViewNative)
+        let scope = native.model.scope(for: native.model.displayedDate)
+        return try XCTUnwrap(buttons(view).first {
+            guard let cell = $0 as? FluentCalendarButton, let date = cell.representedDate else { return false }
+            return !cell.isHidden && cell.title == String(number) && date >= scope.start && date < scope.end
         })
     }
     private func key(_ code: UInt16, modifiers: NSEvent.ModifierFlags = []) -> NSEvent {
@@ -104,9 +107,9 @@ final class CalendarViewRegressionTests: XCTestCase {
                 displayDate: display, range: range, calendar: c)
         }
         let native = try XCTUnwrap(control(first...last, display: first)._makeView(in: context) as? FluentCalendarViewNative)
-        XCTAssertFalse(try day(9, in: native).isEnabled)
+        XCTAssertFalse(buttons(native).contains { $0.identifier?.rawValue.contains(".Day.") == true && $0.title == "9" }, "Dates outside MinDate/MaxDate are not generated")
         XCTAssertTrue(try day(20, in: native).isEnabled)
-        XCTAssertFalse(try day(21, in: native).isEnabled)
+        XCTAssertFalse(buttons(native).contains { $0.identifier?.rawValue.contains(".Day.") == true && $0.title == "21" })
         let nextDay = date(2026, 5, 11, calendar: c)
         XCTAssertTrue(control(nextDay...last, display: first)._updateView(native, in: context))
         XCTAssertEqual(selection.wrappedValue, [last])
@@ -160,7 +163,8 @@ final class CalendarViewRegressionTests: XCTestCase {
         native.keyDown(with: key(119))
         XCTAssertEqual(c.component(.day, from: native.model.focusedDate), 31)
         native.keyDown(with: key(123))
-        XCTAssertEqual(c.dateComponents([.month, .day], from: native.model.displayedDate), DateComponents(month: 6, day: 1))
+        XCTAssertEqual(c.dateComponents([.month, .day], from: native.model.focusedDate), DateComponents(month: 6, day: 1))
+        XCTAssertEqual(c.component(.month, from: native.model.displayedDate), 5, "Focus in the trailing days must not change the visible scope header")
         native.keyDown(with: key(126, modifiers: .control))
         XCTAssertEqual(native.model.mode, .year)
         native.keyDown(with: key(126, modifiers: .control))
@@ -191,7 +195,7 @@ final class CalendarViewRegressionTests: XCTestCase {
         let months = native.model.cellDates.filter { hebrew.component(.year, from: $0) == 5784 }
         XCTAssertEqual(months.count, 13)
         XCTAssertEqual(Set(months.map { hebrew.component(.month, from: $0) }).count, 13)
-        let cells = buttons(native).filter { $0.identifier?.rawValue.contains(".Day.") == true && !$0.isHidden }
+        let cells = buttons(native).filter { $0.identifier?.rawValue.contains(".Day.") == true && !$0.isHidden && !$0.visibleRect.isEmpty }
         XCTAssertEqual(cells.count, 16)
         XCTAssertEqual(Set(cells.map(\.frame.minX)).count, 4)
         XCTAssertEqual(Set(cells.map(\.frame.minY)).count, 4)

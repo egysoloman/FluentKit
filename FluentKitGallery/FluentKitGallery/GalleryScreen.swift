@@ -811,13 +811,7 @@ struct GalleryScreen: FluentView {
                 FluentTimePickerView(selection: $selectedTime, minuteIncrement: 5).frame(width: 242)
                 FluentButtonView("Clear time") { selectedTime = nil }
             })
-        case .CalendarView:
-            return FluentAnyView(FluentVStack(spacing: 12) {
-                FluentCalendarView(selection: $calendarDates, selectionMode: .multiple)
-                    .frame(width: 310, height: 350)
-                FluentText("Selected dates: \(calendarDates.count)")
-                FluentText("Click the header or press Ctrl+Up / Ctrl+Down to change calendar level.", style: .caption)
-            })
+        case .CalendarView: return FluentAnyView(CalendarViewGallerySample())
         case .ColorPicker: return FluentAnyView(FluentColorPickerView(selection: $colorValue, label: "Accent color"))
         case .ContentDialog:
             return FluentAnyView(ContentDialogGallerySample(theme: theme))
