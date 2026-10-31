@@ -456,6 +456,7 @@ public final class FluentBoundCheckBox: NSView {
     private var binding: FluentBinding<Bool>
     private var observer: UUID?
     private var isApplyingBinding = false
+    private var subscriptionGeneration: UInt = 0
 
     public init(_ binding: FluentBinding<Bool>, title: String = "Check box") {
         self.binding = binding
@@ -486,34 +487,47 @@ public final class FluentBoundCheckBox: NSView {
         reduceMotion: Bool,
         layoutDirection: FluentLayoutDirection
     ) {
-        if let observer { self.binding.removeObserver?(observer) }
+        let reusesObservation = self.binding.observationIdentity != nil
+            && self.binding.observationIdentity == binding.observationIdentity
+        if !reusesObservation {
+            removeObserver()
+        }
         self.binding = binding
-        checkBox.theme = theme
-        checkBox.reduceMotion = reduceMotion
-        checkBox.fluentLayoutDirection = layoutDirection
+        if checkBox.theme != theme { checkBox.theme = theme }
+        if checkBox.reduceMotion != reduceMotion { checkBox.reduceMotion = reduceMotion }
+        if checkBox.fluentLayoutDirection != layoutDirection { checkBox.fluentLayoutDirection = layoutDirection }
         let value = binding.get()
         if checkBox.isChecked != value {
             isApplyingBinding = true
             checkBox.setStateFromBinding(value)
             isApplyingBinding = false
         }
-        installObserver()
+        if !reusesObservation { installObserver() }
     }
 
     private func installObserver() {
+        subscriptionGeneration &+= 1
+        let generation = subscriptionGeneration
         observer = binding.observe? { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.checkBox.isChecked != value else { return }
+            let apply = { [weak self] in
+                guard let self, generation == self.subscriptionGeneration,
+                      FluentDependencyTracking.withoutTracking({ self.binding.get() }) == value,
+                      self.checkBox.isChecked != value else { return }
                 self.isApplyingBinding = true
                 self.checkBox.setStateFromBinding(value)
                 self.isApplyingBinding = false
             }
+            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
         }
     }
 
-    deinit {
+    private func removeObserver() {
+        subscriptionGeneration &+= 1
         if let observer { binding.removeObserver?(observer) }
+        observer = nil
     }
+
+    deinit { removeObserver() }
 }
 
 public final class FluentBoundRadioButton: NSView {
@@ -521,6 +535,7 @@ public final class FluentBoundRadioButton: NSView {
     private var binding: FluentBinding<Bool>
     private var observer: UUID?
     private var isApplyingBinding = false
+    private var subscriptionGeneration: UInt = 0
 
     public init(
         _ binding: FluentBinding<Bool>,
@@ -560,11 +575,15 @@ public final class FluentBoundRadioButton: NSView {
         layoutDirection: FluentLayoutDirection,
         groupName: String? = nil
     ) {
-        if let observer { self.binding.removeObserver?(observer) }
+        let reusesObservation = self.binding.observationIdentity != nil
+            && self.binding.observationIdentity == binding.observationIdentity
+        if !reusesObservation {
+            removeObserver()
+        }
         self.binding = binding
-        radioButton.theme = theme
-        radioButton.reduceMotion = reduceMotion
-        radioButton.fluentLayoutDirection = layoutDirection
+        if radioButton.theme != theme { radioButton.theme = theme }
+        if radioButton.reduceMotion != reduceMotion { radioButton.reduceMotion = reduceMotion }
+        if radioButton.fluentLayoutDirection != layoutDirection { radioButton.fluentLayoutDirection = layoutDirection }
         radioButton.groupName = groupName
         let value = binding.get()
         if radioButton.isSelected != value {
@@ -572,23 +591,32 @@ public final class FluentBoundRadioButton: NSView {
             radioButton.setStateFromBinding(value)
             isApplyingBinding = false
         }
-        installObserver()
+        if !reusesObservation { installObserver() }
     }
 
     private func installObserver() {
+        subscriptionGeneration &+= 1
+        let generation = subscriptionGeneration
         observer = binding.observe? { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.radioButton.isSelected != value else { return }
+            let apply = { [weak self] in
+                guard let self, generation == self.subscriptionGeneration,
+                      FluentDependencyTracking.withoutTracking({ self.binding.get() }) == value,
+                      self.radioButton.isSelected != value else { return }
                 self.isApplyingBinding = true
                 self.radioButton.setStateFromBinding(value)
                 self.isApplyingBinding = false
             }
+            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
         }
     }
 
-    deinit {
+    private func removeObserver() {
+        subscriptionGeneration &+= 1
         if let observer { binding.removeObserver?(observer) }
+        observer = nil
     }
+
+    deinit { removeObserver() }
 }
 
 public extension FluentBoundTextField {

@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CheckBox now enters Pressed on Space keyDown and commits on keyUp, ignores Return/Enter,
+  and supports keypad Add/Subtract like WinUI. CheckBox/RadioButton cancel input on focus loss,
+  removal, hiding and window deactivation or disabling, and coordinate combined Space/pointer releases.
+  **Behavior change:** same-model value updates preserve an active gesture; release acts on the
+  current value through the current binding, including after a binding replacement. Changing
+  a binding expression alone does not cancel input; obsolete observer callbacks are isolated.
+  Choice bindings update synchronously on main and reject stale subscriptions/values.
+  See `audits/2026-11-01/choice-input/REPORT.md` for evidence and remaining limits.
+
 - RadioButton fixes unnamed grouping in ordinary NSView containers and stops merging separate
   single-child containers. The binding adapter remains transparent. **Behavior change:** named
   groups use exact identifiers, including leading/trailing whitespace. Standalone radios and

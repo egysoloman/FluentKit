@@ -1,0 +1,10 @@
+{
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/components/controls/KeyDownUp/inc/ButtonBaseKeyProcess.h": "f464ad2eda9d23723afa9925a84947295446196a556ccfb855cd258deefeb03d",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/ButtonBase_Partial.cpp": "0bd6cf2181cdd1debf97730ba08ff3ff934a278492cb2dadcd3c92b7e662da6f",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/CheckBox_Partial.cpp": "bc83ead118c5b9d64eb41ab01d6cbe705730e9a9b386e4bf25e5e69dfe142149",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/ToggleButton_Partial.cpp": "c6f5af4308bc1d13cc3a73bbbd135cf5113487c48e57d6de748fb63428e7b518",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/components/controls/KeyDownUp/FocusPressState.cpp": "a8ebed69d2b4bdf06a29b28ae34adc6e5a1eebb5233dab5cc006ad32b7a35191",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/CheckBox_themeresources.xaml": "d278a1df7ddc3e8516e3c8022a42f5eb1dd834686018e574dc85b2de41140017",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/DependencyObject.cpp": "09a6d2fb12dd48a13f14fffce3f30cfdd966cbf3d0167fd4312dc7ff1c42a1b1",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/FrameworkElement_partial.cpp": "4321aeae90d8eea53589908992180518dc19fc3ea2b00785cd9b9a46c76771d0"
+}

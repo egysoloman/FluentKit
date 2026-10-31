@@ -1,0 +1,12 @@
+{
+  "parent_commit": "8be10b5f5a5abbe173a07268ab99aabe8d4b5d87",
+  "sha256": {
+    "Sources/FluentKit/FluentChoiceControls.swift": "9c7b74eb784f09d0c657e68a7ecbc95b6c36f77d50c2e01cb51fa27422587724",
+    "Sources/FluentKit/FluentBindingControls.swift": "1d7bef8c22520d59db0e2a8fdad32930d6c53dd7054ec9f7ff265fe7676262c1",
+    "Sources/FluentKit/FluentRadioButtons.swift": "21ef5dde9f0b56746175bba3fa2f306a0fefd393ebfbeb35e083dd4aa5907af8",
+    "Sources/FluentKitValidation/main.swift": "c879ed44668ef68675e222847d60bfdaa2d15f5af7638b8d07d9b7242f495497",
+    "Tests/FluentKitTests/ChoiceInputTests.swift": "883c0fb5390dac0a9fe1417a63d37fb139d62240deac71883a850695a1c895fa",
+    "audits/2026-11-01/choice-input/ChoiceAudit.swift": "62779f8517ad991a663ab17049e5a4ece0ede1bb8b5407ecb3e3ef9eca4e7c27",
+    "audits/2026-11-01/choice-input/KeyboardReview.swift": "5574cab7b5860a07bb4ebf70e7c62407dfb65cdc9f53c2e3c7c60d4629325cea"
+  }
+}

@@ -57,6 +57,9 @@ public final class FluentCheckBox: NSControl {
 
     private var isPointerOver = false
     private var isPressed = false
+    private var isPointerPressActive = false
+    private var isSpaceKeyDown = false
+    private var windowResignObserver: NSObjectProtocol?
     private var suppressesValueNotification = false
     private let focusLayer = CALayer()
     private let boxLayer = CALayer()
@@ -126,36 +129,48 @@ public final class FluentCheckBox: NSControl {
 
     public override func mouseEntered(with event: NSEvent) {
         isPointerOver = true
+        if isPointerPressActive && !isSpaceKeyDown { isPressed = true }
         refreshAppearance()
     }
 
     public override func mouseExited(with event: NSEvent) {
         isPointerOver = false
+        if isPointerPressActive && !isSpaceKeyDown { isPressed = false }
         refreshAppearance()
     }
 
     public override func mouseDown(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard isEnabled, bounds.contains(convert(event.locationInWindow, from: nil)) else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
-        isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
+        isPointerOver = true
+        isPointerPressActive = true
         isPressed = true
         refreshAppearance()
     }
 
     public override func mouseDragged(with event: NSEvent) {
-        guard isPressed else { return }
+        guard isPointerPressActive else { return }
         isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
+        isPressed = isSpaceKeyDown || isPointerOver
         refreshAppearance()
     }
 
     public override func mouseUp(with event: NSEvent) {
-        guard isPressed else { return }
+        guard isPointerPressActive else { return }
         let point = convert(event.locationInWindow, from: nil)
         let inside = bounds.contains(point)
+        if isSpaceKeyDown {
+            isPointerPressActive = false
+            isPointerOver = inside
+            refreshAppearance()
+            return
+        }
+        let shouldToggle = isEnabled && isPressed && inside
+        isPointerPressActive = false
         isPressed = false
         isPointerOver = inside
-        if inside {
+        if shouldToggle {
             isChecked.toggle()
         } else {
             refreshAppearance()
@@ -167,15 +182,42 @@ public final class FluentCheckBox: NSControl {
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         updateFocusRing()
         switch event.keyCode {
-        case 36, 49:
-            guard !event.isARepeat else { return }
-            cancelInteraction(refresh: false)
-            isChecked.toggle()
+        case 49:
+            guard !event.isARepeat, !isPointerPressActive, !isSpaceKeyDown else { return }
+            isSpaceKeyDown = true
+            isPressed = true
+            refreshAppearance()
+        case 36, 76:
+            // WinUI CheckBox does not accept Return; it also cancels a held Space.
+            if isSpaceKeyDown { cancelKeyboardPress() }
+        case 69, 78:
+            // WinUI's two-state CheckBox supports keypad Add/Subtract.
+            isSpaceKeyDown = false
+            isPressed = false
+            isChecked = event.keyCode == 69
+            refreshAppearance()
         case 53:
             cancelInteraction()
         default:
+            if isSpaceKeyDown { cancelKeyboardPress() }
             super.keyDown(with: event)
         }
+    }
+
+    public override func keyUp(with event: NSEvent) {
+        guard event.keyCode == 49, isSpaceKeyDown else {
+            super.keyUp(with: event)
+            return
+        }
+        let shouldToggle = isEnabled && isPressed
+        isSpaceKeyDown = false
+        if isPointerPressActive {
+            refreshAppearance()
+            return
+        }
+        isPressed = false
+        if shouldToggle { isChecked.toggle() }
+        else { refreshAppearance() }
     }
 
     public override func cancelOperation(_ sender: Any?) { cancelInteraction() }
@@ -205,13 +247,41 @@ public final class FluentCheckBox: NSControl {
 
     public override func resignFirstResponder() -> Bool {
         let result = super.resignFirstResponder()
-        if result { updateFocusRing() }
+        if result {
+            cancelInteraction()
+            updateFocusRing()
+        }
         return result
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        cancelInteraction()
+    }
+
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if superview !== newSuperview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if window !== newWindow { cancelInteraction() }
+        super.viewWillMove(toWindow: newWindow)
     }
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
+        windowResignObserver = window.map {
+            NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: $0, queue: .main) { [weak self] _ in
+                self?.cancelInteraction()
+            }
+        }
         updateFocusRing()
+    }
+
+    deinit {
+        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
     }
 
     public override func viewDidChangeEffectiveAppearance() {
@@ -221,7 +291,7 @@ public final class FluentCheckBox: NSControl {
     }
 
     func setStateFromBinding(_ value: Bool) {
-        cancelInteraction(refresh: false)
+        // A property change is not an input cancellation (WinUI ToggleButton.OnIsCheckedChanged).
         suppressesValueNotification = true
         isChecked = value
         suppressesValueNotification = false
@@ -233,7 +303,7 @@ public final class FluentCheckBox: NSControl {
                 isChecked: isChecked,
                 isEnabled: isEnabled,
                 isPointerOver: isPointerOver,
-                isPressed: isPressed && isPointerOver,
+                isPressed: isPressed,
                 controlSize: fluentControlSize,
                 theme: theme
             )
@@ -358,9 +428,17 @@ public final class FluentCheckBox: NSControl {
         glyphLayer.add(animation, forKey: key)
     }
 
-    private func cancelInteraction(refresh: Bool = true) {
-        guard isPressed else { return }
+    private func cancelKeyboardPress() {
+        isSpaceKeyDown = false
         isPressed = false
+        refreshAppearance()
+    }
+
+    private func cancelInteraction(refresh: Bool = true) {
+        guard isPressed || isPointerPressActive || isSpaceKeyDown else { return }
+        isPressed = false
+        isPointerPressActive = false
+        isSpaceKeyDown = false
         if refresh { refreshAppearance() }
     }
 
@@ -462,6 +540,7 @@ public final class FluentRadioButton: NSControl {
     private var isSpaceKeyDown = false
     private var suppressesValueNotification = false
     weak var groupingCoordinator: (any FluentRadioButtonGrouping)?
+    private var windowResignObserver: NSObjectProtocol?
     private let focusLayer = CAShapeLayer()
     private let focusInnerLayer = CAShapeLayer()
     private let outerLayer = CALayer()
@@ -539,24 +618,24 @@ public final class FluentRadioButton: NSControl {
 
     public override func mouseEntered(with event: NSEvent) {
         isPointerOver = true
-        if isPointerPressActive { isPressed = true }
+        if isPointerPressActive && !isSpaceKeyDown { isPressed = true }
         refreshAppearance(animated: true)
     }
 
     public override func mouseExited(with event: NSEvent) {
         isPointerOver = false
-        if isPointerPressActive { isPressed = false }
+        if isPointerPressActive && !isSpaceKeyDown { isPressed = false }
         refreshAppearance(animated: true)
     }
 
     public override func mouseDown(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
-        guard isEnabled, !isSpaceKeyDown, bounds.contains(point) else { return }
+        guard isEnabled, bounds.contains(point) else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         isPointerOver = true
         isPointerPressActive = true
-        isPressed = isPointerOver
+        isPressed = isSpaceKeyDown || isPointerOver
         refreshAppearance(animated: true)
     }
 
@@ -564,9 +643,10 @@ public final class FluentRadioButton: NSControl {
         guard isPointerPressActive else { return }
         let inside = bounds.insetBy(dx: -0.05, dy: -0.05)
             .contains(convert(event.locationInWindow, from: nil))
-        guard isPointerOver != inside || isPressed != inside else { return }
+        let pressed = isSpaceKeyDown || inside
+        guard isPointerOver != inside || isPressed != pressed else { return }
         isPointerOver = inside
-        isPressed = inside
+        isPressed = pressed
         refreshAppearance(animated: true)
     }
 
@@ -574,6 +654,12 @@ public final class FluentRadioButton: NSControl {
         guard isPointerPressActive else { return }
         let point = convert(event.locationInWindow, from: nil)
         let inside = bounds.contains(point)
+        if isSpaceKeyDown {
+            isPointerPressActive = false
+            isPointerOver = inside
+            refreshAppearance(animated: true)
+            return
+        }
         let shouldSelect = isPressed && inside && !isSelected
         isPointerPressActive = false
         isPressed = false
@@ -595,8 +681,9 @@ public final class FluentRadioButton: NSControl {
             isSpaceKeyDown = true
             isPressed = true
             refreshAppearance(animated: true)
-        case 36:
+        case 36, 76:
             // WinUI RadioButton explicitly opts out of Return/Enter activation.
+            if isSpaceKeyDown { cancelKeyboardPress() }
             return
         case 123, 124, 125, 126:
             cancelInteraction()
@@ -611,7 +698,7 @@ public final class FluentRadioButton: NSControl {
         case 53:
             cancelInteraction()
         default:
-            if isSpaceKeyDown { cancelInteraction() }
+            if isSpaceKeyDown { cancelKeyboardPress() }
             super.keyDown(with: event)
         }
     }
@@ -623,6 +710,10 @@ public final class FluentRadioButton: NSControl {
         }
         let shouldSelect = isPressed && !isSelected
         isSpaceKeyDown = false
+        if isPointerPressActive {
+            refreshAppearance(animated: true)
+            return
+        }
         isPressed = false
         if shouldSelect { requestSelection() }
         else { refreshAppearance(animated: true) }
@@ -662,8 +753,29 @@ public final class FluentRadioButton: NSControl {
         return result
     }
 
+    public override func viewDidHide() {
+        super.viewDidHide()
+        cancelInteraction()
+    }
+
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if superview !== newSuperview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if window !== newWindow { cancelInteraction() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
+        windowResignObserver = window.map {
+            NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: $0, queue: .main) { [weak self] _ in
+                self?.cancelInteraction()
+            }
+        }
         if isSelected, groupingCoordinator == nil { enforceExclusiveSelection() }
         updateGroupAccessibility()
         updateFocusRing()
@@ -675,6 +787,10 @@ public final class FluentRadioButton: NSControl {
         updateGroupAccessibility()
     }
 
+    deinit {
+        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
+    }
+
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
         fluentNotifyAppearanceCoordinator(from: self)
@@ -682,7 +798,7 @@ public final class FluentRadioButton: NSControl {
     }
 
     func setStateFromBinding(_ value: Bool) {
-        cancelInteraction(refresh: false)
+        // Binding expressions change values, not the control's active input gesture.
         suppressesValueNotification = true
         isSelected = value
         suppressesValueNotification = false
@@ -870,6 +986,12 @@ public final class FluentRadioButton: NSControl {
     private func removeVisualAnimations() {
         dotLayer.removeAllAnimations()
         pressedDotLayer.removeAllAnimations()
+    }
+
+    private func cancelKeyboardPress() {
+        isSpaceKeyDown = false
+        isPressed = false
+        refreshAppearance(animated: true)
     }
 
     private func cancelInteraction(refresh: Bool = true) {

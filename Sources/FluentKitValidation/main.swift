@@ -2284,20 +2284,22 @@ interactiveCheckBox.mouseUp(
     with: toggleMouseEvent(.leftMouseUp, at: checkBoxPoint, in: interactiveCheckBox, eventNumber: 48)
 )
 require(
-    interactiveCheckBoxState.wrappedValue,
-    "external CheckBox binding updates cancel Pressed without a stale toggle"
+    !interactiveCheckBoxState.wrappedValue,
+    "CheckBox release toggles the current external value, matching WinUI OnToggle"
 )
 interactiveCheckBoxWindow.makeFirstResponder(interactiveCheckBox)
 require(checkBoxFocus.opacity == 0, "CheckBox hides focus visuals after pointer focus")
 interactiveCheckBox.keyDown(with: sliderKeyEvent(49, in: interactiveCheckBox, eventNumber: 49))
-require(!interactiveCheckBoxState.wrappedValue && checkBoxFocus.opacity == 1, "CheckBox Space commits through the keyboard path and reveals focus")
+require(!interactiveCheckBoxState.wrappedValue && checkBoxFocus.opacity == 1, "CheckBox Space keyDown reveals focus without committing")
+interactiveCheckBox.keyUp(with: toggleButtonKeyEvent(.keyUp, keyCode: 49, in: interactiveCheckBox, eventNumber: 50))
+require(interactiveCheckBoxState.wrappedValue, "CheckBox Space commits on keyUp")
 require(
-    interactiveCheckBox.accessibilityPerformPress() && interactiveCheckBoxState.wrappedValue,
+    interactiveCheckBox.accessibilityPerformPress() && !interactiveCheckBoxState.wrappedValue,
     "CheckBox accessibility press commits through the same path"
 )
 interactiveCheckBox.isEnabled = false
 require(
-    !interactiveCheckBox.accessibilityPerformPress() && interactiveCheckBoxState.wrappedValue,
+    !interactiveCheckBox.accessibilityPerformPress() && !interactiveCheckBoxState.wrappedValue,
     "disabled CheckBox rejects accessibility activation"
 )
 interactiveCheckBoxState.observableValue.removeObserver(interactiveCheckBoxObserver)
@@ -2417,12 +2419,13 @@ interactiveRadio.mouseDown(
 )
 interactiveRadioState.wrappedValue = true
 drainMainQueue()
+require(radioDot.bounds.width == 10, "external RadioButton value changes preserve the active Pressed geometry")
 interactiveRadio.mouseUp(
     with: toggleMouseEvent(.leftMouseUp, at: radioPoint, in: interactiveRadio, eventNumber: 61)
 )
 require(
     interactiveRadioState.wrappedValue,
-    "external RadioButton binding updates cancel Pressed without a stale selection"
+    "RadioButton release preserves an externally selected value"
 )
 interactiveRadioState.wrappedValue = false
 drainMainQueue()

@@ -1,0 +1,81 @@
+Building for debugging...
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[8 / 17] FluentKitTests-product
+[10 / 19] FluentKitTests-product
+[16 / 18] FluentKitTests-product
+Build complete! (2.12秒)
+Test Suite 'Selected tests' started at 2026-11-01 07:22:07.410.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 07:22:07.412.
+Test Suite 'ChoiceInputTests' started at 2026-11-01 07:22:07.412.
+Test Case '-[FluentKitTests.ChoiceInputTests testBindingReplacementPreservesPressAndReleaseWritesOnlyTheCurrentBinding]' started.
+Test Case '-[FluentKitTests.ChoiceInputTests testBindingReplacementPreservesPressAndReleaseWritesOnlyTheCurrentBinding]' passed (0.064 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:125: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - main-thread model updates are synchronous
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:134: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - obsolete subscription must not overwrite the new model
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:125: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - main-thread model updates are synchronous
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:134: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - obsolete subscription must not overwrite the new model
+Test Case '-[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding]' failed (0.392 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:61: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertFalse failed - Return/Enter must not toggle CheckBox
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:64: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertTrue failed - keypad Add checks
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:65: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertTrue failed
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:72: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - another key cancels held Space
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI]' failed (0.004 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:48: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertFalse failed
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:48: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertTrue failed
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:48: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertTrue failed
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:50: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertFalse failed
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback]' failed (0.001 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check focus
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check detach
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check window
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check hide
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check hide-parent
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - radio detach
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:95: error: -[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - radio window
+Test Case '-[FluentKitTests.ChoiceInputTests testChoicePressCancelsOnLifecycleAndVisibilityChanges]' failed (0.043 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:108: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("false") is not equal to ("true") - release toggles the current model value
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:115: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertTrue failed - release selects regardless of an intervening property update
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:108: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("true") is not equal to ("false") - release toggles the current model value
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:108: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("false") is not equal to ("true") - release toggles the current model value
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:115: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertTrue failed - release selects regardless of an intervening property update
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:108: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("true") is not equal to ("false") - release toggles the current model value
+Test Case '-[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease]' failed (0.002 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:148: error: -[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue] : XCTAssertTrue failed
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:148: error: -[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue] : XCTAssertTrue failed
+Test Case '-[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue]' failed (0.010 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupBindingReplacementAndRefreshPreservePress]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:191: error: -[FluentKitTests.ChoiceInputTests testRadioGroupBindingReplacementAndRefreshPreservePress] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("A")")
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:190: error: -[FluentKitTests.ChoiceInputTests testRadioGroupBindingReplacementAndRefreshPreservePress] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("A")")
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupBindingReplacementAndRefreshPreservePress]' failed (0.002 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:175: error: -[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress] : XCTAssertEqual failed: ("Optional("C")") is not equal to ("Optional("A")") - subsequent user release is a new selection
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:176: error: -[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress] : XCTAssertEqual failed: ("[false, false, true]") is not equal to ("[true, false, false]")
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:178: error: -[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress] : XCTAssertEqual failed: ("1.0") is not equal to ("0.0")
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress]' failed (0.001 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupRejectsQueuedOlderSelectionFromTheSameBinding]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:228: error: -[FluentKitTests.ChoiceInputTests testRadioGroupRejectsQueuedOlderSelectionFromTheSameBinding] : XCTAssertEqual failed: ("[false, true, false]") is not equal to ("[false, false, true]")
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupRejectsQueuedOlderSelectionFromTheSameBinding]' failed (0.001 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease]' started.
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:202: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - first release must not commit
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:205: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)")
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:207: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - no duplicate release commit
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:205: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)")
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:207: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - no duplicate release commit
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:202: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - first release must not commit
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:215: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - cancelling Space retains an existing pointer capture
+/private/tmp/fluentkit-choice-baseline/Tests/FluentKitTests/ChoiceInputTests.swift:215: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - cancelling Space retains an existing pointer capture
+Test Case '-[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease]' failed (0.002 seconds).
+Test Suite 'ChoiceInputTests' failed at 2026-11-01 07:22:07.934.
+	 Executed 11 tests, with 41 failures (0 unexpected) in 0.521 (0.522) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 07:22:07.934.
+	 Executed 11 tests, with 41 failures (0 unexpected) in 0.521 (0.522) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 07:22:07.934.
+	 Executed 11 tests, with 41 failures (0 unexpected) in 0.521 (0.524) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -1,0 +1,16 @@
+{
+  "base_commit": "8be10b5f5a5abbe173a07268ab99aabe8d4b5d87",
+  "sha256": {
+    "Sources/FluentKit/FluentChoiceControls.swift": "7bdbd91babc885a43dfaa15845d6591b5efef95bea402c480e6900f1227ad577",
+    "Sources/FluentKit/FluentBindingControls.swift": "69fb98b813980db353b650dec9e8ade9f574e9c16d4896a81fec5837dba45053",
+    "Sources/FluentKit/FluentRadioButtons.swift": "a0cd1a8a5d270270faaa33397db6f0437da4596b547905c065f76ccdb50aff61",
+    "Sources/FluentKitValidation/main.swift": "b82dd45addba2efe4cbf07a424835eb03b455b762c7b2fbeab284a9768e2bcf0",
+    "Tests/FluentKitTests/ChoiceInputTests.swift": "478a33fa872e965b65687bb99db71036552aee543d5cc7d25124e942b2cf8090",
+    "audits/2026-11-01/choice-input/ChoiceAudit.swift": "161b5820170ff5628c2eee5e36d411b6dbdae35f861f93f28bc3759349c2afc8",
+    "audits/2026-11-01/choice-input/KeyboardReview.swift": "5574cab7b5860a07bb4ebf70e7c62407dfb65cdc9f53c2e3c7c60d4629325cea",
+    "audits/2026-11-01/choice-input/run-probe.sh": "f9d7cdb7a791fc7988fb1c734169593045e0d1561a64f109287005dfac7ba680",
+    "audits/2026-11-01/choice-input/build-keyboard.sh": "6087220c04595f5cd678a469166a3dc62c9e6f45642efd6c5048c7e2bdaba9d2",
+    "audits/2026-11-01/choice-input/check-results.py": "d0b04d0d48fd2e4626dee65e879508ea25c8548e30095207cc17932d7d82d049",
+    "audits/2026-11-01/choice-input/winui-sources.json": "121ca2d82e9012d30ef49a908ad0052ae8e14e108a4e9fa18346adde14e7bbca"
+  }
+}

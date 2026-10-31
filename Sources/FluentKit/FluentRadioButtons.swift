@@ -170,8 +170,11 @@ private final class FluentRadioButtonsHost<Option: Hashable>: NSControl,
         context: FluentRenderContext
     ) {
         let optionsChanged = self.options != options
-        let observationChanged = self.selection.observationIdentity != selection.observationIdentity
-        if observationChanged { removeSelectionObserver() }
+        let observationChanged = self.selection.observationIdentity == nil
+            || self.selection.observationIdentity != selection.observationIdentity
+        if observationChanged {
+            removeSelectionObserver()
+        }
         self.options = options
         self.selection = selection
         self.header = header
@@ -306,7 +309,8 @@ private final class FluentRadioButtonsHost<Option: Hashable>: NSControl,
         observedSelection = selection
         selectionObserverID = selection.observe? { [weak self] value in
             let apply = { [weak self] in
-                guard let self, generation == self.selectionSubscriptionGeneration else { return }
+                guard let self, generation == self.selectionSubscriptionGeneration,
+                      FluentDependencyTracking.withoutTracking({ self.selection.get() }) == value else { return }
                 self.receiveSelection(value, notify: true)
             }
             if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }

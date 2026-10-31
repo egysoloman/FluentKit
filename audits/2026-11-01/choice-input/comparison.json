@@ -1,0 +1,315 @@
+{
+  "before": {
+    "samples": 92,
+    "mismatched_states": 46,
+    "mismatched_fields": 50,
+    "errors": [
+      {
+        "id": "light-check-space-down",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "light-check-space-down",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-space-repeat",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "light-check-space-repeat",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-return-down",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-keypad-add",
+        "field": "selected",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "light-check-focus-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-detach-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-window-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-external-updated-while-held",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "light-check-external-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-focus-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-detach-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-window-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-disable-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-hide-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-hide-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-hide-parent-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-check-hide-parent-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-radio-return-cancel-space",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-radio-detach-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-radio-window-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-radio-external-updated-while-held",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "light-radio-detach-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "light-radio-window-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-space-down",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "dark-check-space-down",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-space-repeat",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "dark-check-space-repeat",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-return-down",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-keypad-add",
+        "field": "selected",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "dark-check-focus-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-detach-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-window-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-external-updated-while-held",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "dark-check-external-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-focus-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-detach-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-window-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-disable-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-hide-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-hide-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-hide-parent-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-check-hide-parent-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-radio-return-cancel-space",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-radio-detach-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-radio-window-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-radio-external-updated-while-held",
+        "field": "pressed",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "dark-radio-detach-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "dark-radio-window-key-up",
+        "field": "selected",
+        "actual": true,
+        "expected": false
+      }
+    ]
+  },
+  "after": {
+    "samples": 92,
+    "mismatched_states": 0,
+    "mismatched_fields": 0,
+    "errors": []
+  }
+}

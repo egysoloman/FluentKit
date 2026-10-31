@@ -1,0 +1,25 @@
+Building for debugging...
+[2 / 18] FluentKit_FluentKit
+[2 / 17]
+[3 / 8] FluentKitTests-product
+[5 / 10] FluentKitTests-product
+[10 / 12] FluentKitTests-product
+[11 / 15] FluentKitTests-product
+Build complete! (1.66秒)
+Test Suite 'Selected tests' started at 2026-11-01 07:06:10.175.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 07:06:10.177.
+Test Suite 'ChoiceInputTests' started at 2026-11-01 07:06:10.177.
+Test Case '-[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:200: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - first release must not commit
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:200: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - first release must not commit
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:213: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - cancelling Space retains an existing pointer capture
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:213: error: -[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - cancelling Space retains an existing pointer capture
+Test Case '-[FluentKitTests.ChoiceInputTests testSpaceAndPointerCombinationCommitsOnceOnTheLastRelease]' failed (0.457 seconds).
+Test Suite 'ChoiceInputTests' failed at 2026-11-01 07:06:10.634.
+	 Executed 1 test, with 4 failures (0 unexpected) in 0.457 (0.457) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 07:06:10.634.
+	 Executed 1 test, with 4 failures (0 unexpected) in 0.457 (0.457) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 07:06:10.634.
+	 Executed 1 test, with 4 failures (0 unexpected) in 0.457 (0.459) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

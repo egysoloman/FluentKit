@@ -1,0 +1,405 @@
+diff --git a/Sources/FluentKit/FluentBindingControls.swift b/Sources/FluentKit/FluentBindingControls.swift
+index 8178e88..e8a60b1 100644
+--- a/Sources/FluentKit/FluentBindingControls.swift
++++ b/Sources/FluentKit/FluentBindingControls.swift
+@@ -456,6 +456,7 @@ public final class FluentBoundCheckBox: NSView {
+     private var binding: FluentBinding<Bool>
+     private var observer: UUID?
+     private var isApplyingBinding = false
++    private var subscriptionGeneration: UInt = 0
+ 
+     public init(_ binding: FluentBinding<Bool>, title: String = "Check box") {
+         self.binding = binding
+@@ -486,34 +487,48 @@ public final class FluentBoundCheckBox: NSView {
+         reduceMotion: Bool,
+         layoutDirection: FluentLayoutDirection
+     ) {
+-        if let observer { self.binding.removeObserver?(observer) }
++        let reusesObservation = self.binding.observationIdentity != nil
++            && self.binding.observationIdentity == binding.observationIdentity
++        if !reusesObservation {
++            checkBox.cancelOperation(nil)
++            removeObserver()
++        }
+         self.binding = binding
+-        checkBox.theme = theme
+-        checkBox.reduceMotion = reduceMotion
+-        checkBox.fluentLayoutDirection = layoutDirection
++        if checkBox.theme != theme { checkBox.theme = theme }
++        if checkBox.reduceMotion != reduceMotion { checkBox.reduceMotion = reduceMotion }
++        if checkBox.fluentLayoutDirection != layoutDirection { checkBox.fluentLayoutDirection = layoutDirection }
+         let value = binding.get()
+         if checkBox.isChecked != value {
+             isApplyingBinding = true
+             checkBox.setStateFromBinding(value)
+             isApplyingBinding = false
+         }
+-        installObserver()
++        if !reusesObservation { installObserver() }
+     }
+ 
+     private func installObserver() {
++        subscriptionGeneration &+= 1
++        let generation = subscriptionGeneration
+         observer = binding.observe? { [weak self] value in
+-            DispatchQueue.main.async { [weak self] in
+-                guard let self, self.checkBox.isChecked != value else { return }
++            let apply = { [weak self] in
++                guard let self, generation == self.subscriptionGeneration,
++                      FluentDependencyTracking.withoutTracking({ self.binding.get() }) == value,
++                      self.checkBox.isChecked != value else { return }
+                 self.isApplyingBinding = true
+                 self.checkBox.setStateFromBinding(value)
+                 self.isApplyingBinding = false
+             }
++            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
+         }
+     }
+ 
+-    deinit {
++    private func removeObserver() {
++        subscriptionGeneration &+= 1
+         if let observer { binding.removeObserver?(observer) }
++        observer = nil
+     }
++
++    deinit { removeObserver() }
+ }
+ 
+ public final class FluentBoundRadioButton: NSView {
+@@ -521,6 +536,7 @@ public final class FluentBoundRadioButton: NSView {
+     private var binding: FluentBinding<Bool>
+     private var observer: UUID?
+     private var isApplyingBinding = false
++    private var subscriptionGeneration: UInt = 0
+ 
+     public init(
+         _ binding: FluentBinding<Bool>,
+@@ -560,11 +576,16 @@ public final class FluentBoundRadioButton: NSView {
+         layoutDirection: FluentLayoutDirection,
+         groupName: String? = nil
+     ) {
+-        if let observer { self.binding.removeObserver?(observer) }
++        let reusesObservation = self.binding.observationIdentity != nil
++            && self.binding.observationIdentity == binding.observationIdentity
++        if !reusesObservation {
++            radioButton.cancelOperation(nil)
++            removeObserver()
++        }
+         self.binding = binding
+-        radioButton.theme = theme
+-        radioButton.reduceMotion = reduceMotion
+-        radioButton.fluentLayoutDirection = layoutDirection
++        if radioButton.theme != theme { radioButton.theme = theme }
++        if radioButton.reduceMotion != reduceMotion { radioButton.reduceMotion = reduceMotion }
++        if radioButton.fluentLayoutDirection != layoutDirection { radioButton.fluentLayoutDirection = layoutDirection }
+         radioButton.groupName = groupName
+         let value = binding.get()
+         if radioButton.isSelected != value {
+@@ -572,23 +593,32 @@ public final class FluentBoundRadioButton: NSView {
+             radioButton.setStateFromBinding(value)
+             isApplyingBinding = false
+         }
+-        installObserver()
++        if !reusesObservation { installObserver() }
+     }
+ 
+     private func installObserver() {
++        subscriptionGeneration &+= 1
++        let generation = subscriptionGeneration
+         observer = binding.observe? { [weak self] value in
+-            DispatchQueue.main.async { [weak self] in
+-                guard let self, self.radioButton.isSelected != value else { return }
++            let apply = { [weak self] in
++                guard let self, generation == self.subscriptionGeneration,
++                      FluentDependencyTracking.withoutTracking({ self.binding.get() }) == value,
++                      self.radioButton.isSelected != value else { return }
+                 self.isApplyingBinding = true
+                 self.radioButton.setStateFromBinding(value)
+                 self.isApplyingBinding = false
+             }
++            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
+         }
+     }
+ 
+-    deinit {
++    private func removeObserver() {
++        subscriptionGeneration &+= 1
+         if let observer { binding.removeObserver?(observer) }
++        observer = nil
+     }
++
++    deinit { removeObserver() }
+ }
+ 
+ public extension FluentBoundTextField {
+diff --git a/Sources/FluentKit/FluentChoiceControls.swift b/Sources/FluentKit/FluentChoiceControls.swift
+index 6a813d0..c18513b 100644
+--- a/Sources/FluentKit/FluentChoiceControls.swift
++++ b/Sources/FluentKit/FluentChoiceControls.swift
+@@ -57,6 +57,9 @@ public final class FluentCheckBox: NSControl {
+ 
+     private var isPointerOver = false
+     private var isPressed = false
++    private var isPointerPressActive = false
++    private var isSpaceKeyDown = false
++    private var windowResignObserver: NSObjectProtocol?
+     private var suppressesValueNotification = false
+     private let focusLayer = CALayer()
+     private let boxLayer = CALayer()
+@@ -126,36 +129,42 @@ public final class FluentCheckBox: NSControl {
+ 
+     public override func mouseEntered(with event: NSEvent) {
+         isPointerOver = true
++        if isPointerPressActive { isPressed = true }
+         refreshAppearance()
+     }
+ 
+     public override func mouseExited(with event: NSEvent) {
+         isPointerOver = false
++        if isPointerPressActive { isPressed = false }
+         refreshAppearance()
+     }
+ 
+     public override func mouseDown(with event: NSEvent) {
+-        guard isEnabled else { return }
++        guard isEnabled, !isSpaceKeyDown, bounds.contains(convert(event.locationInWindow, from: nil)) else { return }
+         FluentFocusVisibility.markPointerInteraction(in: window)
+         window?.makeFirstResponder(self)
+-        isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
++        isPointerOver = true
++        isPointerPressActive = true
+         isPressed = true
+         refreshAppearance()
+     }
+ 
+     public override func mouseDragged(with event: NSEvent) {
+-        guard isPressed else { return }
++        guard isPointerPressActive else { return }
+         isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
++        isPressed = isPointerOver
+         refreshAppearance()
+     }
+ 
+     public override func mouseUp(with event: NSEvent) {
+-        guard isPressed else { return }
++        guard isPointerPressActive else { return }
+         let point = convert(event.locationInWindow, from: nil)
+         let inside = bounds.contains(point)
++        let shouldToggle = isEnabled && isPressed && inside
++        isPointerPressActive = false
+         isPressed = false
+         isPointerOver = inside
+-        if inside {
++        if shouldToggle {
+             isChecked.toggle()
+         } else {
+             refreshAppearance()
+@@ -167,17 +176,40 @@ public final class FluentCheckBox: NSControl {
+         FluentFocusVisibility.markKeyboardInteraction(in: window)
+         updateFocusRing()
+         switch event.keyCode {
+-        case 36, 49:
+-            guard !event.isARepeat else { return }
+-            cancelInteraction(refresh: false)
+-            isChecked.toggle()
++        case 49:
++            guard !event.isARepeat, !isPointerPressActive, !isSpaceKeyDown else { return }
++            isSpaceKeyDown = true
++            isPressed = true
++            refreshAppearance()
++        case 36, 76:
++            // WinUI CheckBox does not accept Return; it also cancels a held Space.
++            if isSpaceKeyDown { cancelInteraction() }
++        case 69, 78:
++            // WinUI's two-state CheckBox supports keypad Add/Subtract.
++            isSpaceKeyDown = false
++            isPressed = false
++            isChecked = event.keyCode == 69
++            refreshAppearance()
+         case 53:
+             cancelInteraction()
+         default:
++            if isSpaceKeyDown { cancelInteraction() }
+             super.keyDown(with: event)
+         }
+     }
+ 
++    public override func keyUp(with event: NSEvent) {
++        guard event.keyCode == 49, isSpaceKeyDown else {
++            super.keyUp(with: event)
++            return
++        }
++        let shouldToggle = isEnabled && isPressed
++        isSpaceKeyDown = false
++        isPressed = false
++        if shouldToggle { isChecked.toggle() }
++        else { refreshAppearance() }
++    }
++
+     public override func cancelOperation(_ sender: Any?) { cancelInteraction() }
+ 
+     public override func accessibilityValue() -> Any? { NSNumber(value: isChecked) }
+@@ -205,15 +237,38 @@ public final class FluentCheckBox: NSControl {
+ 
+     public override func resignFirstResponder() -> Bool {
+         let result = super.resignFirstResponder()
+-        if result { updateFocusRing() }
++        if result {
++            cancelInteraction()
++            updateFocusRing()
++        }
+         return result
+     }
+ 
++    public override func viewWillMove(toSuperview newSuperview: NSView?) {
++        if superview !== newSuperview { cancelInteraction() }
++        super.viewWillMove(toSuperview: newSuperview)
++    }
++
++    public override func viewWillMove(toWindow newWindow: NSWindow?) {
++        if window !== newWindow { cancelInteraction() }
++        super.viewWillMove(toWindow: newWindow)
++    }
++
+     public override func viewDidMoveToWindow() {
+         super.viewDidMoveToWindow()
++        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
++        windowResignObserver = window.map {
++            NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: $0, queue: .main) { [weak self] _ in
++                self?.cancelInteraction()
++            }
++        }
+         updateFocusRing()
+     }
+ 
++    deinit {
++        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
++    }
++
+     public override func viewDidChangeEffectiveAppearance() {
+         super.viewDidChangeEffectiveAppearance()
+         fluentNotifyAppearanceCoordinator(from: self)
+@@ -221,7 +276,7 @@ public final class FluentCheckBox: NSControl {
+     }
+ 
+     func setStateFromBinding(_ value: Bool) {
+-        cancelInteraction(refresh: false)
++        // A property change is not an input cancellation (WinUI ToggleButton.OnIsCheckedChanged).
+         suppressesValueNotification = true
+         isChecked = value
+         suppressesValueNotification = false
+@@ -233,7 +288,7 @@ public final class FluentCheckBox: NSControl {
+                 isChecked: isChecked,
+                 isEnabled: isEnabled,
+                 isPointerOver: isPointerOver,
+-                isPressed: isPressed && isPointerOver,
++                isPressed: isPressed,
+                 controlSize: fluentControlSize,
+                 theme: theme
+             )
+@@ -359,8 +414,10 @@ public final class FluentCheckBox: NSControl {
+     }
+ 
+     private func cancelInteraction(refresh: Bool = true) {
+-        guard isPressed else { return }
++        guard isPressed || isPointerPressActive || isSpaceKeyDown else { return }
+         isPressed = false
++        isPointerPressActive = false
++        isSpaceKeyDown = false
+         if refresh { refreshAppearance() }
+     }
+ 
+@@ -462,6 +519,7 @@ public final class FluentRadioButton: NSControl {
+     private var isSpaceKeyDown = false
+     private var suppressesValueNotification = false
+     weak var groupingCoordinator: (any FluentRadioButtonGrouping)?
++    private var windowResignObserver: NSObjectProtocol?
+     private let focusLayer = CAShapeLayer()
+     private let focusInnerLayer = CAShapeLayer()
+     private let outerLayer = CALayer()
+@@ -595,8 +653,9 @@ public final class FluentRadioButton: NSControl {
+             isSpaceKeyDown = true
+             isPressed = true
+             refreshAppearance(animated: true)
+-        case 36:
++        case 36, 76:
+             // WinUI RadioButton explicitly opts out of Return/Enter activation.
++            if isSpaceKeyDown { cancelInteraction() }
+             return
+         case 123, 124, 125, 126:
+             cancelInteraction()
+@@ -662,8 +721,24 @@ public final class FluentRadioButton: NSControl {
+         return result
+     }
+ 
++    public override func viewWillMove(toSuperview newSuperview: NSView?) {
++        if superview !== newSuperview { cancelInteraction() }
++        super.viewWillMove(toSuperview: newSuperview)
++    }
++
++    public override func viewWillMove(toWindow newWindow: NSWindow?) {
++        if window !== newWindow { cancelInteraction() }
++        super.viewWillMove(toWindow: newWindow)
++    }
++
+     public override func viewDidMoveToWindow() {
+         super.viewDidMoveToWindow()
++        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
++        windowResignObserver = window.map {
++            NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: $0, queue: .main) { [weak self] _ in
++                self?.cancelInteraction()
++            }
++        }
+         if isSelected, groupingCoordinator == nil { enforceExclusiveSelection() }
+         updateGroupAccessibility()
+         updateFocusRing()
+@@ -675,6 +750,10 @@ public final class FluentRadioButton: NSControl {
+         updateGroupAccessibility()
+     }
+ 
++    deinit {
++        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
++    }
++
+     public override func viewDidChangeEffectiveAppearance() {
+         super.viewDidChangeEffectiveAppearance()
+         fluentNotifyAppearanceCoordinator(from: self)
+@@ -682,7 +761,7 @@ public final class FluentRadioButton: NSControl {
+     }
+ 
+     func setStateFromBinding(_ value: Bool) {
+-        cancelInteraction(refresh: false)
++        // Value changes preserve input; replacement bindings cancel at the adapter boundary.
+         suppressesValueNotification = true
+         isSelected = value
+         suppressesValueNotification = false
+diff --git a/Sources/FluentKit/FluentRadioButtons.swift b/Sources/FluentKit/FluentRadioButtons.swift
+index e8751b4..b1c170d 100644
+--- a/Sources/FluentKit/FluentRadioButtons.swift
++++ b/Sources/FluentKit/FluentRadioButtons.swift
+@@ -170,8 +170,12 @@ private final class FluentRadioButtonsHost<Option: Hashable>: NSControl,
+         context: FluentRenderContext
+     ) {
+         let optionsChanged = self.options != options
+-        let observationChanged = self.selection.observationIdentity != selection.observationIdentity
+-        if observationChanged { removeSelectionObserver() }
++        let observationChanged = self.selection.observationIdentity == nil
++            || self.selection.observationIdentity != selection.observationIdentity
++        if observationChanged {
++            radioButtons.forEach { $0.cancelOperation(nil) }
++            removeSelectionObserver()
++        }
+         self.options = options
+         self.selection = selection
+         self.header = header
+@@ -306,7 +310,8 @@ private final class FluentRadioButtonsHost<Option: Hashable>: NSControl,
+         observedSelection = selection
+         selectionObserverID = selection.observe? { [weak self] value in
+             let apply = { [weak self] in
+-                guard let self, generation == self.selectionSubscriptionGeneration else { return }
++                guard let self, generation == self.selectionSubscriptionGeneration,
++                      FluentDependencyTracking.withoutTracking({ self.selection.get() }) == value else { return }
+                 self.receiveSelection(value, notify: true)
+             }
+             if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }

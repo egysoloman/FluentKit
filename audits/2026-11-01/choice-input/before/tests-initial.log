@@ -1,0 +1,62 @@
+Building for debugging...
+[2 / 13] FluentKitTests-product
+[4 / 15] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (1.97秒)
+Test Suite 'Selected tests' started at 2026-11-01 06:48:40.557.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 06:48:40.558.
+Test Suite 'ChoiceInputTests' started at 2026-11-01 06:48:40.558.
+Test Case '-[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:123: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - main-thread model updates are synchronous
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:132: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - obsolete subscription must not overwrite the new model
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:123: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(0)") is not equal to ("Optional(1)") - main-thread model updates are synchronous
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:132: error: -[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - obsolete subscription must not overwrite the new model
+Test Case '-[FluentKitTests.ChoiceInputTests testBoundChoicesUpdateImmediatelyAndRejectQueuedValuesFromAnOldBinding]' failed (0.485 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:61: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertFalse failed - Return/Enter must not toggle CheckBox
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:64: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertTrue failed - keypad Add checks
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:65: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:72: error: -[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - another key cancels held Space
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxReturnAndKeypadSelectionMatchWinUI]' failed (0.016 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:48: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:48: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:48: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:50: error: -[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback] : XCTAssertFalse failed
+Test Case '-[FluentKitTests.ChoiceInputTests testCheckBoxSpaceCommitsOnReleaseWithKeyboardPressedFeedback]' failed (0.001 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:93: error: -[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check focus
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:93: error: -[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check detach
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:93: error: -[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - check window
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:93: error: -[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - radio detach
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:93: error: -[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation] : XCTAssertEqual failed: ("Optional(1)") is not equal to ("Optional(0)") - radio window
+Test Case '-[FluentKitTests.ChoiceInputTests testChoicePressIsCancelledOnFocusLossDetachDisableAndWindowDeactivation]' failed (0.044 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:106: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("false") is not equal to ("true") - release toggles the current model value
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:113: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertTrue failed - release selects regardless of an intervening property update
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:106: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("true") is not equal to ("false") - release toggles the current model value
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:106: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("false") is not equal to ("true") - release toggles the current model value
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:113: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertTrue failed - release selects regardless of an intervening property update
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:106: error: -[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease] : XCTAssertEqual failed: ("true") is not equal to ("false") - release toggles the current model value
+Test Case '-[FluentKitTests.ChoiceInputTests testExternalValueUpdatesPreserveAnOngoingGestureAndUseCurrentValueOnRelease]' failed (0.002 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:146: error: -[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:146: error: -[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue] : XCTAssertTrue failed
+Test Case '-[FluentKitTests.ChoiceInputTests testQueuedOlderNotificationCannotOverwriteANewerMainThreadValue]' failed (0.040 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:173: error: -[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress] : XCTAssertEqual failed: ("Optional("C")") is not equal to ("Optional("A")") - subsequent user release is a new selection
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:174: error: -[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress] : XCTAssertEqual failed: ("[false, false, true]") is not equal to ("[true, false, false]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:176: error: -[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress] : XCTAssertEqual failed: ("1.0") is not equal to ("0.0")
+Test Case '-[FluentKitTests.ChoiceInputTests testRadioGroupModelChangeDoesNotCancelAnUnselectedMembersSpacePress]' failed (0.002 seconds).
+Test Case '-[FluentKitTests.ChoiceInputTests testRebindingCancelsOldPressButRefreshingTheSameBindingPreservesIt]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:159: error: -[FluentKitTests.ChoiceInputTests testRebindingCancelsOldPressButRefreshingTheSameBindingPreservesIt] : XCTAssertFalse failed - a press begun on the old model cannot write to the replacement
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceInputTests.swift:159: error: -[FluentKitTests.ChoiceInputTests testRebindingCancelsOldPressButRefreshingTheSameBindingPreservesIt] : XCTAssertFalse failed - a press begun on the old model cannot write to the replacement
+Test Case '-[FluentKitTests.ChoiceInputTests testRebindingCancelsOldPressButRefreshingTheSameBindingPreservesIt]' failed (0.002 seconds).
+Test Suite 'ChoiceInputTests' failed at 2026-11-01 06:48:41.150.
+	 Executed 8 tests, with 30 failures (0 unexpected) in 0.591 (0.592) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 06:48:41.150.
+	 Executed 8 tests, with 30 failures (0 unexpected) in 0.591 (0.592) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 06:48:41.150.
+	 Executed 8 tests, with 30 failures (0 unexpected) in 0.591 (0.593) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)
