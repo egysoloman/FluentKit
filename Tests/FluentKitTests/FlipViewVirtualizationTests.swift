@@ -118,7 +118,7 @@ final class FlipViewVirtualizationTests: XCTestCase {
             }
         }}
     }
-    @MainActor func testParentRefreshKeepsPanAndLargeJumpKeepsOutgoingPageUntilCompletion() throws {
+    @MainActor func testParentRefreshKeepsPanAndLargeJumpSkipsIntermediatePages() throws {
         for reduced in [false, true] {
             let selection = FluentState(wrappedValue: 0), context = FluentRenderContext(reduceMotion: reduced)
             func content() -> some FluentUpdatablePrimitiveView { FluentFlipView(Array(0..<100), selection: selection.projectedValue) { FluentText(String($0)) } }
@@ -131,13 +131,12 @@ final class FlipViewVirtualizationTests: XCTestCase {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.3))
             XCTAssertFalse(native.isPanning); XCTAssertEqual(selection.wrappedValue, 0)
             if !reduced {
-                native.keyDown(with: key(119))
                 let outgoing = try page(0, in: native)
+                native.keyDown(with: key(119))
                 XCTAssertTrue(content()._updateView(native, in: context))
-                XCTAssertNotNil(outgoing.superview); XCTAssertFalse(outgoing.isHidden)
-                RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.3))
                 XCTAssertNil(outgoing.superview)
                 XCTAssertFalse(try page(99, in: native).isHidden)
+                XCTAssertLessThanOrEqual(native.subviews.first?.subviews.count ?? 0, 3)
             }
         }
     }

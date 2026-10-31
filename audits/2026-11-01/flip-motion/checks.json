@@ -1,0 +1,12 @@
+{
+  "before": {
+    "max_interrupt_jump_pt": 215.37793278694153,
+    "lost_visible_pages": 4,
+    "max_mounted": 3
+  },
+  "after": {
+    "max_interrupt_jump_pt": 0.0,
+    "lost_visible_pages": 0,
+    "max_mounted": 5
+  }
+}

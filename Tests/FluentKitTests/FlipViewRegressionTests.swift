@@ -67,8 +67,7 @@ final class FlipViewRegressionTests: XCTestCase {
         let next = try XCTUnwrap(native.subviews.first { $0.identifier?.rawValue == "FluentKit.FlipView.Next" } as? NSButton)
         next.performClick(nil)
         next.performClick(nil)
-        // The first outgoing page is no longer part of the active transition.
-        XCTAssertTrue(container.subviews.first { $0.identifier?.rawValue == "FluentKit.FlipView.Page.0" }?.isHidden ?? true)
+        XCTAssertLessThanOrEqual(container.subviews.count, 5, "An interrupted flip retains only the visible and destination neighborhoods")
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.4))
         XCTAssertEqual(container.subviews.filter { !$0.isHidden }.map { $0.identifier?.rawValue }, ["FluentKit.FlipView.Page.2"])
         XCTAssertEqual(native.accessibilityValue() as? String, "3 of 3")
@@ -93,9 +92,7 @@ final class FlipViewRegressionTests: XCTestCase {
             FluentText("Updated \($0)")
         }._updateView(native, in: context))
         XCTAssertFalse(container.subviews[0].isHidden)
-        XCTAssertTrue(container.subviews[1].layer?.animationKeys()?.contains {
-            $0.hasPrefix("fluent.flipView.new")
-        } == true)
+        XCTAssertGreaterThan(container.subviews[1].frame.minX, 0, "A content refresh must preserve the partial incoming page")
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.4))
         XCTAssertEqual(container.subviews.filter { !$0.isHidden }, [container.subviews[1]])
     }
@@ -116,10 +113,6 @@ final class FlipViewRegressionTests: XCTestCase {
         native.keyDown(with: left)
         XCTAssertEqual(native.accessibilityValue() as? String, "2 of 3")
         let container = try XCTUnwrap(native.subviews.first { $0.identifier?.rawValue == "FluentKit.FlipView.Content" })
-        let incoming = try XCTUnwrap(container.subviews[1].layer)
-        let key = try XCTUnwrap(incoming.animationKeys()?.first { $0.hasPrefix("fluent.flipView.new") })
-        let animation = try XCTUnwrap(incoming.animation(forKey: key) as? CABasicAnimation)
-        let start = try XCTUnwrap(animation.fromValue as? NSValue).caTransform3DValue
-        XCTAssertLessThan(start.m41, 0, "The next RTL page enters from the left, matching its navigation button")
+        XCTAssertLessThan(container.subviews[1].frame.minX, 0, "The next RTL page enters from the left, matching its navigation button")
     }
 }

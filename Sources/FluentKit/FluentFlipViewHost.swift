@@ -42,7 +42,8 @@ final class FluentFlipViewHost: NSControl {
     private var isWritingBinding = false
     private var animationGeneration = 0
     private var isTransitioning = false
-    private var transitionOutgoingID: AnyHashable?
+    private var transitionPosition: CGFloat?
+    private static let pageMotionKey = "fluent.flipView.position"
     private let animationCoordinator = FluentAnimationCoordinator()
 
     init(
@@ -274,7 +275,7 @@ final class FluentFlipViewHost: NSControl {
         super.layout()
         if bounds.size != lastLayoutSize { cancelInteraction(); lastLayoutSize = bounds.size }
         contentContainer.frame = bounds
-        if !isPanning { for host in pages.values { host.frame = contentContainer.bounds } }
+        if !isPanning && !isTransitioning { for host in pages.values { host.frame = contentContainer.bounds } }
         let vertical = orientation == .vertical
         let buttonSize = NSSize(width: min(vertical ? Self.buttonHeight : Self.buttonWidth, max(0, bounds.width - 2)),
             height: min(vertical ? Self.buttonWidth : Self.buttonHeight, max(0, bounds.height - 2)))
@@ -295,6 +296,7 @@ final class FluentFlipViewHost: NSControl {
         previousButton.updateSymbol(vertical ? "chevron.up" : isRTL ? "chevron.right" : "chevron.left")
         nextButton.updateSymbol(vertical ? "chevron.down" : isRTL ? "chevron.left" : "chevron.right")
         if isPanning { applyPanVisuals() }
+        if isTransitioning { applyTransitionVisuals() }
     }
 
     override func keyDown(with event: NSEvent) {
@@ -348,6 +350,7 @@ final class FluentFlipViewHost: NSControl {
         guard generation == updateGeneration else { return }
         if !isTransitioning && !isPanning { showCurrent() }
         if isPanning { applyPanVisuals() }
+        if isTransitioning { applyTransitionVisuals() }
         if !reused { installSelectionObserver() }
         updateAccessibilityValue(); updateButtonState(); needsLayout = true
         if selectedIndex != oldIndex || selectedID != oldID { self.onSelectionChanged?(selectedIndex) }
@@ -400,78 +403,42 @@ final class FluentFlipViewHost: NSControl {
 
     private func commit(to index: Int, animated: Bool, interactiveOffset: CGFloat? = nil) {
         let oldIndex = selectedIndex
+        let visualStart = transitionPosition ?? (CGFloat(oldIndex) - (interactiveOffset ?? (isPanning ? panOffset : 0)) / max(pageExtent, 1))
         let generation = updateGeneration
         let accepted = acceptedSelection(index)
         guard generation == updateGeneration else { return }
         guard accepted != oldIndex else { if isPanning { settlePanBack() }; return }
         let restoreFocus = page(at: oldIndex).map(ownsFirstResponder) ?? false
-        cancelInteraction(resetDriver: interactiveOffset == nil)
+        if interactiveOffset == nil { panDriver?.reset(notify: false) }
+        animationCoordinator.cancelValueAnimation(key: Self.settleKey)
+        isPanning = false; panOffset = 0
+        stopAnimations()
         guard generation == updateGeneration else { return }
         selectedIndex = accepted
         updateAccessibilityValue(); updateButtonState()
-        animateSelection(from: oldIndex, to: selectedIndex, animated: animated, initialOffset: interactiveOffset ?? 0)
+        // WinUI animates adjacent selection changes. End/Home and arbitrary model jumps
+        // land directly, without realizing intermediate pages along a very long animation.
+        animateSelection(from: visualStart, to: selectedIndex, animated: animated && abs(selectedIndex - oldIndex) == 1)
         if restoreFocus, isEnabled { window?.makeFirstResponder(self) }
         guard generation == updateGeneration else { return }
         onSelectionChanged?(selectedIndex)
     }
 
-    private func animateSelection(from oldIndex: Int, to newIndex: Int, animated: Bool, initialOffset: CGFloat = 0) {
-        // Settle any interrupted transition before starting another. An older outgoing page
-        // must not remain visible when its completion is superseded by a later selection.
-        stopAnimations()
-        reconcilePages(keeping: [oldIndex])
-        guard let oldHost = page(at: oldIndex), let newHost = page(at: newIndex) else { showCurrent(); return }
-        oldHost.wantsLayer = true
-        newHost.wantsLayer = true
-        guard let oldLayer = oldHost.layer, let newLayer = newHost.layer else { return }
+    private func animateSelection(from position: CGFloat, to newIndex: Int, animated: Bool) {
         animationGeneration &+= 1
         let generation = animationGeneration
-        let distance = max(pageExtent, 1)
-        let logicalDirection: CGFloat = newIndex > oldIndex ? 1 : -1
-        let newStart = translation(logicalDirection * distance + initialOffset)
-        let oldStart = translation(initialOffset)
-        let oldEnd = translation(-logicalDirection * distance)
-
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        oldLayer.transform = oldStart
-        newLayer.transform = newStart
-        oldHost.isHidden = false
-        newHost.isHidden = false
-        oldHost.frame = contentContainer.bounds
-        newHost.frame = contentContainer.bounds
-        CATransaction.commit()
-
-        guard animated, !context.reduceMotion, distance > 0 else {
+        guard animated, !context.reduceMotion, pageExtent > 0 else {
             showCurrent()
             return
         }
-
+        // Retarget the viewport from its current position. Centering the last requested page
+        // first discards still-visible content during repeated keys, buttons or binding writes.
         isTransitioning = true
-        transitionOutgoingID = source.id(oldIndex)
-        animationCoordinator.animateTransition(
-            [
-                FluentLayerAnimationChange(
-                    layer: oldLayer,
-                    key: "fluent.flipView.old",
-                    keyPath: "transform",
-                    fromValue: NSValue(caTransform3D: oldStart),
-                    toValue: NSValue(caTransform3D: oldEnd)
-                ) {
-                    oldLayer.transform = oldEnd
-                },
-                FluentLayerAnimationChange(
-                    layer: newLayer,
-                    key: "fluent.flipView.new",
-                    keyPath: "transform",
-                    fromValue: NSValue(caTransform3D: newStart),
-                    toValue: NSValue(caTransform3D: CATransform3DIdentity)
-                ) {
-                    newLayer.transform = CATransform3DIdentity
-                }
-            ],
-            motion: Self.transition,
-            animated: true,
+        animationCoordinator.animateValue(key: Self.pageMotionKey, from: position, to: CGFloat(newIndex),
+            motion: Self.transition, animated: true, update: { [weak self] value in
+                guard let self, self.animationGeneration == generation else { return }
+                self.transitionPosition = value; self.applyTransitionVisuals()
+            },
             completion: { [weak self] in
                 guard let self, self.animationGeneration == generation else { return }
                 self.showCurrent()
@@ -480,7 +447,8 @@ final class FluentFlipViewHost: NSControl {
     }
 
     private func stopAnimations() {
-        isTransitioning = false; transitionOutgoingID = nil; animationGeneration &+= 1
+        isTransitioning = false; transitionPosition = nil; animationGeneration &+= 1
+        animationCoordinator.cancelValueAnimation(key: Self.pageMotionKey)
         animationCoordinator.cancelAll(on: pages.values.compactMap(\.layer))
         CATransaction.begin(); CATransaction.setDisableActions(true)
         for host in pages.values { host.layer?.removeAllAnimations(); host.layer?.transform = CATransform3DIdentity }
@@ -494,14 +462,17 @@ final class FluentFlipViewHost: NSControl {
         for (id, host) in pages { host.isHidden = id != selectedID; host.frame = contentContainer.bounds }
         updateButtonState()
     }
-    private func reconcilePages(keeping extra: Set<Int> = [], refresh: Bool = false) {
+    private func reconcilePages(refresh: Bool = false) {
         let generation = updateGeneration
-        var wanted = extra.filter { (0..<source.count).contains($0) }
-        if isTransitioning, let transitionOutgoingID, let index = source.index(transitionOutgoingID) { wanted.insert(index) }
+        var wanted = Set<Int>()
+        if let position = transitionPosition {
+            wanted.formUnion([Int(floor(position)), Int(ceil(position))].filter { (0..<source.count).contains($0) })
+        }
         if selectedIndex >= 0 && source.count > 0 {
             wanted.formUnion(max(0, selectedIndex - 1)...min(source.count - 1, selectedIndex + 1))
         }
         let ids = Set(wanted.map(source.id))
+        if !refresh && ids == Set(pages.keys) { return }
         for id in Array(pages.keys) where !ids.contains(id) {
             guard let host = pages.removeValue(forKey: id) else { continue }
             if ownsFirstResponder(in: host) { window?.makeFirstResponder(isEnabled ? self : nil) }
@@ -516,6 +487,9 @@ final class FluentFlipViewHost: NSControl {
             } else {
                 let host = FluentViewHost(source.view(index), context: context)
                 host.wantsLayer = true
+                // The pager owns this host's frame. Its constrained content still needs the
+                // autoresizing mask to supply that frame to AppKit's layout engine.
+                host.translatesAutoresizingMaskIntoConstraints = true
                 host.frame = contentContainer.bounds; host.autoresizingMask = [.width, .height]
                 host.isHidden = id != selectedID
                 pages[id] = host; contentContainer.addSubview(host)
@@ -525,6 +499,23 @@ final class FluentFlipViewHost: NSControl {
                 fluentApplyInheritedDisabledState(to: host)
             }
         }
+    }
+
+    private func applyTransitionVisuals() {
+        guard let position = transitionPosition else { return }
+        let generation = updateGeneration
+        reconcilePages()
+        guard generation == updateGeneration, transitionPosition == position else { return }
+        CATransaction.begin(); CATransaction.setDisableActions(true)
+        for (id, host) in pages {
+            guard let index = source.index(id) else { continue }
+            let offset = (CGFloat(index) - position) * pageExtent
+            host.isHidden = abs(offset) > pageExtent
+            let transform = translation(offset)
+            host.layer?.transform = CATransform3DIdentity
+            host.frame = contentContainer.bounds.offsetBy(dx: transform.m41, dy: transform.m42)
+        }
+        CATransaction.commit()
     }
 
     private func updateButtonState() {
@@ -556,9 +547,6 @@ final class FluentFlipViewHost: NSControl {
         if orientation == .vertical { return CATransform3DMakeTranslation(0, -value, 0) }
         return CATransform3DMakeTranslation(userInterfaceLayoutDirection == .rightToLeft ? -value : value, 0, 0)
     }
-    private func logicalOffset(_ transform: CATransform3D) -> CGFloat {
-        orientation == .vertical ? -transform.m42 : userInterfaceLayoutDirection == .rightToLeft ? -transform.m41 : transform.m41
-    }
     private func installPanDriver() {
         panDriver?.detach()
         let driver = FluentPanGestureDriver(view: self, axis: orientation == .vertical ? .vertical : .horizontal)
@@ -585,13 +573,23 @@ final class FluentFlipViewHost: NSControl {
         animationCoordinator.cancelValueAnimation(key: Self.settleKey)
         if !isPanning {
             var offset: CGFloat = 0
-            if isTransitioning, let layer = page(at: selectedIndex)?.layer,
-               let outgoing = transitionOutgoingID.flatMap(source.index), abs(outgoing - selectedIndex) == 1 {
-                if let transform = layer.presentation()?.transform { offset = logicalOffset(transform) }
-                else if let key = layer.animationKeys()?.first(where: { $0.hasPrefix("fluent.flipView.new") }),
-                        let from = (layer.animation(forKey: key) as? CABasicAnimation)?.fromValue as? NSValue {
-                    offset = logicalOffset(from.caTransform3DValue)
+            if let position = transitionPosition {
+                // A fast sequence can target a page several viewports away. Direct manipulation
+                // grabs the visible neighborhood, rather than jumping to that distant target.
+                if abs(CGFloat(selectedIndex) - position) > 1 {
+                    let anchor = clamped(Int(position.rounded()))
+                    let generation = updateGeneration
+                    let accepted = acceptedSelection(anchor)
+                    guard generation == updateGeneration else { return nil }
+                    let changed = selectedIndex != accepted
+                    selectedIndex = accepted
+                    updateAccessibilityValue(); updateButtonState()
+                    if changed { onSelectionChanged?(accepted) }
+                    guard generation == updateGeneration, selectedIndex == accepted,
+                          transitionPosition == position else { return nil }
+                    if accepted != anchor { cancelInteraction(); return nil }
                 }
+                offset = (CGFloat(selectedIndex) - position) * pageExtent
             }
             stopAnimations(); isPanning = true; panOffset = offset
             reconcilePages(); applyPanVisuals()

@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- FlipView retargets repeated adjacent navigation from its visible viewport and supplies native
+  page content with the actual viewport size. At most five pages remain mounted during motion.
+  Nonadjacent selection jumps now land directly, matching WinUI's adjacent-transition distinction;
+  grabbing an unfinished sequence synchronizes selection to the visible neighborhood before
+  single-page manipulation. Rejected or reentrant binding writes cancel the old operation.
+
 - NavigationView preserves the visible frame when a second navigation interrupts an entrance,
   preventing a blank page while the intermediate and destination pages are transparent. Resizing
   settles the current destination and removes temporary snapshots; ordinary transitions keep

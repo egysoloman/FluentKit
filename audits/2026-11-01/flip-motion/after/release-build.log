@@ -1,0 +1,14 @@
+Building for production...
+[Computing dependencies]
+[Planning deferred tasks]
+[12 / 25] FluentKit
+[13 / 26] FluentKit
+[21 / 31] FluentKit-product
+[21 / 31] FluentGallery-product
+[25 / 33] FluentGallery-product
+[27 / 33] FluentGallery-product
+[28 / 33] FluentGallery-product
+[29 / 33] FluentKitValidation-product
+[31 / 33] FluentKitValidation-product
+[32 / 33] FluentKitValidation-product
+Build complete! (128.09秒)

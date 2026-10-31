@@ -4,6 +4,9 @@ import AppKit
 /// gesture settling. Only mounted pages evaluate their content. Keep durable page state in the model:
 /// pages outside the cache are unmounted. Selection is zero-based, clamped, or -1 when empty.
 /// The default initializer identifies pages by position; use `id:` to preserve identity on edits.
+/// Adjacent navigation retargets from the current viewport; nonadjacent jumps land directly.
+/// Grabbing an unfinished sequence cancels its distant target and synchronizes selection to the
+/// visible neighborhood before settling a single page.
 public struct FluentFlipView<Data: RandomAccessCollection, Content: FluentView>: FluentUpdatablePrimitiveView {
     private let data: Data
     private let selection: FluentBinding<Int>?
