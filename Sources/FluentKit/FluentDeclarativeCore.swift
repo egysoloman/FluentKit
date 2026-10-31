@@ -291,6 +291,12 @@ public func FluentVStack(spacing: CGFloat = 12, alignment: NSLayoutConstraint.At
     FluentVStackView(spacing: spacing, alignment: alignment, content: content())
 }
 
+/// Single-child form: a builder with one child yields that child's own type rather than FluentAnyView.
+@_disfavoredOverload
+public func FluentVStack<Content: FluentView>(spacing: CGFloat = 12, alignment: NSLayoutConstraint.Attribute = .leading, @FluentViewBuilder content: () -> Content) -> FluentVStackView {
+    FluentVStackView(spacing: spacing, alignment: alignment, content: FluentAnyView(content()))
+}
+
 public struct FluentHStackView: FluentPrimitiveView {
     fileprivate let spacing: CGFloat
     fileprivate let alignment: NSLayoutConstraint.Attribute
@@ -337,6 +343,12 @@ public struct FluentHStackView: FluentPrimitiveView {
 
 public func FluentHStack(spacing: CGFloat = 12, alignment: NSLayoutConstraint.Attribute = .centerY, @FluentViewBuilder content: () -> FluentAnyView) -> FluentHStackView {
     FluentHStackView(spacing: spacing, alignment: alignment, content: content())
+}
+
+/// Single-child form: a builder with one child yields that child's own type rather than FluentAnyView.
+@_disfavoredOverload
+public func FluentHStack<Content: FluentView>(spacing: CGFloat = 12, alignment: NSLayoutConstraint.Attribute = .centerY, @FluentViewBuilder content: () -> Content) -> FluentHStackView {
+    FluentHStack(spacing: spacing, alignment: alignment) { FluentAnyView(content()) }
 }
 
 public struct FluentNativeView: FluentUpdatablePrimitiveView {
