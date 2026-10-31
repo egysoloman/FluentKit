@@ -44,6 +44,22 @@ an update while File › Export is open. Context-menu refreshes also update thei
 Extended `FluentWindowShell` instances anchor page content below the title bar and fill the
 remaining viewport, including embedded `FluentNativeView` trees without an intrinsic height.
 
+## SplitButton and ToggleSplitButton
+
+`FluentSplitButtonView` separates the primary action from its trailing menu. Space/Return invokes
+on key release; Option+Down or F4 opens the menu. `FluentToggleSplitButtonView` changes its binding
+before invoking the primary action; opening the menu never toggles it. Disabled controls reject both actions.
+
+Supply stable `FluentMenuItem(id:...)` values when menu items can change or reorder. An open menu
+receives current labels, enabled states and closures without replacing its panel. Native
+`showFlyout()` is idempotent; use `hideFlyout()` to close it. Detaching/hiding the control or closing
+its window cancels presses and closes the menu. Toggle bindings also reflect values accepted by
+validating setters and ignore deliveries from replaced subscriptions.
+
+The [interactive samples](FluentKitGallery/FluentKitGallery/SplitButtonGallerySample.swift) cover
+both variants, shared checked state, disabled state and delayed menu refresh. Touch-state checks
+use synthetic events; physical touch and VoiceOver acceptance remain open.
+
 ## AutoSuggestBox
 
 Suggestion lists scroll and keep the keyboard-selected item visible. Supply stable, unique

@@ -187,6 +187,7 @@ public final class FluentMenuFlyout {
     private var pendingSubmenuWorkItem: DispatchWorkItem?
     private var localMonitor: Any?
     private var globalMonitor: Any?
+    private var lifecycleObservers: [NSObjectProtocol] = []
     private weak var parentWindow: NSWindow?
     private weak var anchorView: NSView?
     private var anchorPoint: NSPoint?
@@ -292,7 +293,8 @@ public final class FluentMenuFlyout {
     }
 
     /// Follow the anchor when MenuBar items move or their FlowDirection changes.
-    func reposition() {
+    func reposition(placement: FluentMenuPlacement? = nil) {
+        if let placement { self.placement = placement }
         guard panel != nil, let anchor = anchorView, anchor.window === parentWindow else {
             if panel != nil { dismissBranch(animated: false) }
             return
@@ -470,7 +472,10 @@ public final class FluentMenuFlyout {
         self.presenter = presenter
         self.transitionHost = transitionHost
         panel.setFrameOrigin(origin)
-        if owner == nil { installOutsideClickMonitors() }
+        if owner == nil {
+            installOutsideClickMonitors()
+            installLifecycleObservers(in: anchorWindow)
+        }
 
         panel.alphaValue = 1
         prepareSurfaceEntrance(
@@ -548,7 +553,10 @@ public final class FluentMenuFlyout {
         childFlyout = nil
         childIndex = nil
         presenter?.deactivate()
-        if owner == nil { removeOutsideClickMonitors() }
+        if owner == nil {
+            removeOutsideClickMonitors()
+            removeLifecycleObservers()
+        }
         guard let popupPanel = panel else { return }
         panel = nil
         presenter = nil
@@ -561,6 +569,27 @@ public final class FluentMenuFlyout {
         // retained; dismissing from an item, Escape, the trigger, or an outside click removes the
         // complete presenter in one transaction.
         onDismiss?()
+    }
+
+    private func installLifecycleObservers(in window: NSWindow) {
+        removeLifecycleObservers()
+        let center = NotificationCenter.default
+        for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification] {
+            lifecycleObservers.append(center.addObserver(forName: name, object: window, queue: .main) { [weak self] _ in
+                self?.reposition()
+            })
+        }
+        lifecycleObservers.append(center.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
+            self?.dismiss(animated: false)
+        })
+        lifecycleObservers.append(center.addObserver(forName: NSApplication.didResignActiveNotification, object: NSApp, queue: .main) { [weak self] _ in
+            self?.dismiss(animated: false)
+        })
+    }
+
+    private func removeLifecycleObservers() {
+        lifecycleObservers.forEach(NotificationCenter.default.removeObserver)
+        lifecycleObservers.removeAll()
     }
 
     private func installOutsideClickMonitors() {
@@ -629,6 +658,7 @@ public final class FluentMenuFlyout {
     }
 
     deinit {
+        removeLifecycleObservers()
         removeOutsideClickMonitors()
         unregisterAppearanceUpdates()
         childFlyout?.dismissBranch(animated: false)

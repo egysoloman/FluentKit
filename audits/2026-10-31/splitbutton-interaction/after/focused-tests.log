@@ -1,0 +1,45 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[5 / 20] FluentKit
+[14 / 25] FluentKit
+[16 / 24] FluentGallery-product
+[21 / 27] FluentKitTests-product
+[25 / 32] FluentGallery-product
+[27 / 34] FluentKitTests-product
+[31 / 37] FluentKitTests-product
+[33 / 40] FluentKitTests-product
+[35 / 38] FluentKitValidation-product
+[36 / 38] FluentKitValidation-product
+[38 / 40] FluentKitValidation-product
+Build complete! (48.06秒)
+Test Suite 'Selected tests' started at 2026-10-31 22:13:01.999.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 22:13:02.000.
+Test Suite 'SplitButtonInteractionTests' started at 2026-10-31 22:13:02.000.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress]' passed (0.125 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle]' passed (0.063 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent]' passed (0.021 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState]' passed (0.008 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testLiveThemeEmptyItemsAndWindowMovement]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testLiveThemeEmptyItemsAndWindowMovement]' passed (0.024 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testMouseAndTouchPaintCorrectRegionsInBothDirections]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testMouseAndTouchPaintCorrectRegionsInBothDirections]' passed (0.033 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testObservationReuseAndStaleBackgroundDelivery]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testObservationReuseAndStaleBackgroundDelivery]' passed (0.050 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction]' passed (0.018 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testPointerCaptureCancellationAndKeyboardDismissal]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testPointerCaptureCancellationAndKeyboardDismissal]' passed (0.024 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor]' passed (0.016 seconds).
+Test Suite 'SplitButtonInteractionTests' passed at 2026-10-31 22:13:02.383.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.381 (0.383) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-10-31 22:13:02.383.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.381 (0.383) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 22:13:02.383.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.381 (0.384) seconds

@@ -1,0 +1,95 @@
+Baseline: 2fbcd7d; isolated git archive; corrected hit-dispatch and keyboard-selection fixture.
+Building for debugging...
+[Planning 27 / 182]
+[Planning deferred tasks]
+[54 / 93]
+[55 / 94] FluentKit
+[65 / 189]
+[68 / 189]
+[76 / 189]
+[78 / 189]
+[79 / 189]
+[85 / 189]
+[88 / 189]
+[96 / 189]
+[99 / 189]
+[101 / 189]
+[102 / 189]
+[115 / 189]
+[118 / 189]
+[121 / 189]
+[128 / 189]
+[131 / 189]
+[133 / 189]
+[134 / 189]
+[135 / 189]
+[136 / 189]
+[150 / 189] FluentKit
+[151 / 189] FluentKit
+[152 / 189] FluentKit
+[164 / 191] FluentKit
+[164 / 191] FluentKitValidation-product
+[168 / 195] FluentGallery-product
+[169 / 195] FluentKit
+[171 / 195] FluentKit
+[176 / 196] FluentKitTests-product
+[180 / 221]
+[183 / 221]
+[184 / 221] FluentGallery-product
+[186 / 221] FluentGallery-product
+[188 / 221]
+[189 / 221]
+[192 / 221]
+[203 / 221] FluentKitTests-product
+[206 / 221] FluentKitTests-product
+[210 / 221] FluentKitTests-product
+[212 / 221] FluentKitTests-product
+[214 / 221] FluentKitTests-product
+[216 / 221] FluentKitValidation-product
+[217 / 221] FluentKitValidation-product
+[219 / 221] FluentKitValidation-product
+Build complete! (60.97秒)
+Test Suite 'Selected tests' started at 2026-10-31 22:15:19.542.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 22:15:19.543.
+Test Suite 'SplitButtonInteractionTests' started at 2026-10-31 22:15:19.543.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress]' started.
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:90: error: -[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress] : XCTAssertFalse failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:90: error: -[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress] : XCTAssertFalse failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:95: error: -[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress] : XCTAssertEqual failed: ("1") is not equal to ("0")
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress]' failed (0.600 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle]' started.
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:135: error: -[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle] : XCTAssertFalse failed
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle]' failed (0.065 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent]' started.
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:107: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertFalse failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:107: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertEqual failed: ("1") is not equal to ("0")
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:110: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertTrue failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:111: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertTrue failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:112: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertFalse failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:112: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertEqual failed: ("1") is not equal to ("0")
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:115: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertTrue failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:115: error: -[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent] : XCTAssertEqual failed: ("2") is not equal to ("1")
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent]' failed (0.010 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState]' started.
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:32: error: -[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState] : XCTAssertTrue failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:36: error: -[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState] : XCTAssertEqual failed: ("0") is not equal to ("1")
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState]' failed (0.007 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction]' started.
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:58: error: -[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction] : XCTAssertEqual failed: ("Optional("Save old")") is not equal to ("Optional("Save new")")
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:61: error: -[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction] : XCTAssertEqual failed: ("["old"]") is not equal to ("["new"]")
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction]' failed (0.015 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor]' started.
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:71: error: -[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor] : XCTAssertTrue failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:72: error: -[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor] : XCTAssertTrue failed
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:77: error: -[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor] : XCTAssertEqualWithAccuracy failed: ("140.0") is not equal to ("170.0") +/- ("0.5")
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:78: error: -[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor] : XCTAssertEqualWithAccuracy failed: ("398.0") is not equal to ("418.0") +/- ("0.5")
+/private/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-split-baseline-1wvp19pv/Tests/FluentKitTests/SplitButtonInteractionTests.swift:81: error: -[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor] : XCTAssertNotEqual failed: ("398.0") is equal to ("398.0")
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor]' failed (0.018 seconds).
+Test Suite 'SplitButtonInteractionTests' failed at 2026-10-31 22:15:20.258.
+	 Executed 6 tests, with 21 failures (0 unexpected) in 0.715 (0.715) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 22:15:20.258.
+	 Executed 6 tests, with 21 failures (0 unexpected) in 0.715 (0.715) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 22:15:20.258.
+	 Executed 6 tests, with 21 failures (0 unexpected) in 0.715 (0.716) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

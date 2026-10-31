@@ -865,6 +865,8 @@ struct GalleryScreen: FluentView {
             return FluentAnyView(FluentAppBarButtonView("查看", systemImageName: "list.bullet", defaultLabelPosition: .right,
                 flyoutItems: [FluentMenuItem("Details", action: {}), FluentMenuItem("Properties", isEnabled: false, action: {})]))
         case .MenuBar: return FluentAnyView(MenuBarGallerySample())
+        case .SplitButton: return FluentAnyView(SplitButtonGallerySample(toggle: false))
+        case .ToggleSplitButton: return FluentAnyView(SplitButtonGallerySample(toggle: true))
         case .CommandBar:
             return FluentAnyView(FluentNativeView(make: {
                 let view = FluentCommandBar(primaryCommands: [], secondaryCommands: [FluentCommandBarItem("More commands", systemImageName: "folder", action: {})])

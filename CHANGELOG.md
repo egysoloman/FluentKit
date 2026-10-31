@@ -4,6 +4,20 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- FluentViewBuilder now compiles single-branch `if`, optional binding and nested conditionals
+  through an additional concrete `buildOptional` overload; existing generic calls remain valid.
+
+- SplitButton/ToggleSplitButton now hit-test correctly away from the parent's origin, update open
+  menus without losing retained rows or current actions, and follow anchor/placement changes.
+  `showFlyout()` is now idempotent; use `hideFlyout()` to close. Hidden/detached/disabled controls
+  cancel captured presses and menus; MenuFlyout also follows window movement and closes with its
+  parent or when the application deactivates. Accessibility exposes the separate menu action and
+  expanded state. Disabled programmatic primary invocations no longer run actions or toggle.
+- SplitButton paints primary/secondary elevation independently for mouse presses, spans the
+  separator with the primary background, and uses both pressed fills for touch. Toggle bindings
+  retain stable subscriptions, reject stale deliveries and display the value accepted by setters.
+  Added direct SplitButton and ToggleSplitButton Gallery examples and reproducible audit evidence.
+
 - AutoSuggestBox now uses a scrollable suggestion viewport, follows keyboard selection, and
   preserves stable-ID rows/selection during live result updates. Popup size/position and reveal
   clips follow content, screen space and anchor changes; window close/detach invalidates old rows.

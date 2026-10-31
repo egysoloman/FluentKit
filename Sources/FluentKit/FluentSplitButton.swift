@@ -20,6 +20,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     public var items: [FluentMenuItem] {
         didSet {
             if items.isEmpty { dismissFlyout(animated: false) }
+            else { updatePresentedFlyout() }
             updateAccessibilityValue()
         }
     }
@@ -30,17 +31,20 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
             updateFont()
             invalidateIntrinsicContentSize()
             updateAppearance(animated: false)
+            updatePresentedFlyout()
         }
     }
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
         didSet {
+            guard oldValue != reduceMotion else { return }
             animationCoordinator.reduceMotion = reduceMotion
             if reduceMotion {
-                [layer, primaryLayer, secondaryLayer, dividerLayer, elevationBorderLayer, focusOuterLayer, focusInnerLayer, chevronLayer]
+                [layer, primaryLayer, secondaryLayer, dividerLayer, elevationBorderLayer, secondaryBorderLayer, focusOuterLayer, focusInnerLayer, chevronLayer]
                     .compactMap { $0 }
                     .forEach { $0.removeAllAnimations() }
             }
             updateAppearance(animated: false)
+            updatePresentedFlyout()
         }
     }
     public var fluentControlSize: FluentControlSize = .regular {
@@ -51,7 +55,9 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
             updateAppearance(animated: false)
         }
     }
-    public var flyoutPlacement: FluentMenuPlacement = .below
+    public var flyoutPlacement: FluentMenuPlacement = .below {
+        didSet { menuFlyout?.reposition(placement: flyoutPlacement) }
+    }
     public private(set) var isFlyoutPresented = false
 
     private enum HitRegion: Equatable { case none, primary, secondary }
@@ -61,10 +67,16 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     private var pressedRegion: HitRegion = .none
     private var isTrackingPress = false
     private var isKeyboardPressed = false
+    private var lastPointerDevice: FluentInputDeviceType = .mouse
+    private var windowObservers: [NSObjectProtocol] = []
     private var menuFlyout: FluentMenuFlyout?
     private let primaryLayer = CALayer()
     private let secondaryLayer = CALayer()
     private let dividerLayer = CALayer()
+    private let primaryBorderClip = CALayer()
+    private let secondaryBorderClip = CALayer()
+    private let secondaryBorderLayer = CAGradientLayer()
+    private let secondaryBorderMask = CAShapeLayer()
     private let elevationBorderLayer = CAGradientLayer()
     private let elevationBorderMask = CAShapeLayer()
     private let focusOuterLayer = CAShapeLayer()
@@ -118,7 +130,59 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     public override func layout() {
         super.layout()
         synchronizeGeometry()
+        menuFlyout?.reposition()
     }
+
+    public override var frame: NSRect {
+        didSet { if oldValue != frame { menuFlyout?.reposition() } }
+    }
+
+    public override func setFrameOrigin(_ newOrigin: NSPoint) {
+        super.setFrameOrigin(newOrigin)
+        menuFlyout?.reposition()
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window {
+            cancelInteraction()
+            removeWindowObservers()
+        }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        removeWindowObservers()
+        guard let window else { return }
+        for name in [NSWindow.willCloseNotification, NSWindow.didResignKeyNotification] {
+            windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] notification in
+                guard let self else { return }
+                // The menu legitimately becomes key; only cancel the captured button press.
+                self.cancelInteraction(dismissMenu: notification.name == NSWindow.willCloseNotification)
+            })
+        }
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        cancelInteraction()
+    }
+
+    private func cancelInteraction(dismissMenu: Bool = true) {
+        isTrackingPress = false
+        isKeyboardPressed = false
+        pressedRegion = .none
+        hoveredRegion = .none
+        if dismissMenu { dismissFlyout(animated: false) }
+        else { updateAppearance(animated: false) }
+    }
+
+    private func removeWindowObservers() {
+        windowObservers.forEach(NotificationCenter.default.removeObserver)
+        windowObservers.removeAll()
+    }
+
+    deinit { removeWindowObservers() }
 
     public override func updateTrackingAreas() {
         super.updateTrackingAreas()
@@ -134,14 +198,17 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
 
     public override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
+        updatePointerDevice(event)
         hoveredRegion = region(at: convert(event.locationInWindow, from: nil))
         updateAppearance(animated: true)
     }
 
     public override func mouseMoved(with event: NSEvent) {
         guard isEnabled, !isTrackingPress else { return }
+        let previousDevice = lastPointerDevice
+        updatePointerDevice(event)
         let next = region(at: convert(event.locationInWindow, from: nil))
-        guard next != hoveredRegion else { return }
+        guard next != hoveredRegion || previousDevice != lastPointerDevice else { return }
         hoveredRegion = next
         updateAppearance(animated: true)
     }
@@ -153,8 +220,16 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         updateAppearance(animated: true)
     }
 
+    private func updatePointerDevice(_ event: NSEvent) {
+        let device = FluentInputDeviceTracker.deviceType(for: event)
+            ?? FluentInputDeviceTracker.shared.lastDeviceType(in: window)
+        if device == .mouse || device == .touch || device == .pen { lastPointerDevice = device }
+    }
+
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
+        lastPointerDevice = FluentInputDeviceTracker.deviceType(for: event) ?? .mouse
+        FluentInputDeviceTracker.shared.record(lastPointerDevice, in: window)
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         let region = region(at: convert(event.locationInWindow, from: nil))
@@ -175,7 +250,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     }
 
     public override func mouseUp(with event: NSEvent) {
-        guard isTrackingPress else { return }
+        guard isEnabled, isTrackingPress else { return }
         let captured = pressedRegion
         let released = region(at: convert(event.locationInWindow, from: nil))
         isTrackingPress = false
@@ -194,10 +269,15 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         guard isEnabled else { return }
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         switch event.keyCode {
-        case 36 where !event.isARepeat,
-             49 where !event.isARepeat:
-            isKeyboardPressed = true
-            updateAppearance(animated: true)
+        case 36, 49:
+            if !event.isARepeat {
+                isKeyboardPressed = true
+                updateAppearance(animated: true)
+            }
+        case 118:
+            break
+        case 125 where event.modifierFlags.contains(.option):
+            break // Open on key-up without forwarding the opening key to AppKit's default handler.
         case 53:
             isKeyboardPressed = false
             dismissFlyout(animated: true)
@@ -236,7 +316,8 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     }
 
     public override func hitTest(_ point: NSPoint) -> NSView? {
-        bounds.contains(point) ? self : nil
+        // NSView receives points in its superview coordinate system and handles hidden ancestors.
+        super.hitTest(point) == nil ? nil : self
     }
 
     public override func accessibilityPerformPress() -> Bool {
@@ -245,7 +326,18 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         return true
     }
 
+    public override func accessibilityPerformShowMenu() -> Bool {
+        guard isEnabled, !items.isEmpty else { return false }
+        presentFlyout()
+        return isFlyoutPresented
+    }
+
     open func invokePrimaryAction() {
+        guard isEnabled else { return }
+        performAcceptedPrimaryAction()
+    }
+
+    fileprivate func performAcceptedPrimaryAction() {
         onPrimaryAction?()
     }
 
@@ -288,9 +380,13 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         return pressedRegion
     }
 
+    private var isWholeControlPressed: Bool {
+        isFlyoutPresented || isKeyboardPressed || (lastPointerDevice == .touch && activePressedRegion != .none)
+    }
+
     private var baseBackground: NSColor {
         if !isEnabled { return isCheckedForAppearance ? theme.accentFillDisabled : theme.controlFillDisabled }
-        if isFlyoutPresented || isKeyboardPressed {
+        if isWholeControlPressed {
             return isCheckedForAppearance ? theme.accentFillTertiary : theme.controlFillTertiary
         }
         return isCheckedForAppearance ? theme.accentFillDefault : theme.controlFill
@@ -298,13 +394,13 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
 
     private func regionBackground(_ region: HitRegion) -> NSColor {
         guard isEnabled else { return .clear }
-        if isFlyoutPresented || isKeyboardPressed {
+        if isWholeControlPressed {
             return isCheckedForAppearance ? theme.accentFillTertiary : theme.controlFillTertiary
         }
         if activePressedRegion == region {
             return isCheckedForAppearance ? theme.accentFillTertiary : theme.controlFillTertiary
         }
-        if hoveredRegion == region {
+        if lastPointerDevice != .touch, hoveredRegion == region {
             return isCheckedForAppearance ? theme.accentFillSecondary : theme.controlFillSecondary
         }
         return baseBackground
@@ -313,11 +409,11 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     private var primaryForeground: NSColor {
         if !isEnabled { return theme.textDisabled }
         if isCheckedForAppearance {
-            return activePressedRegion == .primary || isFlyoutPresented || isKeyboardPressed
+            return activePressedRegion == .primary || isWholeControlPressed
                 ? theme.textOnAccentSecondary
                 : theme.textOnAccent
         }
-        return activePressedRegion == .primary || isFlyoutPresented || isKeyboardPressed
+        return activePressedRegion == .primary || isWholeControlPressed
             ? theme.textSecondary
             : theme.textPrimary
     }
@@ -325,14 +421,14 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     private var secondaryForeground: NSColor {
         if !isEnabled { return theme.textDisabled }
         if isCheckedForAppearance {
-            return activePressedRegion == .secondary || isFlyoutPresented || isKeyboardPressed
+            return activePressedRegion == .secondary || isWholeControlPressed
                 ? theme.textOnAccentSecondary
                 : theme.textOnAccent
         }
-        if hoveredRegion == .secondary {
+        if lastPointerDevice != .touch, hoveredRegion == .secondary, activePressedRegion != .secondary, !isWholeControlPressed {
             return theme.textPrimary
         }
-        return activePressedRegion == .secondary || isFlyoutPresented || isKeyboardPressed
+        return activePressedRegion == .secondary || isWholeControlPressed
             ? theme.textTertiary
             : theme.textSecondary
     }
@@ -341,7 +437,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         wantsLayer = true
         layer?.masksToBounds = true
         animationCoordinator.reduceMotion = reduceMotion
-        for child in [primaryLayer, secondaryLayer, dividerLayer, elevationBorderLayer, chevronLayer, focusOuterLayer, focusInnerLayer] {
+        for child in [primaryLayer, secondaryLayer, dividerLayer, primaryBorderClip, secondaryBorderClip, chevronLayer, focusOuterLayer, focusInnerLayer] {
             layer?.addSublayer(child)
         }
         titleLabel.alignment = .center
@@ -357,6 +453,12 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         primaryLayer.name = "FluentKit.SplitButton.Primary"
         secondaryLayer.name = "FluentKit.SplitButton.Secondary"
         dividerLayer.name = "FluentKit.SplitButton.Divider"
+        primaryBorderClip.masksToBounds = true
+        secondaryBorderClip.masksToBounds = true
+        primaryBorderClip.addSublayer(elevationBorderLayer)
+        secondaryBorderClip.addSublayer(secondaryBorderLayer)
+        configureFluentElevationBorderLayer(secondaryBorderLayer, mask: secondaryBorderMask)
+        secondaryBorderLayer.name = "FluentKit.SplitButton.SecondaryElevationBorder"
         configureFluentElevationBorderLayer(elevationBorderLayer, mask: elevationBorderMask)
         elevationBorderLayer.name = "FluentKit.SplitButton.ElevationBorder"
         focusOuterLayer.name = "FluentKit.SplitButton.FocusOuter"
@@ -393,8 +495,14 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         CATransaction.setDisableActions(true)
         layer.cornerRadius = radius
         layer.cornerCurve = .continuous
-        primaryLayer.frame = primaryFrame
+        // WinUI's primary background spans the separator column; avoid an unpainted 1pt seam.
+        let primaryBackground = userInterfaceLayoutDirection == .rightToLeft
+            ? CGRect(x: secondaryFrame.maxX, y: 0, width: max(0, bounds.width - secondaryFrame.width), height: bounds.height)
+            : CGRect(x: 0, y: 0, width: max(0, bounds.width - secondaryFrame.width), height: bounds.height)
+        primaryLayer.frame = primaryBackground
         secondaryLayer.frame = secondaryFrame
+        primaryBorderClip.frame = primaryBackground
+        secondaryBorderClip.frame = secondaryFrame
         let titleInsets = 11 * fluentControlSize.metricScale
         let labelBounds = primaryFrame.insetBy(dx: min(titleInsets, max(0, primaryFrame.width / 2)), dy: 0)
         let labelHeight = min(max(titleLabel.intrinsicContentSize.height, 0), labelBounds.height)
@@ -426,7 +534,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         chevronLayer.update(
             frame: chevronFrame,
             color: secondaryForeground,
-            state: activePressedRegion == .secondary || isFlyoutPresented ? .pressed : (hoveredRegion == .secondary ? .pointerOver : .normal),
+            state: activePressedRegion == .secondary || isFlyoutPresented ? .pressed : (lastPointerDevice != .touch && hoveredRegion == .secondary ? .pointerOver : .normal),
             visual: .downSmall,
             inverted: true,
             backingScale: backingScale,
@@ -464,7 +572,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         titleLabel.textColor = primaryForeground
         let chevronState: FluentControlState = activePressedRegion == .secondary || isFlyoutPresented
             ? .pressed
-            : (hoveredRegion == .secondary ? .pointerOver : (!isEnabled ? .disabled : .normal))
+            : (lastPointerDevice != .touch && hoveredRegion == .secondary ? .pointerOver : (!isEnabled ? .disabled : .normal))
         let chevronSize: CGFloat = 12 * fluentControlSize.metricScale
         chevronLayer.update(
             frame: CGRect(x: secondaryFrame.midX - chevronSize / 2, y: secondaryFrame.midY - chevronSize / 2, width: chevronSize, height: chevronSize),
@@ -478,52 +586,49 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         needsDisplay = true
     }
 
-    private var resolvedElevationColors: [NSColor] {
+    private func resolvedElevationColors(for region: HitRegion) -> [NSColor] {
         if !isEnabled {
             return [theme.controlStrokeDefault, theme.controlStrokeDefault]
         }
         if isCheckedForAppearance {
-            if activePressedRegion != .none || isFlyoutPresented || isKeyboardPressed {
+            if activePressedRegion == region || isWholeControlPressed {
                 return [.clear, .clear]
             }
             return theme.accentElevationBorderColors
         }
-        if activePressedRegion != .none || isFlyoutPresented || isKeyboardPressed {
+        if activePressedRegion == region || isWholeControlPressed {
             return [theme.controlStrokeDefault, theme.controlStrokeDefault]
         }
         return theme.controlElevationBorderColors
     }
 
     private func updateElevationBorder(animated: Bool) {
-        let colors = resolvedElevationColors
-        let appearance = FluentButtonAppearance(
-            backgroundColor: .clear,
-            foregroundColor: primaryForeground,
-            borderColor: colors.last ?? theme.controlStrokeDefault,
-            borderGradientColors: colors,
-            borderWidth: theme.controlStrokeWidth,
-            cornerRadius: theme.designTokens.controlCornerRadius * fluentControlSize.metricScale,
-            contentInsets: NSEdgeInsetsZero
-        )
         CATransaction.begin()
         CATransaction.setDisableActions(!animated)
-        updateFluentElevationBorderLayer(
-            elevationBorderLayer,
-            mask: elevationBorderMask,
-            bounds: bounds,
-            appearance: appearance,
-            visualYAxis: .resolved(for: layer, fallbackView: self),
-            backingScale: max(window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2, 1)
-        )
+        for (border, mask, clip, region) in [
+            (elevationBorderLayer, elevationBorderMask, primaryBorderClip, HitRegion.primary),
+            (secondaryBorderLayer, secondaryBorderMask, secondaryBorderClip, HitRegion.secondary)
+        ] {
+            let colors = resolvedElevationColors(for: region)
+            let appearance = FluentButtonAppearance(
+                backgroundColor: .clear, foregroundColor: primaryForeground,
+                borderColor: colors.last ?? theme.controlStrokeDefault, borderGradientColors: colors,
+                borderWidth: theme.controlStrokeWidth,
+                cornerRadius: theme.designTokens.controlCornerRadius * fluentControlSize.metricScale,
+                contentInsets: NSEdgeInsetsZero
+            )
+            updateFluentElevationBorderLayer(border, mask: mask, bounds: bounds, appearance: appearance,
+                visualYAxis: .resolved(for: layer, fallbackView: self),
+                backingScale: max(window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2, 1))
+            // Each half clips the same outer ring, retaining only the outer corners and edges.
+            border.frame.origin.x = -clip.frame.minX
+        }
         CATransaction.commit()
     }
 
     private func presentFlyout() {
         guard isEnabled, !items.isEmpty else { return }
-        if isFlyoutPresented {
-            dismissFlyout(animated: true)
-            return
-        }
+        guard !isFlyoutPresented, window != nil, !isHiddenOrHasHiddenAncestor else { return }
         let flyout = FluentMenuFlyout(items: items, theme: theme, reduceMotion: reduceMotion)
         menuFlyout = flyout
         isFlyoutPresented = true
@@ -545,6 +650,10 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         }
     }
 
+    private func updatePresentedFlyout() {
+        menuFlyout?.update(items: items, theme: theme, reduceMotion: reduceMotion)
+    }
+
     private func dismissFlyout(animated: Bool) {
         menuFlyout?.dismiss(animated: animated)
         menuFlyout = nil
@@ -554,6 +663,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private func updateAccessibilityValue() {
+        setAccessibilityExpanded(isFlyoutPresented)
         let expansion = isFlyoutPresented ? "Expanded" : "Collapsed"
         setAccessibilityValue(isCheckedForAppearance ? "On, \(expansion)" : expansion)
     }
@@ -585,8 +695,10 @@ public final class FluentToggleSplitButton: FluentSplitButton {
     public override var isCheckedForAppearance: Bool { isChecked }
 
     public override func invokePrimaryAction() {
+        guard isEnabled else { return }
         isChecked.toggle()
-        super.invokePrimaryAction()
+        // WinUI raises Click after CheckedChanged even if that callback disables the control.
+        performAcceptedPrimaryAction()
     }
 
     func setCheckedFromBinding(_ value: Bool) {
@@ -617,6 +729,7 @@ public struct FluentSplitButtonView: FluentUpdatablePrimitiveView {
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let button = FluentSplitButton(title, items: items, action: action)
+        button.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         button.theme = context.theme
         button.reduceMotion = context.reduceMotion
         button.flyoutPlacement = placement
@@ -628,6 +741,7 @@ public struct FluentSplitButtonView: FluentUpdatablePrimitiveView {
         button.title = title
         button.items = items
         button.onPrimaryAction = action
+        button.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         button.theme = context.theme
         button.reduceMotion = context.reduceMotion
         button.flyoutPlacement = placement
@@ -639,6 +753,7 @@ private final class FluentToggleSplitButtonHost: NSView {
     let button: FluentToggleSplitButton
     private var binding: FluentBinding<Bool>
     private var observerID: UUID?
+    private var observationGeneration: UInt64 = 0
     private var isApplyingBinding = false
 
     init(
@@ -650,8 +765,9 @@ private final class FluentToggleSplitButtonHost: NSView {
         context: FluentRenderContext
     ) {
         self.binding = binding
-        button = FluentToggleSplitButton(title, isChecked: binding.get(), items: items, action: action)
+        button = FluentToggleSplitButton(title, isChecked: FluentDependencyTracking.withoutTracking { binding.get() }, items: items, action: action)
         super.init(frame: .zero)
+        button.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         button.theme = context.theme
         button.reduceMotion = context.reduceMotion
         button.flyoutPlacement = placement
@@ -666,6 +782,7 @@ private final class FluentToggleSplitButtonHost: NSView {
         button.onIsCheckedChanged = { [weak self] value in
             guard let self, !self.isApplyingBinding else { return }
             self.binding.set(value)
+            self.synchronizeFromBinding()
         }
         installObserver()
     }
@@ -681,33 +798,44 @@ private final class FluentToggleSplitButtonHost: NSView {
         placement: FluentMenuPlacement,
         context: FluentRenderContext
     ) {
-        removeObserver()
+        let reusesObservation = self.binding.observationIdentity != nil
+            && self.binding.observationIdentity == binding.observationIdentity
+        if !reusesObservation { removeObserver() }
         self.binding = binding
         button.title = title
         button.items = items
         button.onPrimaryAction = action
         button.flyoutPlacement = placement
+        button.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         button.theme = context.theme
         button.reduceMotion = context.reduceMotion
-        isApplyingBinding = true
-        button.setCheckedFromBinding(binding.get())
-        isApplyingBinding = false
-        installObserver()
+        synchronizeFromBinding()
+        if !reusesObservation { installObserver() }
         invalidateIntrinsicContentSize()
     }
 
+    private func synchronizeFromBinding() {
+        isApplyingBinding = true
+        button.setCheckedFromBinding(FluentDependencyTracking.withoutTracking { binding.get() })
+        isApplyingBinding = false
+    }
+
     private func installObserver() {
+        observationGeneration &+= 1
+        let generation = observationGeneration
         observerID = binding.observe { [weak self] value in
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.button.isChecked != value else { return }
-                self.isApplyingBinding = true
-                self.button.setCheckedFromBinding(value)
-                self.isApplyingBinding = false
+            let deliver = { [weak self] in
+                guard let self, self.observationGeneration == generation,
+                      FluentDependencyTracking.withoutTracking({ self.binding.get() }) == value else { return }
+                self.synchronizeFromBinding()
             }
+            if Thread.isMainThread { deliver() }
+            else { DispatchQueue.main.async(execute: deliver) }
         }
     }
 
     private func removeObserver() {
+        observationGeneration &+= 1
         if let observerID { binding.removeObserver(observerID) }
         observerID = nil
     }

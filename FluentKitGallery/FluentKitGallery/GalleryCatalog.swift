@@ -222,6 +222,8 @@ enum GallerySampleID: String, CaseIterable {
     case MapControl
     case CaptureElementPreview
     case ToggleButton
+    case SplitButton
+    case ToggleSplitButton
     case RepeatButton
     case StackPanel
     case Grid

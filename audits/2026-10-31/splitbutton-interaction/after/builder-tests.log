@@ -1,0 +1,34 @@
+Building for debugging...
+[Planning deferred tasks]
+[6 / 29] FluentKit
+[8 / 31] FluentKit
+[20 / 43] FluentKit
+[22 / 43] FluentKit
+[26 / 46] FluentKit
+[30 / 50] FluentKit
+[31 / 50] FluentKit
+[31 / 50] FluentGallery-product
+[32 / 50] FluentKit
+[34 / 50] FluentKit
+[38 / 49] FluentGallery-product
+[51 / 64] FluentKitTests-product
+[53 / 66] FluentKitTests-product
+[57 / 66] FluentKitTests-product
+[59 / 66] FluentKitTests-product
+[61 / 64] FluentKitValidation-product
+[62 / 64] FluentKitValidation-product
+[64 / 64] FluentKitValidation-product
+Build complete! (43.84秒)
+Test Suite 'Selected tests' started at 2026-10-31 22:19:35.037.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 22:19:35.039.
+Test Suite 'ViewBuilderConditionalTests' started at 2026-10-31 22:19:35.039.
+Test Case '-[FluentKitTests.ViewBuilderConditionalTests testOptionalBindingAndNestedConditionalsComposeWithSiblings]' started.
+Test Case '-[FluentKitTests.ViewBuilderConditionalTests testOptionalBindingAndNestedConditionalsComposeWithSiblings]' passed (0.058 seconds).
+Test Case '-[FluentKitTests.ViewBuilderConditionalTests testSingleIfWithoutElseCompilesAndMountsBothBranches]' started.
+Test Case '-[FluentKitTests.ViewBuilderConditionalTests testSingleIfWithoutElseCompilesAndMountsBothBranches]' passed (0.000 seconds).
+Test Suite 'ViewBuilderConditionalTests' passed at 2026-10-31 22:19:35.098.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.059 (0.059) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-10-31 22:19:35.098.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.059 (0.059) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 22:19:35.098.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.059 (0.061) seconds

@@ -148,6 +148,12 @@ public enum FluentViewBuilder {
         FluentAnyView(FluentTupleView([FluentAnyView(v0), FluentAnyView(v1), FluentAnyView(v2), FluentAnyView(v3), FluentAnyView(v4), FluentAnyView(v5), FluentAnyView(v6), FluentAnyView(v7), FluentAnyView(v8), FluentAnyView(v9), FluentAnyView(v10), FluentAnyView(v11)]))
     }
 
+    // The implicit nil branch of `if` has no generic V to infer once the result is erased.
+    // Keep the generic overload for concrete children and give nil a concrete overload.
+    public static func buildOptional(_ component: FluentAnyView?) -> FluentAnyView {
+        component ?? FluentAnyView(FluentEmptyView())
+    }
+
     public static func buildOptional<V: FluentView>(_ component: V?) -> FluentAnyView {
         component.map(FluentAnyView.init) ?? FluentAnyView(FluentEmptyView())
     }

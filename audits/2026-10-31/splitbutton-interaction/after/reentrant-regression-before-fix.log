@@ -1,0 +1,22 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+[12 / 14] FluentKitTests-product
+Build complete! (1.85秒)
+Test Suite 'Selected tests' started at 2026-10-31 22:22:47.775.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 22:22:47.777.
+Test Suite 'SplitButtonInteractionTests' started at 2026-10-31 22:22:47.777.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testCheckedCallbackMayDisableControlWithoutCancelingAcceptedClick]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SplitButtonInteractionTests.swift:253: error: -[FluentKitTests.SplitButtonInteractionTests testCheckedCallbackMayDisableControlWithoutCancelingAcceptedClick] : XCTAssertEqual failed: ("["checked-true"]") is not equal to ("["checked-true", "click-true"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SplitButtonInteractionTests.swift:255: error: -[FluentKitTests.SplitButtonInteractionTests testCheckedCallbackMayDisableControlWithoutCancelingAcceptedClick] : XCTAssertEqual failed: ("1") is not equal to ("2") - a subsequent disabled invocation is rejected
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testCheckedCallbackMayDisableControlWithoutCancelingAcceptedClick]' failed (0.438 seconds).
+Test Suite 'SplitButtonInteractionTests' failed at 2026-10-31 22:22:48.215.
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.438 (0.438) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 22:22:48.215.
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.438 (0.438) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 22:22:48.215.
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.438 (0.440) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)
