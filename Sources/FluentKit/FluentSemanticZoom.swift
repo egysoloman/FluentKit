@@ -172,6 +172,8 @@ final class FluentSemanticZoomControl: NSView {
             return host
         }
         let created = FluentViewHost(view, context: context)
+        // Laid out by frame; FluentViewHost otherwise opts out of autoresizing constraints.
+        created.translatesAutoresizingMaskIntoConstraints = true
         created.identifier = NSUserInterfaceItemIdentifier(identifier)
         created.wantsLayer = true
         addSubview(created, positioned: .below, relativeTo: zoomOutButton)

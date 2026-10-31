@@ -1,0 +1,50 @@
+[
+  {
+    "backgroundHeight" : 400,
+    "backgroundY" : -4.7524752475247531,
+    "scrollOffset" : 0,
+    "state" : "top",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "backgroundHeight" : 400,
+    "backgroundY" : -80,
+    "scrollOffset" : 380,
+    "state" : "middle",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "backgroundHeight" : 400,
+    "backgroundY" : -155.24752475247524,
+    "scrollOffset" : 760,
+    "state" : "end",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "backgroundHeight" : 400,
+    "backgroundY" : -4.7524752475247531,
+    "scrollOffset" : 0,
+    "state" : "top",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "backgroundHeight" : 400,
+    "backgroundY" : -80,
+    "scrollOffset" : 380,
+    "state" : "middle",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "backgroundHeight" : 400,
+    "backgroundY" : -155.24752475247524,
+    "scrollOffset" : 760,
+    "state" : "end",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  }
+]

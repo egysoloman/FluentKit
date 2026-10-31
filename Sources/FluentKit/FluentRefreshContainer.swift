@@ -112,6 +112,8 @@ final class FluentRefreshContainerView: NSView {
         self.context = context
         contentHost = FluentViewHost(content, context: context)
         super.init(frame: .zero)
+        // Hosts are laid out by frame; FluentViewHost otherwise opts out of autoresizing constraints.
+        contentHost.translatesAutoresizingMaskIntoConstraints = true
         identifier = NSUserInterfaceItemIdentifier("FluentKit.RefreshContainer")
         wantsLayer = true
         layer?.masksToBounds = true

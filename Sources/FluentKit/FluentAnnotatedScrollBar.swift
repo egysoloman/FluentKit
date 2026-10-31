@@ -89,6 +89,8 @@ final class FluentAnnotatedScrollViewControl: NSView {
         contentHost = FluentViewHost(content, context: context)
         bar = FluentAnnotatedScrollBarView(configuration: configuration, context: context)
         super.init(frame: .zero)
+        // Hosts are laid out by frame; FluentViewHost otherwise opts out of autoresizing constraints.
+        contentHost.translatesAutoresizingMaskIntoConstraints = true
         identifier = NSUserInterfaceItemIdentifier("FluentKit.AnnotatedScrollView")
         scrollView.hasVerticalScroller = false
         scrollView.hasHorizontalScroller = false

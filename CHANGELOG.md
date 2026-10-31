@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added ParallaxView: a background arranged larger by the shift and translated with WinUI's clamped
+  parallax formula behind scrolling content, with relative/absolute source offsets, max shift
+  ratio and 10% under/overpan. Fixed frame-laid-out hosts in Pivot, SwipeControl, SemanticZoom,
+  AnnotatedScrollView and RefreshContainer being shrunk to their content by Auto Layout.
+
 - Added RefreshContainer (pull to refresh) driven by the scroll view's elastic overscroll for
   trackpad and macOS 27 touch: WinUI's Idle/Peeking/Interacting/Pending/Refreshing states, 100pt
   pull with a 0.8 execution ratio, the rotating 30pt indicator with Pending pulse and refreshing

@@ -545,6 +545,22 @@ struct GalleryScreen: FluentView {
                 FluentText("Pull the list down with two fingers on the trackpad or a finger on a touch screen, then release.",
                     style: .caption, color: theme.textSecondary)
             })
+        case .ParallaxView:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentParallaxView(vertical: FluentParallaxAxis(shift: 160), background: {
+                    FluentText("Parallax background", style: .titleLarge, color: theme.accent)
+                        .padding(24)
+                        .frame(width: 380, height: 420)
+                        .background(theme.cardFillSecondary, cornerRadius: 0)
+                }) {
+                    FluentText((1...40).map { "Item \($0)" }.joined(separator: "\n"), style: .body)
+                        .padding(16)
+                        .frame(width: 380, height: 1_000)
+                }
+                .frame(width: 380, height: 260)
+                FluentText("The background moves more slowly than the list; it reaches its 160pt shift at the end of scrolling.",
+                    style: .caption, color: theme.textSecondary)
+            })
         case .BreadcrumbBar:
             return FluentAnyView(FluentVStack(spacing: 10) {
                 FluentBreadcrumbBarView(items: breadcrumbItems) { _, index in

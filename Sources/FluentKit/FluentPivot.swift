@@ -273,6 +273,7 @@ final class FluentPivotControl: NSControl {
             return host
         }
         let created = FluentViewHost(view, context: context)
+        created.translatesAutoresizingMaskIntoConstraints = true
         created.identifier = NSUserInterfaceItemIdentifier(identifier)
         addSubview(created, positioned: .below, relativeTo: previousButton)
         return created
@@ -288,6 +289,8 @@ final class FluentPivotControl: NSControl {
         contentHosts.forEach { $0.removeFromSuperview() }
         contentHosts = configuration.items.map { item in
             let host = FluentViewHost(item.view, context: context)
+            // Laid out by frame; FluentViewHost otherwise opts out of autoresizing constraints.
+            host.translatesAutoresizingMaskIntoConstraints = true
             host.wantsLayer = true
             host.isHidden = true
             contentContainer.addSubview(host)
