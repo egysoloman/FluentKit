@@ -140,6 +140,11 @@ private extension FluentInputChrome {
 
 /// A Fluent-styled native secure text field. Prefer `FluentSecureField` when binding state.
 public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
+    public override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+    public override var isEnabled: Bool {
+        didSet { synchronizeContentAppearance(); needsDisplay = true }
+    }
+
     public var theme: FluentTheme = .current {
         didSet {
             guard oldValue != theme else { return }
@@ -276,6 +281,11 @@ public final class FluentSecureTextField: NSSecureTextField, FluentInputChrome {
 
 /// A Fluent-styled native search field with AppKit's standard search and cancel affordances.
 public final class FluentSearchTextField: NSSearchField, FluentInputChrome {
+    public override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+    public override var isEnabled: Bool {
+        didSet { synchronizeContentAppearance(); needsDisplay = true }
+    }
+
     /// Called when the field editor routes Escape through `cancelOperation(_:)`.
     public var onCancel: (() -> Void)?
     public var theme: FluentTheme = .current {

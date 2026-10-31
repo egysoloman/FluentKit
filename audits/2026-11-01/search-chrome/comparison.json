@@ -1,0 +1,1300 @@
+{
+  "baseline": {
+    "states": 64,
+    "wrappedStates": 32,
+    "overflow": [
+      4
+    ],
+    "corners": [
+      {
+        "state": "light-220-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.4627450980392157,
+          0.49411764705882355,
+          0.4627450980392157,
+          0.49411764705882355
+        ]
+      },
+      {
+        "state": "light-220-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "light-220-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.32941176470588235,
+          0.3686274509803922,
+          0.32941176470588235,
+          0.3686274509803922
+        ]
+      },
+      {
+        "state": "light-220-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.08627450980392157,
+          0.08627450980392157,
+          0.08627450980392157,
+          0.08627450980392157
+        ]
+      },
+      {
+        "state": "light-220-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.6549019607843137,
+          0.6941176470588235,
+          0.6549019607843137,
+          0.6941176470588235
+        ]
+      },
+      {
+        "state": "light-220-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.2,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.2,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744
+        ]
+      },
+      {
+        "state": "light-220-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.4627450980392157,
+          0.49411764705882355,
+          0.4627450980392157,
+          0.49411764705882355
+        ]
+      },
+      {
+        "state": "light-220-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "light-220-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.6549019607843137,
+          0.6941176470588235,
+          0.6549019607843137,
+          0.6941176470588235
+        ]
+      },
+      {
+        "state": "light-220-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217
+        ]
+      },
+      {
+        "state": "light-220-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.4627450980392157,
+          0.49411764705882355,
+          0.4627450980392157,
+          0.49411764705882355
+        ]
+      },
+      {
+        "state": "light-220-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "light-480-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.4627450980392157,
+          0.49411764705882355,
+          0.4627450980392157,
+          0.49411764705882355
+        ]
+      },
+      {
+        "state": "light-480-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "light-480-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.32941176470588235,
+          0.3686274509803922,
+          0.32941176470588235,
+          0.3686274509803922
+        ]
+      },
+      {
+        "state": "light-480-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.08627450980392157,
+          0.08627450980392157,
+          0.08627450980392157,
+          0.08627450980392157
+        ]
+      },
+      {
+        "state": "light-480-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.6549019607843137,
+          0.6941176470588235,
+          0.6549019607843137,
+          0.6941176470588235
+        ]
+      },
+      {
+        "state": "light-480-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.2,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.2,
+          0.2,
+          0.2,
+          0.2
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744,
+          0.050980392156862744
+        ]
+      },
+      {
+        "state": "light-480-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.4627450980392157,
+          0.49411764705882355,
+          0.4627450980392157,
+          0.49411764705882355
+        ]
+      },
+      {
+        "state": "light-480-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "light-480-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.6549019607843137,
+          0.6941176470588235,
+          0.6549019607843137,
+          0.6941176470588235
+        ]
+      },
+      {
+        "state": "light-480-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217,
+          0.16862745098039217
+        ]
+      },
+      {
+        "state": "light-480-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.4627450980392157,
+          0.49411764705882355,
+          0.4627450980392157,
+          0.49411764705882355
+        ]
+      },
+      {
+        "state": "light-480-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.050980392156862744,
+          0.11764705882352941,
+          0.050980392156862744,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.06666666666666667,
+          0.13333333333333333,
+          0.06666666666666667,
+          0.13333333333333333
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.01568627450980392,
+          0.01568627450980392,
+          0.01568627450980392,
+          0.01568627450980392
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.4666666666666667,
+          0.5294117647058824,
+          0.4666666666666667,
+          0.5294117647058824
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.050980392156862744,
+          0.11764705882352941,
+          0.050980392156862744,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.4666666666666667,
+          0.5294117647058824,
+          0.4666666666666667,
+          0.5294117647058824
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.050980392156862744,
+          0.11764705882352941,
+          0.050980392156862744,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.050980392156862744,
+          0.11764705882352941,
+          0.050980392156862744,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.06666666666666667,
+          0.13333333333333333,
+          0.06666666666666667,
+          0.13333333333333333
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.01568627450980392,
+          0.01568627450980392,
+          0.01568627450980392,
+          0.01568627450980392
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.4666666666666667,
+          0.5294117647058824,
+          0.4666666666666667,
+          0.5294117647058824
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784,
+          0.03137254901960784
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196,
+          0.00784313725490196
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.050980392156862744,
+          0.11764705882352941,
+          0.050980392156862744,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.4666666666666667,
+          0.5294117647058824,
+          0.4666666666666667,
+          0.5294117647058824
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.050980392156862744,
+          0.11764705882352941,
+          0.050980392156862744,
+          0.11764705882352941
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941,
+          0.011764705882352941
+        ]
+      }
+    ]
+  },
+  "after": {
+    "states": 64,
+    "wrappedStates": 32,
+    "overflow": [
+      0
+    ],
+    "corners": [
+      {
+        "state": "light-220-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-220-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "light-480-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-220-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-normal",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-normal",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-hover",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-hover",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-focused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-focused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled-from-focus",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled-from-focus",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-disabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-reenabled",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-reenabled",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-refocused",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-refocused",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-blurred",
+        "scale": 1,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "state": "dark-480-wrapped-blurred",
+        "scale": 2,
+        "alpha": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    ]
+  }
+}

@@ -361,6 +361,10 @@ func drawFluentTextFieldChrome(
 }
 
 public class FluentTextField: NSTextField {
+    // Fluent paints the whole bounds, with no native bezel/shadow outside the layout slot.
+    // AppKit's retained 2pt side insets otherwise inflate explicit frames and crop the corners.
+    public override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+
     public var theme: FluentTheme = .current {
         didSet {
             guard oldValue != theme else { return }

@@ -1,0 +1,1682 @@
+[
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          314,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          314,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -163,
+          -8,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          165,
+          8,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -757,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      314,
+      32
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "unfocused",
+    "text" : "",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "visibleRect" : [
+      -163,
+      -8,
+      640,
+      805
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          314,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          314,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -163,
+          -8,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          165,
+          8,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -757,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      314,
+      32
+    ],
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "marked" : false,
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "padding" : 2,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "focused",
+    "text" : "",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "visibleRect" : [
+      -163,
+      -8,
+      640,
+      805
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          314,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          314,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -163,
+          -8,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          165,
+          8,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -757,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      314,
+      32
+    ],
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "marked" : false,
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "padding" : 2,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "input-and-page-update",
+    "text" : "拼音",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "visibleRect" : [
+      -163,
+      -8,
+      640,
+      805
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          314,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          314,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -163,
+          -8,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          310,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          165,
+          8,
+          310,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -165,
+          -765,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -757,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          640,
+          805
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          640,
+          805
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      314,
+      32
+    ],
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "marked" : true,
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "padding" : 2,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "marked",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "visibleRect" : [
+      -163,
+      -8,
+      640,
+      805
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          274,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          274,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -163,
+          -8,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          270,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          270,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -165,
+          -760,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          270,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          270,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -165,
+          -760,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          270,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          165,
+          8,
+          270,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -165,
+          -760,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          600,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          600,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          600,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          600,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -752,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          600,
+          800
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          600,
+          800
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          600,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          600,
+          800
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          600,
+          800
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          600,
+          800
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      274,
+      32
+    ],
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      216,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      274,
+      32
+    ],
+    "marked" : true,
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "padding" : 2,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "marked-narrow",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      216,
+      19
+    ],
+    "visibleRect" : [
+      -163,
+      -8,
+      600,
+      800
+    ],
+    "window" : [
+      0,
+      0,
+      600,
+      800
+    ]
+  },
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          484,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          484,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -258,
+          -8,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -260,
+          -760,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -260,
+          -760,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          260,
+          8,
+          480,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -260,
+          -760,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -752,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          1000,
+          800
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      484,
+      32
+    ],
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      426,
+      19
+    ],
+    "fieldFrame" : [
+      258,
+      8,
+      484,
+      32
+    ],
+    "marked" : true,
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "padding" : 2,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "marked-wide",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      426,
+      19
+    ],
+    "visibleRect" : [
+      -258,
+      -8,
+      1000,
+      800
+    ],
+    "window" : [
+      0,
+      0,
+      1000,
+      800
+    ]
+  },
+  {
+    "alignmentInsets" : [
+      0,
+      2,
+      0,
+      2
+    ],
+    "ancestors" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          484,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          -2,
+          0,
+          484,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentSearchTextField",
+        "visibleRect" : [
+          -258,
+          -8,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentLayoutContainer",
+        "visibleRect" : [
+          -260,
+          -760,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarPrimaryHost",
+        "visibleRect" : [
+          -260,
+          -760,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          480,
+          32
+        ],
+        "clips" : false,
+        "frame" : [
+          260,
+          8,
+          480,
+          32
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentAnyView>",
+        "visibleRect" : [
+          -260,
+          -760,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentTitleBarHost",
+        "visibleRect" : [
+          0,
+          0,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          1000,
+          48
+        ],
+        "layerMasks" : false,
+        "type" : "FluentViewHost<FluentTitleBar>",
+        "visibleRect" : [
+          0,
+          -752,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "clips" : false,
+        "frame" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "layerMasks" : false,
+        "type" : "SettingsRoot",
+        "visibleRect" : [
+          0,
+          0,
+          1000,
+          800
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "clips" : true,
+        "frame" : [
+          0,
+          0,
+          1000,
+          800
+        ],
+        "layerMasks" : true,
+        "type" : "NSThemeFrame",
+        "visibleRect" : [
+          0,
+          0,
+          1000,
+          800
+        ]
+      }
+    ],
+    "bounds" : [
+      0,
+      0,
+      484,
+      32
+    ],
+    "fieldFrame" : [
+      258,
+      8,
+      484,
+      32
+    ],
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "radius" : 4,
+    "sameSearchInstance" : true,
+    "state" : "unfocused-text",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      426,
+      19
+    ],
+    "visibleRect" : [
+      -258,
+      -8,
+      1000,
+      800
+    ],
+    "window" : [
+      0,
+      0,
+      1000,
+      800
+    ]
+  }
+]

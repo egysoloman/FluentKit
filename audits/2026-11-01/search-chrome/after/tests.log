@@ -1,0 +1,40 @@
+Building for debugging...
+[Using on-disk description]
+[2 / 15] FluentKit
+[5 / 18] FluentKit
+[11 / 24] FluentKit
+[13 / 26] FluentKit
+[22 / 32] FluentKit
+[24 / 32] FluentGallery-product
+[28 / 36] FluentKitTests-product
+[33 / 41] FluentGallery-product
+[34 / 43] FluentKitTests-product
+[36 / 44] FluentKitTests-product
+[36 / 44] FluentGallery-product
+[38 / 44] FluentGallery-product
+[40 / 46] FluentGallery-product
+[40 / 46] FluentKitTests-product
+[42 / 49] FluentKitTests-product
+[44 / 49] FluentKitTests-product
+[44 / 47] FluentKitValidation-product
+[45 / 47] FluentKitValidation-product
+[47 / 49] FluentKitValidation-product
+Build complete! (49.83秒)
+Test Suite 'Selected tests' started at 2026-11-01 01:55:10.704.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 01:55:10.705.
+Test Suite 'SearchTextAlignmentTests' started at 2026-11-01 01:55:10.705.
+Test Case '-[FluentKitTests.SearchTextAlignmentTests testSearchGlyphsDoNotMoveWhenFocusChangesOrEditorIsReused]' started.
+Test Case '-[FluentKitTests.SearchTextAlignmentTests testSearchGlyphsDoNotMoveWhenFocusChangesOrEditorIsReused]' passed (1.724 seconds).
+Test Suite 'SearchTextAlignmentTests' passed at 2026-11-01 01:55:12.429.
+	 Executed 1 test, with 0 failures (0 unexpected) in 1.724 (1.724) seconds
+Test Suite 'TextInputChromeTests' started at 2026-11-01 01:55:12.429.
+Test Case '-[FluentKitTests.TextInputChromeTests testDisablingAndReenablingImmediatelyUpdatesPlaceholderInk]' started.
+Test Case '-[FluentKitTests.TextInputChromeTests testDisablingAndReenablingImmediatelyUpdatesPlaceholderInk]' passed (0.035 seconds).
+Test Case '-[FluentKitTests.TextInputChromeTests testExplicitFrameDoesNotCropCustomInputCorners]' started.
+Test Case '-[FluentKitTests.TextInputChromeTests testExplicitFrameDoesNotCropCustomInputCorners]' passed (0.295 seconds).
+Test Suite 'TextInputChromeTests' passed at 2026-11-01 01:55:12.760.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.330 (0.331) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 01:55:12.760.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 2.054 (2.055) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 01:55:12.760.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 2.054 (2.056) seconds

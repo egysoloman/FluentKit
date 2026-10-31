@@ -1,0 +1,2306 @@
+[
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-bare-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-bare-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-220-bare-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-bare-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-bare-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-bare-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-220-bare-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-bare-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-wrapped-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-wrapped-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-220-wrapped-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-wrapped-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-wrapped-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-wrapped-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-220-wrapped-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-220-wrapped-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-bare-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-bare-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-480-bare-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-bare-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-bare-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-bare-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-480-bare-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-bare-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-wrapped-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-wrapped-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-480-wrapped-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-wrapped-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-wrapped-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-wrapped-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "light-480-wrapped-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "light-480-wrapped-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      0,
+      0,
+      0,
+      0.61960784313725492
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-bare-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-bare-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-220-bare-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-bare-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-bare-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-bare-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-220-bare-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      220,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-bare-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-wrapped-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-wrapped-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-220-wrapped-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-wrapped-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-wrapped-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-wrapped-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-220-wrapped-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      224,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-220-wrapped-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 220,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-bare-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-bare-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-480-bare-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-bare-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-bare-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-bare-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-480-bare-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      20,
+      20,
+      480,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-bare-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : false
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-wrapped-normal",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-wrapped-hover",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-480-wrapped-focused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-wrapped-disabled-from-focus",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : false,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-wrapped-disabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-wrapped-reenabled",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      0.15692797303199768,
+      0.15692797303199768,
+      0.15692797303199768,
+      0.70196078431372544
+    ],
+    "focused" : true,
+    "focusWidth" : 2,
+    "name" : "dark-480-wrapped-refocused",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  },
+  {
+    "actualFrame" : [
+      -2,
+      0,
+      484,
+      32
+    ],
+    "enabled" : true,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "focused" : false,
+    "focusWidth" : 0,
+    "name" : "dark-480-wrapped-blurred",
+    "nativeBackground" : false,
+    "nativeBezel" : false,
+    "nativeBorder" : false,
+    "placeholderColor" : [
+      1,
+      1,
+      1,
+      0.77254901960784317
+    ],
+    "radius" : 4,
+    "requestedWidth" : 480,
+    "textColor" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "wrapped" : true
+  }
+]

@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TextField, SearchBox and SecureField now align their custom chrome with the allocated frame.
+  Removing native bezel alignment insets prevents an extra 4pt of width and clipped corners in
+  containers. SearchBox and SecureField also refresh placeholder/text appearance immediately
+  when disabled or re-enabled.
+
 - SearchBox preserves the native cell’s 2pt text inset when editing, including shared field-editor
   reuse and deferred AppKit setup. Placeholder and entered text no longer shift left on focus.
 
