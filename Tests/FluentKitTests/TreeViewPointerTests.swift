@@ -22,6 +22,11 @@ final class TreeViewPointerTests: XCTestCase {
                     windowNumber: window.windowNumber, context: nil, eventNumber: 1, clickCount: 1, pressure: 1)!
             }
             XCTAssertTrue(view.outlineView.handleAccessoryMouseDown(event(at: NSPoint(x: cell.checkBoxFrame.midX, y: cell.checkBoxFrame.midY))))
+            XCTAssertEqual(checked.wrappedValue, [], "A checkbox commits on release, unlike the chevron")
+            view.outlineView.mouseUp(with: NSEvent.mouseEvent(with: .leftMouseUp,
+                location: cell.convert(NSPoint(x: cell.checkBoxFrame.midX, y: cell.checkBoxFrame.midY), to: nil),
+                modifierFlags: [], timestamp: 0, windowNumber: window.windowNumber, context: nil,
+                eventNumber: 2, clickCount: 1, pressure: 0)!)
             XCTAssertEqual(checked.wrappedValue, ["root", "child"])
             XCTAssertEqual(view.outlineView.selectedRow, 0)
             XCTAssertTrue(view.outlineView.handleAccessoryMouseDown(event(at: NSPoint(x: cell.chevronFrame.midX, y: cell.chevronFrame.midY))))

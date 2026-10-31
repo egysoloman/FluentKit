@@ -1,0 +1,62 @@
+Building for debugging...
+[Planning deferred tasks]
+[5 / 21] FluentKit_FluentKit
+[7 / 18] FluentKitTests-product
+[10 / 21] FluentKitTests-product
+[16 / 20] FluentKitTests-product
+Build complete! (2.17秒)
+Test Suite 'Selected tests' started at 2026-11-01 05:12:24.147.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 05:12:24.148.
+Test Suite 'TreeViewPointerSequenceTests' started at 2026-11-01 05:12:24.148.
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:98: error: -[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit] : XCTAssertEqual failed: ("["root", "child"]") is not equal to ("[]") - escape
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:98: error: -[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit] : XCTAssertEqual failed: ("["child", "root"]") is not equal to ("[]") - resign-window
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:98: error: -[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit] : XCTAssertEqual failed: ("["root", "child"]") is not equal to ("[]") - detach
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:98: error: -[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit] : XCTAssertEqual failed: ("["child", "replacement"]") is not equal to ("[]") - replace
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:98: error: -[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit] : XCTAssertEqual failed: ("["child", "root"]") is not equal to ("[]") - mode
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit]' failed (0.585 seconds).
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:64: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("["child", "root"]") is not equal to ("[]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:67: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("Optional(<CGColor 0x7c1e9cce70> [<CGColorSpace 0x7c1c87ce00> (kCGColorSpaceICCBased; kCGColorSpaceModelRGB; Generic RGB Profile)] headroom = 1.000000 ( 0 0.352941 0.619608 1 ))") is not equal to ("Optional(<CGColor 0x7c1df2c9c0> [<CGColorSpace 0x102e74630> (kCGColorSpaceICCBased; kCGColorSpaceModelMonochrome; Generic Gray Profile)] ( 1 0.701961 ))")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:69: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("["child", "root"]") is not equal to ("[]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:75: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("[]") is not equal to ("["root", "child"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:77: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("[]") is not equal to ("["root", "child"]") - Duplicate release cannot repeat an action
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:64: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("["child", "root"]") is not equal to ("[]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:67: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("Optional(<CGColor 0x7c1e9cf100> [<CGColorSpace 0x7c1c87ce00> (kCGColorSpaceICCBased; kCGColorSpaceModelRGB; Generic RGB Profile)] headroom = 1.000000 ( 0 0.352941 0.619608 1 ))") is not equal to ("Optional(<CGColor 0x7c1df2cf00> [<CGColorSpace 0x102e74630> (kCGColorSpaceICCBased; kCGColorSpaceModelMonochrome; Generic Gray Profile)] ( 1 0.701961 ))")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:69: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("["child", "root"]") is not equal to ("[]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:75: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("[]") is not equal to ("["root", "child"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:77: error: -[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce] : XCTAssertEqual failed: ("[]") is not equal to ("["root", "child"]") - Duplicate release cannot repeat an action
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce]' failed (0.012 seconds).
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:40: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:41: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - The entire trailing 14pt padding expands on press
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:43: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - Release must not toggle a second time
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:46: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:40: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:41: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - The entire trailing 14pt padding expands on press
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:43: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - Release must not toggle a second time
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:46: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:40: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:41: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - The entire trailing 14pt padding expands on press
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:43: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - Release must not toggle a second time
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:52: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:40: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:41: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - The entire trailing 14pt padding expands on press
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:43: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]") - Release must not toggle a second time
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerSequenceTests.swift:52: error: -[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins] : XCTAssertFalse failed
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins]' failed (0.020 seconds).
+Test Suite 'TreeViewPointerSequenceTests' failed at 2026-11-01 05:12:24.764.
+	 Executed 3 tests, with 31 failures (0 unexpected) in 0.616 (0.617) seconds
+Test Suite 'TreeViewPointerTests' started at 2026-11-01 05:12:24.764.
+Test Case '-[FluentKitTests.TreeViewPointerTests testDrawnCheckBoxAndChevronReceiveNativeOutlineClicksInBothDirections]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerTests.swift:25: error: -[FluentKitTests.TreeViewPointerTests testDrawnCheckBoxAndChevronReceiveNativeOutlineClicksInBothDirections] : XCTAssertEqual failed: ("["root", "child"]") is not equal to ("[]") - A checkbox commits on release, unlike the chevron
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewPointerTests.swift:25: error: -[FluentKitTests.TreeViewPointerTests testDrawnCheckBoxAndChevronReceiveNativeOutlineClicksInBothDirections] : XCTAssertEqual failed: ("["root", "child"]") is not equal to ("[]") - A checkbox commits on release, unlike the chevron
+Test Case '-[FluentKitTests.TreeViewPointerTests testDrawnCheckBoxAndChevronReceiveNativeOutlineClicksInBothDirections]' failed (0.011 seconds).
+Test Suite 'TreeViewPointerTests' failed at 2026-11-01 05:12:24.775.
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.011 (0.011) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 05:12:24.775.
+	 Executed 4 tests, with 33 failures (0 unexpected) in 0.627 (0.628) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 05:12:24.776.
+	 Executed 4 tests, with 33 failures (0 unexpected) in 0.627 (0.629) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

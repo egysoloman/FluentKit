@@ -253,6 +253,26 @@ private final class FluentOutlineItem<ID: Hashable>: NSObject {
 /// The outline view draws no native disclosure triangle or indentation; the cell lays both out.
 final class FluentTreeNativeOutlineView: NSOutlineView {
     var keyHandler: ((NSEvent) -> Bool)?
+    private weak var pressedCheckBox: FluentOutlineCellHost?
+    private var pressedItem: AnyObject?
+    private weak var pressWindow: NSWindow?
+    private var consumesAccessoryMouse = false
+    private var resignWindowObserver: NSObjectProtocol?
+
+    deinit {
+        if let resignWindowObserver { NotificationCenter.default.removeObserver(resignWindowObserver) }
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        cancelAccessoryPress()
+        if let resignWindowObserver { NotificationCenter.default.removeObserver(resignWindowObserver) }
+        resignWindowObserver = window.map { window in
+            NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: window, queue: .main) { [weak self] _ in
+                self?.cancelAccessoryPress()
+            }
+        }
+    }
 
     override func frameOfOutlineCell(atRow row: Int) -> NSRect { .zero }
 
@@ -262,8 +282,17 @@ final class FluentTreeNativeOutlineView: NSOutlineView {
     }
 
     override func keyDown(with event: NSEvent) {
+        if consumesAccessoryMouse {
+            cancelAccessoryPress()
+            if event.keyCode == 53 { return }
+        }
         if keyHandler?(event) == true { return }
         super.keyDown(with: event)
+    }
+
+    override func cancelOperation(_ sender: Any?) {
+        if consumesAccessoryMouse { cancelAccessoryPress() }
+        else { super.cancelOperation(sender) }
     }
 
     override func mouseDown(with event: NSEvent) {
@@ -271,20 +300,78 @@ final class FluentTreeNativeOutlineView: NSOutlineView {
         super.mouseDown(with: event)
     }
 
+    override func mouseDragged(with event: NSEvent) {
+        if handleAccessoryMouseDragged(event) { return }
+        super.mouseDragged(with: event)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        if handleAccessoryMouseUp(event) { return }
+        super.mouseUp(with: event)
+    }
+
     /// NSOutlineView consumes row mouse events before plain NSView cell hosts receive them.
     /// Route our drawn accessories here, while leaving row content and native dragging to AppKit.
     func handleAccessoryMouseDown(_ event: NSEvent) -> Bool {
+        cancelAccessoryPress()
+        consumesAccessoryMouse = false
         let point = convert(event.locationInWindow, from: nil)
         let row = row(at: point)
         guard row >= 0, let cell = view(atColumn: 0, row: row, makeIfNecessary: true) as? FluentOutlineCellHost else { return false }
         let local = cell.convert(point, from: self)
-        guard let action = cell.accessoryAction(at: local) else { return false }
+        guard let accessory = cell.accessory(at: local) else { return false }
+        consumesAccessoryMouse = true
+        FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
-        if !cell.checkBoxFrame.isEmpty, cell.checkBoxFrame.insetBy(dx: -6, dy: -6).contains(local) {
+        switch accessory {
+        case .checkBox:
+            pressedCheckBox = cell
+            pressedItem = item(atRow: row) as AnyObject?
+            pressWindow = window
+            cell.beginCheckBoxPress()
             selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        case .chevron:
+            // WinUI's chevron handles PointerPressed; CheckBox uses ButtonBase's Release mode.
+            cell.performChevronClick()
         }
-        action()
         return true
+    }
+
+    func handleAccessoryMouseDragged(_ event: NSEvent) -> Bool {
+        guard consumesAccessoryMouse else { return false }
+        if let cell = validPressedCheckBox {
+            cell.updateCheckBoxPointer(at: cell.convert(event.locationInWindow, from: nil))
+        } else { cancelAccessoryPress() }
+        return true
+    }
+
+    func handleAccessoryMouseUp(_ event: NSEvent) -> Bool {
+        guard consumesAccessoryMouse else { return false }
+        let cell = validPressedCheckBox
+        let commit = cell.map { $0.checkBoxHitFrame.contains($0.convert(event.locationInWindow, from: nil)) } ?? false
+        cancelAccessoryPress()
+        consumesAccessoryMouse = false
+        if let cell {
+            cell.updateCheckBoxPointer(at: cell.convert(event.locationInWindow, from: nil))
+            if commit { cell.performCheckBoxClick() }
+        }
+        return true
+    }
+
+    private var validPressedCheckBox: FluentOutlineCellHost? {
+        guard let cell = pressedCheckBox, let item = pressedItem, cell.isTrackingCheckBox,
+              cell.representedItem == ObjectIdentifier(item), cell.window === window, window === pressWindow,
+              cell.layoutState?.isMultiple == true, !cell.isHiddenOrHasHiddenAncestor else { return nil }
+        let row = row(forItem: item)
+        guard row >= 0, view(atColumn: 0, row: row, makeIfNecessary: false) === cell else { return nil }
+        return cell
+    }
+
+    private func cancelAccessoryPress() {
+        pressedCheckBox?.cancelCheckBoxPress()
+        pressedCheckBox = nil
+        pressedItem = nil
+        pressWindow = nil
     }
 }
 
@@ -913,6 +1000,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     private func configureCell(_ cell: FluentOutlineCellHost, item: FluentOutlineItem<ID>) {
         let id = item.id
         cell.update(
+            representedItem: ObjectIdentifier(item),
             content: item.content,
             context: context,
             layout: FluentOutlineCellHost.Layout(
@@ -1027,6 +1115,7 @@ final class FluentTreeRowView: NSTableRowView {
 }
 
 final class FluentOutlineCellHost: NSTableCellView {
+    enum Accessory { case checkBox, chevron }
     struct Layout: Equatable {
         var depth: Int
         var isMultiple: Bool
@@ -1043,6 +1132,10 @@ final class FluentOutlineCellHost: NSTableCellView {
     let checkBoxLayer = CALayer()
     let checkMarkLayer = CAShapeLayer()
     private(set) var layoutState: Layout?
+    private(set) var representedItem: ObjectIdentifier?
+    private(set) var isTrackingCheckBox = false
+    private var isCheckBoxPointerOver = false
+    private var pointerTrackingArea: NSTrackingArea?
     private var theme = FluentTheme.current
     private var reduceMotion = false
     private var leadingConstraint: NSLayoutConstraint?
@@ -1065,8 +1158,10 @@ final class FluentOutlineCellHost: NSTableCellView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func update(content: FluentAnyView, context: FluentRenderContext, layout: Layout,
+    func update(representedItem: ObjectIdentifier, content: FluentAnyView, context: FluentRenderContext, layout: Layout,
                 onToggleExpansion: @escaping () -> Void, onToggleCheck: @escaping () -> Void) {
+        if self.representedItem != representedItem || !layout.isMultiple { cancelCheckBoxPress() }
+        self.representedItem = representedItem
         let wasExpanded = layoutState?.isExpanded
         layoutState = layout
         theme = context.theme
@@ -1129,9 +1224,27 @@ final class FluentOutlineCellHost: NSTableCellView {
         return mirrored(FluentTreeViewMetrics.checkBoxFrame(depth: layoutState.depth, boxSize: size, rowHeight: bounds.height))
     }
 
+    var chevronHitFrame: NSRect {
+        guard let layoutState, layoutState.isExpandable else { return .zero }
+        let glyph = FluentTreeViewMetrics.chevronFrame(depth: layoutState.depth, isMultiple: layoutState.isMultiple, rowHeight: bounds.height)
+        let leading = layoutState.isMultiple ? 0 : FluentTreeViewMetrics.chevronPadding
+        return mirrored(NSRect(x: glyph.minX - leading, y: FluentTreeViewMetrics.presenterMarginY,
+            width: glyph.width + leading + FluentTreeViewMetrics.chevronPadding,
+            height: max(0, bounds.height - 2 * FluentTreeViewMetrics.presenterMarginY))).intersection(bounds)
+    }
+
+    var checkBoxHitFrame: NSRect {
+        guard let layoutState, layoutState.isMultiple else { return .zero }
+        // The 32pt checkbox column is centered in the presenter, with MinHeight 28.
+        let box = FluentTreeViewMetrics.checkBoxFrame(depth: layoutState.depth, boxSize: FluentTreeViewMetrics.checkBoxWidth, rowHeight: bounds.height)
+        let height = min(max(28, checkBoxAppearance(checked: false).boxSize), max(0, bounds.height - 4))
+        return mirrored(NSRect(x: box.minX, y: (bounds.height - height) / 2, width: box.width, height: height)).intersection(bounds)
+    }
+
     private func checkBoxAppearance(checked: Bool) -> FluentCheckBoxAppearance {
         FluentAutomaticCheckBoxStyle().appearance(for: FluentCheckBoxStyleConfiguration(
-            isChecked: checked, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: theme))
+            isChecked: checked, isEnabled: true, isPointerOver: isCheckBoxPointerOver,
+            isPressed: isTrackingCheckBox && isCheckBoxPointerOver, controlSize: .regular, theme: theme))
     }
 
     override func layout() {
@@ -1184,20 +1297,70 @@ final class FluentOutlineCellHost: NSTableCellView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        if let action = accessoryAction(at: convert(event.locationInWindow, from: nil)) { action(); return }
+        if enclosingOutline?.handleAccessoryMouseDown(event) == true { return }
         super.mouseDown(with: event)
     }
 
-    func accessoryAction(at point: NSPoint) -> (() -> Void)? {
-        if layoutState?.isMultiple == true, checkBoxFrame.insetBy(dx: -6, dy: -6).contains(point) {
-            return onToggleCheck
-        }
-        // `ExpandCollapseChevron` spans its 14pt padding as a hit target.
-        if layoutState?.isExpandable == true,
-           chevronFrame.insetBy(dx: -FluentTreeViewMetrics.chevronPadding / 2, dy: -8).contains(point) {
-            return onToggleExpansion
+    override func mouseDragged(with event: NSEvent) {
+        if enclosingOutline?.handleAccessoryMouseDragged(event) == true { return }
+        super.mouseDragged(with: event)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        if enclosingOutline?.handleAccessoryMouseUp(event) == true { return }
+        super.mouseUp(with: event)
+    }
+
+    private var enclosingOutline: FluentTreeNativeOutlineView? {
+        var ancestor = superview
+        while let view = ancestor {
+            if let outline = view as? FluentTreeNativeOutlineView { return outline }
+            ancestor = view.superview
         }
         return nil
+    }
+
+    func accessory(at point: NSPoint) -> Accessory? {
+        if checkBoxHitFrame.contains(point) { return .checkBox }
+        if chevronHitFrame.contains(point) { return .chevron }
+        return nil
+    }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
+        let area = NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow, .inVisibleRect], owner: self)
+        pointerTrackingArea = area
+        addTrackingArea(area)
+    }
+
+    override func mouseEntered(with event: NSEvent) { updateCheckBoxPointer(at: convert(event.locationInWindow, from: nil)) }
+    override func mouseMoved(with event: NSEvent) { updateCheckBoxPointer(at: convert(event.locationInWindow, from: nil)) }
+    override func mouseExited(with event: NSEvent) { isCheckBoxPointerOver = false; applyLayers(animated: false) }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil { cancelCheckBoxPress() }
+    }
+
+    func beginCheckBoxPress() {
+        isTrackingCheckBox = true
+        isCheckBoxPointerOver = true
+        applyLayers(animated: false)
+    }
+
+    func updateCheckBoxPointer(at point: NSPoint) {
+        let inside = checkBoxHitFrame.contains(point)
+        guard inside != isCheckBoxPointerOver else { return }
+        isCheckBoxPointerOver = inside
+        applyLayers(animated: false)
+    }
+
+    func cancelCheckBoxPress() {
+        guard isTrackingCheckBox || isCheckBoxPointerOver else { return }
+        isTrackingCheckBox = false
+        isCheckBoxPointerOver = false
+        applyLayers(animated: false)
     }
 
     func performChevronClick() { onToggleExpansion?() }

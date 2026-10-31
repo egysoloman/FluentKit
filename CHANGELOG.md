@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TreeView checkbox interactions now commit on release inside their target, cancel when moved
+  outside or interrupted, and show hover/pressed feedback. Chevron activation remains on press.
+  Hit targets include the full WinUI template padding in LTR/RTL; reused or removed rows cannot
+  receive a stale checkbox release. See `audits/2026-11-01/treeview-pointer/REPORT.md`.
+
 - TreeView adds `onMoveItems` for atomic checked-subtree reordering, preserving selection order
   and omitting descendants already carried by a selected ancestor. The drag image shows the
   selected-node count. Existing `onMove` stays a single-row callback. Drop validation rejects
