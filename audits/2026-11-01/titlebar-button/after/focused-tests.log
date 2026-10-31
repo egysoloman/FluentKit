@@ -1,0 +1,52 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (2.08秒)
+Test Suite 'Selected tests' started at 2026-11-01 00:17:02.880.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 00:17:02.881.
+Test Suite 'ExplorerIntegrationRegressionTests' started at 2026-11-01 00:17:02.881.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testButtonImageOnlyRendersVisibleImage]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testButtonImageOnlyRendersVisibleImage]' passed (0.073 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testButtonImageParticipatesInMeasurementAndDeclarativeUpdates]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testButtonImageParticipatesInMeasurementAndDeclarativeUpdates]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testButtonLeadingImageMirrorsWithoutChangingPhysicalLeft]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testButtonLeadingImageMirrorsWithoutChangingPhysicalLeft]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testDeclarativeImageSurvivesStyleFlyoutAndImageRemoval]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testDeclarativeImageSurvivesStyleFlyoutAndImageRemoval]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testExtendedWindowShellFillsNativeContentAndResizes]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testExtendedWindowShellFillsNativeContentAndResizes]' passed (0.059 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testIconOnlyButtonKeepsSixteenPointImageInsideThirtyTwoPointControl]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testIconOnlyButtonKeepsSixteenPointImageInsideThirtyTwoPointControl]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testLeadingCommandBarMirrorsAndPreservesWinUIDefault]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testLeadingCommandBarMirrorsAndPreservesWinUIDefault]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testTitleBarCaptionButtonsRemainFiniteInTinyArrangeSlots]' started.
+Test Case '-[FluentKitTests.ExplorerIntegrationRegressionTests testTitleBarCaptionButtonsRemainFiniteInTinyArrangeSlots]' passed (0.003 seconds).
+Test Suite 'ExplorerIntegrationRegressionTests' passed at 2026-11-01 00:17:03.023.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.140 (0.141) seconds
+Test Suite 'TitleBarButtonTests' started at 2026-11-01 00:17:03.023.
+Test Case '-[FluentKitTests.TitleBarButtonTests testCompactExpandedAndRTLKeepWinUICaptionButtonGeometry]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testCompactExpandedAndRTLKeepWinUICaptionButtonGeometry]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testDisabledAndHiddenProgrammaticInvocationDoesNothing]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testDisabledAndHiddenProgrammaticInvocationDoesNothing]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testDisableDuringSpacePressCancelsPendingAction]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testDisableDuringSpacePressCancelsPendingAction]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testDragOutsideCancelsAndReenterRearmsBeforeRelease]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testDragOutsideCancelsAndReenterRearmsBeforeRelease]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testEscapeAndFocusLossCancelPendingSpace]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testEscapeAndFocusLossCancelPendingSpace]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testHiddenAncestorCannotBeInvokedByAccessibility]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testHiddenAncestorCannotBeInvokedByAccessibility]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testHidingAndRedisplayingClearsHoverAndCapturedPress]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testHidingAndRedisplayingClearsHoverAndCapturedPress]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testReturnDoesNotRepeatNavigation]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testReturnDoesNotRepeatNavigation]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat]' started.
+Test Case '-[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat]' passed (0.001 seconds).
+Test Suite 'TitleBarButtonTests' passed at 2026-11-01 00:17:03.036.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.012 (0.013) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 00:17:03.036.
+	 Executed 17 tests, with 0 failures (0 unexpected) in 0.153 (0.154) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 00:17:03.036.
+	 Executed 17 tests, with 0 failures (0 unexpected) in 0.153 (0.155) seconds

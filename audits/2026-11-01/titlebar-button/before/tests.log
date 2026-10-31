@@ -1,0 +1,33 @@
+Building for debugging...
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[1 / 12] FluentGallery-product
+[6 / 29] FluentKit
+[8 / 31] FluentKit
+[15 / 26] FluentKitTests-product
+[17 / 28] FluentKitTests-product
+[23 / 27] FluentKitTests-product
+Build complete! (6.41秒)
+Test Suite 'Selected tests' started at 2026-11-01 00:12:59.907.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 00:12:59.909.
+Test Suite 'TitleBarButtonTests' started at 2026-11-01 00:12:59.909.
+Test Case '-[FluentKitTests.TitleBarButtonTests testHiddenAncestorCannotBeInvokedByAccessibility]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TitleBarButtonTests.swift:29: error: -[FluentKitTests.TitleBarButtonTests testHiddenAncestorCannotBeInvokedByAccessibility] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TitleBarButtonTests.swift:29: error: -[FluentKitTests.TitleBarButtonTests testHiddenAncestorCannotBeInvokedByAccessibility] : XCTAssertEqual failed: ("1") is not equal to ("0")
+Test Case '-[FluentKitTests.TitleBarButtonTests testHiddenAncestorCannotBeInvokedByAccessibility]' failed (0.638 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testReturnDoesNotRepeatNavigation]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TitleBarButtonTests.swift:24: error: -[FluentKitTests.TitleBarButtonTests testReturnDoesNotRepeatNavigation] : XCTAssertEqual failed: ("2") is not equal to ("1")
+Test Case '-[FluentKitTests.TitleBarButtonTests testReturnDoesNotRepeatNavigation]' failed (0.006 seconds).
+Test Case '-[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TitleBarButtonTests.swift:18: error: -[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat] : XCTAssertEqual failed: ("2") is not equal to ("0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TitleBarButtonTests.swift:19: error: -[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat] : XCTAssertEqual failed: ("2") is not equal to ("1")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TitleBarButtonTests.swift:20: error: -[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat] : XCTAssertEqual failed: ("2") is not equal to ("1")
+Test Case '-[FluentKitTests.TitleBarButtonTests testSpaceInvokesOnceOnReleaseAndIgnoresRepeat]' failed (0.002 seconds).
+Test Suite 'TitleBarButtonTests' failed at 2026-11-01 00:13:00.555.
+	 Executed 3 tests, with 6 failures (0 unexpected) in 0.646 (0.646) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 00:13:00.555.
+	 Executed 3 tests, with 6 failures (0 unexpected) in 0.646 (0.646) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 00:13:00.555.
+	 Executed 3 tests, with 6 failures (0 unexpected) in 0.646 (0.649) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

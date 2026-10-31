@@ -699,10 +699,9 @@ private final class FluentTitleBarHost: NSView {
     override func hitTest(_ point: NSPoint) -> NSView? {
         guard let hit = super.hitTest(point) else { return nil }
         if hit === backButton || hit === forwardButton || hit === paneToggleButton { return hit }
-        if let control = hit as? NSControl,
-           control.isEnabled,
-           !(control is NSTextField && !(control as! NSTextField).isEditable && !(control as! NSTextField).isSelectable) {
-            return hit
+        if let control = hit as? NSControl, control.isEnabled {
+            if let label = control as? NSTextField, !label.isEditable, !label.isSelectable { return self }
+            return control
         }
         return self
     }
@@ -797,6 +796,7 @@ private final class FluentTitleBarHost: NSView {
             theme: theme,
             layoutDirection: context.layoutDirection,
             isActive: isWindowActive,
+            reduceMotion: context.reduceMotion,
             isEnabled: isBackButtonEnabled,
             accessibilityValue: nil
         )
@@ -804,6 +804,7 @@ private final class FluentTitleBarHost: NSView {
             theme: theme,
             layoutDirection: context.layoutDirection,
             isActive: isWindowActive,
+            reduceMotion: context.reduceMotion,
             isEnabled: isForwardButtonEnabled,
             accessibilityValue: nil
         )
@@ -812,6 +813,7 @@ private final class FluentTitleBarHost: NSView {
             theme: theme,
             layoutDirection: context.layoutDirection,
             isActive: isWindowActive,
+            reduceMotion: context.reduceMotion,
             isEnabled: true,
             accessibilityValue: paneValue
         )
@@ -975,167 +977,4 @@ private struct WindowConfiguration {
     let titlebarSeparatorStyle: NSTitlebarSeparatorStyle
     let windowControlsStyle: FluentWindowControlsStyle
     let title: String
-}
-
-private final class FluentTitleBarButton: NSButton {
-    enum Kind {
-        case back
-        case forward
-        case pane
-    }
-
-    let kind: Kind
-    var onInvoke: (() -> Void)?
-    private var theme: FluentTheme = .current
-    private var layoutDirection: FluentLayoutDirection = .leftToRight
-    private var isWindowActive = true
-    private var pointerOver = false
-    private var pressed = false
-
-    override var acceptsFirstResponder: Bool { isEnabled }
-
-    init(kind: Kind) {
-        self.kind = kind
-        super.init(frame: .zero)
-        isBordered = false
-        focusRingType = .none
-        wantsLayer = true
-        layer?.masksToBounds = false
-        target = self
-        action = #selector(invoke)
-        setAccessibilityRole(.button)
-        let label = switch kind {
-        case .back: "Back"
-        case .forward: "Forward"
-        case .pane: "Navigation"
-        }
-        setAccessibilityTitle(label)
-        toolTip = label
-        addTrackingArea(
-            NSTrackingArea(
-                rect: .zero,
-                options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect],
-                owner: self,
-                userInfo: nil
-            )
-        )
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    func update(
-        theme: FluentTheme,
-        layoutDirection: FluentLayoutDirection,
-        isActive: Bool,
-        isEnabled: Bool,
-        accessibilityValue: String?
-    ) {
-        self.theme = theme
-        self.layoutDirection = layoutDirection
-        let label: String = switch kind { case .back: "Back"; case .forward: "Forward"; case .pane: "Navigation" }
-        setAccessibilityTitle(fluentControlString(label))
-        toolTip = fluentControlString(label)
-        isWindowActive = isActive
-        self.isEnabled = isEnabled
-        setAccessibilityEnabled(isEnabled)
-        setAccessibilityValue(accessibilityValue)
-        needsDisplay = true
-    }
-
-    override func mouseEntered(with event: NSEvent) {
-        guard isEnabled else { return }
-        pointerOver = true
-        needsDisplay = true
-    }
-
-    override func mouseExited(with event: NSEvent) {
-        pointerOver = false
-        pressed = false
-        needsDisplay = true
-    }
-
-    override func mouseDown(with event: NSEvent) {
-        guard isEnabled else { return }
-        pressed = true
-        needsDisplay = true
-        super.mouseDown(with: event)
-        pressed = false
-        pointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
-        needsDisplay = true
-    }
-
-    override func keyDown(with event: NSEvent) {
-        if event.keyCode == 36 || event.keyCode == 49 { performClick(nil) } else { super.keyDown(with: event) }
-    }
-
-    override func accessibilityPerformPress() -> Bool {
-        guard isEnabled, !isHidden else { return false }
-        performClick(nil)
-        return true
-    }
-
-    override func draw(_ dirtyRect: NSRect) {
-        // The view's frame is already the 40-point WinUI button after its external Margin=2 has
-        // been removed by layout. Its root surface therefore fills these bounds.
-        let surface = bounds
-        let background: NSColor
-        if !isEnabled {
-            background = theme.buttonBackground(for: .disabled)
-        } else if pressed {
-            background = theme.subtleFillTertiary
-        } else if pointerOver {
-            background = theme.subtleFillSecondary
-        } else {
-            background = .clear
-        }
-        background.setFill()
-        NSBezierPath(roundedRect: surface, xRadius: 4, yRadius: 4).fill()
-
-        let color: NSColor
-        if !isEnabled {
-            color = theme.textDisabled
-        } else if pressed {
-            color = theme.textSecondary
-        } else {
-            color = isWindowActive ? theme.textPrimary : theme.textSecondary
-        }
-        color.setStroke()
-        let glyph = NSBezierPath()
-        glyph.lineWidth = 1.5
-        glyph.lineCapStyle = .round
-        glyph.lineJoinStyle = .round
-        let center = NSPoint(x: bounds.midX, y: bounds.midY)
-        switch kind {
-        case .pane:
-            // Segoe Fluent E700 / AnimatedGlobalNavigationButtonVisualSource fallback geometry.
-            for offset in [-5.0, 0, 5.0] {
-                glyph.move(to: NSPoint(x: center.x - 7, y: center.y + offset))
-                glyph.line(to: NSPoint(x: center.x + 7, y: center.y + offset))
-            }
-        case .back, .forward:
-            // WinUI E72B is a complete arrow with a horizontal stem. SF's chevron/arrow metrics
-            // are noticeably different at 16 points, so keep the Fluent fallback geometry here.
-            let pointsRight = (kind == .forward) != (layoutDirection == .rightToLeft)
-            let sign: CGFloat = pointsRight ? 1 : -1
-            let tipX = center.x + sign * 7
-            let tailX = center.x - sign * 7
-            glyph.move(to: NSPoint(x: tailX, y: center.y))
-            glyph.line(to: NSPoint(x: tipX, y: center.y))
-            glyph.move(to: NSPoint(x: tipX, y: center.y))
-            glyph.line(to: NSPoint(x: tipX - sign * 5, y: center.y - 5))
-            glyph.move(to: NSPoint(x: tipX, y: center.y))
-            glyph.line(to: NSPoint(x: tipX - sign * 5, y: center.y + 5))
-        }
-        glyph.stroke()
-        // AppKit may nominate the first title-bar key view while a window is becoming key. That
-        // must not look like a keyboard selection until the user actually navigates with keys.
-        if FluentFocusVisibility.isKeyboardFocusVisible(for: self) {
-            theme.accent.setStroke()
-            let focus = NSBezierPath(roundedRect: surface.insetBy(dx: 1, dy: 1), xRadius: 3, yRadius: 3)
-            focus.lineWidth = theme.focusStrokeWidth
-            focus.stroke()
-        }
-    }
-
-    @objc private func invoke() { if isEnabled { onInvoke?() } }
 }

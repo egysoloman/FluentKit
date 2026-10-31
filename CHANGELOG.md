@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TitleBar back/forward buttons now animate the arrow inward on press and spring back on release,
+  with RTL mirroring and reduced-motion support. Pointer release outside cancels; re-entry restores
+  the press. Space activates once on key-up, Return ignores repeat, and hidden/disabled controls
+  reject programmatic and accessibility presses. Hiding or deactivating clears stale hover/press.
+
 - FlipView yields new outward trackpad gestures at a settled first/last page to enclosing
   responders. Shared pan rejection now replays tentative events in order, preserving the original
   begin phase and deltas for FlipView, Pivot and SwipeControl cross-axis handoff. Unresolved

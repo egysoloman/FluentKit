@@ -900,7 +900,13 @@ Entrance transition elsewhere. `.crossFade`, `.slide`, `.drillIn`, `.entrance`, 
 only for the required phase, resumes interruptions from presentation values, settles rapid changes
 on the newest destination, and replaces immediately under Reduce Motion.
 
-`FluentTitleBar` provides reusable custom window chrome while keeping the native main menu. Its
+`FluentTitleBar` provides reusable custom window chrome while keeping the native main menu.
+Back/forward buttons retain a 40pt-wide hit target while their arrow compresses on press and
+rebounds on release; reduced motion applies the endpoint immediately. Dragging outside cancels
+activation, and moving back inside re-arms it. Space activates on release, Return on the first
+key-down. Hidden/disabled controls cannot navigate. The application supplies navigation/history
+through `onBack` and `onForward`.
+
 `windowControlsStyle` independently chooses native macOS traffic lights on the left or Windows-style
 Minimize/Maximize/Close controls on the right; both styles route commands through `NSWindow`, and
 switching back to `.macOS` restores the prior native buttons. Compact and expanded modes use 32pt
