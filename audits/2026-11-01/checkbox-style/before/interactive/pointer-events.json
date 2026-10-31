@@ -1,0 +1,14 @@
+[
+  {
+    "checked" : false,
+    "event" : 1,
+    "over" : false,
+    "pressed" : false
+  },
+  {
+    "checked" : false,
+    "event" : 2,
+    "over" : false,
+    "pressed" : false
+  }
+]

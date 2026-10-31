@@ -1,0 +1,33 @@
+Building for debugging...
+[2 / 15] FluentKit
+[5 / 18] FluentKit
+[10 / 19] FluentKit
+[14 / 15] FluentGallery-product
+[18 / 20] FluentKitTests-product
+Build complete! (4.60秒)
+Test Suite 'Selected tests' started at 2026-11-01 05:55:09.626.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 05:55:09.627.
+Test Suite 'CheckBoxResourceTests' started at 2026-11-01 05:55:09.627.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testCapturedCheckBoxRevertsAppearanceOutsideAndStillCommitsOnReentry]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testCapturedCheckBoxRevertsAppearanceOutsideAndStillCommitsOnReentry]' passed (0.081 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testExplicitHighContrastThemeResolvesColorsOutsideDrawingCallbacks]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testExplicitHighContrastThemeResolvesColorsOutsideDrawingCallbacks]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testHighContrastHasItsOwnCheckedAndUncheckedResourceMatrix]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testHighContrastHasItsOwnCheckedAndUncheckedResourceMatrix]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CheckBoxResourceTests.swift:156: error: -[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CheckBoxResourceTests.swift:158: error: -[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CheckBoxResourceTests.swift:161: error: -[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)")
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox]' failed (0.321 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandardCheckBoxUsesWinUIAltFillAndStrongStrokeResources]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandardCheckBoxUsesWinUIAltFillAndStrongStrokeResources]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testTreeIndeterminateHighContrastUsesIndeterminateRatherThanCheckedBrushes]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testTreeIndeterminateHighContrastUsesIndeterminateRatherThanCheckedBrushes]' passed (0.009 seconds).
+Test Suite 'CheckBoxResourceTests' failed at 2026-11-01 05:55:10.041.
+	 Executed 6 tests, with 3 failures (0 unexpected) in 0.414 (0.415) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 05:55:10.041.
+	 Executed 6 tests, with 3 failures (0 unexpected) in 0.414 (0.415) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 05:55:10.041.
+	 Executed 6 tests, with 3 failures (0 unexpected) in 0.414 (0.416) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

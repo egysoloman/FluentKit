@@ -729,7 +729,8 @@ let standardCheckBoxAppearance = FluentAutomaticCheckBoxStyle().appearance(
 let highContrastCheckBoxAppearance = FluentAutomaticCheckBoxStyle().appearance(
     for: FluentCheckBoxStyleConfiguration(isChecked: false, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: highContrastSelectionTheme)
 )
-require(highContrastCheckBoxAppearance.borderWidth > standardCheckBoxAppearance.borderWidth, "high contrast increases check box border emphasis")
+require(standardCheckBoxAppearance.borderWidth == 1 && highContrastCheckBoxAppearance.borderWidth == 1,
+        "WinUI CheckBoxBorderThickness stays 1pt in standard and High Contrast themes")
 require(highContrastCheckBoxAppearance.labelFont.pointSize > standardCheckBoxAppearance.labelFont.pointSize, "theme typography scales check box labels")
 let highContrastSegmentedAppearance = FluentAutomaticSegmentedStyle().appearance(
     for: FluentSegmentedStyleConfiguration(selectedIndex: 0, isEnabled: true, controlSize: .regular, theme: highContrastSelectionTheme)
@@ -2156,7 +2157,9 @@ styledCheckBoxState.wrappedValue = false
 drainMainQueue()
 require(firstCheckBox(in: styledCheckBoxHost) === nativeStyledCheckBox, "styled check box updates preserve native identity")
 require(nativeStyledCheckBox?.isChecked == false, "check box binding updates native state")
-require(nativeStyledCheckBox?.accessibilityValue() as? String == "Off", "check box binding updates accessibility state")
+require(nativeStyledCheckBox?.isAccessibilityElement() == true
+        && nativeStyledCheckBox?.accessibilityValue() as? NSNumber == 0,
+        "check box binding updates its exposed numeric accessibility state")
 nativeStyledCheckBox?.isChecked = true
 require(styledCheckBoxState.wrappedValue, "check box interaction writes back to its binding")
 

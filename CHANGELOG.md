@@ -4,6 +4,16 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Default CheckBox styling now follows WinUI's unchecked, checked and indeterminate resource
+  matrices, including High Contrast, a 4pt corner radius and a 1pt border. Captured presses
+  return to the normal appearance outside the control without losing release/reentry handling.
+  High Contrast system colors resolve under the explicit Fluent theme during event updates.
+  Standalone CheckBox is exposed to accessibility with a numeric checked value and change
+  notifications. Style configuration adds optional `isIndeterminate`; appearance adds an
+  optional presenter background. Existing style initializer calls remain valid. TreeView uses
+  the mixed-state brushes and clips its presenter background inside the HC row border.
+  See `audits/2026-11-01/checkbox-style/REPORT.md` for evidence and remaining limits.
+
 - TreeView accessibility disclosure queries no longer trigger `onExpanding` or lazy loading.
   Expansion events now use the native will-expand notification. **Behavior change:** changes to
   `expandedIDs` after mounting emit expansion/collapse events; initial state and internal reload

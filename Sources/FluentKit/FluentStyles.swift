@@ -1067,6 +1067,8 @@ public extension FluentProgressStyle where Self == FluentNeutralProgressStyle {
 
 public struct FluentCheckBoxStyleConfiguration {
     public let isChecked: Bool
+    /// Distinguishes the indeterminate glyph and its High Contrast resources from checked.
+    public let isIndeterminate: Bool
     public let isEnabled: Bool
     public let isPointerOver: Bool
     public let isPressed: Bool
@@ -1084,8 +1086,9 @@ public struct FluentCheckBoxStyleConfiguration {
         )
     }
 
-    public init(isChecked: Bool, isEnabled: Bool, isPointerOver: Bool, isPressed: Bool, controlSize: FluentControlSize, theme: FluentTheme) {
+    public init(isChecked: Bool, isEnabled: Bool, isPointerOver: Bool, isPressed: Bool, isIndeterminate: Bool = false, controlSize: FluentControlSize, theme: FluentTheme) {
         self.isChecked = isChecked
+        self.isIndeterminate = isIndeterminate
         self.isEnabled = isEnabled
         self.isPointerOver = isPointerOver
         self.isPressed = isPressed
@@ -1104,6 +1107,8 @@ public struct FluentCheckBoxAppearance {
     public let labelColor: NSColor
     public let labelFont: NSFont
     public let labelSpacing: CGFloat
+    /// Background of the complete checkbox presenter, transparent in standard themes.
+    public let backgroundColor: NSColor
 
     public init(
         boxSize: CGFloat = 18,
@@ -1114,7 +1119,8 @@ public struct FluentCheckBoxAppearance {
         markColor: NSColor,
         labelColor: NSColor,
         labelFont: NSFont,
-        labelSpacing: CGFloat = 8
+        labelSpacing: CGFloat = 8,
+        backgroundColor: NSColor = .clear
     ) {
         self.boxSize = max(boxSize, 1)
         self.cornerRadius = max(cornerRadius, 0)
@@ -1125,6 +1131,7 @@ public struct FluentCheckBoxAppearance {
         self.labelColor = labelColor
         self.labelFont = labelFont
         self.labelSpacing = max(labelSpacing, 0)
+        self.backgroundColor = backgroundColor
     }
 }
 
@@ -1147,30 +1154,29 @@ public struct FluentAutomaticCheckBoxStyle: FluentCheckBoxStyle {
         } else {
             .normal
         }
-        let uncheckedFill: NSColor = switch state {
-        case .pointerOver: theme.controlFillSecondary
-        case .pressed: theme.controlFillTertiary
-        case .disabled: theme.controlFill.withAlphaComponent(0.45)
-        default: theme.controlFill
+        let mixed = configuration.isIndeterminate
+        let selected = configuration.isChecked || mixed
+        // Layer updates also occur in event/binding callbacks, outside AppKit drawing.
+        // Resolve dynamic system colors under the explicit theme before creating CGColors.
+        func resolved(_ color: NSColor) -> NSColor {
+            guard theme.isHighContrast, let appearance = NSAppearance(named: theme.isDark ? .darkAqua : .aqua) else { return color }
+            var result = color
+            appearance.performAsCurrentDrawingAppearance { result = color.usingColorSpace(.deviceRGB) ?? color }
+            return result
         }
-        let fill = configuration.isChecked
-            ? theme.accentFill(for: state)
-            : uncheckedFill
-        let border = configuration.isChecked && !theme.isHighContrast
-            ? theme.accentFill(for: state)
-            : theme.controlStrokeStrong.withAlphaComponent(state == .disabled ? 0.35 : 1)
         return FluentCheckBoxAppearance(
             boxSize: 20 * scale,
-            cornerRadius: 3 * scale,
-            fillColor: fill,
-            borderColor: border,
-            borderWidth: theme.controlStrokeWidth,
-            markColor: state == .pressed
-                ? theme.textOnAccentSecondary
-                : (state == .disabled ? theme.textOnAccentDisabled : theme.textOnAccent),
-            labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
+            cornerRadius: 4 * scale,
+            fillColor: resolved(theme.checkBoxFill(isSelected: selected, isIndeterminate: mixed, state: state)),
+            borderColor: resolved(theme.checkBoxStroke(isSelected: selected, isIndeterminate: mixed, state: state)),
+            borderWidth: 1,
+            markColor: resolved(theme.checkBoxGlyph(isSelected: selected, isIndeterminate: mixed, state: state)),
+            labelColor: resolved(theme.isHighContrast
+                ? (configuration.isEnabled ? (mixed ? .textColor : .controlTextColor) : .disabledControlTextColor)
+                : (configuration.isEnabled ? theme.textPrimary : theme.textDisabled)),
             labelFont: theme.typography.font(for: .body).withSize(theme.typography.font(for: .body).pointSize * configuration.controlSize.metricScale),
-            labelSpacing: 8 * scale
+            labelSpacing: 8 * scale,
+            backgroundColor: theme.isHighContrast ? theme.windowBackground : .clear
         )
     }
 }

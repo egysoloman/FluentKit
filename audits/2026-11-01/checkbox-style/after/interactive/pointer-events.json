@@ -1,0 +1,16 @@
+[
+  {
+    "checked" : false,
+    "event" : 1,
+    "over" : false,
+    "pointInBox" : "{38, 106}",
+    "pressed" : false
+  },
+  {
+    "checked" : false,
+    "event" : 2,
+    "over" : false,
+    "pointInBox" : "{38, 106}",
+    "pressed" : false
+  }
+]

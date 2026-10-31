@@ -1148,6 +1148,7 @@ final class FluentOutlineCellHost: NSTableCellView {
     override var isFlipped: Bool { true }
     private(set) var contentView: NSView?
     let chevronLayer = FluentChevronPrimitiveLayer()
+    let checkBoxBackgroundLayer = CALayer()
     let checkBoxLayer = CALayer()
     let checkMarkLayer = CAShapeLayer()
     private(set) var layoutState: Layout?
@@ -1168,6 +1169,8 @@ final class FluentOutlineCellHost: NSTableCellView {
         super.init(frame: frameRect)
         wantsLayer = true
         layer?.addSublayer(chevronLayer)
+        checkBoxBackgroundLayer.name = "FluentKit.TreeView.CheckBoxBackground"
+        layer?.addSublayer(checkBoxBackgroundLayer)
         checkBoxLayer.addSublayer(checkMarkLayer)
         checkMarkLayer.fillColor = nil
         checkMarkLayer.lineCap = .round
@@ -1263,7 +1266,8 @@ final class FluentOutlineCellHost: NSTableCellView {
     private func checkBoxAppearance(checked: Bool) -> FluentCheckBoxAppearance {
         FluentAutomaticCheckBoxStyle().appearance(for: FluentCheckBoxStyleConfiguration(
             isChecked: checked, isEnabled: true, isPointerOver: isCheckBoxPointerOver,
-            isPressed: isTrackingCheckBox && isCheckBoxPointerOver, controlSize: .regular, theme: theme))
+            isPressed: isTrackingCheckBox && isCheckBoxPointerOver, isIndeterminate: layoutState?.checkState == .mixed,
+            controlSize: .regular, theme: theme))
     }
 
     override func layout() {
@@ -1281,6 +1285,14 @@ final class FluentOutlineCellHost: NSTableCellView {
         CATransaction.setDisableActions(true)
         if let state = layoutState.checkState {
             let appearance = checkBoxAppearance(checked: state != .unchecked)
+            checkBoxBackgroundLayer.isHidden = false
+            // WinUI's High Contrast MultiSelectGrid adds a 1pt margin and 1pt border.
+            // Clip the presenter's background to that inner slot when an explicit row
+            // height cannot accommodate its minimum height; do not paint over the row border.
+            let presenterInset = FluentTreeViewMetrics.presenterMarginY + (theme.isHighContrast ? 2 : 0)
+            checkBoxBackgroundLayer.frame = checkBoxHitFrame.intersection(bounds.insetBy(dx: 0, dy: presenterInset))
+            checkBoxBackgroundLayer.backgroundColor = appearance.backgroundColor.cgColor
+            checkBoxBackgroundLayer.cornerRadius = appearance.cornerRadius
             checkBoxLayer.isHidden = false
             checkBoxLayer.frame = checkBoxFrame
             checkBoxLayer.cornerRadius = appearance.cornerRadius
@@ -1292,6 +1304,7 @@ final class FluentOutlineCellHost: NSTableCellView {
             checkMarkLayer.lineWidth = 1.5
             checkMarkLayer.path = Self.markPath(for: state, in: checkBoxLayer.bounds)
         } else {
+            checkBoxBackgroundLayer.isHidden = true
             checkBoxLayer.isHidden = true
         }
         CATransaction.commit()

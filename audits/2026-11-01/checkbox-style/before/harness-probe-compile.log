@@ -1,0 +1,7 @@
+/Users/stars/Documents/WinUI-macOS/audits/2026-11-01/checkbox-style/CheckBoxAudit.swift:96:51: error: type 'FluentTheme' has no member 'dark'
+ 94 |         window.appearance = NSAppearance(named: .darkAqua)
+ 95 |         let root = window.contentView!; root.wantsLayer = true
+ 96 |         root.layer?.backgroundColor = FluentTheme.dark.windowBackground.cgColor
+    |                                                   `- error: type 'FluentTheme' has no member 'dark'
+ 97 |         let box = FluentCheckBox(title: "Drag out, release; then reenter and release")
+ 98 |         box.theme = FluentTheme.custom(contrast: .standard, colorScheme: .dark); box.reduceMotion = true

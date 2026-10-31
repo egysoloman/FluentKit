@@ -1,0 +1,3202 @@
+[
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.45000000000000001
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.34999999999999998
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.50196078431372548
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      0.9813271164894104,
+      0.9813271164894104,
+      0.9813271164894104,
+      0.30196078431372547
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.45000000000000001
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.34999999999999998
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.34999999999999998
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.70196078431372544
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "light-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.031372549019607843
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.031372549019607843
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.031372549019607843
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      0.50196078431372548
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.45000000000000001
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.52941176470588236
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.34999999999999998
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      0.52941176470588236
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "glyph" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-normal"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.082352941176470587
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-hover"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.031372549019607843
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.031372549019607843
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-pressed"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.031372549019607843
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-outside"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.45000000000000001
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.34999999999999998
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "disabled",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.34999999999999998
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 2,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.058823529411764705
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 3,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-disabled"
+  },
+  {
+    "boxWidth" : 20,
+    "control" : 4,
+    "fill" : [
+      0,
+      0.55400210618972778,
+      0.86456793546676636,
+      1
+    ],
+    "glyph" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal-after-cancel",
+    "radius" : 3,
+    "rootBackground" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 2,
+    "variant" : "dark-high-disabled"
+  }
+]

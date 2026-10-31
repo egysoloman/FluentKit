@@ -750,6 +750,85 @@ public struct FluentTheme: Equatable {
             : NSColor(calibratedWhite: 0, alpha: 55.0 / 255.0)
     }
 
+    /// CheckBox uses ControlAltFill for unchecked and accent brushes for checked/mixed.
+    /// In High Contrast, Windows system roles map to AppKit colors, consistently with
+    /// RadioButton; the Window role uses the Fluent window surface.
+    public func checkBoxFill(isSelected: Bool, isIndeterminate: Bool = false, state: FluentControlState) -> NSColor {
+        let selected = isSelected || isIndeterminate
+        guard isHighContrast else {
+            if selected { return accentFill(for: state) }
+            return switch state {
+            case .pointerOver: controlAltFillTertiary
+            case .pressed: controlAltFillQuaternary
+            case .disabled: controlAltFillDisabled
+            default: controlAltFillSecondary
+            }
+        }
+        if isIndeterminate {
+            return switch state {
+            case .pointerOver: .selectedMenuItemTextColor
+            case .disabled: .disabledControlTextColor
+            default: .selectedContentBackgroundColor
+            }
+        }
+        if selected {
+            return switch state {
+            case .pointerOver: .controlTextColor
+            case .pressed: .controlBackgroundColor
+            case .disabled: .disabledControlTextColor
+            default: .selectedContentBackgroundColor
+            }
+        }
+        return switch state {
+        case .pointerOver: .selectedMenuItemTextColor
+        case .pressed: .selectedContentBackgroundColor
+        case .disabled: windowBackground
+        default: .controlBackgroundColor
+        }
+    }
+
+    public func checkBoxStroke(isSelected: Bool, isIndeterminate: Bool = false, state: FluentControlState) -> NSColor {
+        let selected = isSelected || isIndeterminate
+        guard isHighContrast else {
+            if state == .disabled { return controlStrokeStrongDisabled }
+            if selected { return accentFill(for: state) }
+            return state == .pressed ? controlStrokeStrongDisabled : controlStrokeStrong
+        }
+        if state == .disabled { return .disabledControlTextColor }
+        if isIndeterminate { return .selectedContentBackgroundColor }
+        if selected { return checkBoxFill(isSelected: true, state: state) }
+        return state == .pointerOver || state == .pressed ? .selectedContentBackgroundColor : .controlTextColor
+    }
+
+    public func checkBoxGlyph(isSelected: Bool, isIndeterminate: Bool = false, state: FluentControlState) -> NSColor {
+        let selected = isSelected || isIndeterminate
+        guard isHighContrast else {
+            if state == .disabled { return textOnAccentDisabled }
+            return selected && state == .pressed ? textOnAccentSecondary : textOnAccent
+        }
+        if isIndeterminate {
+            return switch state {
+            case .pointerOver: .selectedContentBackgroundColor
+            case .disabled: windowBackground
+            default: .selectedMenuItemTextColor
+            }
+        }
+        if selected {
+            return switch state {
+            case .pointerOver: .controlBackgroundColor
+            case .pressed: .controlTextColor
+            case .disabled: windowBackground
+            default: .selectedMenuItemTextColor
+            }
+        }
+        return switch state {
+        case .pointerOver: .selectedContentBackgroundColor
+        case .pressed: .selectedMenuItemTextColor
+        case .disabled: .disabledControlTextColor
+        default: .controlBackgroundColor
+        }
+    }
+
     /// RadioButton owns a High Contrast matrix in WinUI instead of resolving through the
     /// generic accent and control brushes.
     public func radioOuterFill(isSelected: Bool, state: FluentControlState) -> NSColor {

@@ -39,7 +39,7 @@ public final class FluentCheckBox: NSControl {
     public var isChecked: Bool {
         didSet {
             guard oldValue != isChecked else { return }
-            setAccessibilityValue(isChecked ? "On" : "Off")
+            NSAccessibility.post(element: self, notification: .valueChanged)
             refreshAppearance(selectionChanged: true)
             guard !suppressesValueNotification else { return }
             sendAction(action, to: target)
@@ -180,7 +180,7 @@ public final class FluentCheckBox: NSControl {
 
     public override func cancelOperation(_ sender: Any?) { cancelInteraction() }
 
-    public override func accessibilityValue() -> Any? { isChecked ? "On" : "Off" }
+    public override func accessibilityValue() -> Any? { NSNumber(value: isChecked) }
 
     public override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
@@ -233,7 +233,7 @@ public final class FluentCheckBox: NSControl {
                 isChecked: isChecked,
                 isEnabled: isEnabled,
                 isPointerOver: isPointerOver,
-                isPressed: isPressed,
+                isPressed: isPressed && isPointerOver,
                 controlSize: fluentControlSize,
                 theme: theme
             )
@@ -245,8 +245,8 @@ public final class FluentCheckBox: NSControl {
         focusRingType = .none
         userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
         setAccessibilityRole(.checkBox)
+        setAccessibilityElement(true)
         setAccessibilityTitle(title)
-        setAccessibilityValue(isChecked ? "On" : "Off")
         setAccessibilityEnabled(isEnabled)
 
         focusLayer.name = "FluentKit.CheckBox.FocusRing"
@@ -313,6 +313,8 @@ public final class FluentCheckBox: NSControl {
 
         CATransaction.begin()
         CATransaction.setDisableActions(true)
+        layer?.backgroundColor = appearance.backgroundColor.cgColor
+        layer?.cornerRadius = appearance.cornerRadius
         boxLayer.frame = box
         boxLayer.cornerRadius = appearance.cornerRadius
         boxLayer.backgroundColor = appearance.fillColor.cgColor
