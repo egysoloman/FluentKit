@@ -1,0 +1,626 @@
+[
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "initial",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "hover",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 146,
+    "selection" : 2,
+    "state" : "selected",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 342,
+    "selection" : 4,
+    "state" : "edge",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 342,
+    "selection" : 4,
+    "state" : "locked",
+    "variant" : "light",
+    "visibleHeaders" : [
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 342,
+    "selection" : 4,
+    "state" : "disabled",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "initial",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : true,
+    "previousButtonVisible" : true,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "hover",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 2,
+    "state" : "selected",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "edge",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "locked",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "disabled",
+    "variant" : "light",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "initial",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "hover",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 146,
+    "selection" : 2,
+    "state" : "selected",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 342,
+    "selection" : 4,
+    "state" : "edge",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 342,
+    "selection" : 4,
+    "state" : "locked",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 342,
+    "selection" : 4,
+    "state" : "disabled",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "initial",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : true,
+    "previousButtonVisible" : true,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "hover",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 2,
+    "state" : "selected",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "edge",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "locked",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 0,
+    "selection" : 0,
+    "state" : "disabled",
+    "variant" : "dark",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 471,
+    "selection" : 0,
+    "state" : "initial",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 471,
+    "selection" : 0,
+    "state" : "hover",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 270,
+    "selection" : 2,
+    "state" : "selected",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 80,
+    "selection" : 4,
+    "state" : "edge",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 80,
+    "selection" : 4,
+    "state" : "locked",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "static",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 80,
+    "selection" : 4,
+    "state" : "disabled",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 251,
+    "selection" : 0,
+    "state" : "initial",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : true,
+    "previousButtonVisible" : true,
+    "selectedHeaderMinX" : 251,
+    "selection" : 0,
+    "state" : "hover",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 196,
+    "selection" : 2,
+    "state" : "selected",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 251,
+    "selection" : 0,
+    "state" : "edge",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 251,
+    "selection" : 0,
+    "state" : "locked",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "layout" : "carousel",
+    "nextButtonVisible" : false,
+    "previousButtonVisible" : false,
+    "selectedHeaderMinX" : 251,
+    "selection" : 0,
+    "state" : "disabled",
+    "variant" : "rtl",
+    "visibleHeaders" : [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  }
+]

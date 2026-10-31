@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added Pivot with source-derived header geometry, accent selection pipe, static and carousel
+  header modes, carousel-only wrapping, locked mode, hover navigation buttons, header and
+  Ctrl+Tab/PageUp/PageDown keyboard navigation, RTL, optional title and left/right header slots,
+  and WinUI's fly-out/fly-in content motion. Added a direct Gallery sample with partial coverage;
+  touch panning, header templates and PivotItem loading events remain pending.
+
 - TimePicker's flyout now uses the shared Fluent looping selectors instead of the native time
   editor, with locale-driven field order, localized period labels and digits, RTL ordering, and
   Return/Escape/Tab keyboard transactions. TimePicker and DatePicker reject queued notifications

@@ -16,6 +16,9 @@ struct GalleryScreen: FluentView {
     @FluentState private var pipsPage = 2
     @FluentState private var flipPage = 0
     @FluentState private var flipPages = ["Mountains", "Coast", "Forest"]
+    @FluentState private var pivotSelection = 0
+    @FluentState private var pivotLocked = false
+    private let pivotSections = ["All", "Unread", "Flagged", "Urgent"]
     @FluentState private var breadcrumbItems = [
         FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
         FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
@@ -421,6 +424,22 @@ struct GalleryScreen: FluentView {
                 FluentText("Move the pointer to reveal arrows. Scroll or press Left/Right to change pages.",
                     style: .caption, color: theme.textSecondary)
                 FluentText("Home/End selects the first/last page. Horizontal navigation mirrors in RTL.",
+                    style: .caption, color: theme.textSecondary)
+            })
+        case .Pivot:
+            return FluentAnyView(FluentVStack(spacing: 12) {
+                FluentPivot(pivotSections, selection: $pivotSelection, title: "EMAIL", isLocked: pivotLocked,
+                    header: { $0 }) { section in
+                    FluentVStack(spacing: 8) {
+                        FluentText(section, style: .subtitle)
+                        FluentText("Messages filtered by \(section.lowercased()).", style: .body,
+                            color: theme.textSecondary)
+                    }
+                    .padding(12)
+                }
+                .frame(width: 420, height: 220)
+                FluentToggleView("Lock to the current item", isOn: $pivotLocked)
+                FluentText("Narrow the window to switch to the carousel header. Ctrl+Tab and Ctrl+PageUp/PageDown change items.",
                     style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:

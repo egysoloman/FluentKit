@@ -40,6 +40,7 @@ import FluentKit
                         precondition(mountedViews.contains { $0 is NSDatePicker })
                         precondition(!mountedViews.contains { $0 is FluentWinUIDatePickerControl })
                     case "TimePicker": precondition(mountedViews.contains { $0 is FluentTimePicker })
+                    case "Pivot": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.Pivot" })
                     default: break
                     }
                     window.close()

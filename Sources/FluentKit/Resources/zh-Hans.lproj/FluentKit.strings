@@ -66,3 +66,6 @@
 "FluentKit.Variable sized wrap grid" = "可变大小换行网格";
 "FluentKit.View selector" = "视图选择器";
 "FluentKit.Viewbox" = "视框";
+"FluentKit.Pivot" = "透视";
+"FluentKit.Previous" = "上一个";
+"FluentKit.Next" = "下一个";

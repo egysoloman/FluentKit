@@ -66,3 +66,6 @@
 "FluentKit.Variable sized wrap grid" = "Variable sized wrap grid";
 "FluentKit.View selector" = "View selector";
 "FluentKit.Viewbox" = "Viewbox";
+"FluentKit.Pivot" = "Pivot";
+"FluentKit.Previous" = "Previous";
+"FluentKit.Next" = "Next";
