@@ -18,6 +18,7 @@
 | 10 | **TreeView 附件命中及按下/释放本批已修。** | 旧回归 33 处失败归零；56 个旧原生状态中 32 处选择错误，修后 72 个状态通过。实际 Gallery 点击、拖出取消及箭头尾部留白验证通过；404 项测试与门禁通过，见 `treeview-pointer/REPORT.md`。本批发现的 AX 查询副作用已在第 11 项处理。 |
 | 11 | **TreeView AX 查询副作用、绑定事件缺失及折叠回调重开被覆盖已修。** | 同一组测试在 d60edee 产生 13 处失败，修后全量 407 项通过。CUA 对真实 Gallery 验证：读取不加载，实际 AX Expand/Collapse 正常；27 个 Gallery 原生状态及相关门禁通过。挂载后绑定变化现在发出事件，初始/重建恢复静默；见 `treeview-expansion/REPORT.md`。完整 VoiceOver 验收仍开放。 |
 | 12 | **CheckBox 共享资源、拖出外观、显式主题颜色及原生 AX 暴露已修。** | 同一组 6 项测试在 e0232c4 有 230 处断言失败，修后归零；100 个原生采样的 391 项字段差异归零（含取消复测、不含 TreeView 禁用）。实际 AX 查询和激活通过；413 项测试、原生验证、Gallery 构建及 Release 门禁通过。坐标拖动工具不可用，不计实机验收；见 `checkbox-style/REPORT.md`。 |
+| 13 | **RadioButton 原生分组、AX 及显式高对比度颜色本批已修。** | 5 项测试在 c5ad3bd 的 162 处断言失败归零；112 个独立原生状态的 156 项字段偏差归零。CUA 验证独立控件/组容器可查询，同组互斥、独立组保留及外部清空正常；418 项测试、原生验证、Gallery 和 Release 门禁通过。首版探针的跨控件焦点干扰已纠正并保留原始数据；见 `radio-accessibility/REPORT.md`。 |
 
 ## 已处理项与明确边界
 
@@ -27,13 +28,13 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前框架批次已通过 413 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（TreeView/CheckBox 后续批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前框架批次已通过 418 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（后续 TreeView、CheckBox、RadioButton 批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 
 1. **原审计 15 项 + 2 项绘制缺陷**：逐项结果保持在 `../2026-10-30/REMEDIATION.md`，原始 `REPORT.md` 和数据不覆盖。重复刷新、挂载身份、外部重置、快照、样式失效、组合输入策略、ForEach、状态去重、monitor 生命周期、本地化、Gallery 注册和质量门禁继续由回归守护；省略号比例和箭头留白也纳入集成复验。固定 Mica/Acrylic 底色仍不是完整 Windows 材质，字体字形/基线、图标最终观感和真实 IME/VoiceOver 仍未全面验收。
 2. **Claude 修改及后续报告**：独立核对见 `../2026-10-30/CLAUDE_REVIEW.md`。6 处 body 简化已验证；“builder 最多 10 个”和“原生控件必须包装”已由编译反例澄清。Xcode Preview、可恢复 snapshot API、可选 URL 导航策略、文档整理和有实测支持的构建优化继续保留；不按推断做破坏性改名或无收益的大拆分。日期耦合 CI 已迁至固定入口。
-3. **交接剩余能力**：TreeView 示例/生命周期、批量子树移动 API、附件交互及 AX 查询/展开事件已修，仍需完整原生拖放、跨树传输、展开动画；CheckBox 共享资源与 AX 本批已修，独立三态 API、AnimatedIcon，以及 RadioButton 的同类 AX/高对比度路径继续复核；Collection、CommandBar/MenuBar、AutoSuggestBox、SplitButton 已有独立修复批次，仍保留其报告中的长尾状态与完整行为差距。Calendar/FlipView 的剩余事项见 ROADMAP 的 follow-up，不因已有样例标记为完成。
+3. **交接剩余能力**：TreeView 示例/生命周期、批量子树移动 API、附件交互及 AX 查询/展开事件已修，仍需完整原生拖放、跨树传输、展开动画；CheckBox 共享资源/AX 及 RadioButton 分组/AX/高对比度已修。接续检查 RadioButton 内圆描边、组位置描述更新、绑定与手势交错，以及 CheckBox 键盘按压/释放；独立三态 API、AnimatedIcon 继续保留。Collection、CommandBar/MenuBar、AutoSuggestBox、SplitButton 已有独立修复批次，仍保留其报告中的长尾状态与完整行为差距。Calendar/FlipView 的剩余事项见 ROADMAP 的 follow-up，不因已有样例标记为完成。
 4. **跨平台与实机**：Windows 同尺寸、缩放、字体与状态对拍，真实触摸、真实中文输入与 VoiceOver 分别验收。MapControl 网络、相机权限场景及 AnimatedVisualPlayer 的 Lottie 支持等已知限制仍保持原范围，不能用样例挂载通过代替。
 5. **包装层审查结果**：导航/Undo scope 之后，又独立复现并修复 Accessibility、Lifecycle、Dialog、Command、ControlSizing、SettingsCard 等 24 条旧内容路径，保留 5 条正常路径对照，见 `wrapper-content/REPORT.md`。覆盖当前内置包装器，第三方组合及真实 VoiceOver 仍单独验收。
 

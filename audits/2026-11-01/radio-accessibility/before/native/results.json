@@ -1,0 +1,7282 @@
+[
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.023529411764705882
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.023529411764705882
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.058823529411764705
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.058823529411764705
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.094117647058823528
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.094117647058823528
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.023529411764705882
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.023529411764705882
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.094117647058823528
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.094117647058823528
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.023529411764705882
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.023529411764705882
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.90000000000000002
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.90000000000000002
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.023529411764705882
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.023529411764705882
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.058823529411764705
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.058823529411764705
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.094117647058823528
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.094117647058823528
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.023529411764705882
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.023529411764705882
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.094117647058823528
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.094117647058823528
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.023529411764705882
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.44705882352941179
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.023529411764705882
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.44705882352941179
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.90000000000000002
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.90000000000000002
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.43560969829559326,
+        0.68260473012924194,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.43560969829559326,
+      0.68260473012924194,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.21568627450980393
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.21568627450980393
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-standard-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.96254128217697144,
+        0.96254128217697144,
+        0.96254128217697144,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.96254128217697144,
+      0.96254128217697144,
+      0.96254128217697144,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.96254128217697144,
+        0.96254128217697144,
+        0.96254128217697144,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.96254128217697144,
+      0.96254128217697144,
+      0.96254128217697144,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.96254128217697144,
+        0.96254128217697144,
+        0.96254128217697144,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.96254128217697144,
+      0.96254128217697144,
+      0.96254128217697144,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.39215686917304993,
+        0.88235294818878174,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.96254128217697144,
+        0.96254128217697144,
+        0.96254128217697144,
+        1
+      ],
+      "stroke" : [
+        0,
+        0,
+        0,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.96254128217697144,
+      0.96254128217697144,
+      0.96254128217697144,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "light-high-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.098039215686274508
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.098039215686274508
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.043137254901960784
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.070588235294117646
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.070588235294117646
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.098039215686274508
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.098039215686274508
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.070588235294117646
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.070588235294117646
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.098039215686274508
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.098039215686274508
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.90000000000000002
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.90000000000000002
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.098039215686274508
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.098039215686274508
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.043137254901960784
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.043137254901960784
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.070588235294117646
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.070588235294117646
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.098039215686274508
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.098039215686274508
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.070588235294117646
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.070588235294117646
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0.098039215686274508
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.54509803921568623
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0.098039215686274508
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.54509803921568623
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0,
+        0,
+        0,
+        0
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0,
+      0,
+      0,
+      0
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.90000000000000002
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.90000000000000002
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.90000000000000002
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        0.80000000000000004
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      0.80000000000000004
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "stroke" : [
+        0.5294947624206543,
+        0.77692937850952148,
+        0.94437777996063232,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0.5294947624206543,
+      0.77692937850952148,
+      0.94437777996063232,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0,
+        0,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.15686274509803921
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0,
+      0,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.15686274509803921
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-standard-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.16743844747543335,
+        0.16743844747543335,
+        0.16743844747543335,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.16743844747543335,
+      0.16743844747543335,
+      0.16743844747543335,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.16743844747543335,
+        0.16743844747543335,
+        0.16743844747543335,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.16743844747543335,
+      0.16743844747543335,
+      0.16743844747543335,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-ltr-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.11764705882352941,
+      0.11764705882352941,
+      0.11764705882352941,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 1,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 1,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : false,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 0,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 0,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.16743844747543335,
+        0.16743844747543335,
+        0.16743844747543335,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.16743844747543335,
+      0.16743844747543335,
+      0.16743844747543335,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : false,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-disabled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "normal",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.3490196168422699,
+      0.81960785388946533,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-normal"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "hover",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-hover"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "pressed",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-pressed"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "outside",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-outside"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.84705882352941175
+    ],
+    "dotDiameter" : 10,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.84705882352941175
+      ],
+      "dotDiameter" : 10,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "stroke" : [
+        0.11764705882352941,
+        0.11764705882352941,
+        0.11764705882352941,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "reentered",
+    "selected" : true,
+    "stroke" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-reentered"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "dotDiameter" : 12,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "dotDiameter" : 12,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        1,
+        1,
+        1,
+        1
+      ],
+      "stroke" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "phase" : "cancelled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-cancelled"
+  },
+  {
+    "diameter" : 20,
+    "dot" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "dotDiameter" : 14,
+    "dotOpacity" : 1,
+    "expected" : {
+      "diameter" : 20,
+      "dot" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "dotDiameter" : 14,
+      "dotOpacity" : 1,
+      "feedback" : [
+        0,
+        0.3490196168422699,
+        0.81960785388946533,
+        1
+      ],
+      "feedbackOpacity" : 0,
+      "fill" : [
+        0.16743844747543335,
+        0.16743844747543335,
+        0.16743844747543335,
+        1
+      ],
+      "stroke" : [
+        1,
+        1,
+        1,
+        0.24705882352941178
+      ],
+      "strokeWidth" : 1
+    },
+    "feedback" : [
+      0,
+      0.39215686917304993,
+      0.88235294818878174,
+      1
+    ],
+    "feedbackOpacity" : 0,
+    "fill" : [
+      0.16743844747543335,
+      0.16743844747543335,
+      0.16743844747543335,
+      1
+    ],
+    "phase" : "disabled",
+    "selected" : true,
+    "stroke" : [
+      0,
+      0,
+      0,
+      0.24705882352941178
+    ],
+    "strokeWidth" : 1,
+    "variant" : "dark-high-rtl-disabled"
+  }
+]

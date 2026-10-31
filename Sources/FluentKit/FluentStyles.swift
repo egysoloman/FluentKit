@@ -1158,12 +1158,7 @@ public struct FluentAutomaticCheckBoxStyle: FluentCheckBoxStyle {
         let selected = configuration.isChecked || mixed
         // Layer updates also occur in event/binding callbacks, outside AppKit drawing.
         // Resolve dynamic system colors under the explicit theme before creating CGColors.
-        func resolved(_ color: NSColor) -> NSColor {
-            guard theme.isHighContrast, let appearance = NSAppearance(named: theme.isDark ? .darkAqua : .aqua) else { return color }
-            var result = color
-            appearance.performAsCurrentDrawingAppearance { result = color.usingColorSpace(.deviceRGB) ?? color }
-            return result
-        }
+        func resolved(_ color: NSColor) -> NSColor { theme.resolvedHighContrastColor(color) }
         return FluentCheckBoxAppearance(
             boxSize: 20 * scale,
             cornerRadius: 4 * scale,
@@ -1317,14 +1312,17 @@ public struct FluentAutomaticRadioButtonStyle: FluentRadioButtonStyle {
         default: 12
         }
         let bodyFont = theme.typography.font(for: .body)
+        func resolved(_ color: NSColor) -> NSColor { theme.resolvedHighContrastColor(color) }
         return FluentRadioButtonAppearance(
             diameter: 20 * scale,
-            fillColor: theme.radioOuterFill(isSelected: configuration.isSelected, state: state),
-            borderColor: theme.radioOuterStroke(isSelected: configuration.isSelected, state: state),
+            fillColor: resolved(theme.radioOuterFill(isSelected: configuration.isSelected, state: state)),
+            borderColor: resolved(theme.radioOuterStroke(isSelected: configuration.isSelected, state: state)),
             borderWidth: 1,
-            dotColor: theme.radioDotFill(for: state),
-            pressedFeedbackColor: theme.radioDotFill(for: .normal),
-            labelColor: configuration.isEnabled ? theme.textPrimary : theme.textDisabled,
+            dotColor: resolved(theme.radioDotFill(for: state)),
+            pressedFeedbackColor: resolved(theme.radioDotFill(for: .normal)),
+            labelColor: resolved(theme.isHighContrast
+                ? (configuration.isEnabled ? .controlTextColor : .disabledControlTextColor)
+                : (configuration.isEnabled ? theme.textPrimary : theme.textDisabled)),
             labelFont: bodyFont.withSize(bodyFont.pointSize * configuration.controlSize.metricScale),
             labelSpacing: 8 * scale,
             dotDiameter: dotDiameter * scale

@@ -2175,7 +2175,9 @@ styledRadioState.wrappedValue = true
 drainMainQueue()
 require(firstRadioButton(in: styledRadioHost) === nativeStyledRadio, "styled radio updates preserve native identity")
 require(nativeStyledRadio?.isSelected == true, "radio binding updates native state")
-require(nativeStyledRadio?.accessibilityValue() as? String == "On", "radio binding updates accessibility state")
+require(nativeStyledRadio?.isAccessibilityElement() == true
+        && nativeStyledRadio?.accessibilityValue() as? NSNumber == 1,
+        "radio binding updates its exposed numeric accessibility state")
 nativeStyledRadio?.isSelected = false
 require(!styledRadioState.wrappedValue, "radio interaction writes back to its binding")
 

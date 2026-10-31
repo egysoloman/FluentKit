@@ -1,0 +1,16 @@
+{
+  "parent_commit": "c5ad3bdd3ef383272da55e09cc2d41ff6f1856cf",
+  "source_sha256": {
+    "Sources/FluentKit/FluentChoiceControls.swift": "7bdbd91babc885a43dfaa15845d6591b5efef95bea402c480e6900f1227ad577",
+    "Sources/FluentKit/FluentRadioButtons.swift": "a0cd1a8a5d270270faaa33397db6f0437da4596b547905c065f76ccdb50aff61",
+    "Sources/FluentKit/FluentStyles.swift": "aad493bfcc87077ab224c04e08ad8cc69f93f78703735d15c3635d1f8db9390c",
+    "Sources/FluentKit/Theme.swift": "3088fda0be062a65bc418969c16f7fa93a2a350de12a2c7fc646bed94772462d",
+    "Sources/FluentKitValidation/main.swift": "b82dd45addba2efe4cbf07a424835eb03b455b762c7b2fbeab284a9768e2bcf0"
+  },
+  "test_sha256": {
+    "Tests/FluentKitTests/RadioButtonAuditTests.swift": "b5503ee16979233efff85d2d3aa17e9601bae031b66984fa2be0c0edffe96c82",
+    "Tests/FluentKitTests/FluentKitTests.swift": "d520a8de6050383498ad3bf28c1d9a2c0a555e484e56dd5bec3be04ad5e07e92"
+  },
+  "probe_sha256": "4ea2159f8987d832c89f1eab003c09ef10f251ef3f3a4bee1e58d77a5736f0e3",
+  "os": "macOS-27.2-arm64-arm-64bit-Mach-O"
+}

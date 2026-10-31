@@ -1,0 +1,44 @@
+[
+  {
+    "a1" : true,
+    "a2" : false,
+    "b1" : true,
+    "mode" : "Auto",
+    "reason" : "initial"
+  },
+  {
+    "a1" : false,
+    "a2" : true,
+    "b1" : true,
+    "mode" : "Auto",
+    "reason" : "native selection"
+  },
+  {
+    "a1" : false,
+    "a2" : true,
+    "b1" : true,
+    "mode" : "Auto",
+    "reason" : "native selection"
+  },
+  {
+    "a1" : false,
+    "a2" : true,
+    "b1" : true,
+    "mode" : "Manual",
+    "reason" : "group selection"
+  },
+  {
+    "a1" : false,
+    "a2" : true,
+    "b1" : true,
+    "mode" : "nil",
+    "reason" : "group selection"
+  },
+  {
+    "a1" : false,
+    "a2" : true,
+    "b1" : true,
+    "mode" : "nil",
+    "reason" : "clear model command"
+  }
+]

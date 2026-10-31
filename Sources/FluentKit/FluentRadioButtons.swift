@@ -127,6 +127,7 @@ private final class FluentRadioButtonsHost<Option: Hashable>: NSControl,
         isEnabled = isGroupEnabled
         identifier = NSUserInterfaceItemIdentifier("FluentKit.RadioButtons.Host")
         setAccessibilityRole(.radioGroup)
+        setAccessibilityElement(true)
         setAccessibilityEnabled(isGroupEnabled)
         addSubview(headerLabel)
         configureHeader()

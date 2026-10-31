@@ -1,0 +1,4700 @@
+{
+  "before": {
+    "samples": 112,
+    "mismatched_fields": 232,
+    "mismatched_samples": 64,
+    "errors": [
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-ltr-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-ltr-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-rtl-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-rtl-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-hover",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-disabled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-ltr-disabled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-disabled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-ltr-disabled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-ltr-disabled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-disabled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-hover",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-disabled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-rtl-disabled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-disabled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-rtl-disabled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "light-high-rtl-disabled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-disabled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-ltr-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-ltr-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-rtl-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-rtl-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-hover",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-disabled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-disabled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-disabled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-disabled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-disabled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-disabled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-hover",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": true,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-disabled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-disabled",
+        "selected": false,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-disabled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-disabled",
+        "selected": true,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-disabled",
+        "selected": true,
+        "field": "feedback",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-disabled",
+        "selected": true,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.24705882352941178
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.24705882352941178
+        ]
+      }
+    ]
+  },
+  "after": {
+    "samples": 112,
+    "mismatched_fields": 100,
+    "mismatched_samples": 32,
+    "errors": [
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-ltr-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-ltr-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-rtl-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09411764705882353
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0,
+          0,
+          0.4470588235294118
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.21568627450980393
+        ]
+      },
+      {
+        "variant": "light-standard-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-standard-rtl-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          0,
+          0,
+          0,
+          0.058823529411764705
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.023529411764705882
+        ]
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-ltr-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-ltr-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-rtl-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "light-high-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ]
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "light-high-rtl-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3921568691730499,
+          0.8823529481887817,
+          1
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-ltr-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-ltr-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-rtl-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.07058823529411765
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          1,
+          1,
+          1,
+          0.5450980392156862
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.1568627450980392
+        ]
+      },
+      {
+        "variant": "dark-standard-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-standard-rtl-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          0.043137254901960784
+        ],
+        "expected": [
+          0,
+          0,
+          0,
+          0.09803921568627451
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-ltr-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-ltr-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-ltr-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-rtl-pressed",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-outside",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 10
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "feedbackOpacity",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "variant": "dark-high-rtl-reentered",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "dot",
+        "actual": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ],
+        "expected": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "dotDiameter",
+        "actual": 14,
+        "expected": 12
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "fill",
+        "actual": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          0.11764705882352941,
+          0.11764705882352941,
+          0.11764705882352941,
+          1
+        ]
+      },
+      {
+        "variant": "dark-high-rtl-cancelled",
+        "selected": false,
+        "field": "stroke",
+        "actual": [
+          0,
+          0.3490196168422699,
+          0.8196078538894653,
+          1
+        ],
+        "expected": [
+          1,
+          1,
+          1,
+          0.8470588235294118
+        ]
+      }
+    ]
+  }
+}

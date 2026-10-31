@@ -395,6 +395,15 @@ public struct FluentTheme: Equatable {
         }
     }
 
+    /// Resolve the system-color roles used by High Contrast control styles before they
+    /// become CGColors. Event/binding callbacks may run under another drawing appearance.
+    func resolvedHighContrastColor(_ color: NSColor) -> NSColor {
+        guard isHighContrast, let appearance = NSAppearance(named: isDark ? .darkAqua : .aqua) else { return color }
+        var result = color
+        appearance.performAsCurrentDrawingAppearance { result = color.usingColorSpace(.deviceRGB) ?? color }
+        return result
+    }
+
     public var windowBackground: NSColor {
         isDark
             ? NSColor(calibratedWhite: 32.0 / 255.0, alpha: 1)

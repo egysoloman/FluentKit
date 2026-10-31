@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- RadioButton fixes unnamed grouping in ordinary NSView containers and stops merging separate
+  single-child containers. The binding adapter remains transparent. **Behavior change:** named
+  groups use exact identifiers, including leading/trailing whitespace. Standalone radios and
+  the declarative group are exposed to accessibility, with numeric selected values and change
+  notifications. Default High Contrast brushes and label colors resolve under the explicit Fluent
+  theme, sharing the CheckBox resolver. See `audits/2026-11-01/radio-accessibility/REPORT.md`.
+
 - Default CheckBox styling now follows WinUI's unchecked, checked and indeterminate resource
   matrices, including High Contrast, a 4pt corner radius and a 1pt border. Captured presses
   return to the normal appearance outside the control without losing release/reentry handling.

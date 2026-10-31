@@ -1,0 +1,64 @@
+Building for debugging...
+[1 / 1]
+[2 / 15] FluentKit
+[7 / 20] FluentKit
+[18 / 32] FluentKit
+[19 / 32] FluentKit
+[24 / 35] FluentKit
+[26 / 38] FluentKit
+[30 / 42] FluentGallery-product
+[31 / 44] FluentKit
+[33 / 44] FluentGallery-product
+[37 / 44] FluentGallery-product
+[50 / 59] FluentKitTests-product
+[55 / 61] FluentKitTests-product
+[57 / 64] FluentKitTests-product
+[59 / 62] FluentKitValidation-product
+[60 / 62] FluentKitValidation-product
+[62 / 64] FluentKitValidation-product
+Build complete! (45.66秒)
+Test Suite 'Selected tests' started at 2026-11-01 06:27:44.467.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 06:27:44.468.
+Test Suite 'CheckBoxResourceTests' started at 2026-11-01 06:27:44.468.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testCapturedCheckBoxRevertsAppearanceOutsideAndStillCommitsOnReentry]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testCapturedCheckBoxRevertsAppearanceOutsideAndStillCommitsOnReentry]' passed (0.084 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testExplicitHighContrastThemeResolvesColorsOutsideDrawingCallbacks]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testExplicitHighContrastThemeResolvesColorsOutsideDrawingCallbacks]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testHighContrastHasItsOwnCheckedAndUncheckedResourceMatrix]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testHighContrastHasItsOwnCheckedAndUncheckedResourceMatrix]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandaloneCheckBoxIsExposedAsAnAccessibleCheckBox]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandardCheckBoxUsesWinUIAltFillAndStrongStrokeResources]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testStandardCheckBoxUsesWinUIAltFillAndStrongStrokeResources]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.CheckBoxResourceTests testTreeIndeterminateHighContrastUsesIndeterminateRatherThanCheckedBrushes]' started.
+Test Case '-[FluentKitTests.CheckBoxResourceTests testTreeIndeterminateHighContrastUsesIndeterminateRatherThanCheckedBrushes]' passed (0.003 seconds).
+Test Suite 'CheckBoxResourceTests' passed at 2026-11-01 06:27:44.558.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.089 (0.089) seconds
+Test Suite 'FluentKitTests' started at 2026-11-01 06:27:44.558.
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonMatchesWinUIPressLifecycleAndIndependentGroupWrapping]' started.
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonMatchesWinUIPressLifecycleAndIndependentGroupWrapping]' passed (0.017 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonsOwnsSelectionLayoutAccessibilityAndArrowNavigation]' started.
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonsOwnsSelectionLayoutAccessibilityAndArrowNavigation]' passed (0.004 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonsUsesGlobalUniformColumnsAndGroupDisabledState]' started.
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonsUsesGlobalUniformColumnsAndGroupDisabledState]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonUsesWinUIControlAltResources]' started.
+Test Case '-[FluentKitTests.FluentKitTests testRadioButtonUsesWinUIControlAltResources]' passed (0.001 seconds).
+Test Suite 'FluentKitTests' passed at 2026-11-01 06:27:44.582.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.024 (0.024) seconds
+Test Suite 'RadioButtonAuditTests' started at 2026-11-01 06:27:44.582.
+Test Case '-[FluentKitTests.RadioButtonAuditTests testHighContrastRadioResourcesResolveUnderTheExplicitTheme]' started.
+Test Case '-[FluentKitTests.RadioButtonAuditTests testHighContrastRadioResourcesResolveUnderTheExplicitTheme]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.RadioButtonAuditTests testNativeSiblingsShareTheirParentAndArrowNavigation]' started.
+Test Case '-[FluentKitTests.RadioButtonAuditTests testNativeSiblingsShareTheirParentAndArrowNavigation]' passed (0.007 seconds).
+Test Case '-[FluentKitTests.RadioButtonAuditTests testRadioButtonsExposesItsChildrenAndModelChanges]' started.
+Test Case '-[FluentKitTests.RadioButtonAuditTests testRadioButtonsExposesItsChildrenAndModelChanges]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.RadioButtonAuditTests testSeparateNativeParentsAreNotAccidentallyOneGroupAndBoundAdaptersStayTransparent]' started.
+Test Case '-[FluentKitTests.RadioButtonAuditTests testSeparateNativeParentsAreNotAccidentallyOneGroupAndBoundAdaptersStayTransparent]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.RadioButtonAuditTests testStandaloneRadioIsAnAccessibleNumericSingleSelectionControl]' started.
+Test Case '-[FluentKitTests.RadioButtonAuditTests testStandaloneRadioIsAnAccessibleNumericSingleSelectionControl]' passed (0.000 seconds).
+Test Suite 'RadioButtonAuditTests' passed at 2026-11-01 06:27:44.594.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.012 (0.012) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 06:27:44.594.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.125 (0.126) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 06:27:44.594.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.125 (0.127) seconds

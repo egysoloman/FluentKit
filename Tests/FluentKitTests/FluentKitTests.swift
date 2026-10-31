@@ -2290,7 +2290,10 @@ final class FluentKitTests: XCTestCase {
         ))
         XCTAssertEqual(hcPressed.borderWidth, 1, accuracy: 0.001)
         XCTAssertEqual(hcPressed.dotDiameter, 10, accuracy: 0.001)
-        XCTAssertEqual(hcPressed.pressedFeedbackColor, highContrast.radioDotFill(for: .normal))
+        NSAppearance(named: .darkAqua)!.performAsCurrentDrawingAppearance {
+            XCTAssertEqual(hcPressed.pressedFeedbackColor.usingColorSpace(.deviceRGB),
+                           NSColor.selectedContentBackgroundColor.usingColorSpace(.deviceRGB))
+        }
 
         let first = FluentRadioButton(title: "First", isSelected: true)
         let second = FluentRadioButton(title: "Second")

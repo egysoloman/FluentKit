@@ -426,7 +426,8 @@ public final class FluentRadioButton: NSControl {
         }
     }
     /// Radio buttons with the same non-empty name are mutually exclusive across their window.
-    /// With no explicit name, siblings in the same declarative stack form an implicit group.
+    /// Names are exact identifiers, including whitespace. With no name, controls sharing a
+    /// parent form a group; a FluentBoundRadioButton adapter does not add a group boundary.
     public var groupName: String? {
         didSet {
             guard oldValue != groupName else { return }
@@ -438,7 +439,7 @@ public final class FluentRadioButton: NSControl {
         didSet {
             guard oldValue != isSelected else { return }
             if isSelected, groupingCoordinator == nil { enforceExclusiveSelection() }
-            setAccessibilityValue(isSelected ? "On" : "Off")
+            NSAccessibility.post(element: self, notification: .valueChanged)
             refreshAppearance(animated: true)
             updateGroupAccessibility()
             guard !suppressesValueNotification else { return }
@@ -629,7 +630,7 @@ public final class FluentRadioButton: NSControl {
 
     public override func cancelOperation(_ sender: Any?) { cancelInteraction() }
 
-    public override func accessibilityValue() -> Any? { isSelected ? "On" : "Off" }
+    public override func accessibilityValue() -> Any? { NSNumber(value: isSelected) }
 
     public override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
@@ -705,8 +706,8 @@ public final class FluentRadioButton: NSControl {
         focusRingType = .none
         userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
         setAccessibilityRole(.radioButton)
+        setAccessibilityElement(true)
         setAccessibilityTitle(title)
-        setAccessibilityValue(isSelected ? "On" : "Off")
         setAccessibilityEnabled(isEnabled)
 
         focusLayer.name = "FluentKit.RadioButton.FocusRing"
@@ -919,27 +920,29 @@ public final class FluentRadioButton: NSControl {
     }
 
     private func semanticGroupMembers() -> [FluentRadioButton] {
-        if let explicitName = normalizedGroupName {
+        if let explicitName = effectiveGroupName {
             guard let root = window?.contentView ?? rootSuperview else { return [self] }
-            return Self.radioButtons(in: root).filter { $0.normalizedGroupName == explicitName }
+            return Self.radioButtons(in: root).filter { $0.effectiveGroupName == explicitName }
         }
         guard let container = implicitGroupContainer else { return [self] }
         let children = (container as? NSStackView)?.arrangedSubviews ?? container.subviews
         let members = children.compactMap(Self.directWrappedRadioButton(in:))
-            .filter { $0.normalizedGroupName == nil }
+            .filter { $0.effectiveGroupName == nil }
         return members.contains(where: { $0 === self }) ? members : [self]
     }
 
-    private var normalizedGroupName: String? {
-        guard let name = groupName?.trimmingCharacters(in: .whitespacesAndNewlines), !name.isEmpty else {
+    private var effectiveGroupName: String? {
+        guard let name = groupName, !name.isEmpty else {
             return nil
         }
         return name
     }
 
     private var implicitGroupContainer: NSView? {
-        if superview is NSStackView { return superview }
-        return superview?.superview
+        // Only the binding adapter is transparent. Arbitrary one-child NSViews are real
+        // group boundaries, matching WinUI's immediate-parent rule for unnamed radios.
+        if let bound = superview as? FluentBoundRadioButton { return bound.superview }
+        return superview
     }
 
     private var rootSuperview: NSView? {
@@ -963,8 +966,7 @@ public final class FluentRadioButton: NSControl {
 
     private static func directWrappedRadioButton(in view: NSView) -> FluentRadioButton? {
         if let radio = view as? FluentRadioButton { return radio }
-        guard view.subviews.count == 1 else { return nil }
-        return view.subviews[0] as? FluentRadioButton
+        return (view as? FluentBoundRadioButton)?.radioButton
     }
 
     private static func radioButtons(in root: NSView) -> [FluentRadioButton] {
