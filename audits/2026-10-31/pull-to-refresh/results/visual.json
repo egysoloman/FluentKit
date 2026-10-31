@@ -1,0 +1,46 @@
+[
+  {
+    "refreshing" : false,
+    "state" : "idle",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "held" : 80,
+    "refreshing" : true,
+    "state" : "refreshing",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "refreshing" : false,
+    "state" : "completed",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "refreshing" : false,
+    "state" : "idle",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "held" : 80,
+    "refreshing" : true,
+    "state" : "refreshing",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "refreshing" : false,
+    "state" : "completed",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  }
+]

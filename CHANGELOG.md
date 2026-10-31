@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added RefreshContainer (pull to refresh) driven by the scroll view's elastic overscroll for
+  trackpad and macOS 27 touch: WinUI's Idle/Peeking/Interacting/Pending/Refreshing states, 100pt
+  pull with a 0.8 execution ratio, the rotating 30pt indicator with Pending pulse and refreshing
+  spin, four pull directions, deferral-based completion and a two-way isRefreshing binding.
+  Gallery sample added with partial coverage.
+
 - Added AnnotatedScrollView, a scroll view with a WinUI AnnotatedScrollBar: proportional labels with
   the source collision rules, an accent thumb and pointer ghost, a detail label raised for touch,
   click/drag jumps, repeating step buttons with SmallChange, and a cancellable Scrolling callback.

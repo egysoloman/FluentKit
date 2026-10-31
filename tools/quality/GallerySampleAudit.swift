@@ -44,6 +44,7 @@ import FluentKit
                     case "SwipeControl": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.SwipeControl" })
                     case "SemanticZoom": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.SemanticZoom" })
                     case "AnnotatedScrollBar": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnnotatedScrollBar" })
+                    case "PullToRefresh": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.RefreshContainer" })
                     default: break
                     }
                     window.close()

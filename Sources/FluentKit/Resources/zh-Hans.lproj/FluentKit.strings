@@ -70,3 +70,5 @@
 "FluentKit.Previous" = "上一个";
 "FluentKit.Next" = "下一个";
 "FluentKit.Zoom out" = "缩小";
+"FluentKit.Refresh" = "刷新";
+"FluentKit.Refreshing" = "正在刷新";

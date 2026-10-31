@@ -1,0 +1,80 @@
+[
+  {
+    "bodyEvaluations" : 30,
+    "finalText" : "audit-29",
+    "meanMs" : 0.65436110938511172,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 1.9037083256989717,
+    "rowMakes" : 0,
+    "rows" : 1,
+    "rowUpdates" : 30,
+    "shell" : false,
+    "textChanges" : 30
+  },
+  {
+    "bodyEvaluations" : 30,
+    "finalText" : "audit-29",
+    "meanMs" : 1.1079541664609376,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 1.52095832163468,
+    "rowMakes" : 0,
+    "rows" : 1,
+    "rowUpdates" : 30,
+    "shell" : true,
+    "textChanges" : 30
+  },
+  {
+    "bodyEvaluations" : 30,
+    "finalText" : "audit-29",
+    "meanMs" : 2.7976166684917794,
+    "nativeAttachments" : 0,
+    "navigation" : true,
+    "p95Ms" : 3.492333329631947,
+    "rowMakes" : 0,
+    "rows" : 1,
+    "rowUpdates" : 30,
+    "shell" : true,
+    "textChanges" : 30
+  },
+  {
+    "bodyEvaluations" : 30,
+    "finalText" : "audit-29",
+    "meanMs" : 0.97978610962551704,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 1.1834583274321631,
+    "rowMakes" : 0,
+    "rows" : 100,
+    "rowUpdates" : 3000,
+    "shell" : false,
+    "textChanges" : 30
+  },
+  {
+    "bodyEvaluations" : 30,
+    "finalText" : "audit-29",
+    "meanMs" : 6.6891861104522832,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 7.1683333226246759,
+    "rowMakes" : 0,
+    "rows" : 100,
+    "rowUpdates" : 3000,
+    "shell" : true,
+    "textChanges" : 30
+  },
+  {
+    "bodyEvaluations" : 30,
+    "finalText" : "audit-29",
+    "meanMs" : 8.7680263886189405,
+    "nativeAttachments" : 0,
+    "navigation" : true,
+    "p95Ms" : 9.8761249973904341,
+    "rowMakes" : 0,
+    "rows" : 100,
+    "rowUpdates" : 3000,
+    "shell" : true,
+    "textChanges" : 30
+  }
+]

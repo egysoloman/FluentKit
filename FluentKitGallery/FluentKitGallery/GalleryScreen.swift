@@ -23,6 +23,8 @@ struct GalleryScreen: FluentView {
     @FluentState private var swipeStatus = "No command invoked"
     @FluentState private var sezoZoomedIn = true
     @FluentState private var asbStatus = "Use the annotated rail to navigate"
+    @FluentState private var ptrRefreshing = false
+    @FluentState private var ptrItems = ["Quarterly report", "Design review", "Lunch on Friday"]
     @FluentState private var sezoStatus = "Choose a letter in the zoomed-out view"
     private let sezoGroups = ["A": ["Ada", "Alan", "Anita"], "B": ["Bea", "Bjarne"], "G": ["Grace", "Guido"], "K": ["Ken", "Katherine"], "L": ["Linus", "Lin"]]
     @FluentState private var breadcrumbItems = [
@@ -524,6 +526,23 @@ struct GalleryScreen: FluentView {
                 .frame(width: 380, height: 300)
                 FluentText(asbStatus, style: .caption, color: theme.textSecondary)
                 FluentText("Hover the rail for the detail label; click or drag it to jump. The arrows step by an eighth of the viewport.",
+                    style: .caption, color: theme.textSecondary)
+            })
+        case .PullToRefresh:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentRefreshContainer(isRefreshing: $ptrRefreshing, onRefreshRequested: { deferral in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        ptrItems.insert("New message \(ptrItems.count + 1)", at: 0)
+                        deferral.complete()
+                    }
+                }) {
+                    FluentText(ptrItems.joined(separator: "\n"), style: .body)
+                    .padding(12)
+                    .frame(width: 360, height: 260)
+                }
+                .frame(width: 360, height: 260)
+                FluentButtonView(ptrRefreshing ? "Refreshing…" : "Refresh") { ptrRefreshing = true }
+                FluentText("Pull the list down with two fingers on the trackpad or a finger on a touch screen, then release.",
                     style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:

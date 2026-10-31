@@ -70,3 +70,5 @@
 "FluentKit.Previous" = "Previous";
 "FluentKit.Next" = "Next";
 "FluentKit.Zoom out" = "Zoom out";
+"FluentKit.Refresh" = "Refresh";
+"FluentKit.Refreshing" = "Refreshing";
