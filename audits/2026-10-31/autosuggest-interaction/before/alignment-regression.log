@@ -1,0 +1,32 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[9 / 19] FluentKit
+[13 / 18] FluentKitValidation-product
+[17 / 22] FluentKitTests-product
+[21 / 24] FluentKitTests-product
+[23 / 27] FluentKitTests-product
+Build complete! (5.20秒)
+Test Suite 'Selected tests' started at 2026-10-31 21:34:39.135.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 21:34:39.136.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-10-31 21:34:39.136.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:291: error: -[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:292: error: -[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:295: error: -[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup] : XCTAssertEqual failed: ("NSTextAlignment(rawValue: 0)") is not equal to ("NSTextAlignment(rawValue: 2)")
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup]' failed (0.595 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:81: error: -[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds] : XCTUnwrap failed: expected non-nil value of type "NSText"
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds]' failed (0.218 seconds).
+Test Suite 'AutoSuggestInteractionTests' failed at 2026-10-31 21:34:39.950.
+	 Executed 2 tests, with 4 failures (0 unexpected) in 0.813 (0.814) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 21:34:39.950.
+	 Executed 2 tests, with 4 failures (0 unexpected) in 0.813 (0.814) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 21:34:39.950.
+	 Executed 2 tests, with 4 failures (0 unexpected) in 0.813 (0.815) seconds
+ASB TRACE lost editor: if field.cell?.alignment != alignment { field.cell?.alignment = alignment }
+ASB TRACE lost editor: if field.cell?.alignment != alignment { field.cell?.alignment = alignment }
+ASB TRACE lost editor: if field.cell?.alignment != alignment { field.cell?.alignment = alignment }
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -4,6 +4,20 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AutoSuggestBox now uses a scrollable suggestion viewport, follows keyboard selection, and
+  preserves stable-ID rows/selection during live result updates. Popup size/position and reveal
+  clips follow content, screen space and anchor changes; window close/detach invalidates old rows.
+- Fixed Escape/Tab restoring only the displayed query while leaving the binding at a candidate,
+  closed lists accepting navigation, stale candidate submission after external reset, and pending
+  debounces reopening dismissed suggestions. Committed-text mode cancels pre-composition refreshes.
+- AutoSuggestBox headers stay within the control; text, adornments and rows mirror in RTL without
+  ending editing. Field-editor viewports retain complete glyphs and the end of long queries;
+  previews/resets retain alignment. Text roles use theme typography. Added a richer Gallery sample.
+- Added `onTextChangedEvent` with user-input, suggestion-chosen and programmatic-change reasons.
+  Text changes are debounced before querying the provider; focus alone no longer raises the event.
+  The existing string callback now also reports actual programmatic/selection text changes.
+- Behavior correction to WinUI: AutoSuggestBox `maxSuggestionListHeight == 0` hides suggestions;
+  negative values use available space. Previously both were treated as an unconstrained maximum.
 - MenuBar preserves identified top-level controls, live menu panels, retained rows and open submenu
   branches during updates/reordering. `FluentMenuItem` accepts an optional stable ID, and standalone
   `FluentMenuFlyout.update(items:theme:reduceMotion:)` refreshes content without reopening the menu.

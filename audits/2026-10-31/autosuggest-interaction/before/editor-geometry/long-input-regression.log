@@ -1,0 +1,22 @@
+Building for debugging...
+[1 / 1]
+[2 / 8] FluentKitTests-product
+[4 / 10] FluentKitTests-product
+[7 / 11] FluentKitTests-product
+[9 / 11] FluentKitTests-product
+Build complete! (1.95秒)
+Test Suite 'Selected tests' started at 2026-10-31 21:48:49.090.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 21:48:49.091.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-10-31 21:48:49.091.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:386: error: -[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset] : XCTAssertTrue failed - long input end: (3287.8125, 0.0, 9.1123046875, 17.0); viewport: (0.0, 0.0, 180.0, 17.0)
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:386: error: -[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset] : XCTAssertTrue failed - long input end: (3286.8876953125, 0.0, 9.1123046875, 17.0); viewport: (0.0, 0.0, 180.0, 17.0)
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' failed (1.399 seconds).
+Test Suite 'AutoSuggestInteractionTests' failed at 2026-10-31 21:48:50.490.
+	 Executed 1 test, with 2 failures (0 unexpected) in 1.399 (1.399) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 21:48:50.490.
+	 Executed 1 test, with 2 failures (0 unexpected) in 1.399 (1.399) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 21:48:50.490.
+	 Executed 1 test, with 2 failures (0 unexpected) in 1.399 (1.400) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

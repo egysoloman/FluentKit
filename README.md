@@ -44,6 +44,27 @@ an update while File › Export is open. Context-menu refreshes also update thei
 Extended `FluentWindowShell` instances anchor page content below the title bar and fill the
 remaining viewport, including embedded `FluentNativeView` trees without an intrinsic height.
 
+## AutoSuggestBox
+
+Suggestion lists scroll and keep the keyboard-selected item visible. Supply stable, unique
+`FluentAutoSuggestBoxSuggestion.id` values when results can refresh or reorder; omitting an ID
+creates a new identity. While navigating suggestions, Escape and Tab restore the original query
+in both the field and binding.
+Down/Up navigate an open list, and a single candidate remains selected. External model resets
+invalidate old suggestions. Header, text insets, adornments and suggestion rows follow RTL.
+
+`onTextChangedEvent` reports `.userInput`, `.suggestionChosen` or `.programmaticChange` with the
+text. Events retain the 150 ms debounce; focus alone does not emit a text change. The existing
+`onTextChanged` string callback remains available and receives all three kinds of change. The
+callback runs before querying the suggestion provider, so it can update the available results.
+Keyboard previews do not re-filter the provider using the previewed candidate title. Use
+`.textInput(.init(commitPolicy: .committedText))` to defer publication and suggestion queries
+until composition commits.
+
+`maxSuggestionListHeight: 0` hides the popup; negative values use the available screen space,
+matching WinUI. The [interactive Gallery sample](FluentKitGallery/FluentKitGallery/AutoSuggestBoxGallerySample.swift)
+shows scrolling, delayed result reordering, query submission and external reset.
+
 ## Installation
 
 FluentKit supports macOS 12 or later and Swift 5.9 language mode. Add the package dependency to

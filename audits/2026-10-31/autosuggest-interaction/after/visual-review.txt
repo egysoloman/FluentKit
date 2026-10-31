@@ -1,0 +1,9 @@
+Visual review: final native 2x layer renders.
+Short input glyphs and candidate previews are complete, keep their reading-direction alignment, and leave the adornment columns clear.
+The resized RTL suggestion viewport retains the selected row and shows its remaining rows within the popup.
+16/16 release states verify glyph containment, editor focus and alignment; 28 final PNGs.
+These are macOS renders with material effects disabled, not Windows reference comparisons.
+light-rtl-open-field.png: SHA-256 53b8de07c9ceda405ff99545f65faa46137b97ef35add74b8233fe79938fc100
+light-rtl-last-field.png: SHA-256 fc4dc945e31de1e90c9706f00e5f3563eb099ad6c89f0a265e20ad35dc48951a
+light-ltr-open-field.png: SHA-256 93f1aea2e299a3b0f795d3aa4d8a6376f0789e331b0309bad5af143c483b3fe1
+dark-rtl-resize-popup.png: SHA-256 470dcd80ae50804da59117eb10522996fcbcff7302b525d69fcfc504dc74aba6

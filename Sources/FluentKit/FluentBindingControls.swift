@@ -47,6 +47,7 @@ final class FluentStringBindingCoordinator {
     private var editingObservers: [NSObjectProtocol] = []
     private var editorObservers: [NSObjectProtocol] = []
     var currentBinding: FluentBinding<String> { binding }
+    var onExternalValueApplied: ((String) -> Void)?
 
     init(field: NSTextField, binding: FluentBinding<String>) {
         self.field = field
@@ -176,6 +177,7 @@ final class FluentStringBindingCoordinator {
     private func applyExternalValue(_ value: String, to field: NSTextField) {
         let editor = field.currentEditor() as? NSTextView
         let selection = editor?.selectedRange()
+        let changed = field.stringValue != value || (editor != nil && editor?.string != value)
         if field.stringValue != value { field.stringValue = value }
         if let editor, editor.string != value { editor.string = value }
         if let editor, let selection {
@@ -183,6 +185,7 @@ final class FluentStringBindingCoordinator {
             let location = min(selection.location, length)
             editor.setSelectedRange(NSRange(location: location, length: min(selection.length, length - location)))
         }
+        if changed { onExternalValueApplied?(value) }
     }
 
     private func observeEditorChanges() {

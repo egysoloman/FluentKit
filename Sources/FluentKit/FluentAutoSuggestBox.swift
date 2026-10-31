@@ -20,6 +20,16 @@ public struct FluentAutoSuggestBoxSuggestion: Hashable {
     }
 }
 
+/// The origin of a debounced AutoSuggestBox text change, matching WinUI's three reasons.
+public enum FluentAutoSuggestBoxTextChangeReason: Sendable, Equatable {
+    case userInput, programmaticChange, suggestionChosen
+}
+
+public struct FluentAutoSuggestBoxTextChangedEvent: Sendable, Equatable {
+    public let text: String
+    public let reason: FluentAutoSuggestBoxTextChangeReason
+}
+
 /// A WinUI AutoSuggestBox backed by a Fluent text field, a query/clear adornment column, and an
 /// application-owned suggestion popup.
 ///
@@ -27,6 +37,10 @@ public struct FluentAutoSuggestBoxSuggestion: Hashable {
 /// - TextChanged is debounced for 150 ms before the provider is consulted and the event raised.
 /// - The popup opens below the field when focused with non-empty text and matching suggestions,
 ///   flips above when the screen edge requires it, and closes on Escape, submit, or focus loss.
+/// - Supply stable, unique suggestion IDs to retain rows and selection when the provider updates.
+/// - `onTextChangedEvent` distinguishes input, programmatic changes and suggestion previews;
+///   the existing string-only `onTextChanged` callback remains supported.
+/// - A zero maximum height hides suggestions; negative heights use available screen space.
 /// - Down/Up move through suggestions and update the text on select; Enter submits the selected
 ///   suggestion (or the raw query), and the query button always submits the raw query.
 public struct FluentAutoSuggestBox: FluentUpdatablePrimitiveView {
@@ -35,6 +49,7 @@ public struct FluentAutoSuggestBox: FluentUpdatablePrimitiveView {
     private let header: String?
     private let querySystemImageName: String?
     private let suggestionsProvider: (String) -> [FluentAutoSuggestBoxSuggestion]
+    private let onTextChangedEvent: ((FluentAutoSuggestBoxTextChangedEvent) -> Void)?
     private let onTextChanged: ((String) -> Void)?
     private let onSuggestionChosen: ((FluentAutoSuggestBoxSuggestion) -> Void)?
     private let onSubmit: ((String, FluentAutoSuggestBoxSuggestion?) -> Void)?
@@ -49,6 +64,7 @@ public struct FluentAutoSuggestBox: FluentUpdatablePrimitiveView {
         suggestions: @escaping (String) -> [FluentAutoSuggestBoxSuggestion] = { _ in [] },
         updateTextOnSelect: Bool = true,
         maxSuggestionListHeight: CGFloat = 374,
+        onTextChangedEvent: ((FluentAutoSuggestBoxTextChangedEvent) -> Void)? = nil,
         onTextChanged: ((String) -> Void)? = nil,
         onSuggestionChosen: ((FluentAutoSuggestBoxSuggestion) -> Void)? = nil,
         onSubmit: ((String, FluentAutoSuggestBoxSuggestion?) -> Void)? = nil
@@ -58,11 +74,12 @@ public struct FluentAutoSuggestBox: FluentUpdatablePrimitiveView {
         self.header = header
         self.querySystemImageName = querySystemImageName
         suggestionsProvider = suggestions
+        self.onTextChangedEvent = onTextChangedEvent
         self.onTextChanged = onTextChanged
         self.onSuggestionChosen = onSuggestionChosen
         self.onSubmit = onSubmit
         self.updateTextOnSelect = updateTextOnSelect
-        self.maxSuggestionListHeight = max(0, maxSuggestionListHeight)
+        self.maxSuggestionListHeight = maxSuggestionListHeight
     }
 
     public var body: NeverFluentView { NeverFluentView() }
@@ -74,6 +91,7 @@ public struct FluentAutoSuggestBox: FluentUpdatablePrimitiveView {
             header: header,
             querySystemImageName: querySystemImageName,
             suggestionsProvider: suggestionsProvider,
+            onTextChangedEvent: onTextChangedEvent,
             onTextChanged: onTextChanged,
             onSuggestionChosen: onSuggestionChosen,
             onSubmit: onSubmit,
@@ -91,6 +109,7 @@ public struct FluentAutoSuggestBox: FluentUpdatablePrimitiveView {
             header: header,
             querySystemImageName: querySystemImageName,
             suggestionsProvider: suggestionsProvider,
+            onTextChangedEvent: onTextChangedEvent,
             onTextChanged: onTextChanged,
             onSuggestionChosen: onSuggestionChosen,
             onSubmit: onSubmit,
@@ -108,7 +127,11 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
     fileprivate static let queryButtonWidth: CGFloat = 32
     fileprivate static let queryButtonMargin: CGFloat = 2
     fileprivate static let rightMargin: CGFloat = 4
-    fileprivate static let rowHeight: CGFloat = 40
+    fileprivate static func textHeight(for theme: FluentTheme) -> CGFloat {
+        let font = theme.typography.font(for: .body)
+        return ceil(font.ascender - font.descender + font.leading)
+    }
+    fileprivate static func rowHeight(for theme: FluentTheme) -> CGFloat { max(40, textHeight(for: theme) + 16) }
     fileprivate static let popupVerticalPadding: CGFloat = 2
 
     private let field: FluentAutoSuggestBoxField
@@ -117,12 +140,17 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
     private let queryButton = NSButton()
     private var bindingCoordinator: FluentStringBindingCoordinator!
     private var suggestionsProvider: (String) -> [FluentAutoSuggestBoxSuggestion]
+    private var onTextChangedEvent: ((FluentAutoSuggestBoxTextChangedEvent) -> Void)?
     private var onTextChanged: ((String) -> Void)?
     private var onSuggestionChosen: ((FluentAutoSuggestBoxSuggestion) -> Void)?
     private var onSubmit: ((String, FluentAutoSuggestBoxSuggestion?) -> Void)?
     private var updateTextOnSelect: Bool
     private var maxSuggestionListHeight: CGFloat
     private var theme: FluentTheme
+    private var reduceMotion: Bool
+    private var refreshGeneration: UInt = 0
+    private var hasPendingResultRefresh = false
+    private var suppressPresentation = false
     private var suggestions: [FluentAutoSuggestBoxSuggestion] = []
     private var selectedIndex = -1
     private var userTypedText = ""
@@ -130,6 +158,8 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
     private var debounceWorkItem: DispatchWorkItem?
     private var popup: FluentAutoSuggestBoxPopup?
     private var pendingDismissWorkItem: DispatchWorkItem?
+    private weak var geometryEditor: NSTextView?
+    private var geometryText: String?
 
     init(
         text: FluentBinding<String>,
@@ -137,6 +167,7 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         header: String?,
         querySystemImageName: String?,
         suggestionsProvider: @escaping (String) -> [FluentAutoSuggestBoxSuggestion],
+        onTextChangedEvent: ((FluentAutoSuggestBoxTextChangedEvent) -> Void)?,
         onTextChanged: ((String) -> Void)?,
         onSuggestionChosen: ((FluentAutoSuggestBoxSuggestion) -> Void)?,
         onSubmit: ((String, FluentAutoSuggestBoxSuggestion?) -> Void)?,
@@ -151,12 +182,14 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
             headerLabel = nil
         }
         self.suggestionsProvider = suggestionsProvider
+        self.onTextChangedEvent = onTextChangedEvent
         self.onTextChanged = onTextChanged
         self.onSuggestionChosen = onSuggestionChosen
         self.onSubmit = onSubmit
         self.updateTextOnSelect = updateTextOnSelect
         self.maxSuggestionListHeight = maxSuggestionListHeight
         theme = context.theme
+        reduceMotion = context.reduceMotion
         super.init(frame: .zero)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.AutoSuggestBox")
         translatesAutoresizingMaskIntoConstraints = false
@@ -173,7 +206,7 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
 
         if let headerLabel {
             headerLabel.identifier = NSUserInterfaceItemIdentifier("FluentKit.AutoSuggestBox.Header")
-            headerLabel.font = .systemFont(ofSize: 13)
+            headerLabel.font = theme.typography.font(for: .body)
             headerLabel.textColor = theme.textSecondary
             addSubview(headerLabel)
         }
@@ -199,23 +232,28 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         addSubview(queryButton)
 
         bindingCoordinator = FluentStringBindingCoordinator(field: field, binding: text)
+        userTypedText = field.stringValue
+        bindingCoordinator.onExternalValueApplied = { [weak self] value in
+            self?.externalTextDidChange(value)
+        }
+        userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         updateClearButton()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override var intrinsicContentSize: NSSize {
-        let fieldHeight = theme.controlHeight(for: .regular)
-        let headerHeight: CGFloat = headerLabel == nil ? 0 : 21
+        let fieldHeight = max(theme.controlHeight(for: .regular), Self.textHeight(for: theme) + 14)
+        let headerHeight: CGFloat = headerLabel == nil ? 0 : max(21, Self.textHeight(for: theme))
         return NSSize(width: 260, height: headerHeight + (headerLabel == nil ? 0 : 8) + fieldHeight)
     }
 
     override func layout() {
         super.layout()
-        let fieldHeight = theme.controlHeight(for: .regular)
-        let headerHeight: CGFloat = headerLabel == nil ? 0 : 21
+        let fieldHeight = max(theme.controlHeight(for: .regular), Self.textHeight(for: theme) + 14)
+        let headerHeight: CGFloat = headerLabel == nil ? 0 : max(21, Self.textHeight(for: theme))
         let headerGap: CGFloat = headerLabel == nil ? 0 : 8
-        let fieldY = max(0, bounds.height - fieldHeight)
+        let fieldY = max(0, bounds.height - fieldHeight - headerHeight - headerGap)
         headerLabel?.frame = NSRect(x: 0, y: fieldY + fieldHeight + headerGap, width: bounds.width, height: headerHeight)
         field.frame = NSRect(x: 0, y: fieldY, width: bounds.width, height: fieldHeight)
 
@@ -246,9 +284,63 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
             )
             trailing += Self.deleteButtonWidth
         }
-        (field.cell as? FluentAutoSuggestBoxFieldCell)?.trailingInset = max(10, trailing)
-        if let editor = field.currentEditor() {
-            editor.frame = field.cell?.drawingRect(forBounds: field.bounds) ?? field.bounds
+        let rtl = userInterfaceLayoutDirection == .rightToLeft
+        for button in [clearButton, queryButton] where !button.isHidden {
+            if rtl { button.frame.origin.x = bounds.width - button.frame.maxX }
+        }
+        field.userInterfaceLayoutDirection = userInterfaceLayoutDirection
+        let alignment: NSTextAlignment = rtl ? .right : .left
+        // Both control and cell alignment setters end editing. Defer the cell until blur.
+        if field.currentEditor() == nil, field.cell?.alignment != alignment { field.cell?.alignment = alignment }
+        headerLabel?.alignment = rtl ? .right : .left
+        if let cell = field.cell as? FluentAutoSuggestBoxFieldCell {
+            cell.trailingInset = max(10, trailing)
+            cell.isRightToLeft = rtl
+        }
+        synchronizeEditorGeometry()
+        popup?.reposition()
+    }
+
+    private func synchronizeEditorGeometry() {
+        guard let editor = field.currentEditor() as? NSTextView else { return }
+        let alignment: NSTextAlignment = userInterfaceLayoutDirection == .rightToLeft ? .right : .left
+        if !isComposing, editor.alignment != alignment {
+            let wasApplying = isApplyingProgrammaticText
+            isApplyingProgrammaticText = true
+            editor.alignment = alignment
+            isApplyingProgrammaticText = wasApplying
+        }
+        let contentRect = field.cell?.drawingRect(forBounds: field.bounds) ?? field.bounds
+        if let clip = editor.superview as? NSClipView {
+            // The native field editor retains its original viewport, minimum size and scroll
+            // origin. Replacing just its frame leaves clipped ascenders/descenders, especially
+            // when the clear button appears or right alignment changes the native baseline.
+            let viewport = field.convert(contentRect, to: clip.superview)
+            let resized = clip.frame != viewport || editor.minSize != contentRect.size
+            let textChanged = geometryEditor !== editor || geometryText != editor.string
+            clip.automaticallyAdjustsContentInsets = false
+            clip.contentInsets = .init()
+            if clip.frame != viewport { clip.frame = viewport }
+            editor.minSize = contentRect.size
+            editor.maxSize = NSSize(width: max(editor.maxSize.width, contentRect.width), height: contentRect.height)
+            if resized || textChanged {
+                var width = contentRect.width
+                if let manager = editor.layoutManager, let container = editor.textContainer {
+                    manager.ensureLayout(for: container)
+                    let range = manager.glyphRange(forCharacterRange: NSRange(location: 0, length: editor.string.utf16.count), actualCharacterRange: nil)
+                    let textWidth = manager.boundingRect(forGlyphRange: range, in: container).width
+                    if textWidth > width { width = ceil(textWidth) + 2 } // Keep room for the insertion caret.
+                }
+                editor.frame = NSRect(x: 0, y: 0, width: width, height: contentRect.height)
+                editor.scrollRangeToVisible(editor.selectedRange())
+                geometryEditor = editor
+                geometryText = editor.string
+            }
+            let x = editor.frame.width <= clip.bounds.width ? 0 : clip.bounds.minX
+            clip.scroll(to: NSPoint(x: x, y: 0))
+        } else {
+            let frame = field.convert(contentRect, to: editor.superview)
+            if editor.frame != frame { editor.frame = frame }
         }
     }
 
@@ -258,6 +350,7 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         header: String?,
         querySystemImageName: String?,
         suggestionsProvider: @escaping (String) -> [FluentAutoSuggestBoxSuggestion],
+        onTextChangedEvent: ((FluentAutoSuggestBoxTextChangedEvent) -> Void)?,
         onTextChanged: ((String) -> Void)?,
         onSuggestionChosen: ((FluentAutoSuggestBoxSuggestion) -> Void)?,
         onSubmit: ((String, FluentAutoSuggestBoxSuggestion?) -> Void)?,
@@ -265,6 +358,8 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         maxSuggestionListHeight: CGFloat,
         context: FluentRenderContext
     ) {
+        reduceMotion = context.reduceMotion
+        userInterfaceLayoutDirection = context.layoutDirection.appKitValue
         bindingCoordinator.update(binding: text)
         if (field.placeholderAttributedString?.string ?? field.placeholderString) != placeholder { field.placeholderString = placeholder }
         updateClearButton()
@@ -272,21 +367,25 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
             theme = context.theme
             field.theme = theme
             headerLabel?.textColor = theme.textSecondary
+            headerLabel?.font = theme.typography.font(for: .body)
+            clearButton.contentTintColor = theme.textSecondary
             popup?.updateTheme(theme)
         }
         self.suggestionsProvider = suggestionsProvider
+        self.onTextChangedEvent = onTextChangedEvent
         self.onTextChanged = onTextChanged
         self.onSuggestionChosen = onSuggestionChosen
         self.onSubmit = onSubmit
         self.updateTextOnSelect = updateTextOnSelect
-        self.maxSuggestionListHeight = max(0, maxSuggestionListHeight)
+        if self.maxSuggestionListHeight != maxSuggestionListHeight, maxSuggestionListHeight != 0 { suppressPresentation = false }
+        self.maxSuggestionListHeight = maxSuggestionListHeight
         if let header, !header.isEmpty {
             if let headerLabel {
                 if headerLabel.stringValue != header { headerLabel.stringValue = header }
             } else {
                 let label = NSTextField(labelWithString: header)
                 label.identifier = NSUserInterfaceItemIdentifier("FluentKit.AutoSuggestBox.Header")
-                label.font = .systemFont(ofSize: 13)
+                label.font = theme.typography.font(for: .body)
                 label.textColor = theme.textSecondary
                 addSubview(label)
                 headerLabel = label
@@ -299,6 +398,23 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         updateAdornmentImage(queryButton, symbolName: querySystemImageName ?? "magnifyingglass")
         invalidateIntrinsicContentSize()
         needsLayout = true
+        if !hasPendingResultRefresh && !isComposing {
+            refreshSuggestions(preservingSelection: true)
+        }
+        updatePopup()
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if window !== newWindow {
+            popup?.dismiss(animated: false)
+            pendingDismissWorkItem?.cancel()
+        }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    override func setFrameOrigin(_ newOrigin: NSPoint) {
+        super.setFrameOrigin(newOrigin)
+        popup?.reposition()
     }
 
     deinit {
@@ -309,36 +425,44 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
 
     // MARK: - Field editing
 
+    private var isComposing: Bool { (field.currentEditor() as? NSTextView)?.hasMarkedText() == true }
+
     func controlTextDidBeginEditing(_ obj: Notification) {
+        pendingDismissWorkItem?.cancel()
+        suppressPresentation = false
+        if selectedIndex == -1 { userTypedText = field.stringValue }
         if !field.stringValue.isEmpty {
             DispatchQueue.main.async { [weak self] in
-                self?.refreshSuggestionsAndPresentPopup()
+                guard let self, !self.hasPendingResultRefresh, !self.isComposing else { return }
+                self.refreshSuggestions(preservingSelection: true)
             }
         }
     }
 
     func controlTextDidChange(_ obj: Notification) {
-        let value = field.stringValue
-        if !isApplyingProgrammaticText {
-            bindingCoordinator.scheduleCurrentValuePublication()
-            userTypedText = value
-            selectedIndex = -1
-            updateClearButton()
-            if bindingCoordinator.currentBinding.textInputConfiguration.commitPolicy != .committedText
-                || (field.currentEditor() as? NSTextView)?.hasMarkedText() != true {
-                scheduleSuggestionRefresh()
-            }
+        guard !isApplyingProgrammaticText else { return }
+        bindingCoordinator.scheduleCurrentValuePublication()
+        userTypedText = field.stringValue
+        selectedIndex = -1
+        if field.currentEditor()?.alignment != (userInterfaceLayoutDirection == .rightToLeft ? NSTextAlignment.right : .left) { needsLayout = true }
+        updateClearButton()
+        cancelPendingTextChange()
+        if isComposing && bindingCoordinator.currentBinding.textInputConfiguration.commitPolicy == .committedText {
+            // A pending pre-composition debounce must not open our popup over the IME candidates.
+            popup?.dismiss(animated: false)
+            return
         }
+        suppressPresentation = false
+        scheduleTextChange(reason: .userInput, refreshResults: true)
+        updatePopup()
     }
 
     func controlTextDidEndEditing(_ obj: Notification) {
         bindingCoordinator.publishCurrentValue()
+        needsLayout = true
         if popup?.isPresented == true && NSEvent.pressedMouseButtons != 0 {
             pendingDismissWorkItem?.cancel()
-            let work = DispatchWorkItem { [weak self] in
-                guard let self, self.popup?.isPresented == true else { return }
-                self.popup?.dismiss(animated: true)
-            }
+            let work = DispatchWorkItem { [weak self] in self?.popup?.dismiss(animated: true) }
             pendingDismissWorkItem = work
             DispatchQueue.main.async(execute: work)
         } else {
@@ -346,17 +470,12 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         }
     }
 
-    func control(
-        _ control: NSControl,
-        textView: NSTextView,
-        doCommandBy commandSelector: Selector
-    ) -> Bool {
+    func control(_ control: NSControl, textView: NSTextView, doCommandBy commandSelector: Selector) -> Bool {
+        guard !textView.hasMarkedText() else { return false }
         switch commandSelector {
-        case #selector(NSResponder.moveDown(_:)):
-            moveSelection(forward: true)
-            return true
-        case #selector(NSResponder.moveUp(_:)):
-            moveSelection(forward: false)
+        case #selector(NSResponder.moveDown(_:)), #selector(NSResponder.moveUp(_:)):
+            guard popup?.isPresented == true else { return false }
+            moveSelection(forward: commandSelector == #selector(NSResponder.moveDown(_:)))
             return true
         case #selector(NSResponder.insertNewline(_:)):
             submitCurrentSelection()
@@ -364,6 +483,9 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         case #selector(NSResponder.cancelOperation(_:)):
             cancelSuggestionNavigation()
             return true
+        case #selector(NSResponder.insertTab(_:)), #selector(NSResponder.insertBacktab(_:)):
+            if popup?.isPresented == true { cancelSuggestionNavigation() }
+            return false // Continue normal key-view traversal after restoring the query.
         default:
             return false
         }
@@ -371,122 +493,135 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
 
     // MARK: - Suggestions
 
-    private func scheduleSuggestionRefresh() {
-        debounceWorkItem?.cancel()
-        let work = DispatchWorkItem { [weak self] in
-            self?.refreshSuggestionsAndPresentPopup()
-        }
-        debounceWorkItem = work
-        DispatchQueue.main.asyncAfter(
-            deadline: .now() + Self.textChangedDebounce,
-            execute: work
-        )
-    }
-
-    private func refreshSuggestionsAndPresentPopup() {
+    private func cancelPendingTextChange() {
+        refreshGeneration &+= 1
         debounceWorkItem?.cancel()
         debounceWorkItem = nil
-        let values = suggestionsProvider(field.stringValue)
-        suggestions = values
+        hasPendingResultRefresh = false
+    }
+
+    private func scheduleTextChange(reason: FluentAutoSuggestBoxTextChangeReason, refreshResults: Bool) {
+        cancelPendingTextChange()
+        hasPendingResultRefresh = refreshResults
+        let generation = refreshGeneration
+        let event = FluentAutoSuggestBoxTextChangedEvent(text: field.stringValue, reason: reason)
+        let work = DispatchWorkItem { [weak self] in
+            guard let self, self.refreshGeneration == generation else { return }
+            self.debounceWorkItem = nil
+            self.hasPendingResultRefresh = false
+            if self.isComposing && self.bindingCoordinator.currentBinding.textInputConfiguration.commitPolicy == .committedText { return }
+            // WinUI raises TextChanged first, so an application can supply the new results there.
+            self.onTextChanged?(event.text)
+            self.onTextChangedEvent?(event)
+            guard self.refreshGeneration == generation else { return }
+            if refreshResults { self.refreshSuggestions(preservingSelection: false) }
+        }
+        debounceWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.textChangedDebounce, execute: work)
+    }
+
+    private func externalTextDidChange(_ value: String) {
+        userTypedText = value
+        needsLayout = true
         selectedIndex = -1
-        onTextChanged?(field.stringValue)
-        if field.currentEditor() != nil, !field.stringValue.isEmpty, !values.isEmpty {
-            if let popup {
-                popup.update(suggestions: values, selectedIndex: selectedIndex, theme: theme)
-            } else {
-                presentPopup()
-            }
+        suggestions = []
+        popup?.dismiss(animated: false)
+        suppressPresentation = false
+        updateClearButton()
+        scheduleTextChange(reason: .programmaticChange, refreshResults: true)
+    }
+
+    private func refreshSuggestions(preservingSelection: Bool) {
+        let selectedID = preservingSelection && suggestions.indices.contains(selectedIndex) ? suggestions[selectedIndex].id : nil
+        // Keyboard preview must not turn the previewed title into a new filter query.
+        let values = suggestionsProvider(userTypedText)
+        suggestions = values
+        selectedIndex = selectedID.flatMap { id in values.firstIndex { $0.id == id } } ?? -1
+        updatePopup()
+    }
+
+    private func updatePopup() {
+        guard field.currentEditor() != nil, !isComposing, !suppressPresentation,
+              !field.stringValue.isEmpty, !suggestions.isEmpty, maxSuggestionListHeight != 0 else {
+            popup?.dismiss(animated: false)
+            return
+        }
+        if let popup {
+            popup.update(suggestions: suggestions, selectedIndex: selectedIndex, theme: theme,
+                maxSuggestionListHeight: maxSuggestionListHeight, reduceMotion: reduceMotion)
         } else {
-            popup?.dismiss(animated: true)
+            presentPopup()
         }
     }
 
     private func presentPopup() {
         guard !suggestions.isEmpty, let window = field.window else { return }
-        popup?.dismiss(animated: false)
         let popup = FluentAutoSuggestBoxPopup(
-            theme: theme,
-            reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
-            maxSuggestionListHeight: maxSuggestionListHeight,
-            onSelect: { [weak self] index in
-                self?.chooseSuggestion(at: index)
-            },
+            theme: theme, reduceMotion: reduceMotion, maxSuggestionListHeight: maxSuggestionListHeight,
+            onSelect: { [weak self] index in self?.chooseSuggestion(at: index) },
             onDismiss: { [weak self] in
                 self?.popup = nil
+                self?.selectedIndex = -1
+                self?.suppressPresentation = true
             }
         )
         self.popup = popup
-        popup.present(
-            relativeTo: field,
-            suggestions: suggestions,
-            selectedIndex: selectedIndex,
-            in: window
-        )
+        popup.present(relativeTo: field, suggestions: suggestions, selectedIndex: selectedIndex, in: window)
     }
 
     private func moveSelection(forward: Bool) {
-        guard !suggestions.isEmpty else {
-            popup?.dismiss(animated: true)
-            return
+        guard popup?.isPresented == true, !suggestions.isEmpty else { return }
+        // WinUI keeps the sole suggestion selected instead of cycling back to the query.
+        if suggestions.count == 1 && selectedIndex == 0 { return }
+        let candidate = selectedIndex == -1 ? (forward ? 0 : suggestions.count - 1) : selectedIndex + (forward ? 1 : -1)
+        applySelectionChange(to: suggestions.indices.contains(candidate) ? candidate : -1)
+    }
+
+    private func setPreviewText(_ value: String, reason: FluentAutoSuggestBoxTextChangeReason) {
+        let changed = field.stringValue != value
+        isApplyingProgrammaticText = true
+        field.stringValue = value
+        if let editor = field.currentEditor() as? NSTextView {
+            editor.string = value
+            editor.setSelectedRange(NSRange(location: value.utf16.count, length: 0))
         }
-        if popup == nil { presentPopup() }
-        let nextIndex: Int
-        if selectedIndex == -1 {
-            nextIndex = forward ? 0 : suggestions.count - 1
-        } else {
-            let candidate = selectedIndex + (forward ? 1 : -1)
-            if candidate < 0 || candidate >= suggestions.count {
-                nextIndex = -1
-            } else {
-                nextIndex = candidate
-            }
-        }
-        applySelectionChange(to: nextIndex)
+        synchronizeEditorGeometry()
+        isApplyingProgrammaticText = false
+        updateClearButton()
+        bindingCoordinator.publishCurrentValue()
+        if changed && field.stringValue == value { scheduleTextChange(reason: reason, refreshResults: false) }
     }
 
     private func applySelectionChange(to index: Int) {
+        if index >= 0 && index == selectedIndex { return }
+        selectedIndex = index
         if index == -1 {
-            selectedIndex = -1
-            isApplyingProgrammaticText = true
-            field.stringValue = userTypedText
-            isApplyingProgrammaticText = false
-            updateClearButton()
+            setPreviewText(userTypedText, reason: .programmaticChange)
         } else if suggestions.indices.contains(index) {
-            selectedIndex = index
             let suggestion = suggestions[index]
-            if updateTextOnSelect {
-                isApplyingProgrammaticText = true
-                field.stringValue = suggestion.title
-                isApplyingProgrammaticText = false
-                updateClearButton()
-                bindingCoordinator.publishCurrentValue()
-            }
+            if updateTextOnSelect { setPreviewText(suggestion.title, reason: .suggestionChosen) }
             onSuggestionChosen?(suggestion)
         }
-        popup?.update(suggestions: suggestions, selectedIndex: selectedIndex, theme: theme)
+        updatePopup()
     }
 
     private func chooseSuggestion(at index: Int) {
-        guard suggestions.indices.contains(index) else { return }
+        guard popup?.isPresented == true, suggestions.indices.contains(index) else { return }
         applySelectionChange(to: index)
         submitCurrentSelection()
     }
 
     private func submitCurrentSelection() {
-        let suggestion = selectedIndex >= 0 && selectedIndex < suggestions.count
-            ? suggestions[selectedIndex]
-            : nil
+        let suggestion = popup?.isPresented == true && suggestions.indices.contains(selectedIndex) ? suggestions[selectedIndex] : nil
         bindingCoordinator.publishCurrentValue()
-        onSubmit?(field.stringValue, suggestion)
+        suppressPresentation = true
         popup?.dismiss(animated: true)
+        onSubmit?(field.stringValue, suggestion)
     }
 
     private func cancelSuggestionNavigation() {
-        guard popup?.isPresented == true else {
-            popup?.dismiss(animated: true)
-            return
-        }
-        applySelectionChange(to: -1)
+        suppressPresentation = true
+        if selectedIndex >= 0 { applySelectionChange(to: -1) }
         popup?.dismiss(animated: true)
     }
 
@@ -498,8 +633,9 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
 
     @objc private func submitQuery() {
         bindingCoordinator.publishCurrentValue()
-        onSubmit?(field.stringValue, nil)
+        suppressPresentation = true
         popup?.dismiss(animated: true)
+        onSubmit?(field.stringValue, nil)
     }
 
     @objc private func clearText() {
@@ -511,7 +647,9 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         updateClearButton()
         bindingCoordinator.publishCurrentValue()
         popup?.dismiss(animated: true)
-        scheduleSuggestionRefresh()
+        suppressPresentation = false
+        suggestions = []
+        scheduleTextChange(reason: .userInput, refreshResults: true)
     }
 
     private func updateClearButton() {
@@ -571,6 +709,7 @@ private final class FluentAutoSuggestBoxField: FluentTextField {
 
 private final class FluentAutoSuggestBoxFieldCell: NSTextFieldCell {
     var trailingInset: CGFloat = 10
+    var isRightToLeft = false
 
     override func setUpFieldEditorAttributes(_ textObj: NSText) -> NSText {
         configureFluentSingleLineFieldEditor(super.setUpFieldEditorAttributes(textObj))
@@ -581,8 +720,8 @@ private final class FluentAutoSuggestBoxFieldCell: NSTextFieldCell {
             super.drawingRect(forBounds: rect),
             in: rect,
             font: font,
-            leadingInset: 10,
-            trailingInset: trailingInset
+            leadingInset: isRightToLeft ? trailingInset : 10,
+            trailingInset: isRightToLeft ? 10 : trailingInset
         )
     }
 
@@ -627,7 +766,7 @@ private final class FluentAutoSuggestBoxFieldCell: NSTextFieldCell {
 
 /// The suggestion popup: an application-owned borderless panel attached to the field.
 private final class FluentAutoSuggestBoxPopup: NSObject {
-    private let reduceMotion: Bool
+    private var reduceMotion: Bool
     private var theme: FluentTheme
     private var maxSuggestionListHeight: CGFloat
     private let onSelect: (Int) -> Void
@@ -638,6 +777,7 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
     private weak var anchor: NSView?
     private var localMonitor: Any?
     private var globalMonitor: Any?
+    private var windowObservers: [NSObjectProtocol] = []
     private weak var appearanceCoordinator: FluentAppearanceCoordinator?
     private var appearanceRegistration: UUID?
 
@@ -667,8 +807,9 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         dismiss(animated: false, notify: false)
         guard !suggestions.isEmpty else { return }
         self.anchor = anchor
-        registerAppearanceUpdates(from: anchorWindow)
         let size = preferredSize(suggestionCount: suggestions.count)
+        guard size.height > 0 else { dismiss(animated: false); return }
+        registerAppearanceUpdates(from: anchorWindow)
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
         let visibleFrame = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
         let origin = origin(
@@ -683,6 +824,7 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
             theme: theme,
             onSelect: onSelect
         )
+        suggestionsView.userInterfaceLayoutDirection = anchor.userInterfaceLayoutDirection
         suggestionsView.frame = NSRect(origin: .zero, size: size)
 
         let popup = NSPanel(
@@ -728,30 +870,52 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         self.suggestionsView = suggestionsView
         popup.orderFront(nil)
         installOutsideClickMonitors()
+        for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification] {
+            windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: anchorWindow, queue: .main) { [weak self] _ in self?.reposition() })
+        }
+        for name in [NSWindow.willCloseNotification, NSWindow.didResignKeyNotification] {
+            windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: anchorWindow, queue: .main) { [weak self] _ in self?.dismiss(animated: false) })
+        }
+        windowObservers.append(NotificationCenter.default.addObserver(forName: NSApplication.didResignActiveNotification, object: NSApp, queue: .main) { [weak self] _ in self?.dismiss(animated: false) })
+        suggestionsView.layoutSubtreeIfNeeded()
+        suggestionsView.revealSelection()
     }
 
     func update(
-        suggestions: [FluentAutoSuggestBoxSuggestion],
-        selectedIndex: Int,
-        theme: FluentTheme
+        suggestions: [FluentAutoSuggestBoxSuggestion], selectedIndex: Int, theme: FluentTheme,
+        maxSuggestionListHeight: CGFloat, reduceMotion: Bool
     ) {
         guard isPresented, let panel else { return }
         self.theme = theme
-        let size = preferredSize(suggestionCount: suggestions.count)
-        suggestionsView?.update(
-            suggestions: suggestions,
-            selectedIndex: selectedIndex,
-            theme: theme
-        )
+        self.maxSuggestionListHeight = maxSuggestionListHeight
+        self.reduceMotion = reduceMotion
+        suggestionsView?.update(suggestions: suggestions, selectedIndex: selectedIndex, theme: theme)
         transitionHost?.update(theme: theme)
         panel.appearance = fluentAppKitAppearance(for: theme)
-        if !size.equalTo(panel.frame.size) {
-            panel.setContentSize(size)
-            transitionHost?.frame = NSRect(origin: .zero, size: size)
-            suggestionsView?.frame = NSRect(origin: .zero, size: size)
+        reposition()
+        suggestionsView?.revealSelection()
+    }
+
+    func reposition() {
+        guard let panel else { return }
+        guard let anchor, let window = anchor.window, panel.parent === window else {
+            dismiss(animated: false)
+            return
         }
-        panel.contentView?.needsLayout = true
+        let size = preferredSize(suggestionCount: suggestionsView?.count ?? 0)
+        guard size.height > 0 else { dismiss(animated: false); return }
+        let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
+        let visible = window.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let frame = NSRect(origin: origin(anchorRect: rect, size: size, visibleFrame: visible), size: size)
+        let resized = frame.size != panel.frame.size
+        if panel.frame != frame { panel.setFrame(frame, display: false) }
+        suggestionsView?.userInterfaceLayoutDirection = anchor.userInterfaceLayoutDirection
+        transitionHost?.frame = NSRect(origin: .zero, size: size)
+        suggestionsView?.frame = NSRect(origin: .zero, size: size)
+        suggestionsView?.needsLayout = true
         panel.contentView?.layoutSubtreeIfNeeded()
+        suggestionsView?.revealSelection()
+        if resized || reduceMotion { transitionHost?.settlePresentation() }
     }
 
     func updateTheme(_ theme: FluentTheme) {
@@ -761,6 +925,8 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         transitionHost?.update(theme: theme)
         panel?.appearance = fluentAppKitAppearance(for: theme)
         panel?.contentView?.needsDisplay = true
+        reposition()
+        suggestionsView?.revealSelection()
     }
 
     func dismiss(animated: Bool) {
@@ -773,6 +939,9 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
             return
         }
         removeOutsideClickMonitors()
+        windowObservers.forEach(NotificationCenter.default.removeObserver)
+        windowObservers.removeAll()
+        suggestionsView?.deactivate()
         unregisterAppearanceUpdates()
         panel = nil
         transitionHost = nil
@@ -787,37 +956,25 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
     }
 
     private func preferredSize(suggestionCount: Int) -> NSSize {
-        let width = max(anchor?.bounds.width ?? 0, 160)
-        let contentHeight = CGFloat(suggestionCount) * FluentAutoSuggestBoxHost.rowHeight
+        guard let anchor, let window = anchor.window else { return .zero }
+        let visible = window.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
+        let available = max(0, max(rect.minY - visible.minY - 2, visible.maxY - rect.maxY - 2))
+        let contentHeight = CGFloat(suggestionCount) * FluentAutoSuggestBoxHost.rowHeight(for: theme)
             + FluentAutoSuggestBoxHost.popupVerticalPadding * 2
-        let availableHeight: CGFloat
-        if let anchor, let window = anchor.window {
-            let visibleFrame = window.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
-            availableHeight = visibleFrame.height - 24
-        } else {
-            availableHeight = maxSuggestionListHeight
-        }
-        return NSSize(
-            width: width,
-            height: min(maxSuggestionListHeight > 0 ? maxSuggestionListHeight : availableHeight, max(contentHeight, 0))
-        )
+        // WinUI: zero hides the list; a negative maximum means use the available screen space.
+        let maximum = maxSuggestionListHeight < 0 ? available : maxSuggestionListHeight
+        return NSSize(width: min(anchor.bounds.width, max(0, visible.width - 8)),
+            height: max(0, min(maximum, available, contentHeight)))
     }
 
     private func origin(anchorRect: NSRect, size: NSSize, visibleFrame: NSRect) -> NSPoint {
-        let gap: CGFloat = 2
-        let below = anchorRect.minY - size.height - gap
-        let above = anchorRect.maxY + gap
-        let maximumY = visibleFrame.maxY - size.height
-        let y: CGFloat
-        if below >= visibleFrame.minY {
-            y = below
-        } else if above <= maximumY {
-            y = above
-        } else {
-            y = min(max(below, visibleFrame.minY), maximumY)
-        }
-        let x = min(max(anchorRect.minX, visibleFrame.minX + 4), max(visibleFrame.maxX - size.width - 4, visibleFrame.minX + 4))
-        return NSPoint(x: x, y: y)
+        let below = anchorRect.minY - size.height - 2
+        let y = below >= visibleFrame.minY ? below : min(anchorRect.maxY + 2, visibleFrame.maxY - size.height)
+        let rtl = anchor?.userInterfaceLayoutDirection == .rightToLeft
+        let leading = rtl ? anchorRect.maxX - size.width : anchorRect.minX
+        let x = min(max(leading, visibleFrame.minX + 4), max(visibleFrame.maxX - size.width - 4, visibleFrame.minX + 4))
+        return NSPoint(x: x, y: max(visibleFrame.minY, y))
     }
 
     private func installOutsideClickMonitors() {
@@ -870,91 +1027,108 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
     }
 }
 
+private final class FluentAutoSuggestBoxSuggestionDocument: NSView {
+    override var isFlipped: Bool { true }
+}
+
 private final class FluentAutoSuggestBoxSuggestionsView: NSView {
     private let onSelect: (Int) -> Void
+    private let scrollView = NSScrollView()
+    private let document = FluentAutoSuggestBoxSuggestionDocument()
     private var rows: [FluentAutoSuggestBoxSuggestionRow] = []
-    private var theme: FluentTheme
+    private var selectedIndex = -1
+    private var needsSelectionReveal = true
+    private var isActive = true
+    private var rowHeight: CGFloat = 40
+    var count: Int { rows.count }
 
-    init(
-        suggestions: [FluentAutoSuggestBoxSuggestion],
-        selectedIndex: Int,
-        theme: FluentTheme,
-        onSelect: @escaping (Int) -> Void
-    ) {
+    init(suggestions: [FluentAutoSuggestBoxSuggestion], selectedIndex: Int, theme: FluentTheme, onSelect: @escaping (Int) -> Void) {
         self.onSelect = onSelect
-        self.theme = theme
         super.init(frame: .zero)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.AutoSuggestBox.Suggestions")
         setAccessibilityRole(.list)
+        scrollView.drawsBackground = false
+        scrollView.borderType = .noBorder
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
+        scrollView.scrollerStyle = .overlay
+        scrollView.verticalScrollElasticity = .none
+        scrollView.horizontalScrollElasticity = .none
+        scrollView.documentView = document
+        addSubview(scrollView)
         update(suggestions: suggestions, selectedIndex: selectedIndex, theme: theme)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    override var acceptsFirstResponder: Bool { true }
-
-    func update(
-        suggestions: [FluentAutoSuggestBoxSuggestion],
-        selectedIndex: Int,
-        theme: FluentTheme
-    ) {
-        self.theme = theme
-        while rows.count > suggestions.count {
-            let row = rows.removeLast()
-            row.removeFromSuperview()
-        }
-        while rows.count < suggestions.count {
-            let row = FluentAutoSuggestBoxSuggestionRow { [weak self] index in
-                self?.onSelect(index)
+    func update(suggestions: [FluentAutoSuggestBoxSuggestion], selectedIndex: Int, theme: FluentTheme) {
+        let newHeight = FluentAutoSuggestBoxHost.rowHeight(for: theme)
+        if rowHeight != newHeight { needsSelectionReveal = true }
+        rowHeight = newHeight
+        let oldSelected = rows.indices.contains(self.selectedIndex) ? rows[self.selectedIndex] : nil
+        let oldIDs = rows.compactMap(\.suggestionID)
+        var available = Dictionary(grouping: rows, by: { $0.suggestionID })
+        let updated = suggestions.enumerated().map { index, suggestion -> FluentAutoSuggestBoxSuggestionRow in
+            let row: FluentAutoSuggestBoxSuggestionRow
+            if var matches = available[suggestion.id], !matches.isEmpty {
+                row = matches.removeFirst()
+                available[suggestion.id] = matches
+            } else {
+                row = FluentAutoSuggestBoxSuggestionRow { [weak self] index in
+                    guard let self, self.isActive, self.rows.indices.contains(index) else { return }
+                    self.onSelect(index)
+                }
+                row.identifier = NSUserInterfaceItemIdentifier("FluentKit.AutoSuggestBox.Suggestion")
+                document.addSubview(row)
             }
-            row.identifier = NSUserInterfaceItemIdentifier("FluentKit.AutoSuggestBox.Suggestion")
-            addSubview(row)
-            rows.append(row)
+            row.update(suggestion: suggestion, index: index, selected: index == selectedIndex, theme: theme)
+            return row
         }
-        for (index, row) in rows.enumerated() {
-            row.update(
-                suggestion: suggestions[index],
-                index: index,
-                selected: index == selectedIndex,
-                theme: theme
-            )
-            row.frame = NSRect(
-                x: 4,
-                y: bounds.height - resolvedVerticalPadding
-                    - CGFloat(index + 1) * FluentAutoSuggestBoxHost.rowHeight,
-                width: max(bounds.width - 8, 0),
-                height: FluentAutoSuggestBoxHost.rowHeight
-            )
-        }
-        needsDisplay = true
+        for row in available.values.flatMap({ $0 }) { row.deactivate(); row.removeFromSuperview() }
+        rows = updated
+        self.selectedIndex = selectedIndex
+        let newSelected = rows.indices.contains(selectedIndex) ? rows[selectedIndex] : nil
+        needsSelectionReveal = needsSelectionReveal || oldIDs != suggestions.map(\.id) || oldSelected !== newSelected
+        setAccessibilityChildren(rows)
+        needsLayout = true
     }
 
     func updateTheme(_ theme: FluentTheme) {
-        self.theme = theme
+        rowHeight = FluentAutoSuggestBoxHost.rowHeight(for: theme)
         for row in rows { row.updateTheme(theme) }
-        needsDisplay = true
+        needsLayout = true
+        needsSelectionReveal = true
+    }
+
+    func deactivate() {
+        isActive = false
+        rows.forEach { $0.deactivate() }
     }
 
     override func layout() {
         super.layout()
+        let padding = FluentAutoSuggestBoxHost.popupVerticalPadding
+        let viewport = NSRect(x: 0, y: min(padding, bounds.height / 2), width: bounds.width, height: max(0, bounds.height - padding * 2))
+        if scrollView.frame.size != viewport.size { needsSelectionReveal = true }
+        scrollView.frame = viewport
+        scrollView.tile()
+        let width = scrollView.contentSize.width
+        document.frame.size = NSSize(width: width, height: max(CGFloat(rows.count) * rowHeight, scrollView.contentSize.height))
         for (index, row) in rows.enumerated() {
-            row.frame = NSRect(
-                x: 4,
-                y: bounds.height - resolvedVerticalPadding
-                    - CGFloat(index + 1) * FluentAutoSuggestBoxHost.rowHeight,
-                width: max(bounds.width - 8, 0),
-                height: FluentAutoSuggestBoxHost.rowHeight
-            )
+            if row.userInterfaceLayoutDirection != userInterfaceLayoutDirection {
+                row.userInterfaceLayoutDirection = userInterfaceLayoutDirection
+                row.needsLayout = true
+            }
+            row.frame = NSRect(x: 4, y: CGFloat(index) * rowHeight,
+                width: max(width - 8, 0), height: rowHeight)
         }
     }
 
-    /// Do not let decorative popup padding consume part of the final suggestion row when the
-    /// caller's maximum height is an exact multiple of the WinUI row height. WinUI's presenter
-    /// clips the list viewport, not an individual ListViewItem.
-    private var resolvedVerticalPadding: CGFloat {
-        let required = CGFloat(rows.count) * FluentAutoSuggestBoxHost.rowHeight
-            + FluentAutoSuggestBoxHost.popupVerticalPadding * 2
-        return bounds.height + 0.5 >= required ? FluentAutoSuggestBoxHost.popupVerticalPadding : 0
+    func revealSelection() {
+        guard needsSelectionReveal else { return }
+        needsSelectionReveal = false
+        if rows.indices.contains(selectedIndex) { document.scrollToVisible(rows[selectedIndex].frame) }
+        else { scrollView.contentView.scroll(to: .zero); scrollView.reflectScrolledClipView(scrollView.contentView) }
     }
 }
 
@@ -964,6 +1138,9 @@ private final class FluentAutoSuggestBoxSuggestionRow: NSView {
     private let subtitleLabel = NSTextField(labelWithString: "")
     private let iconView = NSImageView()
     private var index = 0
+    private var suggestion: FluentAutoSuggestBoxSuggestion?
+    var suggestionID: AnyHashable? { suggestion?.id }
+    private var isActive = true
     private var theme: FluentTheme = .current
     private var isSelected = false
     private var isPointerOver = false
@@ -1009,6 +1186,7 @@ private final class FluentAutoSuggestBoxSuggestionRow: NSView {
     }
 
     override func mouseDown(with event: NSEvent) {
+        guard isActive, window != nil else { return }
         isPressed = true
         refreshBackground()
     }
@@ -1019,7 +1197,7 @@ private final class FluentAutoSuggestBoxSuggestionRow: NSView {
     }
 
     override func mouseUp(with event: NSEvent) {
-        let activates = isPressed && bounds.contains(convert(event.locationInWindow, from: nil))
+        let activates = isActive && window != nil && isPressed && bounds.contains(convert(event.locationInWindow, from: nil))
         isPressed = false
         refreshBackground()
         if activates { onSelect(index) }
@@ -1034,20 +1212,26 @@ private final class FluentAutoSuggestBoxSuggestionRow: NSView {
         self.index = index
         self.theme = theme
         isSelected = selected
-        titleLabel.stringValue = suggestion.title
-        setAccessibilityLabel(suggestion.title)
-        subtitleLabel.stringValue = suggestion.subtitle ?? ""
-        subtitleLabel.isHidden = suggestion.subtitle == nil
-        if let symbolName = suggestion.systemImageName,
-           let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: suggestion.title) {
-            let configuration = NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
-            iconView.image = symbol.withSymbolConfiguration(configuration) ?? symbol
-            iconView.image?.isTemplate = true
-            iconView.isHidden = false
-        } else {
-            iconView.image = nil
-            iconView.isHidden = true
+        setAccessibilitySelected(selected)
+        if self.suggestion != suggestion {
+            self.suggestion = suggestion
+            titleLabel.stringValue = suggestion.title
+            setAccessibilityLabel(suggestion.title)
+            subtitleLabel.stringValue = suggestion.subtitle ?? ""
+            subtitleLabel.isHidden = suggestion.subtitle == nil
+            if let symbolName = suggestion.systemImageName,
+               let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: suggestion.title) {
+                let configuration = NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)
+                iconView.image = symbol.withSymbolConfiguration(configuration) ?? symbol
+                iconView.image?.isTemplate = true
+                iconView.isHidden = false
+            } else {
+                iconView.image = nil
+                iconView.isHidden = true
+            }
         }
+        titleLabel.font = theme.typography.font(for: .body)
+        subtitleLabel.font = theme.typography.font(for: .caption)
         titleLabel.textColor = theme.textPrimary
         subtitleLabel.textColor = theme.textSecondary
         iconView.contentTintColor = theme.textSecondary
@@ -1059,11 +1243,22 @@ private final class FluentAutoSuggestBoxSuggestionRow: NSView {
 
     func updateTheme(_ theme: FluentTheme) {
         self.theme = theme
+        titleLabel.font = theme.typography.font(for: .body)
+        subtitleLabel.font = theme.typography.font(for: .caption)
         titleLabel.textColor = theme.textPrimary
         subtitleLabel.textColor = theme.textSecondary
         iconView.contentTintColor = theme.textSecondary
         refreshBackground()
         needsDisplay = true
+        needsLayout = true
+    }
+
+    func deactivate() { isActive = false; isPressed = false }
+
+    override func accessibilityPerformPress() -> Bool {
+        guard isActive, window != nil else { return false }
+        onSelect(index)
+        return true
     }
 
     private func refreshBackground() {
@@ -1101,6 +1296,11 @@ private final class FluentAutoSuggestBoxSuggestionRow: NSView {
             width: subtitleWidth,
             height: subtitleHeight
         )
-        subtitleLabel.alignment = .right
+        let rtl = userInterfaceLayoutDirection == .rightToLeft
+        if rtl {
+            for view in [iconView, titleLabel, subtitleLabel] { view.frame.origin.x = bounds.width - view.frame.maxX }
+        }
+        titleLabel.alignment = rtl ? .right : .left
+        subtitleLabel.alignment = rtl ? .left : .right
     }
 }

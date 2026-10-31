@@ -1,0 +1,407 @@
+import XCTest
+@testable import FluentKit
+
+final class AutoSuggestInteractionTests: XCTestCase {
+    @MainActor private func all(_ view: NSView) -> [NSView] { [view] + view.subviews.flatMap(all) }
+    @MainActor private func field(_ root: NSView) throws -> NSTextField {
+        try XCTUnwrap(all(root).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.Field" } as? NSTextField)
+    }
+    @MainActor private func mount(_ view: NSView) -> NSWindow {
+        _ = NSApplication.shared
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 400, width: 460, height: 160),
+            styleMask: [.titled], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        let stage = NSView(frame: NSRect(x: 0, y: 0, width: 460, height: 160))
+        window.contentView = stage; stage.addSubview(view)
+        view.frame = NSRect(x: 20, y: 40, width: 300, height: view.intrinsicContentSize.height)
+        window.makeKeyAndOrderFront(nil); view.layoutSubtreeIfNeeded()
+        return window
+    }
+    @MainActor private func type(_ text: String, in root: NSView, wait: Bool = true) throws -> NSTextView {
+        let field = try field(root)
+        field.selectText(nil)
+        let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
+        editor.insertText(text, replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
+        if wait { RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19)) }
+        return editor
+    }
+    private var values: [FluentAutoSuggestBoxSuggestion] {
+        (0..<20).map { FluentAutoSuggestBoxSuggestion(id: $0, title: "Apple \($0)", subtitle: "Fruit", systemImageName: "leaf") }
+    }
+
+    @MainActor func testEscapeRestoresOriginalQueryAndBindingImmediately() throws {
+        let state = FluentState(wrappedValue: "")
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        XCTAssertEqual(state.wrappedValue, "Apple 0")
+        editor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        XCTAssertEqual(try field(view).stringValue, "Ap")
+        XCTAssertEqual(state.wrappedValue, "Ap")
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        XCTAssertEqual(try field(view).stringValue, "Ap", "Closed suggestions must not be navigated")
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+    }
+
+    @MainActor func testSuggestionViewportScrollsToKeyboardSelection() throws {
+        let state = FluentState(wrappedValue: "")
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values }, maxSuggestionListHeight: 84)._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        let popup = try XCTUnwrap(window.childWindows?.first)
+        for _ in 0..<20 { editor.doCommand(by: #selector(NSResponder.moveDown(_:))) }
+        let root = try XCTUnwrap(popup.contentView)
+        let row = try XCTUnwrap(all(root).first { $0.accessibilityLabel() == "Apple 19" })
+        XCTAssertTrue(row.isAccessibilitySelected())
+        XCTAssertGreaterThan(row.visibleRect.height, 39)
+        let scroll = try XCTUnwrap(all(root).first { $0 is NSScrollView } as? NSScrollView)
+        XCTAssertGreaterThan(scroll.documentVisibleRect.minY, 600)
+        XCTAssertTrue(window.firstResponder === editor)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        XCTAssertEqual(state.wrappedValue, "Ap")
+        XCTAssertEqual(scroll.documentVisibleRect.minY, 0, accuracy: 0.5)
+    }
+
+    @MainActor func testHeaderAndRTLAdornmentsFitInsideTheirBounds() throws {
+        let state = FluentState(wrappedValue: "")
+        let view = FluentAutoSuggestBox(state.projectedValue, header: "Search fruit", querySystemImageName: "magnifyingglass")._makeView(in: .init(reduceMotion: true, layoutDirection: .rightToLeft))
+        view.fluentApplyLayoutDirection(.rightToLeft)
+        let window = mount(view); defer { window.close() }
+        _ = try type("Ap", in: view)
+        view.layoutSubtreeIfNeeded()
+        let header = try XCTUnwrap(all(view).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.Header" })
+        let query = try XCTUnwrap(all(view).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.QueryButton" })
+        let clear = try XCTUnwrap(all(view).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.ClearButton" })
+        XCTAssertTrue(view.bounds.contains(header.frame))
+        XCTAssertEqual(query.frame.minX, 4, accuracy: 0.01)
+        XCTAssertEqual(clear.frame.minX, query.frame.maxX + 2, accuracy: 0.01)
+        let textField = try field(view)
+        let editor = try XCTUnwrap(textField.currentEditor())
+        let editRect = editor.convert(editor.visibleRect, to: textField)
+        XCTAssertGreaterThanOrEqual(editRect.minX, clear.frame.maxX)
+    }
+
+    @MainActor func testExternalResetInvalidatesSelectionAndClosesOldSuggestions() throws {
+        let state = FluentState(wrappedValue: "")
+        var chosen: String?
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { query in query.isEmpty ? [] : self.values },
+            onSubmit: { _, item in chosen = item?.title })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        state.wrappedValue = ""
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+        XCTAssertEqual(try field(view).stringValue, "")
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
+        XCTAssertNil(chosen)
+        XCTAssertEqual(state.wrappedValue, "")
+    }
+
+    @MainActor func testLiveProviderUpdatePreservesSelectedIDAndResizesFromAnchor() throws {
+        let state = FluentState(wrappedValue: "")
+        var values = Array(self.values.prefix(2))
+        var maxHeight: CGFloat = 84
+        func content() -> FluentAutoSuggestBox { FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in values }, maxSuggestionListHeight: maxHeight) }
+        let view = content()._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        let first = try XCTUnwrap(all(panel.contentView!).first { $0.accessibilityLabel() == "Apple 0" })
+        values = Array(self.values.reversed()); maxHeight = 164
+        XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true)))
+        view.layoutSubtreeIfNeeded()
+        XCTAssertTrue(window.childWindows?.first === panel)
+        XCTAssertEqual(panel.frame.height, 164, accuracy: 0.5)
+        XCTAssertTrue(all(panel.contentView!).contains { $0 === first })
+        XCTAssertTrue(first.isAccessibilitySelected())
+        let anchor = window.convertToScreen(try field(view).convert(try field(view).bounds, to: nil))
+        XCTAssertEqual(panel.frame.maxY, anchor.minY - 2, accuracy: 0.5)
+    }
+
+    @MainActor func testZeroMaximumHidesSuggestionsAndNegativeUsesAvailableSpace() throws {
+        let state = FluentState(wrappedValue: "")
+        func content(_ height: CGFloat) -> FluentAutoSuggestBox {
+            FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values }, maxSuggestionListHeight: height)
+        }
+        let view = content(0)._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        _ = try type("Ap", in: view)
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        XCTAssertTrue(content(-1)._updateView(view, in: .init(reduceMotion: true)))
+        let popup = try XCTUnwrap(window.childWindows?.first)
+        XCTAssertLessThanOrEqual(popup.frame.height, window.screen!.visibleFrame.height)
+        XCTAssertTrue(window.screen!.visibleFrame.contains(popup.frame))
+    }
+
+    @MainActor func testEscapeDuringDebounceDoesNotReopenAndDetachClosesPanel() throws {
+        let state = FluentState(wrappedValue: "")
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view, wait: false)
+        editor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        _ = try type("App", in: view)
+        XCTAssertFalse(window.childWindows?.isEmpty ?? true)
+        view.removeFromSuperview()
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+    }
+
+    @MainActor func testTextChangeReasonsAreDebouncedAndCallbacksSupplyCurrentResults() throws {
+        let state = FluentState(wrappedValue: "")
+        var events: [FluentAutoSuggestBoxTextChangedEvent] = []
+        var values: [FluentAutoSuggestBoxSuggestion] = []
+        var queries: [String] = []
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { query in queries.append(query); return values },
+            onTextChangedEvent: { event in
+                events.append(event)
+                if event.reason == .userInput { values = [FluentAutoSuggestBoxSuggestion(id: 1, title: "Apple")] }
+            })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        XCTAssertEqual(events.map(\.reason), [.userInput])
+        XCTAssertEqual(queries, ["Ap"])
+        XCTAssertFalse(window.childWindows?.isEmpty ?? true)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertEqual(events.map(\.reason), [.userInput, .suggestionChosen])
+        XCTAssertEqual(events.last?.text, "Apple")
+        XCTAssertEqual(queries, ["Ap"], "Previewing must not re-filter by the candidate title")
+        editor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertEqual(events.last?.reason, .programmaticChange)
+        XCTAssertEqual(events.last?.text, "Ap")
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        window.makeFirstResponder(nil)
+        try field(view).selectText(nil)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertEqual(events.count, 3, "Focus alone is not a text change")
+    }
+
+    @MainActor func testSingleResultDoesNotCycleAndUpdateTextOnSelectCanBeDisabled() throws {
+        let state = FluentState(wrappedValue: "")
+        var chosen: [String] = []
+        var submissions: [(String, String?)] = []
+        let view = FluentAutoSuggestBox(state.projectedValue,
+            suggestions: { _ in [FluentAutoSuggestBoxSuggestion(id: 1, title: "Apple")] }, updateTextOnSelect: false,
+            onSuggestionChosen: { chosen.append($0.title) }, onSubmit: { submissions.append(($0, $1?.title)) })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        for _ in 0..<3 { editor.doCommand(by: #selector(NSResponder.moveDown(_:))) }
+        editor.doCommand(by: #selector(NSResponder.moveUp(_:)))
+        XCTAssertEqual(chosen, ["Apple"])
+        XCTAssertEqual(state.wrappedValue, "Ap")
+        editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
+        XCTAssertEqual(submissions.last?.0, "Ap")
+        XCTAssertEqual(submissions.last?.1, "Apple")
+    }
+
+    @MainActor func testCompositionCancelsOldDebounceAndExternalResetWinsOnCommit() throws {
+        let state = FluentState(wrappedValue: "")
+        var events: [FluentAutoSuggestBoxTextChangedEvent] = []
+        let view = FluentAutoSuggestBox(state.projectedValue.textInput(.init(commitPolicy: .committedText)),
+            suggestions: { _ in self.values }, onTextChangedEvent: { events.append($0) })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view, wait: false)
+        editor.setMarkedText("pin", selectedRange: NSRange(location: 3, length: 0), replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
+        editor.didChangeText()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertTrue(editor.hasMarkedText())
+        XCTAssertTrue(events.isEmpty)
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        state.wrappedValue = "reset"
+        XCTAssertTrue(editor.hasMarkedText())
+        editor.unmarkText(); editor.didChangeText()
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertEqual(editor.string, "reset")
+        XCTAssertEqual(state.wrappedValue, "reset")
+        XCTAssertEqual(events.last?.text, "reset")
+        XCTAssertEqual(events.last?.reason, .programmaticChange)
+    }
+
+    @MainActor func testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen() throws {
+        let state = FluentState(wrappedValue: "")
+        var count = 2
+        func content() -> FluentAutoSuggestBox {
+            FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in Array(self.values.prefix(count)) }, maxSuggestionListHeight: 164)
+        }
+        let view = content()._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        _ = try type("Ap", in: view)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        let old = panel.frame.origin
+        view.setFrameOrigin(NSPoint(x: view.frame.minX + 35, y: view.frame.minY + 10))
+        XCTAssertEqual(panel.frame.origin.x, old.x + 35, accuracy: 0.5)
+        XCTAssertEqual(panel.frame.origin.y, old.y + 10, accuracy: 0.5)
+        count = 20
+        XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true)))
+        let root = try XCTUnwrap(panel.contentView)
+        root.layoutSubtreeIfNeeded(); root.displayIfNeeded(); CATransaction.flush()
+        func mask(_ layer: CALayer) -> CALayer? {
+            if let mask = layer.mask, mask.name?.hasSuffix("RevealClip") == true { return mask }
+            return layer.sublayers?.compactMap(mask).first
+        }
+        XCTAssertTrue(try XCTUnwrap(mask(try XCTUnwrap(root.layer))).frame.contains(root.bounds))
+        let visible = try XCTUnwrap(window.screen).visibleFrame
+        window.setFrameOrigin(NSPoint(x: visible.minX + 30, y: visible.minY + 2))
+        view.layoutSubtreeIfNeeded()
+        let anchor = window.convertToScreen(try field(view).convert(try field(view).bounds, to: nil))
+        XCTAssertEqual(panel.frame.minY, anchor.maxY + 2, accuracy: 0.5)
+        XCTAssertTrue(visible.contains(panel.frame))
+    }
+
+    @MainActor func testRemovedAndClosedSuggestionRowsCannotInvokeLater() throws {
+        let state = FluentState(wrappedValue: "")
+        var values = self.values
+        var submissions = 0
+        func content() -> FluentAutoSuggestBox {
+            FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in values }, onSubmit: { _, _ in submissions += 1 })
+        }
+        let view = content()._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        _ = try type("Ap", in: view)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        let row = try XCTUnwrap(all(panel.contentView!).first { $0.accessibilityLabel() == "Apple 0" })
+        values.removeFirst()
+        XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true)))
+        XCTAssertFalse(row.accessibilityPerformPress())
+        let current = try XCTUnwrap(all(panel.contentView!).first { $0.accessibilityLabel() == "Apple 1" })
+        window.close()
+        XCTAssertFalse(panel.isVisible)
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        XCTAssertFalse(current.accessibilityPerformPress())
+        XCTAssertEqual(submissions, 0)
+    }
+
+
+    @MainActor func testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup() throws {
+        let state = FluentState(wrappedValue: "")
+        let auto = FluentAutoSuggestBox(state.projectedValue, querySystemImageName: "magnifyingglass", suggestions: { _ in self.values })
+        let view = auto._makeView(in: .init(reduceMotion: true, layoutDirection: .leftToRight))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        editor.setSelectedRange(NSRange(location: 1, length: 0))
+        let popup = try XCTUnwrap(window.childWindows?.first)
+        XCTAssertTrue(auto._updateView(view, in: .init(reduceMotion: true, layoutDirection: .rightToLeft)))
+        view.layoutSubtreeIfNeeded()
+        XCTAssertTrue(try field(view).currentEditor() === editor)
+        XCTAssertTrue(window.firstResponder === editor)
+        XCTAssertEqual(editor.selectedRange(), NSRange(location: 1, length: 0))
+        XCTAssertTrue(window.childWindows?.first === popup)
+        XCTAssertEqual(editor.alignment, .right)
+        XCTAssertTrue(all(popup.contentView!).contains { $0.accessibilityLabel() == "Apple 0" && $0.isAccessibilitySelected() })
+        editor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        XCTAssertEqual(state.wrappedValue, "Ap")
+    }
+
+
+    @MainActor func testUnchangedRefreshPreservesManualScrollButResizeRevealsSelection() throws {
+        let state = FluentState(wrappedValue: "")
+        var height: CGFloat = 164
+        func content() -> FluentAutoSuggestBox {
+            FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values }, maxSuggestionListHeight: height)
+        }
+        let view = content()._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        for _ in 0..<10 { editor.doCommand(by: #selector(NSResponder.moveDown(_:))) }
+        let popup = try XCTUnwrap(window.childWindows?.first)
+        let root = try XCTUnwrap(popup.contentView)
+        let row = try XCTUnwrap(all(root).first { $0.accessibilityLabel() == "Apple 9" })
+        let scroll = try XCTUnwrap(all(root).first { $0 is NSScrollView } as? NSScrollView)
+        scroll.contentView.scroll(to: .zero); scroll.reflectScrolledClipView(scroll.contentView)
+        for _ in 0..<5 { XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true))) }
+        XCTAssertEqual(scroll.documentVisibleRect.minY, 0, accuracy: 0.5)
+        height = 84
+        XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true)))
+        XCTAssertTrue(row.isAccessibilitySelected())
+        XCTAssertGreaterThan(row.visibleRect.height, 39)
+    }
+
+
+    @MainActor func testObservedBodyRefreshKeepsOriginalQueryAndCandidateSelection() throws {
+        let text = FluentState(wrappedValue: "")
+        let status = FluentState(wrappedValue: "")
+        let view = FluentViewHost(AutoSuggestObservedSample(text: text, status: status))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        let field = try field(view)
+        let popup = try XCTUnwrap(window.childWindows?.first)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertEqual(text.wrappedValue, "Apple")
+        XCTAssertEqual(status.wrappedValue, "Apple")
+        XCTAssertTrue(try self.field(view) === field)
+        XCTAssertTrue(field.currentEditor() === editor)
+        XCTAssertTrue(window.childWindows?.first === popup)
+        XCTAssertTrue(all(popup.contentView!).contains { $0.accessibilityLabel() == "Apple" && $0.isAccessibilitySelected() })
+        editor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertEqual(text.wrappedValue, "Ap")
+        XCTAssertEqual(editor.string, "Ap")
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+    }
+
+
+    @MainActor func testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset() throws {
+        for rtl in [false, true] {
+            let state = FluentState(wrappedValue: "")
+            let view = FluentAutoSuggestBox(state.projectedValue, querySystemImageName: "magnifyingglass", suggestions: { _ in self.values })
+                ._makeView(in: .init(reduceMotion: true, layoutDirection: rtl ? .rightToLeft : .leftToRight))
+            let window = mount(view)
+            defer { window.close() }
+            let editor = try type("Ap", in: view)
+            func assertVisible(_ text: String, file: StaticString = #filePath, line: UInt = #line) throws {
+                view.layoutSubtreeIfNeeded()
+                let manager = try XCTUnwrap(editor.layoutManager)
+                let container = try XCTUnwrap(editor.textContainer)
+                manager.ensureLayout(for: container)
+                let range = manager.glyphRange(forCharacterRange: NSRange(location: 0, length: text.utf16.count), actualCharacterRange: nil)
+                let glyph = manager.boundingRect(forGlyphRange: range, in: container)
+                    .offsetBy(dx: editor.textContainerOrigin.x, dy: editor.textContainerOrigin.y)
+                XCTAssertTrue(editor.visibleRect.insetBy(dx: -0.5, dy: -0.5).contains(glyph), "glyph=\(glyph) viewport=\(editor.visibleRect)", file: file, line: line)
+                XCTAssertEqual(editor.alignment, rtl ? .right : .left, file: file, line: line)
+                XCTAssertEqual(editor.string, text, file: file, line: line)
+            }
+            try assertVisible("Ap")
+            editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+            try assertVisible("Apple 0")
+            state.wrappedValue = "Pear"
+            try assertVisible("Pear")
+            let clear = try XCTUnwrap(all(view).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.ClearButton" } as? NSButton)
+            clear.performClick(nil); view.layoutSubtreeIfNeeded()
+            let longQuery = String(repeating: "Apple ", count: 80) + "Z"
+            editor.insertText(longQuery, replacementRange: NSRange(location: 0, length: 0))
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+            let manager = try XCTUnwrap(editor.layoutManager)
+            manager.ensureLayout(for: try XCTUnwrap(editor.textContainer))
+            let last = manager.glyphRange(forCharacterRange: NSRange(location: longQuery.utf16.count - 1, length: 1), actualCharacterRange: nil)
+            let lastGlyph = manager.boundingRect(forGlyphRange: last, in: editor.textContainer!)
+                .offsetBy(dx: editor.textContainerOrigin.x, dy: editor.textContainerOrigin.y)
+            XCTAssertTrue(editor.visibleRect.insetBy(dx: -0.5, dy: -0.5).contains(lastGlyph), "long input end: \(lastGlyph); viewport: \(editor.visibleRect)")
+            XCTAssertEqual(state.wrappedValue, longQuery)
+            state.wrappedValue = "Pear"
+            try assertVisible("Pear")
+        }
+    }
+
+}
+
+
+private struct AutoSuggestObservedSample: FluentView {
+    let text: FluentState<String>
+    let status: FluentState<String>
+    var body: some FluentView {
+        FluentVStack {
+            FluentAutoSuggestBox(text.projectedValue,
+                suggestions: { query in ["Apple", "Apricot"].filter { $0.hasPrefix(query) }.map { .init(id: $0, title: $0) } },
+                onSuggestionChosen: { status.wrappedValue = $0.title })
+            FluentText(status.wrappedValue)
+        }
+    }
+}
