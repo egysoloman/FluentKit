@@ -28,3 +28,4 @@ swiftc -parse-as-library -O -swift-version 5 -warnings-as-errors -I "$EXPANDER_P
     "$EXPANDER_AUDIT/ExpanderGalleryAudit.swift" "$EXPANDER_LIBRARY" -o "$EXPANDER_BIN/ExpanderGalleryAudit"
 "$EXPANDER_BIN/ExpanderGalleryAudit" "$EXPANDER_OUTPUT/images" > "$EXPANDER_OUTPUT/results.json" 2> "$EXPANDER_OUTPUT/render.log"
 python3 tools/check_test_diagnostics.py "$EXPANDER_OUTPUT/render.log"
+python3 "$EXPANDER_AUDIT/check_results.py" "$EXPANDER_OUTPUT"

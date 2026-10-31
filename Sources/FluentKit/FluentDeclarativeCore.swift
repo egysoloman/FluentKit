@@ -19,7 +19,8 @@ func fluentViewFillsAvailableWidth(_ view: NSView) -> Bool {
 private func fluentApplyFillWidth(_ view: NSView, in stack: NSStackView, force: Bool = false) {
     guard force || fluentViewFillsAvailableWidth(view) else { return }
     view.setContentHuggingPriority(.defaultLow, for: .horizontal)
-    view.setContentCompressionResistancePriority(.required, for: .horizontal)
+    // The equal-width constraint owns allocation. Promoting intrinsic width to required
+    // makes long content compete with that allocation and overflow explicit frame wrappers.
     let constraint = view.widthAnchor.constraint(equalTo: stack.widthAnchor)
     constraint.identifier = "FluentKit.FillWidth"
     constraint.isActive = true

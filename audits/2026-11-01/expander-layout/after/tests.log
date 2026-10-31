@@ -1,0 +1,27 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+Build complete! (2.01秒)
+Test Suite 'Selected tests' started at 2026-11-01 01:05:48.167.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 01:05:48.168.
+Test Suite 'ExpanderLayoutTests' started at 2026-11-01 01:05:48.168.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' passed (0.147 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' passed (0.098 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' passed (0.101 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' passed (0.896 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' passed (0.057 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' passed (0.415 seconds).
+Test Suite 'ExpanderLayoutTests' passed at 2026-11-01 01:05:49.884.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.715 (1.716) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 01:05:49.884.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.715 (1.716) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 01:05:49.884.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.715 (1.717) seconds

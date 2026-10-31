@@ -1,0 +1,1562 @@
+[
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "expanded",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "collapse-down-early",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          330,
+          728,
+          48
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          213,
+          728,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      177,
+      808,
+      297
+    ],
+    "state" : "collapse-down",
+    "variant" : "light",
+    "viewportHeight" : 233,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          116
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          330,
+          728,
+          48
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          116
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          262,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      164
+    ],
+    "expectedContentHeight" : 184,
+    "outerFrame" : [
+      280,
+      226,
+      808,
+      248
+    ],
+    "state" : "both-collapsed",
+    "variant" : "light",
+    "viewportHeight" : 184,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          728,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          213,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      177,
+      808,
+      297
+    ],
+    "state" : "expand-down",
+    "variant" : "light",
+    "viewportHeight" : 233,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          345,
+          728,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          277,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      -221,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      410,
+      808,
+      64
+    ],
+    "state" : "outer-closed",
+    "variant" : "light",
+    "viewportHeight" : 0,
+    "viewportHidden" : true
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          728,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          213,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      177,
+      808,
+      297
+    ],
+    "state" : "outer-reopened",
+    "variant" : "light",
+    "viewportHeight" : 233,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "expand-up",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          411,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          411,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          411,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          411,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          411,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          411,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      459,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      491,
+      346
+    ],
+    "state" : "narrow",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          991,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          991,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          991,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          991,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          991,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          991,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      1039,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      1071,
+      346
+    ],
+    "state" : "wide",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "restored",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "interrupted",
+    "variant" : "light",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "expanded",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "collapse-down-early",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          330,
+          728,
+          48
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          213,
+          728,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      177,
+      808,
+      297
+    ],
+    "state" : "collapse-down",
+    "variant" : "dark",
+    "viewportHeight" : 233,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          116
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          330,
+          728,
+          48
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          116
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          262,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      164
+    ],
+    "expectedContentHeight" : 184,
+    "outerFrame" : [
+      280,
+      226,
+      808,
+      248
+    ],
+    "state" : "both-collapsed",
+    "variant" : "dark",
+    "viewportHeight" : 184,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          728,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          213,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      177,
+      808,
+      297
+    ],
+    "state" : "expand-down",
+    "variant" : "dark",
+    "viewportHeight" : 233,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          345,
+          728,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          277,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      -221,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      410,
+      808,
+      64
+    ],
+    "state" : "outer-closed",
+    "variant" : "dark",
+    "viewportHeight" : 0,
+    "viewportHidden" : true
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          728,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          728,
+          48
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          728,
+          165
+        ],
+        "value" : "Collapsed",
+        "windowFrame" : [
+          320,
+          213,
+          728,
+          48
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      776,
+      213
+    ],
+    "expectedContentHeight" : 233,
+    "outerFrame" : [
+      280,
+      177,
+      808,
+      297
+    ],
+    "state" : "outer-reopened",
+    "variant" : "dark",
+    "viewportHeight" : 233,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "expand-up",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          411,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          411,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          411,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          411,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          411,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          411,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      459,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      491,
+      346
+    ],
+    "state" : "narrow",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          991,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          991,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          991,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          991,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          991,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          991,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      1039,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      1071,
+      346
+    ],
+    "state" : "wide",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "restored",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  },
+  {
+    "children" : [
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "More details",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          281,
+          711,
+          97
+        ]
+      },
+      {
+        "bounds" : [
+          0,
+          0,
+          711,
+          97
+        ],
+        "label" : "Open upward",
+        "parentBounds" : [
+          0,
+          0,
+          711,
+          214
+        ],
+        "value" : "Expanded",
+        "windowFrame" : [
+          320,
+          164,
+          711,
+          97
+        ]
+      }
+    ],
+    "contentFrame" : [
+      16,
+      12,
+      759,
+      262
+    ],
+    "expectedContentHeight" : 282,
+    "outerFrame" : [
+      280,
+      128,
+      791,
+      346
+    ],
+    "state" : "interrupted",
+    "variant" : "dark",
+    "viewportHeight" : 282,
+    "viewportHidden" : false
+  }
+]

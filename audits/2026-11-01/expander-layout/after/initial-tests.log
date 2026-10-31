@@ -1,0 +1,37 @@
+Building for debugging...
+[1 / 1]
+[2 / 14] FluentKit
+[6 / 18] FluentKit
+[14 / 24] FluentKit
+[16 / 24] FluentGallery-product
+[21 / 25] FluentKitTests-product
+[25 / 28] FluentGallery-product
+[28 / 32] FluentKitTests-product
+[32 / 35] FluentKitValidation-product
+Build complete! (14.99秒)
+Test Suite 'Selected tests' started at 2026-11-01 01:04:31.182.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 01:04:31.183.
+Test Suite 'ExpanderLayoutTests' started at 2026-11-01 01:04:31.183.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' passed (0.150 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' passed (0.099 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderLayoutTests.swift:161: error: -[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("720.0") +/- ("0.5")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderLayoutTests.swift:161: error: -[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("360.0") +/- ("0.5")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderLayoutTests.swift:161: error: -[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("960.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' failed (0.397 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' passed (0.931 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' passed (0.070 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' passed (0.473 seconds).
+Test Suite 'ExpanderLayoutTests' failed at 2026-11-01 01:04:33.304.
+	 Executed 6 tests, with 3 failures (0 unexpected) in 2.120 (2.121) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 01:04:33.304.
+	 Executed 6 tests, with 3 failures (0 unexpected) in 2.120 (2.121) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 01:04:33.304.
+	 Executed 6 tests, with 3 failures (0 unexpected) in 2.120 (2.122) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

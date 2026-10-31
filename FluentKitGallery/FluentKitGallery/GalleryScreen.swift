@@ -789,7 +789,7 @@ struct GalleryScreen: FluentView {
         case .ContentDialog:
             return FluentAnyView(ContentDialogGallerySample(theme: theme))
         case .Expander:
-            return FluentAnyView(FluentVStack(spacing: 20) {
+            return FluentAnyView(FluentVStack(spacing: 20, alignment: .width) {
                 FluentExpander(
                     "More details",
                     isExpanded: $expanderExpanded
@@ -800,7 +800,6 @@ struct GalleryScreen: FluentView {
                         color: theme.textSecondary
                     )
                 }
-                .frame(width: 520)
                 FluentExpander(
                     "Open upward",
                     isExpanded: $expanderUpExpanded,
@@ -812,7 +811,6 @@ struct GalleryScreen: FluentView {
                         color: theme.textSecondary
                     )
                 }
-                .frame(width: 520)
             })
         case .ToolTip:
             return FluentAnyView(FluentVStack(spacing: 10) {

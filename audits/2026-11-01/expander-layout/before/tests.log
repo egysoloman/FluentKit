@@ -1,0 +1,38 @@
+Test Suite 'Selected tests' started at 2026-11-01 01:07:30.555.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 01:07:30.556.
+Test Suite 'ExpanderLayoutTests' started at 2026-11-01 01:07:30.556.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' started.
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:90: error: -[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening] : XCTAssertEqualWithAccuracy failed: ("60.0") is not equal to ("200.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' failed (0.600 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' started.
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:103: error: -[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight] : XCTAssertEqualWithAccuracy failed: ("44.0") is not equal to ("92.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' failed (0.100 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' started.
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:167: error: -[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("720.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:167: error: -[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("360.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:167: error: -[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("960.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' failed (0.102 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' started.
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:134: error: -[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent] : XCTAssertEqualWithAccuracy failed: ("180.0") is not equal to ("68.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' failed (0.926 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' started.
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:147: error: -[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth] : XCTAssertEqualWithAccuracy failed: ("1314.0") is not equal to ("520.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' failed (0.057 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' started.
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:63: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:65: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:63: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:65: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:63: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:65: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:63: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+/private/tmp/fluentkit-expander-baseline/Tests/FluentKitTests/ExpanderLayoutTests.swift:65: error: -[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("112.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' failed (0.420 seconds).
+Test Suite 'ExpanderLayoutTests' failed at 2026-11-01 01:07:32.761.
+	 Executed 6 tests, with 15 failures (0 unexpected) in 2.204 (2.205) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 01:07:32.761.
+	 Executed 6 tests, with 15 failures (0 unexpected) in 2.204 (2.205) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 01:07:32.761.
+	 Executed 6 tests, with 15 failures (0 unexpected) in 2.204 (2.206) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

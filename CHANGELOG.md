@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- SettingsExpander now follows nested expansion, content replacement and width-dependent content
+  height instead of freezing its opening height. Temporary animation constraints are released
+  when settled, so following rows and scroll extents update together. Expander natural width and
+  vertical-stack fill allocation no longer override explicit frames. Gallery's Expander examples
+  adapt to narrow page widths instead of forcing a 520pt body beyond the viewport.
+
 - Navigation-history and undo scopes now forward the latest declarative content and action
   captures instead of replaying their first mounted value. Gallery routes can replace the page
   body; compatible native views retain identity and child undo environments remain intact.

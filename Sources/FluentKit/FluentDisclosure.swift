@@ -462,7 +462,9 @@ private final class FluentExpanderHost: NSView, FluentFillWidthProviding {
         wantsLayer = true
         layer?.masksToBounds = false
         setContentHuggingPriority(.defaultLow, for: .horizontal)
-        setContentCompressionResistancePriority(.required, for: .horizontal)
+        // Natural content width is a measure preference, not a required allocation. A frame
+        // or full-width stack must be able to constrain long header/body text to its row.
+        setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         animationCoordinator.reduceMotion = context.reduceMotion
         userInterfaceLayoutDirection = context.layoutDirection.appKitValue
 

@@ -821,6 +821,7 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
     private let contentContainer = NSView()
     private let contentSeparator = NSView()
     private var contentHeight: NSLayoutConstraint!
+    private var contentBottom: NSLayoutConstraint!
     private var binding: FluentBinding<Bool>?
     private var observerID: UUID?
     private var context: FluentRenderContext
@@ -890,16 +891,15 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
         contentContainer.addSubview(content)
         if let contentStack = content as? NSStackView { contentStack.spacing = 1 }
         content.translatesAutoresizingMaskIntoConstraints = false
-        let contentBottomConstraint = content.bottomAnchor.constraint(
-            lessThanOrEqualTo: contentContainer.bottomAnchor,
+        contentBottom = content.bottomAnchor.constraint(
+            equalTo: contentContainer.bottomAnchor,
             constant: -12
         )
-        contentBottomConstraint.priority = .defaultLow
+        contentBottom.priority = NSLayoutConstraint.Priority(999)
         NSLayoutConstraint.activate([
             content.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor, constant: 16),
             content.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor, constant: -16),
             content.topAnchor.constraint(equalTo: contentContainer.topAnchor, constant: 8),
-            contentBottomConstraint,
             contentSeparator.leadingAnchor.constraint(equalTo: contentContainer.leadingAnchor),
             contentSeparator.trailingAnchor.constraint(equalTo: contentContainer.trailingAnchor),
             contentSeparator.topAnchor.constraint(equalTo: contentContainer.topAnchor),
@@ -927,7 +927,9 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
 
     override var intrinsicContentSize: NSSize {
         let headerHeight = max(header?.fittingSize.height ?? 0, 64)
-        return NSSize(width: NSView.noIntrinsicMetric, height: headerHeight + (contentHeight?.constant ?? 0))
+        let bodyHeight = contentHeight?.isActive == true ? contentHeight.constant
+            : (isExpanded ? measuredContentHeight() : 0)
+        return NSSize(width: NSView.noIntrinsicMetric, height: headerHeight + bodyHeight)
     }
 
     func update(
@@ -978,8 +980,7 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
         expansionGeneration &+= 1
         animationCoordinator.cancelAllValueAnimations()
         animationCoordinator.cancelAll(on: [layer, contentContainer.layer].compactMap { $0 })
-        contentHeight.constant = isExpanded ? measuredContentHeight() : 0
-        invalidateIntrinsicContentSize()
+        resolveExpandedLayout()
         contentContainer.layer?.opacity = isExpanded ? 1 : 0
         contentContainer.isHidden = !isExpanded
         header.setChevronExpanded(isExpanded, animated: false)
@@ -1023,11 +1024,21 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
     }
 
     private func measuredContentHeight() -> CGFloat {
-        layoutSubtreeIfNeeded()
         let intrinsic = contentView.intrinsicContentSize.height
         let fitting = contentView.fittingSize.height
         let desired = intrinsic == NSView.noIntrinsicMetric ? fitting : intrinsic
         return max(desired + 20, 20)
+    }
+
+    private func resolveExpandedLayout() {
+        // At rest, content participates in measure instead of retaining an animation's last
+        // height. Nested expanders, new content, and wrapping after resize can then resize the
+        // card through Auto Layout. Only a closed or animating viewport needs a fixed height.
+        contentHeight.constant = isExpanded ? measuredContentHeight() : 0
+        contentHeight.isActive = !isExpanded
+        contentBottom.isActive = isExpanded
+        contentContainer.isHidden = !isExpanded
+        invalidateExpandedLayout()
     }
 
     private func applyExpanded(animated: Bool, force: Bool = false) {
@@ -1038,7 +1049,10 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
         let expanded = isExpanded
         if expanded { contentContainer.isHidden = false }
         let target = expanded ? measuredContentHeight() : 0
-        let current = contentHeight.constant
+        let current = contentHeight.isActive ? contentHeight.constant : contentContainer.bounds.height
+        contentBottom.isActive = false
+        contentHeight.constant = current
+        contentHeight.isActive = true
         // Detached views are commonly measured before they enter a window. Resolve those state
         // changes synchronously so fittingSize reflects the binding immediately; mounted views
         // continue through the shared animation coordinator.
@@ -1064,9 +1078,9 @@ private final class FluentSettingsExpanderHost: NSView, FluentAppearanceParticip
             },
             completion: { [weak self] in
                 guard let self, self.expansionGeneration == generation else { return }
-                self.contentContainer.isHidden = !expanded
-                self.contentHeight.constant = target
-                self.invalidateExpandedLayout()
+                // Content may change while opening. Release the temporary height and use the
+                // current content, rather than freezing the height captured at animation start.
+                self.resolveExpandedLayout()
             }
         )
         header.setChevronExpanded(expanded, animated: effectiveAnimated)
