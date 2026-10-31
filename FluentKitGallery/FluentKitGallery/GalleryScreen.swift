@@ -19,6 +19,8 @@ struct GalleryScreen: FluentView {
     @FluentState private var pivotSelection = 0
     @FluentState private var pivotLocked = false
     private let pivotSections = ["All", "Unread", "Flagged", "Urgent"]
+    @FluentState private var swipeMessages = ["Team meeting notes", "Invoice #2041", "Weekend plans"]
+    @FluentState private var swipeStatus = "No command invoked"
     @FluentState private var breadcrumbItems = [
         FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
         FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
@@ -440,6 +442,30 @@ struct GalleryScreen: FluentView {
                 .frame(width: 420, height: 220)
                 FluentToggleView("Lock to the current item", isOn: $pivotLocked)
                 FluentText("Narrow the window to switch to the carousel header. Ctrl+Tab and Ctrl+PageUp/PageDown change items.",
+                    style: .caption, color: theme.textSecondary)
+            })
+        case .SwipeControl:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentForEach(swipeMessages, id: { $0 }) { message in
+                    FluentSwipeControl(
+                        leftItems: FluentSwipeItems(mode: .execute, [
+                            FluentSwipeItem("Archive", systemImage: "archivebox") { swipeStatus = "Archived \(message)" }
+                        ]),
+                        rightItems: FluentSwipeItems([
+                            FluentSwipeItem("Flag", systemImage: "flag") { swipeStatus = "Flagged \(message)" },
+                            FluentSwipeItem("Delete", systemImage: "trash") { swipeMessages.removeAll { $0 == message } }
+                        ])
+                    ) {
+                        FluentText(message, style: .body)
+                            .padding(12)
+                            .frame(width: 360, height: 48)
+                            .background(theme.cardFill, cornerRadius: 0)
+                    }
+                    .frame(width: 360, height: 48)
+                }
+                FluentText(swipeStatus, style: .caption, color: theme.textSecondary)
+                FluentButtonView("Reset") { swipeMessages = ["Team meeting notes", "Invoice #2041", "Weekend plans"] }
+                FluentText("Swipe with two fingers on the trackpad or with a finger on a touch screen. VoiceOver lists each command as an action.",
                     style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:

@@ -1,0 +1,92 @@
+[
+  {
+    "contentMinX" : -136,
+    "invoked" : [
+
+    ],
+    "state" : "reveal-open",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : 50,
+    "invoked" : [
+
+    ],
+    "state" : "execute-before-threshold",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : 200,
+    "invoked" : [
+
+    ],
+    "state" : "execute-past-threshold",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : -136,
+    "invoked" : [
+
+    ],
+    "state" : "reveal-open",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : 50,
+    "invoked" : [
+
+    ],
+    "state" : "execute-before-threshold",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : 200,
+    "invoked" : [
+
+    ],
+    "state" : "execute-past-threshold",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : 136,
+    "invoked" : [
+
+    ],
+    "state" : "reveal-open",
+    "touchScreen" : "pending device",
+    "variant" : "rtl",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : -50,
+    "invoked" : [
+
+    ],
+    "state" : "execute-before-threshold",
+    "touchScreen" : "pending device",
+    "variant" : "rtl",
+    "windowsComparison" : "pending"
+  },
+  {
+    "contentMinX" : -200,
+    "invoked" : [
+
+    ],
+    "state" : "execute-past-threshold",
+    "touchScreen" : "pending device",
+    "variant" : "rtl",
+    "windowsComparison" : "pending"
+  }
+]

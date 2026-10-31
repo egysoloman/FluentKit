@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added SwipeControl with Reveal and Execute modes on left/right (RTL-mirrored) or top/bottom
+  sides, WinUI's 100pt threshold and open/close rules, BehaviorOnInvoked, single-open and
+  outside-press dismissal, touch and trackpad input through the shared pan driver, and VoiceOver
+  custom actions for every command. Gallery sample added with partial coverage.
+
 - Added a shared input foundation: `FluentInputDeviceTracker` records the last input device per
   window (mouse, touch, pen, keyboard) like WinUI's InputDeviceType and posts changes, and an
   internal pan driver unifies macOS 27 direct touch, phased trackpad swipes and discrete wheel
