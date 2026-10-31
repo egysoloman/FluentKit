@@ -1,0 +1,1882 @@
+[
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      100.5087890625,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      55.564202334630352,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      100.5087890625,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      55.564202334630352,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "light-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      100.5087890625,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-en"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      55.564202334630352,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      32,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      27,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      32,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      284,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      2,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      30,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-ltr-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      100.5087890625,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "Search settings",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "Search settings",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-en"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "placeholder",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "focused-placeholder",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      55.564202334630352,
+      17
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "editing",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "caretFrame" : [
+      30,
+      7,
+      0,
+      17
+    ],
+    "cellString" : "nihao",
+    "cellType" : "FluentSearchFieldCell",
+    "editorClipFrame" : [
+      25,
+      5,
+      256.5,
+      23
+    ],
+    "editorFrame" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "font" : ".AppleSystemUIFont",
+    "glyphFrame" : [
+      30,
+      7,
+      35.109375,
+      17
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "layer tree",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "marked",
+    "textOrigin" : [
+      0,
+      0
+    ],
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-zh"
+  },
+  {
+    "cancelButton" : [
+      4,
+      5,
+      22,
+      22
+    ],
+    "cellString" : "查找设置",
+    "cellType" : "FluentSearchFieldCell",
+    "font" : ".AppleSystemUIFont",
+    "placeholder" : "查找设置",
+    "pointSize" : 14,
+    "renderMode" : "native cell directly (no chrome)",
+    "searchButton" : [
+      283,
+      5,
+      25,
+      22
+    ],
+    "searchImage" : "nil",
+    "state" : "unfocused-text",
+    "textRect" : [
+      28,
+      7,
+      252,
+      17
+    ],
+    "variant" : "dark-rtl-zh"
+  }
+]

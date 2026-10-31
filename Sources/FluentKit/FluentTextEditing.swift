@@ -116,7 +116,13 @@ final class FluentTextEditingSession {
         if editor.focusRingType != .none { editor.focusRingType = .none }
         if editor.isVerticallyResizable { editor.isVerticallyResizable = false }
         if !editor.isHorizontallyResizable { editor.isHorizontallyResizable = true }
-        configureFluentSingleLineFieldEditor(editor)
+        // NSSearchFieldCell paints glyphs two points inside searchTextRect. Its shared field
+        // editor can retain a different inset from the previous control, and AppKit may reset
+        // it after cell setup. Reassert the matching inset here, including the deferred setup
+        // pass, so focus/IME caret geometry stays aligned with the inactive cell's actual ink.
+        configureFluentSingleLineFieldEditor(
+            editor, lineFragmentPadding: control is FluentSearchTextField ? 2 : 0
+        )
         if let textContainer = editor.textContainer {
             if textContainer.maximumNumberOfLines != 1 { textContainer.maximumNumberOfLines = 1 }
             if textContainer.lineBreakMode != .byClipping { textContainer.lineBreakMode = .byClipping }

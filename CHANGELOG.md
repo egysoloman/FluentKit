@@ -4,6 +4,9 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- SearchBox preserves the native cell’s 2pt text inset when editing, including shared field-editor
+  reuse and deferred AppKit setup. Placeholder and entered text no longer shift left on focus.
+
 - SettingsExpander now follows nested expansion, content replacement and width-dependent content
   height instead of freezing its opening height. Temporary animation constraints are released
   when settled, so following rows and scroll extents update together. Expander natural width and

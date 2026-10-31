@@ -92,11 +92,13 @@ func fluentCenteredAdornmentRect(_ rect: NSRect, in bounds: NSRect) -> NSRect {
 }
 
 @discardableResult
-func configureFluentSingleLineFieldEditor(_ text: NSText) -> NSText {
+func configureFluentSingleLineFieldEditor(_ text: NSText, lineFragmentPadding: CGFloat = 0) -> NSText {
     guard let editor = text as? NSTextView else { return text }
     editor.textContainerInset = .zero
     if let textContainer = editor.textContainer {
-        textContainer.lineFragmentPadding = 0
+        if textContainer.lineFragmentPadding != lineFragmentPadding {
+            textContainer.lineFragmentPadding = lineFragmentPadding
+        }
         textContainer.maximumNumberOfLines = 1
         textContainer.lineBreakMode = .byClipping
     }

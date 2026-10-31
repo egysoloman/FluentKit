@@ -3474,9 +3474,11 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
         searchField.convert(expectedTextRect, to: nil)
     )
     require(
-        abs(caretScreenRect.minX - expectedTextScreenRect.minX) <= 1
+        // searchTextRect is the layout slot; the native cell draws its contents 2pt inside.
+        // SearchTextAlignmentTests separately compares inactive and editing glyph pixels.
+        abs(caretScreenRect.minX - (expectedTextScreenRect.minX + 2)) <= 1
             && abs(caretScreenRect.midY - expectedTextScreenRect.midY) <= 1,
-        "SearchBox caret uses the same content geometry as placeholder text (caret: \(caretScreenRect), expected: \(expectedTextScreenRect), editor: \(editor.frame), superview: \(editorSuperview.frame))"
+        "SearchBox caret preserves the native cell's content inset (caret: \(caretScreenRect), slot: \(expectedTextScreenRect), editor: \(editor.frame), superview: \(editorSuperview.frame))"
     )
     let searchIconRect = cell.searchButtonRect(forBounds: searchField.bounds)
     require(

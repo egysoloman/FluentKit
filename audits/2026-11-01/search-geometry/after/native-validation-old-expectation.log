@@ -1,0 +1,1 @@
+FAIL: SearchBox caret uses the same content geometry as placeholder text (caret: (30.0, 55.0, 0.0, 20.0), expected: (28.0, 54.0, 266.0, 21.0), editor: (30.0, 5.0, 266.0, 21.0), superview: (26.5, 2.5, 271.5, 28.5))

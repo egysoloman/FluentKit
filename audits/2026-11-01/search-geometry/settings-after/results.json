@@ -1,0 +1,233 @@
+[
+  {
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "sameSearchInstance" : true,
+    "state" : "unfocused",
+    "text" : "",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "sameSearchInstance" : true,
+    "state" : "focused",
+    "text" : "",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "marked" : false,
+    "padding" : 2,
+    "sameSearchInstance" : true,
+    "state" : "input-and-page-update",
+    "text" : "拼音",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      314,
+      32
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "sameSearchInstance" : true,
+    "state" : "marked",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      256,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      640,
+      805
+    ]
+  },
+  {
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      216,
+      19
+    ],
+    "fieldFrame" : [
+      163,
+      8,
+      274,
+      32
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "sameSearchInstance" : true,
+    "state" : "marked-narrow",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      216,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      600,
+      800
+    ]
+  },
+  {
+    "caretFrame" : [
+      32,
+      6,
+      0,
+      19
+    ],
+    "editorFrame" : [
+      30,
+      6,
+      426,
+      19
+    ],
+    "fieldFrame" : [
+      258,
+      8,
+      484,
+      32
+    ],
+    "marked" : true,
+    "padding" : 2,
+    "sameSearchInstance" : true,
+    "state" : "marked-wide",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      426,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      1000,
+      800
+    ]
+  },
+  {
+    "fieldFrame" : [
+      258,
+      8,
+      484,
+      32
+    ],
+    "sameSearchInstance" : true,
+    "state" : "unfocused-text",
+    "text" : "nihao",
+    "textRect" : [
+      30,
+      6,
+      426,
+      19
+    ],
+    "window" : [
+      0,
+      0,
+      1000,
+      800
+    ]
+  }
+]
