@@ -1,0 +1,101 @@
+Building for debugging...
+[1 / 2] FluentKit_FluentKit
+[2 / 15] FluentKit
+[4 / 17] FluentKit
+[13 / 23] FluentKit
+[15 / 23] FluentGallery-product
+[20 / 24] FluentKitTests-product
+[29 / 34] FluentGallery-product
+[32 / 38] FluentKitTests-product
+[37 / 42] FluentKitTests-product
+[39 / 42] FluentKitValidation-product
+Build complete! (16.38秒)
+Test Suite 'Selected tests' started at 2026-11-01 05:31:25.193.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 05:31:25.194.
+Test Suite 'TreeViewDropValidationTests' started at 2026-11-01 05:31:25.194.
+Test Case '-[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes]' started.
+Test Case '-[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes]' passed (0.070 seconds).
+Test Suite 'TreeViewDropValidationTests' passed at 2026-11-01 05:31:25.264.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.070 (0.070) seconds
+Test Suite 'TreeViewExpansionEventTests' started at 2026-11-01 05:31:25.264.
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:37: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - The real AX expansion action loads exactly once
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:38: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:39: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:42: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - An already-expanded node does not load twice
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' failed (0.392 seconds).
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' started.
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' passed (0.098 seconds).
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest]' started.
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest]' passed (0.036 seconds).
+Test Suite 'TreeViewExpansionEventTests' failed at 2026-11-01 05:31:25.790.
+	 Executed 3 tests, with 4 failures (0 unexpected) in 0.526 (0.526) seconds
+Test Suite 'TreeViewLifecycleTests' started at 2026-11-01 05:31:25.790.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testBoundSelectionSurvivesReorderingAndClearsOnlyWhenRemoved]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testBoundSelectionSurvivesReorderingAndClearsOnlyWhenRemoved]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testContentOnlyUpdateChangesTheRetainedVisibleLabel]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testContentOnlyUpdateChangesTheRetainedVisibleLabel]' passed (0.008 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testDetachedMultipleBindingCannotReceiveQueuedNormalization]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testDetachedMultipleBindingCannotReceiveQueuedNormalization]' passed (0.035 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testLazyChildrenKeepExpansionAndInheritASelectedParent]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testLazyChildrenKeepExpansionAndInheritASelectedParent]' passed (0.036 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testRemovingTheUnboundSelectedNodeDoesNotSelectItsReplacement]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testRemovingTheUnboundSelectedNodeDoesNotSelectItsReplacement]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testRTLContentFollowsTheMirroredChevronAndCanSwitchBack]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testRTLContentFollowsTheMirroredChevronAndCanSwitchBack]' passed (0.012 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testUnboundSelectionSurvivesAStableIDReorder]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testUnboundSelectionSurvivesAStableIDReorder]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testUnchangedTreeKeepsNativeItemAndContentIdentity]' started.
+Test Case '-[FluentKitTests.TreeViewLifecycleTests testUnchangedTreeKeepsNativeItemAndContentIdentity]' passed (0.006 seconds).
+Test Suite 'TreeViewLifecycleTests' passed at 2026-11-01 05:31:25.893.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.102 (0.102) seconds
+Test Suite 'TreeViewMultiDragTests' started at 2026-11-01 05:31:25.893.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testCrossParentMoveAndEmptySelectionFallback]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testCrossParentMoveAndEmptySelectionFallback]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testDragCapturesSelectionButUsesLatestHandler]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testDragCapturesSelectionButUsesLatestHandler]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testLegacyHandlerRemainsSingleAndLastModifierWins]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testLegacyHandlerRemainsSingleAndLastModifierWins]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testMovesSelectedSubtreesOnceInSelectionOrder]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testMovesSelectedSubtreesOnceInSelectionOrder]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testNativeDropRequiresSameSourceAndFreshValidationAfterTopologyChanges]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testNativeDropRequiresSameSourceAndFreshValidationAfterTopologyChanges]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testPartialSelectionMovesChildrenAndRejectsCyclesAndNoOps]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testPartialSelectionMovesChildrenAndRejectsCyclesAndNoOps]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testRemovedNodeInvalidatesDragButLazyLoadingDoesNot]' started.
+Test Case '-[FluentKitTests.TreeViewMultiDragTests testRemovedNodeInvalidatesDragButLazyLoadingDoesNot]' passed (0.001 seconds).
+Test Suite 'TreeViewMultiDragTests' passed at 2026-11-01 05:31:25.899.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Test Suite 'TreeViewPointerSequenceTests' started at 2026-11-01 05:31:25.899.
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit]' started.
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCaptureCancellationAndRemovedRowsCannotCommit]' passed (0.095 seconds).
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce]' started.
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testCheckboxReleaseOutsideCancelsAndReentryCommitsOnce]' passed (0.015 seconds).
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins]' started.
+Test Case '-[FluentKitTests.TreeViewPointerSequenceTests testChevronUsesFullTemplatePaddingAndExcludesPresenterMargins]' passed (0.027 seconds).
+Test Suite 'TreeViewPointerSequenceTests' passed at 2026-11-01 05:31:26.036.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.136 (0.136) seconds
+Test Suite 'TreeViewPointerTests' started at 2026-11-01 05:31:26.036.
+Test Case '-[FluentKitTests.TreeViewPointerTests testDrawnCheckBoxAndChevronReceiveNativeOutlineClicksInBothDirections]' started.
+Test Case '-[FluentKitTests.TreeViewPointerTests testDrawnCheckBoxAndChevronReceiveNativeOutlineClicksInBothDirections]' passed (0.015 seconds).
+Test Suite 'TreeViewPointerTests' passed at 2026-11-01 05:31:26.051.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.015 (0.015) seconds
+Test Suite 'TreeViewPolishTests' started at 2026-11-01 05:31:26.051.
+Test Case '-[FluentKitTests.TreeViewPolishTests testExpansionBindingAndEvents]' started.
+Test Case '-[FluentKitTests.TreeViewPolishTests testExpansionBindingAndEvents]' passed (0.117 seconds).
+Test Case '-[FluentKitTests.TreeViewPolishTests testKeyboardFollowsHandleExpandCollapse]' started.
+Test Case '-[FluentKitTests.TreeViewPolishTests testKeyboardFollowsHandleExpandCollapse]' passed (0.065 seconds).
+Test Case '-[FluentKitTests.TreeViewPolishTests testMultipleSelectionUsesTriStateCheckBoxes]' started.
+Test Case '-[FluentKitTests.TreeViewPolishTests testMultipleSelectionUsesTriStateCheckBoxes]' passed (0.117 seconds).
+Test Case '-[FluentKitTests.TreeViewPolishTests testReorderReportsTheIndexAfterRemoval]' started.
+Test Case '-[FluentKitTests.TreeViewPolishTests testReorderReportsTheIndexAfterRemoval]' passed (0.062 seconds).
+Test Case '-[FluentKitTests.TreeViewPolishTests testRowsFollowTheTreeViewItemTemplate]' started.
+Test Case '-[FluentKitTests.TreeViewPolishTests testRowsFollowTheTreeViewItemTemplate]' passed (0.063 seconds).
+Test Suite 'TreeViewPolishTests' passed at 2026-11-01 05:31:26.476.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.424 (0.425) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 05:31:26.476.
+	 Executed 28 tests, with 4 failures (0 unexpected) in 1.279 (1.282) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 05:31:26.476.
+	 Executed 28 tests, with 4 failures (0 unexpected) in 1.279 (1.283) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

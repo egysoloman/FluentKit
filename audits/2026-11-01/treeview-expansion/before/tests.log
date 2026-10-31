@@ -1,0 +1,80 @@
+Building for debugging...
+[Planning 111 / 182]
+[Planning deferred tasks]
+[54 / 93]
+[55 / 94] FluentKit
+[65 / 189]
+[68 / 189]
+[76 / 189]
+[78 / 189]
+[79 / 189]
+[85 / 189]
+[88 / 189]
+[91 / 189]
+[96 / 189]
+[99 / 189]
+[101 / 189]
+[102 / 189]
+[117 / 189]
+[118 / 189]
+[120 / 189]
+[124 / 189]
+[131 / 189]
+[133 / 189]
+[134 / 189]
+[135 / 189]
+[136 / 189]
+[150 / 189] FluentKit
+[151 / 189] FluentKit
+[156 / 189] FluentKit
+[164 / 191] FluentKit
+[164 / 191] FluentGallery-product
+[168 / 195] FluentGallery-product
+[169 / 195] FluentKit
+[171 / 195] FluentKit
+[176 / 196] FluentGallery-product
+[178 / 208] FluentKitTests-product
+[184 / 221]
+[185 / 221]
+[188 / 221]
+[189 / 221]
+[191 / 221]
+[192 / 221]
+[203 / 221] FluentKitTests-product
+[206 / 221] FluentKitTests-product
+[210 / 221] FluentKitTests-product
+[212 / 221] FluentKitTests-product
+[216 / 221] FluentKitValidation-product
+[217 / 221] FluentKitValidation-product
+[219 / 221] FluentKitValidation-product
+Build complete! (62.08秒)
+Test Suite 'Selected tests' started at 2026-11-01 05:36:00.376.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 05:36:00.380.
+Test Suite 'TreeViewExpansionEventTests' started at 2026-11-01 05:36:00.380.
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' started.
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:32: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("["remote", "remote", "remote"]") is not equal to ("[]") - Reading AX affordances is not an expansion request
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:37: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("["remote", "remote", "remote", "remote"]") is not equal to ("["remote"]") - A real expansion transition loads exactly once
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:41: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("["remote", "remote", "remote", "remote", "remote"]") is not equal to ("["remote"]") - An already-expanded node does not load twice
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' failed (0.623 seconds).
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' started.
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:78: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - WinUI raises Expanding when the node's IsExpanded property changes
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:79: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial"]")
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:82: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - Reloading loaded children preserves, rather than repeats, the transition
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:83: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial"]")
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:86: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]")
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:89: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial", "remote"]")
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' failed (0.102 seconds).
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest]' started.
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:56: error: -[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest] : XCTAssertEqual failed: ("[Set(["root"])]") is not equal to ("[Set([])]")
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:57: error: -[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest] : XCTAssertEqual failed: ("[]") is not equal to ("["root"]")
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:58: error: -[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest] : XCTAssertTrue failed
+/private/tmp/fluentkit-tree-expansion-baseline/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:59: error: -[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest] : XCTAssertEqual failed: ("0") is not equal to ("1")
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testCollapsePublishesStateBeforeCallbackAndPreservesAReopenRequest]' failed (0.037 seconds).
+Test Suite 'TreeViewExpansionEventTests' failed at 2026-11-01 05:36:01.143.
+	 Executed 3 tests, with 13 failures (0 unexpected) in 0.763 (0.764) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 05:36:01.143.
+	 Executed 3 tests, with 13 failures (0 unexpected) in 0.763 (0.764) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 05:36:01.143.
+	 Executed 3 tests, with 13 failures (0 unexpected) in 0.763 (0.767) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

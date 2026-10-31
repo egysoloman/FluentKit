@@ -1,0 +1,12 @@
+[
+  {
+    "event" : "mouse",
+    "location" : "{30, 516}",
+    "type" : 1
+  },
+  {
+    "event" : "mouse",
+    "location" : "{30, 516}",
+    "type" : 2
+  }
+]

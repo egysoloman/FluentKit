@@ -83,7 +83,8 @@ public struct FluentOutline<ID: Hashable>: FluentUpdatablePrimitiveView {
         validateIDs()
     }
 
-    /// Two-way expansion state by node ID.
+    /// Two-way expansion state by node ID. Changes after mounting raise expansion/collapse
+    /// events; initial state and restoration after a data reload do not repeat those events.
     public func expandedIDs(_ binding: FluentBinding<Set<ID>>) -> Self {
         var copy = self
         copy.expandedIDs = binding
@@ -390,6 +391,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     private var theme: FluentTheme
     private var isApplyingSelection = false
     private var isApplyingExpansion = false
+    private var isRestoringExpansion = false
     /// Multiple selection: the IDs whose check box is fully checked.
     private(set) var checkedIDs: Set<ID> = []
     private var checkedOrder: [ID] = []
@@ -454,6 +456,9 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     private var isRightToLeft: Bool { context.layoutDirection.appKitValue == .rightToLeft }
 
     func update(_ next: FluentOutlineConfiguration<ID>, context: FluentRenderContext, initial: Bool) {
+        let wasRestoringExpansion = isRestoringExpansion
+        isRestoringExpansion = wasRestoringExpansion || initial
+        defer { isRestoringExpansion = wasRestoringExpansion }
         configuration = next
         self.context = context
         theme = context.theme
@@ -502,11 +507,14 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
         validatedDrop = nil
         let wasApplyingSelection = isApplyingSelection
         let wasApplyingExpansion = isApplyingExpansion
+        let wasRestoringExpansion = isRestoringExpansion
         isApplyingSelection = true
         isApplyingExpansion = true
+        isRestoringExpansion = true
         defer {
             isApplyingSelection = wasApplyingSelection
             isApplyingExpansion = wasApplyingExpansion
+            isRestoringExpansion = wasRestoringExpansion
         }
         outlineView.reloadData()
         expand(expanded)
@@ -574,8 +582,9 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
 
     private func applyExpansion() {
         guard let wanted = configuration?.expandedIDs?.get() else { return }
+        let wasApplyingExpansion = isApplyingExpansion
         isApplyingExpansion = true
-        defer { isApplyingExpansion = false }
+        defer { isApplyingExpansion = wasApplyingExpansion }
         let current = expandedIDsInView()
         for id in current.subtracting(wanted) {
             if let item = itemsByID[id] { outlineView.collapseItem(item) }
@@ -699,8 +708,17 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     }
 
     func outlineView(_ outlineView: NSOutlineView, shouldExpandItem item: Any) -> Bool {
-        if !isApplyingExpansion, let item = item as? FluentOutlineItem<ID> { configuration?.onExpanding?(item.id) }
-        return true
+        // AppKit also asks this when accessibility clients query whether disclosure is allowed.
+        // Eligibility must not load children or emit an expansion event.
+        guard let item = item as? FluentOutlineItem<ID> else { return false }
+        return itemsByID[item.id] === item && item.isExpandable
+    }
+
+    func outlineViewItemWillExpand(_ notification: Notification) {
+        guard !isRestoringExpansion, notification.object as? NSOutlineView === outlineView,
+              let item = notification.userInfo?["NSObject"] as? FluentOutlineItem<ID>,
+              itemsByID[item.id] === item else { return }
+        configuration?.onExpanding?(item.id)
     }
 
     func outlineViewItemDidExpand(_ notification: Notification) {
@@ -714,14 +732,15 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     private func expansionDidChange(_ notification: Notification, collapsed: Bool) {
         guard let item = notification.userInfo?["NSObject"] as? FluentOutlineItem<ID> else { return }
         refresh(item)
-        guard !isApplyingExpansion else { return }
-        if collapsed { configuration?.onCollapsed?(item.id) }
-        if let binding = configuration?.expandedIDs {
+        if !isApplyingExpansion, let binding = configuration?.expandedIDs {
             var next = binding.get()
             if collapsed { next.remove(item.id) } else { next.insert(item.id) }
             if next != binding.get() { binding.set(next) }
         }
-        context.invalidate?()
+        // Publish the collapsed state before application code runs. A callback may reopen the
+        // node, and its new binding value must not be overwritten by this completed transition.
+        if collapsed && !isRestoringExpansion { configuration?.onCollapsed?(item.id) }
+        if !isApplyingExpansion { context.invalidate?() }
     }
 
     // MARK: Input

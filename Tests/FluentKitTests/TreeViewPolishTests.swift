@@ -119,7 +119,7 @@ final class TreeViewPolishTests: XCTestCase {
         XCTAssertTrue(view.isExpanded("work"))
         XCTAssertTrue(view.isExpanded("specs"))
         XCTAssertEqual(view.outlineView.numberOfRows, 6)
-        XCTAssertEqual(expanding, ["work"], "Programmatic expansion does not raise Expanding")
+        XCTAssertEqual(expanding, ["work", "work", "specs"], "Actual binding transitions raise Expanding, as WinUI node property changes do")
     }
 
     @MainActor

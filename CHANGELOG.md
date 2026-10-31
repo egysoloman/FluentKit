@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TreeView accessibility disclosure queries no longer trigger `onExpanding` or lazy loading.
+  Expansion events now use the native will-expand notification. **Behavior change:** changes to
+  `expandedIDs` after mounting emit expansion/collapse events; initial state and internal reload
+  restoration remain silent. `onCollapsed` receives the updated binding state, and requests to
+  reopen from that callback are preserved. See `audits/2026-11-01/treeview-expansion/REPORT.md`.
+
 - TreeView checkbox interactions now commit on release inside their target, cancel when moved
   outside or interrupted, and show hover/pressed feedback. Chevron activation remains on press.
   Hit targets include the full WinUI template padding in LTR/RTL; reused or removed rows cannot

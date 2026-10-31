@@ -1,0 +1,34 @@
+Building for debugging...
+[1 / 10] FluentGallery-product
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+Build complete! (1.59秒)
+Test Suite 'Selected tests' started at 2026-11-01 05:26:23.209.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 05:26:23.210.
+Test Suite 'TreeViewExpansionEventTests' started at 2026-11-01 05:26:23.210.
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:21: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed: throwing "NSInvalidArgumentException: -[NSOutlineRow isAccessibilitySelectorAllowed:]: unrecognized selector sent to instance 0x7951407300"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:22: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertFalse failed: throwing "NSInvalidArgumentException: -[NSOutlineRow isAccessibilityExpanded]: unrecognized selector sent to instance 0x7951407300"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:21: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed: throwing "NSInvalidArgumentException: -[NSOutlineRow isAccessibilitySelectorAllowed:]: unrecognized selector sent to instance 0x7951407300"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:22: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertFalse failed: throwing "NSInvalidArgumentException: -[NSOutlineRow isAccessibilityExpanded]: unrecognized selector sent to instance 0x7951407300"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:21: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed: throwing "NSInvalidArgumentException: -[NSOutlineRow isAccessibilitySelectorAllowed:]: unrecognized selector sent to instance 0x7951407300"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:22: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertFalse failed: throwing "NSInvalidArgumentException: -[NSOutlineRow isAccessibilityExpanded]: unrecognized selector sent to instance 0x7951407300"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:26: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : -[NSOutlineRow setAccessibilityExpanded:]: unrecognized selector sent to instance 0x7951407300 (NSInvalidArgumentException)
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' failed (0.447 seconds).
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:50: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - WinUI raises Expanding when the node's IsExpanded property changes
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:51: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:54: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - Reloading loaded children preserves, rather than repeats, the transition
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:55: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:58: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:61: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial", "remote"]")
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' failed (0.096 seconds).
+Test Suite 'TreeViewExpansionEventTests' failed at 2026-11-01 05:26:23.754.
+	 Executed 2 tests, with 13 failures (7 unexpected) in 0.544 (0.544) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 05:26:23.754.
+	 Executed 2 tests, with 13 failures (7 unexpected) in 0.544 (0.544) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 05:26:23.754.
+	 Executed 2 tests, with 13 failures (7 unexpected) in 0.544 (0.545) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

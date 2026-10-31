@@ -1,0 +1,37 @@
+Building for debugging...
+[Starting]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (1.88秒)
+Test Suite 'Selected tests' started at 2026-11-01 05:27:37.601.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 05:27:37.602.
+Test Suite 'TreeViewExpansionEventTests' started at 2026-11-01 05:27:37.602.
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:30: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:31: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(false)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:30: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:31: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(false)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:30: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:31: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(false)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:36: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - The real AX expansion action loads exactly once
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:37: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:38: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:40: error: -[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - An already-expanded node does not load twice
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testAccessibilityEligibilityReadsDoNotExpandOrLoadNodes]' failed (0.497 seconds).
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:59: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - WinUI raises Expanding when the node's IsExpanded property changes
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:60: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:63: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]") - Reloading loaded children preserves, rather than repeats, the transition
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:64: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:67: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["remote"]")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewExpansionEventTests.swift:70: error: -[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot] : XCTAssertEqual failed: ("[]") is not equal to ("["initial", "remote"]")
+Test Case '-[FluentKitTests.TreeViewExpansionEventTests testBindingTransitionsRaiseEventsButInitialAndRestoredStateDoNot]' failed (0.100 seconds).
+Test Suite 'TreeViewExpansionEventTests' failed at 2026-11-01 05:27:38.199.
+	 Executed 2 tests, with 16 failures (0 unexpected) in 0.597 (0.597) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 05:27:38.199.
+	 Executed 2 tests, with 16 failures (0 unexpected) in 0.597 (0.597) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 05:27:38.199.
+	 Executed 2 tests, with 16 failures (0 unexpected) in 0.597 (0.598) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

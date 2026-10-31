@@ -1428,6 +1428,10 @@ of complete visual parity with Windows.
   modifier wins. Native drag/drop acceptance, cross-tree transfer and row expansion animation
   remain pending. See the
   [TreeView multi-drag audit](audits/2026-11-01/treeview-multi-drag/REPORT.md).
+- TreeView disclosure availability queries do not call `onExpanding`. Actual changes to
+  `expandedIDs` after mounting emit `onExpanding` / `onCollapsed`; initial state and restoration
+  after reloading children do not repeat them. `onCollapsed` observes the updated binding, so a
+  callback can request reopening. See the [expansion event audit](audits/2026-11-01/treeview-expansion/REPORT.md).
 - Typography uses Caption 12, Body 14, BodyLarge 18, Subtitle 20, Title 28, TitleLarge 40 and Display 68.
   Legacy aliases map `largeTitle` to `titleLarge`, `title2` to `subtitle`, `headline` to `bodyStrong`
   and `callout` to `body`. `FluentTypography(overrides:fontProvider:)` supports per-style size, weight,
