@@ -1,0 +1,575 @@
+[
+  {
+    "appAppearance" : "NSAppearanceNameAqua",
+    "editorIdentity" : false,
+    "editorInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "labels" : [
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : "没有找到相关设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.89411764705882357
+        ],
+        "text" : "设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : ""
+      }
+    ],
+    "marked" : false,
+    "materialFills" : [
+      [
+        0.94117647058823528,
+        0.95294117647058818,
+        0.97647058823529409,
+        1
+      ]
+    ],
+    "preference" : "system",
+    "previewFocused" : false,
+    "previewIdentity" : false,
+    "previewMarked" : true,
+    "previewText" : "hua",
+    "rawFieldInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "searchIdentity" : true,
+    "searchInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "state" : "light",
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "appAppearance" : "NSAppearanceNameDarkAqua",
+    "editorIdentity" : false,
+    "editorInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "labels" : [
+      {
+        "ink" : [
+          1,
+          1,
+          1,
+          0.77254901960784317
+        ],
+        "text" : "没有找到相关设置"
+      },
+      {
+        "ink" : [
+          1,
+          1,
+          1,
+          1
+        ],
+        "text" : "设置"
+      },
+      {
+        "ink" : [
+          1,
+          1,
+          1,
+          0.77254901960784317
+        ],
+        "text" : ""
+      }
+    ],
+    "marked" : false,
+    "materialFills" : [
+      [
+        0.125,
+        0.125,
+        0.125,
+        1
+      ]
+    ],
+    "preference" : "system",
+    "previewFocused" : false,
+    "previewIdentity" : false,
+    "previewMarked" : true,
+    "previewText" : "hua",
+    "rawFieldInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "searchIdentity" : true,
+    "searchInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "state" : "dark",
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "appAppearance" : "NSAppearanceNameAqua",
+    "editorIdentity" : false,
+    "editorInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "labels" : [
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : "没有找到相关设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.89411764705882357
+        ],
+        "text" : "设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : ""
+      }
+    ],
+    "marked" : false,
+    "materialFills" : [
+      [
+        0.94117647058823528,
+        0.95294117647058818,
+        0.97647058823529409,
+        1
+      ]
+    ],
+    "preference" : "system",
+    "previewFocused" : false,
+    "previewIdentity" : false,
+    "previewMarked" : true,
+    "previewText" : "hua",
+    "rawFieldInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "searchIdentity" : true,
+    "searchInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "state" : "light-again",
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "appAppearance" : "NSAppearanceNameAqua",
+    "candidateAppearance" : "NSAppearanceNameAqua",
+    "candidateChoices" : [
+      "ObjectIdentifier(0x0000007843d59500)",
+      "ObjectIdentifier(0x0000007843d59800)",
+      "ObjectIdentifier(0x0000007843d59b00)",
+      "ObjectIdentifier(0x0000007843d59e00)",
+      "ObjectIdentifier(0x0000007843d5a100)"
+    ],
+    "candidateVisible" : true,
+    "editorIdentity" : false,
+    "editorInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "emojiAppearance" : "NSAppearanceNameAqua",
+    "emojiInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "emojiItems" : [
+      "ObjectIdentifier(0x0000007843f31e00)",
+      "ObjectIdentifier(0x0000007843f32100)",
+      "ObjectIdentifier(0x0000007843f32400)",
+      "ObjectIdentifier(0x0000007843f32700)",
+      "ObjectIdentifier(0x0000007843f32a00)"
+    ],
+    "emojiMaterials" : [
+      [
+        0.94117647058823528,
+        0.94117647058823528,
+        0.94117647058823528,
+        1
+      ]
+    ],
+    "emojiQuery" : "smile",
+    "emojiVisible" : true,
+    "labels" : [
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : "没有找到相关设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.89411764705882357
+        ],
+        "text" : "设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : ""
+      }
+    ],
+    "marked" : false,
+    "materialFills" : [
+      [
+        0.94117647058823528,
+        0.95294117647058818,
+        0.97647058823529409,
+        1
+      ]
+    ],
+    "preference" : "system",
+    "previewFocused" : false,
+    "previewIdentity" : false,
+    "previewMarked" : true,
+    "previewText" : "hua",
+    "rawFieldInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "searchIdentity" : true,
+    "searchInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "state" : "panels-light",
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "appAppearance" : "NSAppearanceNameDarkAqua",
+    "candidateAppearance" : "NSAppearanceNameDarkAqua",
+    "candidateChoices" : [
+      "ObjectIdentifier(0x0000007843d59500)",
+      "ObjectIdentifier(0x0000007843d59800)",
+      "ObjectIdentifier(0x0000007843d59b00)",
+      "ObjectIdentifier(0x0000007843d59e00)",
+      "ObjectIdentifier(0x0000007843d5a100)"
+    ],
+    "candidateVisible" : true,
+    "editorIdentity" : false,
+    "editorInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "emojiAppearance" : "NSAppearanceNameDarkAqua",
+    "emojiInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "emojiItems" : [
+      "ObjectIdentifier(0x0000007843f31e00)",
+      "ObjectIdentifier(0x0000007843f32100)",
+      "ObjectIdentifier(0x0000007843f32400)",
+      "ObjectIdentifier(0x0000007843f32700)",
+      "ObjectIdentifier(0x0000007843f32a00)"
+    ],
+    "emojiMaterials" : [
+      [
+        0.17000000000000001,
+        0.17000000000000001,
+        0.17000000000000001,
+        1
+      ]
+    ],
+    "emojiQuery" : "smile",
+    "emojiVisible" : true,
+    "labels" : [
+      {
+        "ink" : [
+          1,
+          1,
+          1,
+          1
+        ],
+        "text" : "设置"
+      },
+      {
+        "ink" : [
+          1,
+          1,
+          1,
+          0.77254901960784317
+        ],
+        "text" : ""
+      }
+    ],
+    "marked" : false,
+    "materialFills" : [
+      [
+        0.125,
+        0.125,
+        0.125,
+        1
+      ]
+    ],
+    "preference" : "system",
+    "previewFocused" : false,
+    "previewIdentity" : false,
+    "previewMarked" : true,
+    "previewText" : "hua",
+    "rawFieldInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "searchIdentity" : true,
+    "searchInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "state" : "panels-dark",
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "appAppearance" : "NSAppearanceNameAqua",
+    "candidateAppearance" : "NSAppearanceNameAqua",
+    "candidateChoices" : [
+      "ObjectIdentifier(0x0000007843d59500)",
+      "ObjectIdentifier(0x0000007843d59800)",
+      "ObjectIdentifier(0x0000007843d59b00)",
+      "ObjectIdentifier(0x0000007843d59e00)",
+      "ObjectIdentifier(0x0000007843d5a100)"
+    ],
+    "candidateVisible" : true,
+    "editorIdentity" : false,
+    "editorInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "emojiAppearance" : "NSAppearanceNameAqua",
+    "emojiInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "emojiItems" : [
+      "ObjectIdentifier(0x0000007843f31e00)",
+      "ObjectIdentifier(0x0000007843f32100)",
+      "ObjectIdentifier(0x0000007843f32400)",
+      "ObjectIdentifier(0x0000007843f32700)",
+      "ObjectIdentifier(0x0000007843f32a00)"
+    ],
+    "emojiMaterials" : [
+      [
+        0.94117647058823528,
+        0.94117647058823528,
+        0.94117647058823528,
+        1
+      ]
+    ],
+    "emojiQuery" : "smile",
+    "emojiVisible" : true,
+    "labels" : [
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.89411764705882357
+        ],
+        "text" : "设置"
+      },
+      {
+        "ink" : [
+          0,
+          0,
+          0,
+          0.61960784313725492
+        ],
+        "text" : ""
+      }
+    ],
+    "marked" : false,
+    "materialFills" : [
+      [
+        0.94117647058823528,
+        0.95294117647058818,
+        0.97647058823529409,
+        1
+      ]
+    ],
+    "preference" : "system",
+    "previewFocused" : false,
+    "previewIdentity" : false,
+    "previewMarked" : true,
+    "previewText" : "hua",
+    "rawFieldInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ],
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "searchIdentity" : true,
+    "searchInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "state" : "panels-light-again",
+    "windowAppearance" : "NSAppearanceNameAqua"
+  }
+]

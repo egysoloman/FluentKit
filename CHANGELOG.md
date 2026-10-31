@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox updates an already-open popup when its host receives a new theme, including native
+  AppKit embeddings without an AppearanceCoordinator. The popup stays open with its selection
+  intact; temporary transition imagery is settled before repainting.
+
 - FlipView retargets repeated adjacent navigation from its visible viewport and supplies native
   page content with the actual viewport size. At most five pages remain mounted during motion.
   Nonadjacent selection jumps now land directly, matching WinUI's adjacent-transition distinction;

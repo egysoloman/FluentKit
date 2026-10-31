@@ -1,0 +1,5 @@
+f692ffb35c2f09a782bd3417ae1c0bf199fc6059ef9711e1978740d51d7dd080  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/SettingsWindow.swift
+f921bc8b62374d2a93fad7f5daa140c9cec107fa1f87868f4b9da4a432dbc881  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/CandidateView.swift
+2b1d5d3e178e729641916ec06f4469f9de987488fa50a2fd31efbb810dd876fc  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/CandidateChrome.swift
+bb3123c72ad7d2a4a0c94e5dff4b10a6166fec99bb4f757eba5dd0660503a907  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/EmojiPanel.swift
+9f0ef3a5b1d14d8897c7a111f52a543324417f217a61aec8ee30596c52868d68  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/IMEThemeObservation.swift

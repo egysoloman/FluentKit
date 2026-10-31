@@ -348,8 +348,9 @@ final class FluentComboBoxPopup: NSObject {
         appearanceCoordinator = nil
     }
 
-    private func apply(theme: FluentTheme) {
+    func apply(theme: FluentTheme) {
         guard self.theme != theme else { return }
+        transitionHost?.settleForAppearanceChange()
         self.theme = theme
         transitionHost?.update(theme: theme)
         popupView?.update(theme: theme)

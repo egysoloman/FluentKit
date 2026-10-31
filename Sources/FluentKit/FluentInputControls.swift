@@ -1673,6 +1673,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private func applyTheme() {
         applyControlSize()
         focusPillLayer.backgroundColor = theme.accentFillDefault.cgColor
+        comboPopup?.apply(theme: theme)
         needsDisplay = true
     }
 

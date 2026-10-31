@@ -1,0 +1,12 @@
+Building for production...
+[Planning deferred tasks]
+[1 / 3]
+[2 / 4] FluentKit
+[3 / 5] FluentKit
+[7 / 7] FluentKit
+[14 / 19] FluentIME-product
+[16 / 20] FluentIME-product
+/Users/stars/Downloads/Fluent IME/Package.swift: FluentIME-product: ld: warning: building for macOS-13.0, but linking with dylib '/opt/homebrew/opt/librime/lib/librime.1.dylib' which was built for newer version 27.0
+[18 / 20] FluentIME-product
+[19 / 20] FluentIME-product
+Build complete! (48.34秒)

@@ -1,0 +1,746 @@
+[
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentTextField"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "TextBox",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentTextField"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "TextBox",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentTextField"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "TextBox",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "Expander",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "Expander",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "Expander",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "ToggleSwitch",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentToggle"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "ToggleSwitch",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "ToggleSwitch",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentAutoSuggestBoxField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "AutoSuggestBox",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentAutoSuggestBoxField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentButton"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "AutoSuggestBox",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentAutoSuggestBoxField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "AutoSuggestBox",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentCommandBar"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "CommandBar",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentCommandBar"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "CommandBar",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentCommandBar"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "CommandBar",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentMenuBar"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "MenuBar",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentMenuBar"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "MenuBar",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentMenuBar"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "MenuBar",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentSplitButton"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "SplitButton",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  },
+  {
+    "backgroundDark" : true,
+    "controls" : [
+      {
+        "dark" : true,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentSplitButton"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : true,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : true,
+    "dark" : true,
+    "expectedInk" : [
+      1,
+      1,
+      1,
+      1
+    ],
+    "page" : "SplitButton",
+    "storeDark" : true,
+    "titleInks" : [
+      [
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameDarkAqua"
+  },
+  {
+    "backgroundDark" : false,
+    "controls" : [
+      {
+        "dark" : false,
+        "type" : "FluentSearchTextField"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentSplitButton"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentToggle"
+      },
+      {
+        "dark" : false,
+        "type" : "FluentButton"
+      }
+    ],
+    "coordinatorDark" : false,
+    "dark" : false,
+    "expectedInk" : [
+      0,
+      0,
+      0,
+      0.89411764705882357
+    ],
+    "page" : "SplitButton",
+    "storeDark" : false,
+    "titleInks" : [
+      [
+        0,
+        0,
+        0,
+        0.89411764705882357
+      ]
+    ],
+    "windowAppearance" : "NSAppearanceNameAqua"
+  }
+]
