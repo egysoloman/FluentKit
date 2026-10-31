@@ -1,0 +1,14 @@
+$ sw_vers
+ProductName:		macOS
+ProductVersion:		27.2
+BuildVersion:		26B123
+$ uname -m
+arm64
+$ swift --version
+swift-driver version: 1.168.6 Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)
+Target: arm64-apple-macosx27.2.0
+$ xcodebuild -version
+Xcode 27.1
+Build version 27A9269
+$ git rev-parse HEAD
+073238a86b14c4cd6e675c17763950542bf9378a

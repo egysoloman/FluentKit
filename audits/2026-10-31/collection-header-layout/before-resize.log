@@ -1,0 +1,16 @@
+Building for debugging...
+Build complete! (0.33秒)
+Test Suite 'Selected tests' started at 2026-10-31 19:52:43.376.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 19:52:43.379.
+Test Suite 'AuditRegressionTests' started at 2026-10-31 19:52:43.379.
+Test Case '-[FluentKitTests.AuditRegressionTests testGridResizeFitsRowsAndSectionHeadersInBothDirections]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AuditRegressionTests.swift:434: warning: -[FluentKitTests.AuditRegressionTests testGridResizeFitsRowsAndSectionHeadersInBothDirections] : Conflicting constraints detected: <private>.
+
+Will attempt to recover by breaking <private>.
+Test Case '-[FluentKitTests.AuditRegressionTests testGridResizeFitsRowsAndSectionHeadersInBothDirections]' passed (0.525 seconds).
+Test Suite 'AuditRegressionTests' passed at 2026-10-31 19:52:43.904.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.525 (0.525) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-10-31 19:52:43.904.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.525 (0.526) seconds
+Test Suite 'Selected tests' passed at 2026-10-31 19:52:43.904.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.525 (0.528) seconds

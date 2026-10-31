@@ -1,0 +1,1282 @@
+[
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "list-light-ltr",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "list-light-ltr",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "list-light-ltr",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "list-light-ltr",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1500,
+    "variant" : "list-light-ltr",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "list-light-rtl",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "list-light-rtl",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "list-light-rtl",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "list-light-rtl",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1500,
+    "variant" : "list-light-rtl",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "list-dark-ltr",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "list-dark-ltr",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "list-dark-ltr",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "list-dark-ltr",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1500,
+    "variant" : "list-dark-ltr",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "list-dark-rtl",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "list-dark-rtl",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "list-dark-rtl",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "list-dark-rtl",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1500,
+    "variant" : "list-dark-rtl",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "grid-light-ltr",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "grid-light-ltr",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "grid-light-ltr",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "grid-light-ltr",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1590,
+    "variant" : "grid-light-ltr",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "grid-light-rtl",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "grid-light-rtl",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "grid-light-rtl",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "grid-light-rtl",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1590,
+    "variant" : "grid-light-rtl",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "grid-dark-ltr",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "grid-dark-ltr",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "grid-dark-ltr",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "grid-dark-ltr",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1590,
+    "variant" : "grid-dark-ltr",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 559,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 583,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 559,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 600,
+    "requestedWidth" : 600,
+    "scrollY" : 0,
+    "variant" : "grid-dark-rtl",
+    "viewportWidth" : 583,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 139,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 163,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 139,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 180,
+    "requestedWidth" : 180,
+    "scrollY" : 0,
+    "variant" : "grid-dark-rtl",
+    "viewportWidth" : 163,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 0,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 23,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 0,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 40,
+    "requestedWidth" : 40,
+    "scrollY" : 0,
+    "variant" : "grid-dark-rtl",
+    "viewportWidth" : 23,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 1183,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 1159,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 0: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 1200,
+    "requestedWidth" : 1200,
+    "scrollY" : 0,
+    "variant" : "grid-dark-rtl",
+    "viewportWidth" : 1183,
+    "windowsComparison" : "pending"
+  },
+  {
+    "headers" : [
+      {
+        "clipped" : false,
+        "divider" : {
+          "height" : 1,
+          "width" : 279,
+          "x" : 12,
+          "y" : 33
+        },
+        "header" : {
+          "height" : 48,
+          "width" : 303,
+          "x" : 0,
+          "y" : 0
+        },
+        "label" : {
+          "height" : 17,
+          "width" : 279,
+          "x" : 12,
+          "y" : 8
+        },
+        "text" : "Group 1: a long heading that must fit the available width"
+      }
+    ],
+    "hostWidth" : 320,
+    "requestedWidth" : 320,
+    "scrollY" : 1590,
+    "variant" : "grid-dark-rtl",
+    "viewportWidth" : 303,
+    "windowsComparison" : "pending"
+  }
+]

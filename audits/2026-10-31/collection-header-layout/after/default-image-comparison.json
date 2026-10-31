@@ -1,0 +1,66 @@
+[
+  {
+    "image": "grid-dark-ltr-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-dark-ltr-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-dark-rtl-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-dark-rtl-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-light-ltr-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-light-ltr-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-light-rtl-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "grid-light-rtl-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-dark-ltr-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-dark-ltr-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-dark-rtl-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-dark-rtl-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-light-ltr-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-light-ltr-40.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-light-rtl-320.png",
+    "identicalPixels": true
+  },
+  {
+    "image": "list-light-rtl-40.png",
+    "identicalPixels": true
+  }
+]

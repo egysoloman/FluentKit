@@ -438,7 +438,7 @@ final class AuditRegressionTests: XCTestCase {
                 XCTAssertFalse(headers.isEmpty)
                 for header in headers {
                     for label in descendants(header).compactMap({ $0 as? NSTextField }) {
-                        XCTAssertLessThanOrEqual(label.alignmentRect(forFrame: label.frame).width, max(0, header.bounds.width - 12) + 0.01)
+                        XCTAssertLessThanOrEqual(label.alignmentRect(forFrame: label.frame).width, max(0, header.bounds.width - 24) + 0.01)
                         XCTAssertGreaterThanOrEqual(label.frame.width, 0)
                     }
                 }

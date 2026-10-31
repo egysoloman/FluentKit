@@ -1368,3 +1368,5 @@ Run `swift test` for behavior and work-count regressions, and
 `./tools/run-quality-checks.sh` for Release raw data, registered Gallery sample mounting and
 controlled screenshots. `tools/compare_snapshots.py` compares reviewed image pairs without
 rewriting their baselines; capture OS, scale and fonts must match.
+CI also checks XCTest output with `tools/check_test_diagnostics.py` so AppKit constraint conflicts
+fail the build even when the test assertions pass.

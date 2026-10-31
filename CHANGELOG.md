@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ListView/GridView headers clamp their available content width to zero after subtracting the
+  WinUI 12pt side margins, including during reuse and narrow resize. Long text can compress,
+  RTL preserves the correct leading edge, and content is clipped to the header. CI now rejects
+  AppKit constraint-conflict diagnostics even when XCTest reports passing assertions.
+- Header content follows WinUI's default leading alignment at its natural width instead of
+  stretching every custom button/template. Explicitly stretching content, such as
+  `FluentVStack(alignment: .width)`, still fills the slot; the divider retains the full slot width.
 - TreeView retains native node and cell identity for content-only updates, preserves unbound
   selection through stable-ID reordering, and prevents queued normalization from writing to a
   detached selection binding. RTL row content now follows the mirrored chevron column.

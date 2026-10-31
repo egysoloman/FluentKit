@@ -31,7 +31,10 @@ jobs:
         run: swift build -Xswiftc -warnings-as-errors
 
       - name: Run tests
-        run: swift test -Xswiftc -warnings-as-errors
+        run: |
+          set -o pipefail
+          swift test -Xswiftc -warnings-as-errors 2>&1 | tee "$RUNNER_TEMP/fluentkit-tests.log"
+          python3 tools/check_test_diagnostics.py "$RUNNER_TEMP/fluentkit-tests.log"
 
       - name: Build release configuration
         run: swift build --configuration release -Xswiftc -warnings-as-errors

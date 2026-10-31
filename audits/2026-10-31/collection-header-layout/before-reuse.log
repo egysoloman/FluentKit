@@ -1,0 +1,27 @@
+Building for debugging...
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[5 / 18] FluentKitValidation-product
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+Build complete! (2.13秒)
+Test Suite 'Selected tests' started at 2026-10-31 19:55:19.524.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 19:55:19.527.
+Test Suite 'CollectionHeaderLayoutTests' started at 2026-10-31 19:55:19.527.
+Test Case '-[FluentKitTests.CollectionHeaderLayoutTests testReusedHeaderClampsItsContentSlotAndRestoresNormalPadding]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CollectionHeaderLayoutTests.swift:31: warning: -[FluentKitTests.CollectionHeaderLayoutTests testReusedHeaderClampsItsContentSlotAndRestoresNormalPadding] : Conflicting constraints detected: <private>.
+
+Will attempt to recover by breaking <private>.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CollectionHeaderLayoutTests.swift:38: error: -[FluentKitTests.CollectionHeaderLayoutTests testReusedHeaderClampsItsContentSlotAndRestoresNormalPadding] : XCTAssertEqualWithAccuracy failed: ("12.0") is not equal to ("0.0") +/- ("0.5")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CollectionHeaderLayoutTests.swift:38: error: -[FluentKitTests.CollectionHeaderLayoutTests testReusedHeaderClampsItsContentSlotAndRestoresNormalPadding] : XCTAssertEqualWithAccuracy failed: ("12.0") is not equal to ("-11.0") +/- ("0.5")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CollectionHeaderLayoutTests.swift:38: error: -[FluentKitTests.CollectionHeaderLayoutTests testReusedHeaderClampsItsContentSlotAndRestoresNormalPadding] : XCTAssertEqualWithAccuracy failed: ("12.0") is not equal to ("-12.0") +/- ("0.5")
+Test Case '-[FluentKitTests.CollectionHeaderLayoutTests testReusedHeaderClampsItsContentSlotAndRestoresNormalPadding]' failed (0.563 seconds).
+Test Suite 'CollectionHeaderLayoutTests' failed at 2026-10-31 19:55:20.090.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.563 (0.563) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 19:55:20.090.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.563 (0.563) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 19:55:20.090.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.563 (0.566) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -2326,12 +2326,16 @@ private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewEle
     var sectionIndex: Int?
     private(set) var contentView: NSView?
     let dividerLayer = CALayer()
+    private var contentWidthConstraint: NSLayoutConstraint?
+    private var leftConstraint: NSLayoutConstraint?
+    private var rightConstraint: NSLayoutConstraint?
 
     override var isFlipped: Bool { true }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         wantsLayer = true
+        layer?.masksToBounds = true
         dividerLayer.name = "FluentKit.Collection.HeaderDivider"
         layer?.addSublayer(dividerLayer)
         setAccessibilityElement(true)
@@ -2342,21 +2346,71 @@ private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewEle
     func update(content: FluentAnyView, context: FluentRenderContext) {
         let base: NSColor = context.theme.isDark ? .white : .black
         dividerLayer.backgroundColor = (context.theme.isHighContrast ? context.theme.textPrimary : base.withAlphaComponent(0.2)).cgColor
-        if let contentView, content._update(contentView, in: context) { needsLayout = true; return }
+        if let contentView, content._update(contentView, in: context) {
+            configureContentDirection(context.layoutDirection)
+            updateContentWidth()
+            needsLayout = true
+            return
+        }
+        contentWidthConstraint?.isActive = false
+        contentWidthConstraint = nil
         contentView?.removeFromSuperview()
         let mounted = content._mount(in: context)
         contentView = mounted
         addSubview(mounted)
         mounted.translatesAutoresizingMaskIntoConstraints = false
         mounted.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        mounted.setContentCompressionResistancePriority(.required, for: .horizontal)
+        mounted.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         let insets = Self.contentInsets
+        leftConstraint = mounted.leftAnchor.constraint(equalTo: leftAnchor, constant: insets.left)
+        rightConstraint = mounted.rightAnchor.constraint(equalTo: rightAnchor, constant: -insets.right)
         NSLayoutConstraint.activate([
-            mounted.leadingAnchor.constraint(equalTo: leadingAnchor, constant: insets.left),
-            mounted.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right),
             mounted.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
         ])
+        configureContentDirection(context.layoutDirection)
+        updateContentWidth()
         needsLayout = true
+    }
+
+    private func configureContentDirection(_ direction: FluentLayoutDirection) {
+        fluentApplyLayoutDirection(direction)
+        let rtl = direction.appKitValue == .rightToLeft
+        (rtl ? leftConstraint : rightConstraint)?.isActive = false
+        (rtl ? rightConstraint : leftConstraint)?.isActive = true
+    }
+
+    override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        updateContentWidth()
+    }
+
+    override func setBoundsSize(_ newSize: NSSize) {
+        super.setBoundsSize(newSize)
+        updateContentWidth()
+    }
+
+    private func updateContentWidth() {
+        // FrameworkElement::ArrangeCore clamps the slot after subtracting margins to zero.
+        // Two required edge equalities would instead request negative width during reuse or
+        // extreme resize. Keep the 12pt leading margin and clip the zero-width content slot.
+        guard let contentView else { return }
+        let insets = Self.contentInsets
+        let available = max(0, bounds.width - insets.left - insets.right)
+        // The WinUI header's HorizontalContentAlignment defaults to Left, so natural content
+        // keeps its desired width. An explicitly stretching Fluent view can fill the slot.
+        let fillsWidth = fluentViewFillsAvailableWidth(contentView)
+        let relation: NSLayoutConstraint.Relation = fillsWidth ? .equal : .lessThanOrEqual
+        if contentWidthConstraint?.relation != relation {
+            contentWidthConstraint?.isActive = false
+            let width = fillsWidth ? contentView.widthAnchor.constraint(equalToConstant: available)
+                : contentView.widthAnchor.constraint(lessThanOrEqualToConstant: available)
+            width.identifier = "FluentKit.Collection.HeaderContentWidth"
+            contentWidthConstraint = width
+            width.isActive = true
+        } else if contentWidthConstraint?.constant != available {
+            contentWidthConstraint?.constant = available
+            needsLayout = true
+        }
     }
 
     override func layout() {
@@ -2365,8 +2419,9 @@ private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewEle
         let insets = Self.contentInsets
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        dividerLayer.frame = NSRect(x: insets.left, y: contentView.frame.maxY + Self.dividerSpacing,
-                                    width: max(0, bounds.width - insets.left - insets.right), height: 1)
+        let width = max(0, bounds.width - insets.left - insets.right)
+        let x = userInterfaceLayoutDirection == .rightToLeft ? bounds.width - insets.right - width : insets.left
+        dividerLayer.frame = NSRect(x: x, y: contentView.frame.maxY + Self.dividerSpacing, width: width, height: 1)
         CATransaction.commit()
     }
 }
