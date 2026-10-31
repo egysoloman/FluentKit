@@ -1,0 +1,2 @@
+sandbox_extension_issue_file_to_process failed for /tmp/Fluent Settings Integration Audit.app: 1 (Operation not permitted)
+2026-11-01 04:37:51.204 SettingsIntegrationAudit[15130:3725193] error messaging the mach port for IMKCFRunLoopWakeUpReliable

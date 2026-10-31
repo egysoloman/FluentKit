@@ -1,0 +1,16 @@
+{
+  "interactiveStates": 57,
+  "searchNativeInstances": 1,
+  "markedInputSource": "org.fluentime.inputmethod.FluentIME.Hans",
+  "compositionPreservedAcrossThemes": true,
+  "menuSize": "180x80pt",
+  "switchStates": 24,
+  "maximizedBackgroundRGB": [
+    [
+      32,
+      32,
+      32
+    ]
+  ],
+  "nativeCandidatePositionVerified": false
+}
