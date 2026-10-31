@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added a shared input foundation: `FluentInputDeviceTracker` records the last input device per
+  window (mouse, touch, pen, keyboard) like WinUI's InputDeviceType and posts changes, and an
+  internal pan driver unifies macOS 27 direct touch, phased trackpad swipes and discrete wheel
+  steps along either axis with RTL mapping. Pivot now uses it and hides its navigation buttons
+  for touch.
+
 - Pivot now pans interactively with direct touch on macOS 27, trackpad swipes and horizontal mouse
   wheels: content follows the gesture with the neighbouring item visible, carousel and clipped
   static headers follow WinUI's header curves, non-wrapping ends rubber-band, and releases snap to

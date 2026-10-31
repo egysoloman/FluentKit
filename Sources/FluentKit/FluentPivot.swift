@@ -167,11 +167,9 @@ final class FluentPivotControl: NSControl {
     /// `panOffset` is logical: negative reveals the next item, positive the previous one.
     private(set) var isPanning = false
     private(set) var panOffset: CGFloat = 0
-    fileprivate var panSamples: [(time: TimeInterval, delta: CGFloat)] = []
-    fileprivate var scrollGesture: FluentPivotScrollGesture = .idle
-    fileprivate var lastWheelStep: (time: TimeInterval, direction: Int)?
-    private(set) var touchPanRecognizer: NSPanGestureRecognizer?
-    fileprivate var touchPanStart: CGFloat = 0
+    /// Shared touch, trackpad and wheel input (see `FluentPanGestureDriver`).
+    private(set) var panDriver: FluentPanGestureDriver!
+    var touchPanRecognizer: NSPanGestureRecognizer? { panDriver.touchRecognizer }
     /// Logical header displacement while panning. Applied to header frames, not to the strip's
     /// backing-layer transform, which AppKit owns and may reset.
     private(set) var panHeaderShift: CGFloat = 0
@@ -217,7 +215,7 @@ final class FluentPivotControl: NSControl {
         focusLayer.zPosition = 10
         layer?.addSublayer(focusLayer)
         animationCoordinator.reduceMotion = context.reduceMotion
-        installTouchPanRecognizer()
+        installPanDriver()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -695,7 +693,11 @@ final class FluentPivotControl: NSControl {
         updateNavigationButtons()
     }
 
-    override func mouseEntered(with event: NSEvent) { setPointerOverHeaders(true) }
+    /// `m_isMouseOrPenPointerOverHeaders`: touch never reveals the navigation buttons.
+    override func mouseEntered(with event: NSEvent) {
+        guard FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch, event.subtype != .touch else { return }
+        setPointerOverHeaders(true)
+    }
     override func mouseExited(with event: NSEvent) { setPointerOverHeaders(false) }
 
     // MARK: - Keyboard and focus
@@ -1076,18 +1078,9 @@ final class FluentPivotNavigationButton: NSView {
     }
 }
 
-enum FluentPivotScrollGesture: Equatable {
-    case idle
-    case undecided(dx: CGFloat, dy: CGFloat)
-    case owned
-    case rejected
-}
-
 // MARK: - Interactive pan (trackpad, direct touch, wheel)
 
-extension FluentPivotControl: NSGestureRecognizerDelegate {
-    /// Distance a trackpad gesture travels before its axis is decided.
-    static let panAxisThreshold: CGFloat = 4
+extension FluentPivotControl {
     /// Projection window used to emulate ScrollViewer inertia for MandatorySingle snapping.
     static let panProjectionTime: CGFloat = 0.25
     private static let panSettleKey = "fluent.pivot.pan"
@@ -1121,12 +1114,11 @@ extension FluentPivotControl: NSGestureRecognizerDelegate {
     func beginInteractivePan() -> CGFloat? {
         guard canBeginInteractivePan else { return nil }
         animationCoordinator.cancelValueAnimation(key: Self.panSettleKey)
-        if isPanning { return panOffset }
+        if isPanning { return panOffsetBeforeDamping }
         if isTransitioning { showCurrent() }
         if let layer = headerStrip.layer { animationCoordinator.cancel(layer: layer, key: "fluent.pivot.headerShift") }
         isPanning = true
         panOffset = 0
-        panSamples = []
         return 0
     }
 
@@ -1194,7 +1186,6 @@ extension FluentPivotControl: NSGestureRecognizerDelegate {
         guard isPanning else { return }
         isPanning = false
         panOffset = 0
-        panSamples = []
         panHeaderShift = 0
         if let target, target != selectedIndex {
             // Content already rests on the target, so the commit itself does not fly.
@@ -1244,145 +1235,36 @@ extension FluentPivotControl: NSGestureRecognizerDelegate {
         }
     }
 
-    private func recordPanSample(_ delta: CGFloat, at time: TimeInterval) {
-        panSamples.append((time, delta))
-        panSamples.removeAll { time - $0.time > 0.1 }
-    }
+    // MARK: Input
 
-    private var sampledPanVelocity: CGFloat {
-        guard let first = panSamples.first, let last = panSamples.last else { return 0 }
-        let span = max(last.time - first.time, 1.0 / 120.0)
-        return panSamples.reduce(0) { $0 + $1.delta } / CGFloat(span)
+    fileprivate func installPanDriver() {
+        let driver = FluentPanGestureDriver(view: self, axis: .horizontal)
+        driver.onBeginAllowed = { [weak self] in self?.canBeginInteractivePan ?? false }
+        driver.onBegin = { [weak self] in self?.beginInteractivePan() }
+        driver.onChange = { [weak self] translation in self?.updateInteractivePan(translation: translation) }
+        driver.onEnd = { [weak self] velocity in self?.endInteractivePan(velocity: velocity) }
+        driver.onCancel = { [weak self] in self?.cancelInteractivePan(animated: true) }
+        // A horizontal mouse wheel without gesture phases moves one item per burst.
+        driver.onDiscreteStep = { [weak self] direction, _ in
+            guard let self, !self.configuration.isLocked else { return false }
+            return self.move(direction < 0 ? .next : .previous, wrap: self.shouldWrap)
+        }
+        panDriver = driver
     }
-
-    // MARK: Trackpad and wheel
 
     override func scrollWheel(with event: NSEvent) {
-        guard isEnabled else { super.scrollWheel(with: event); return }
-        let logicalDX = userInterfaceLayoutDirection == .rightToLeft ? -event.scrollingDeltaX : event.scrollingDeltaX
-        if !event.momentumPhase.isEmpty {
-            // Momentum after a pan Pivot owned is replaced by its own settle animation.
-            if scrollGesture != .owned { super.scrollWheel(with: event) }
-            if event.momentumPhase.contains(.ended) || event.momentumPhase.contains(.cancelled) { scrollGesture = .idle }
+        guard isEnabled, panDriver.handleScrollWheel(event) else {
+            super.scrollWheel(with: event)
             return
         }
-        if event.phase.isEmpty {
-            handleDiscreteWheel(event, logicalDX: logicalDX)
-            return
-        }
-        if event.phase.contains(.began) {
-            scrollGesture = .undecided(dx: 0, dy: 0)
-        }
-        if event.phase.contains(.began) || event.phase.contains(.changed) {
-            switch scrollGesture {
-            case let .undecided(dx, dy):
-                let nextDX = dx + logicalDX
-                let nextDY = dy + event.scrollingDeltaY
-                guard hypot(nextDX, nextDY) >= Self.panAxisThreshold else {
-                    scrollGesture = .undecided(dx: nextDX, dy: nextDY)
-                    return
-                }
-                if abs(nextDX) > abs(nextDY), let start = beginInteractivePan() {
-                    FluentFocusVisibility.markPointerInteraction(in: window)
-                    scrollGesture = .owned
-                    recordPanSample(nextDX, at: event.timestamp)
-                    updateInteractivePan(translation: start + nextDX)
-                } else {
-                    scrollGesture = .rejected
-                    super.scrollWheel(with: event)
-                }
-            case .owned:
-                recordPanSample(logicalDX, at: event.timestamp)
-                updateInteractivePan(translation: panOffsetBeforeDamping + logicalDX)
-            case .rejected, .idle:
-                super.scrollWheel(with: event)
-            }
-            return
-        }
-        if event.phase.contains(.ended) || event.phase.contains(.cancelled) {
-            switch scrollGesture {
-            case .owned:
-                if event.phase.contains(.cancelled) { cancelInteractivePan(animated: true) }
-                else { endInteractivePan(velocity: sampledPanVelocity) }
-                // Keep ownership so the trailing momentum events are consumed.
-                return
-            case .rejected:
-                super.scrollWheel(with: event)
-            case .undecided, .idle:
-                break
-            }
-            scrollGesture = .idle
-            return
-        }
-        super.scrollWheel(with: event)
     }
 
-    /// Undamped logical translation equivalent to the current offset, so trackpad deltas keep
-    /// accumulating naturally while an elastic overpan is shown.
-    private var panOffsetBeforeDamping: CGFloat {
+    /// Undamped logical translation equivalent to the current offset, so a resumed gesture
+    /// continues naturally while an elastic overpan is shown.
+    fileprivate var panOffsetBeforeDamping: CGFloat {
         guard let width = panSectionWidth, panNeighbor == nil, panOffset != 0 else { return panOffset }
         let fraction = min(abs(panOffset) / width, 0.999)
         let raw = (1 / (1 - fraction) - 1) * width / 0.55
         return panOffset < 0 ? -raw : raw
-    }
-
-    /// A horizontal mouse wheel without gesture phases moves one item per burst.
-    private func handleDiscreteWheel(_ event: NSEvent, logicalDX: CGFloat) {
-        guard abs(logicalDX) > abs(event.scrollingDeltaY), logicalDX != 0, !configuration.isLocked else {
-            super.scrollWheel(with: event)
-            return
-        }
-        let direction = logicalDX < 0 ? 1 : -1
-        let isBurst = lastWheelStep.map { $0.direction == direction && event.timestamp - $0.time <= 0.2 } ?? false
-        lastWheelStep = (event.timestamp, direction)
-        guard !isBurst else { return }
-        if !move(direction > 0 ? .next : .previous, wrap: shouldWrap) { super.scrollWheel(with: event) }
-    }
-
-    // MARK: Direct touch (macOS 27)
-
-    func installTouchPanRecognizer() {
-        guard #available(macOS 27, *) else { return }
-        let recognizer = NSPanGestureRecognizer(target: self, action: #selector(handleTouchPan(_:)))
-        recognizer.allowedTouchTypes = [.direct]
-        // Mouse drags do not pan a WinUI Pivot; only fingers on a touch screen do.
-        recognizer.buttonMask = 0
-        recognizer.minimumNumberOfTouches = 1
-        recognizer.maximumNumberOfTouches = 1
-        recognizer.isCancellableByScrollGesture = true
-        recognizer.delegate = self
-        addGestureRecognizer(recognizer)
-        touchPanRecognizer = recognizer
-    }
-
-    @objc func handleTouchPan(_ recognizer: NSPanGestureRecognizer) {
-        let sign: CGFloat = userInterfaceLayoutDirection == .rightToLeft ? -1 : 1
-        let translation = recognizer.translation(in: self).x * sign
-        switch recognizer.state {
-        case .began:
-            guard let start = beginInteractivePan() else {
-                recognizer.isEnabled = false
-                recognizer.isEnabled = true
-                return
-            }
-            FluentFocusVisibility.markPointerInteraction(in: window)
-            touchPanStart = start
-            updateInteractivePan(translation: start + translation)
-        case .changed:
-            updateInteractivePan(translation: touchPanStart + translation)
-        case .ended:
-            endInteractivePan(velocity: recognizer.velocity(in: self).x * sign)
-        case .cancelled, .failed:
-            cancelInteractivePan(animated: true)
-        default:
-            break
-        }
-    }
-
-    /// Horizontal-dominant touches pan the Pivot; vertical ones are left to enclosing scrollers.
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: NSGestureRecognizer) -> Bool {
-        guard gestureRecognizer === touchPanRecognizer, let pan = gestureRecognizer as? NSPanGestureRecognizer else { return true }
-        let velocity = pan.velocity(in: self)
-        return canBeginInteractivePan && abs(velocity.x) > abs(velocity.y)
     }
 }

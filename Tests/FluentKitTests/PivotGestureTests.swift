@@ -247,6 +247,6 @@ final class PivotGestureTests: XCTestCase {
         XCTAssertEqual(recognizer.minimumNumberOfTouches, 1)
         XCTAssertEqual(recognizer.maximumNumberOfTouches, 1)
         XCTAssertTrue(recognizer.isCancellableByScrollGesture)
-        XCTAssertTrue(recognizer.delegate === pivot)
+        XCTAssertTrue(recognizer.delegate === pivot.panDriver)
     }
 }
