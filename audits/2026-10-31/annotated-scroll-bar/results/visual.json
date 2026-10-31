@@ -1,0 +1,83 @@
+[
+  {
+    "scrolls" : [
+
+    ],
+    "state" : "initial",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+
+    ],
+    "state" : "hover",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+      "click"
+    ],
+    "state" : "clicked",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+
+    ],
+    "state" : "initial",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+
+    ],
+    "state" : "hover",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+      "click"
+    ],
+    "state" : "clicked",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+
+    ],
+    "state" : "initial",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+
+    ],
+    "state" : "hover",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "scrolls" : [
+      "click"
+    ],
+    "state" : "clicked",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  }
+]

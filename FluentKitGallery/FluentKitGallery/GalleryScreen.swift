@@ -22,6 +22,7 @@ struct GalleryScreen: FluentView {
     @FluentState private var swipeMessages = ["Team meeting notes", "Invoice #2041", "Weekend plans"]
     @FluentState private var swipeStatus = "No command invoked"
     @FluentState private var sezoZoomedIn = true
+    @FluentState private var asbStatus = "Use the annotated rail to navigate"
     @FluentState private var sezoStatus = "Choose a letter in the zoomed-out view"
     private let sezoGroups = ["A": ["Ada", "Alan", "Anita"], "B": ["Bea", "Bjarne"], "G": ["Grace", "Guido"], "K": ["Ken", "Katherine"], "L": ["Linus", "Lin"]]
     @FluentState private var breadcrumbItems = [
@@ -507,6 +508,22 @@ struct GalleryScreen: FluentView {
                 FluentToggleView("Zoomed-in view active", isOn: $sezoZoomedIn)
                 FluentText(sezoStatus, style: .caption, color: theme.textSecondary)
                 FluentText("Pinch on the trackpad or touch screen, or press Ctrl/⌘ with minus or plus. Move the mouse to reveal the zoom-out button.",
+                    style: .caption, color: theme.textSecondary)
+            })
+        case .AnnotatedScrollBar:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentAnnotatedScrollView(
+                    labels: (0..<10).map { FluentAnnotatedScrollBarLabel(String(UnicodeScalar(65 + $0 * 2)!), scrollOffset: CGFloat($0) * 40 * 32) },
+                    detailLabel: { offset in "Row \(Int(offset / 32) + 1)" },
+                    onScrolling: { offset, kind in asbStatus = "\(kind) → row \(Int(offset / 32) + 1)"; return false }
+                ) {
+                    FluentAnyView(FluentForEach(Array(0..<400), id: { $0 }, spacing: 0) { row in
+                        FluentText("Row \(row + 1)", style: .body).padding(6).frame(width: 300, height: 32)
+                    })
+                }
+                .frame(width: 380, height: 300)
+                FluentText(asbStatus, style: .caption, color: theme.textSecondary)
+                FluentText("Hover the rail for the detail label; click or drag it to jump. The arrows step by an eighth of the viewport.",
                     style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:
