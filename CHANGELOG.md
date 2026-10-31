@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CommandBar reconciles command updates in place, preserving its open overflow panel and focus.
+  Commands accept an optional stable `id`; `setCommands(primary:secondary:)` updates both groups
+  atomically and retains identified controls across reorders/group moves. Without IDs, controls
+  retain identity by group and position. Updated actions and toggle state no longer require
+  recreating the native buttons, and model updates do not invoke toggle actions.
+- Fixed hidden primary commands in overflow, incorrect primary-width measurement while the menu
+  is open, and stale close animations reclaiming controls from a reopened popup. Resizes retain
+  command focus across the bar/popup boundary, update the shared animation clip to fit new rows,
+  and preserve the device-specific opening density.
 - ListView/GridView headers clamp their available content width to zero after subtracting the
   WinUI 12pt side margins, including during reuse and narrow resize. Long text can compress,
   RTL preserves the correct leading edge, and content is clipped to the header. CI now rejects

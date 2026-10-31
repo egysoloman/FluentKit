@@ -27,6 +27,13 @@ Document toolbars can opt into `bar.primaryCommandAlignment = .leading`, or pass
 extension, not a change to WinUI's default. In leading mode, More follows the command strip and
 custom content uses the remaining trailing space; both arrangements mirror in RTL.
 
+CommandBar refreshes retain native controls and an open overflow menu. For commands that can be
+inserted, reordered or moved between groups, provide a unique stable ID, for example
+`FluentCommandBarItem(id: "save", "Save", action: save)`. Without an ID, identity follows the
+command's group and position. Use `bar.setCommands(primary:secondary:)` to update both groups
+together; `FluentCommandBarView` does this automatically. Updated labels, actions, enabled states
+and toggle values take effect in the existing controls without invoking actions during rendering.
+
 Extended `FluentWindowShell` instances anchor page content below the title bar and fill the
 remaining viewport, including embedded `FluentNativeView` trees without an intrinsic height.
 

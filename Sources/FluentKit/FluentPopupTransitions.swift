@@ -82,6 +82,12 @@ final class FluentPopupTransitionHost: NSView {
     /// coordinator cancels the shared timeline first, then commits one fully-open model state so
     /// the newly resolved material and presenter colors are composited without an old clip frame.
     func settleForAppearanceChange() {
+        settlePresentation()
+    }
+
+    /// Commit fully visible geometry after live content resizing or an appearance change.
+    /// Call after layout so the shared clip covers the current animation-root bounds.
+    func settlePresentation() {
         let layers = [
             animationRoot.layer,
             surface.layer,

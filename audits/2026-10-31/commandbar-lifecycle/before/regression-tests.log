@@ -1,0 +1,46 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[5 / 20] FluentKit
+[14 / 29] FluentKit
+[23 / 34] FluentKit
+[25 / 33] FluentGallery-product
+[29 / 37] FluentKitTests-product
+[35 / 43] FluentGallery-product
+[36 / 45] FluentKitTests-product
+[39 / 47] FluentKitTests-product
+[39 / 47] FluentGallery-product
+[41 / 49] FluentGallery-product
+[43 / 49] FluentKitTests-product
+[45 / 52] FluentKitTests-product
+[47 / 50] FluentKitValidation-product
+[48 / 50] FluentKitValidation-product
+[50 / 52] FluentKitValidation-product
+Build complete! (45.54秒)
+Test Suite 'Selected tests' started at 2026-10-31 20:20:56.101.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 20:20:56.102.
+Test Suite 'CommandBarLifecycleTests' started at 2026-10-31 20:20:56.102.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:39: error: -[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:40: error: -[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:41: error: -[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:42: error: -[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:43: error: -[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:44: error: -[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand] : XCTAssertTrue failed
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand]' failed (0.558 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:57: error: -[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable] : XCTAssertFalse failed - An overflowed primary command must be visible inside the popup
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:59: error: -[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:63: error: -[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable] : XCTAssertTrue failed - Measure primary widths rather than their wider overflow row presentation
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:64: error: -[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:65: error: -[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/CommandBarLifecycleTests.swift:66: error: -[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable] : XCTAssertTrue failed
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable]' failed (0.015 seconds).
+Test Suite 'CommandBarLifecycleTests' failed at 2026-10-31 20:20:56.676.
+	 Executed 2 tests, with 12 failures (0 unexpected) in 0.573 (0.573) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 20:20:56.676.
+	 Executed 2 tests, with 12 failures (0 unexpected) in 0.573 (0.574) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 20:20:56.676.
+	 Executed 2 tests, with 12 failures (0 unexpected) in 0.573 (0.575) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

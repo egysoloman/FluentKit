@@ -146,7 +146,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     public override var acceptsFirstResponder: Bool { isEnabled }
 
     public var presentation: FluentAppBarPresentation {
-        if useOverflowStyle { return .overflow }
+        useOverflowStyle ? .overflow : primaryPresentation
+    }
+
+    private var primaryPresentation: FluentAppBarPresentation {
         let effective: FluentCommandBarDefaultLabelPosition = labelPosition == .collapsed ? .collapsed : defaultLabelPosition
         switch effective {
         case .right: return .labelOnRight
@@ -155,7 +158,12 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         }
     }
 
-    public override var intrinsicContentSize: NSSize {
+    public override var intrinsicContentSize: NSSize { contentSize(for: presentation) }
+
+    /// Dynamic overflow must measure the primary template even while this control is in a menu.
+    var primaryContentSize: NSSize { contentSize(for: primaryPresentation) }
+
+    private func contentSize(for presentation: FluentAppBarPresentation) -> NSSize {
         let scale = fluentControlSize.metricScale
         switch presentation {
         case .fullSize:

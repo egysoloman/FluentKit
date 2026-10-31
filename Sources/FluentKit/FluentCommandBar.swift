@@ -35,10 +35,10 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     public static let contentLeadingPadding: CGFloat = 4
 
     public var primaryCommands: [FluentCommandBarItem] {
-        didSet { rebuildControls() }
+        didSet { if !isSettingCommands { reconcileControls() } }
     }
     public var secondaryCommands: [FluentCommandBarItem] {
-        didSet { rebuildControls() }
+        didSet { if !isSettingCommands { reconcileControls() } }
     }
     public var contentView: NSView? {
         didSet {
@@ -107,6 +107,15 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     }
     public var isOverflowButtonVisible: Bool { resolvedOverflowButtonVisible }
 
+    private enum CommandIdentity: Hashable {
+        case explicit(AnyHashable, occurrence: Int)
+        case position(primary: Bool, index: Int)
+    }
+    private var primaryIdentities: [CommandIdentity] = []
+    private var secondaryIdentities: [CommandIdentity] = []
+    private var isSettingCommands = false
+    private var overflowGeneration = 0
+    private let overflowGroupSeparator = FluentAppBarSeparator(useOverflowStyle: true)
     private var primaryControls: [NSView] = []
     private var secondaryControls: [NSView] = []
     private var primaryButtons: [FluentAppBarButton] { primaryControls.compactMap { $0 as? FluentAppBarButton } }
@@ -153,7 +162,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     public override var intrinsicContentSize: NSSize {
         let scale = fluentControlSize.metricScale
         let height = isOpen ? Self.openHeight : closedHeight
-        let primaryWidth = primaryControls.reduce(CGFloat(0)) { $0 + $1.intrinsicContentSize.width }
+        let primaryWidth = primaryControls.reduce(CGFloat(0)) { $0 + primaryWidth(of: $1) }
         let contentWidth = max(0, contentView?.intrinsicContentSize.width ?? 0)
         let moreWidth = resolvedOverflowButtonVisible ? Self.moreButtonWidth * scale : 0
         return NSSize(
@@ -165,8 +174,20 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     public override func layout() {
         super.layout()
         guard bounds.width > 0 else { return }
+        let focus = captureCommandFocus()
         recomputeDynamicOverflow(for: bounds.width)
         arrangePrimaryStrip()
+        if isOpen { updateOverflowPresentation(animated: false) }
+        restoreCommandFocus(focus)
+    }
+
+    /// Reconcile both groups in one transaction, retaining identified controls across group moves.
+    public func setCommands(primary: [FluentCommandBarItem], secondary: [FluentCommandBarItem]) {
+        isSettingCommands = true
+        primaryCommands = primary
+        secondaryCommands = secondary
+        isSettingCommands = false
+        reconcileControls()
     }
 
     public func setOpen(_ open: Bool, animated: Bool = true) {
@@ -218,57 +239,99 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         moreButton.onInvoke = { [weak self] in self?.toggleOverflow() }
         addSubview(moreButton)
         if let contentView { addSubview(contentView) }
-        rebuildControls()
+        reconcileControls()
         applyTheme()
     }
 
-    private func rebuildControls() {
-        dismissOverflow(animated: false, notify: true)
-        primaryControls.forEach { $0.removeFromSuperview() }
-        secondaryControls.forEach { $0.removeFromSuperview() }
-        primaryControls = primaryCommands.enumerated().map { makeControl(for: $0.element, primaryIndex: $0.offset) }
-        secondaryControls = secondaryCommands.map { makeControl(for: $0, primaryIndex: nil) }
-        primaryControls.forEach(addSubview)
-        overflowedPrimaryIndexes = []
+    private func reconcileControls() {
+        let oldControls = primaryControls + secondaryControls
+        let focus = captureCommandFocus()
+        var candidates = Dictionary(uniqueKeysWithValues: zip(primaryIdentities + secondaryIdentities, oldControls))
+        var occurrences: [AnyHashable: Int] = [:]
+        func identities(_ commands: [FluentCommandBarItem], primary: Bool) -> [CommandIdentity] {
+            commands.enumerated().map { index, item in
+                guard let id = item.id else { return .position(primary: primary, index: index) }
+                let occurrence = occurrences[id, default: 0]
+                occurrences[id] = occurrence + 1
+                return .explicit(id, occurrence: occurrence)
+            }
+        }
+        primaryIdentities = identities(primaryCommands, primary: true)
+        secondaryIdentities = identities(secondaryCommands, primary: false)
+        func control(_ item: FluentCommandBarItem, identity: CommandIdentity, primaryIndex: Int?) -> NSView {
+            let candidate = candidates.removeValue(forKey: identity)
+            let view: NSView
+            switch item.kind {
+            case .separator:
+                view = (candidate as? FluentAppBarSeparator) ?? FluentAppBarSeparator()
+            case .toggle:
+                view = (candidate as? FluentAppBarToggleButton) ?? FluentAppBarToggleButton(item.title)
+            case .button:
+                view = candidate is FluentAppBarToggleButton ? FluentAppBarButton(item.title)
+                    : ((candidate as? FluentAppBarButton) ?? FluentAppBarButton(item.title))
+            }
+            if candidate !== view { candidate?.removeFromSuperview() }
+            if let button = view as? FluentAppBarButton { configure(button: button, item: item) }
+            if let separator = view as? FluentAppBarSeparator { separator.dynamicOverflowOrder = item.dynamicOverflowOrder }
+            view.identifier = NSUserInterfaceItemIdentifier(
+                primaryIndex.map { "FluentKit.CommandBar.Primary.\($0)" } ?? "FluentKit.CommandBar.Secondary")
+            (view as? FluentControlSizeConfigurable)?.fluentControlSize = fluentControlSize
+            return view
+        }
+        primaryControls = primaryCommands.enumerated().map { control($0.element, identity: primaryIdentities[$0.offset], primaryIndex: $0.offset) }
+        secondaryControls = secondaryCommands.enumerated().map { control($0.element, identity: secondaryIdentities[$0.offset], primaryIndex: nil) }
+        candidates.values.forEach { $0.removeFromSuperview() }
         applyTheme()
+        if bounds.width > 0 {
+            recomputeDynamicOverflow(for: bounds.width)
+        } else {
+            // A new bar has no meaningful available width until its first layout. Do not invent
+            // an all-overflow state and then emit a removal event for that first real layout.
+            updateOverflowIndexes(overflowedPrimaryIndexes.filter { primaryControls.indices.contains($0) })
+        }
+        arrangePrimaryStrip()
+        if isOpen { updateOverflowPresentation(animated: false) }
+        restoreCommandFocus(focus)
         invalidateIntrinsicContentSize()
         needsLayout = true
     }
 
-    private func makeControl(for item: FluentCommandBarItem, primaryIndex: Int?) -> NSView {
-        let view: NSView
-        switch item.kind {
-        case .separator:
-            let separator = FluentAppBarSeparator()
-            separator.dynamicOverflowOrder = item.dynamicOverflowOrder
-            view = separator
-        case .button:
-            let button = FluentAppBarButton(item.title, systemImageName: item.systemImageName) { [weak self] in
-                item.action()
-                if self?.isOpen == true { self?.dismissOverflow(animated: true, notify: true) }
+    private func captureCommandFocus() -> (view: NSView, owner: NSWindow, wasKey: Bool)? {
+        // In inactive/offscreen windows neither surface may be key. Preserve its stored responder
+        // as well; when active, the key window wins over a popup's dormant responder.
+        let owners = NSApp?.isActive == true && window?.isKeyWindow == true ? [window, overflowPanel] : [overflowPanel, window]
+        for case let owner? in owners {
+            if let focused = owner.firstResponder as? NSView, focused.window === owner,
+               (primaryControls + secondaryControls).contains(where: { $0 === focused }) {
+                return (focused, owner, owner.isKeyWindow)
             }
-            configure(button: button, item: item)
-            view = button
-        case .toggle(let isOn):
-            let button = FluentAppBarToggleButton(
-                item.title,
-                systemImageName: item.systemImageName,
-                isChecked: isOn
-            ) { [weak self] _ in
-                item.action()
-                if self?.isOpen == true { self?.dismissOverflow(animated: true, notify: true) }
-            }
-            configure(button: button, item: item)
-            view = button
         }
-        view.identifier = NSUserInterfaceItemIdentifier(
-            primaryIndex.map { "FluentKit.CommandBar.Primary.\($0)" } ?? "FluentKit.CommandBar.Secondary"
-        )
-        (view as? FluentControlSizeConfigurable)?.fluentControlSize = fluentControlSize
-        return view
+        return nil
+    }
+
+    private func restoreCommandFocus(_ focus: (view: NSView, owner: NSWindow, wasKey: Bool)?) {
+        guard let focus else { return }
+        let destination: NSView?
+        if (primaryControls + secondaryControls).contains(where: { $0 === focus.view }),
+           focus.view.acceptsFirstResponder, !focus.view.isHidden, focus.view.window != nil {
+            destination = focus.view
+        } else if overflowPanel != nil {
+            destination = overflowPresenter?.firstFocusableControl ?? overflowPresenter
+        } else {
+            destination = primaryControls.first { $0.acceptsFirstResponder && !$0.isHidden } ?? moreButton
+        }
+        if let destination, let owner = destination.window {
+            if focus.owner !== owner { focus.owner.makeFirstResponder(nil) }
+            owner.makeFirstResponder(destination)
+            // Reparenting between an NSPanel and the bar's window must preserve actual keyboard
+            // focus, not just each window's stored first responder. Never activate an inactive bar.
+            if focus.wasKey, !owner.isKeyWindow { owner.makeKey() }
+        }
     }
 
     private func configure(button: FluentAppBarButton, item: FluentCommandBarItem) {
+        button.label = item.title
+        button.systemImageName = item.systemImageName
         button.labelPosition = item.labelPosition
         button.defaultLabelPosition = defaultLabelPosition
         button.icon = item.icon
@@ -277,6 +340,27 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         button.isEnabled = item.isEnabled
         button.reduceMotion = reduceMotion
         button.theme = theme
+        if let toggle = button as? FluentAppBarToggleButton, case .toggle(let isOn) = item.kind {
+            // Model updates must not invoke the action. User toggles report the current native value,
+            // including repeated clicks when the application has not replaced its command array.
+            toggle.onIsCheckedChanged = nil
+            toggle.setCheckedFromBinding(isOn)
+            toggle.onIsCheckedChanged = { [weak self] value in
+                if let action = item.toggleAction { action(value) } else { item.action() }
+                if self?.isOpen == true { self?.dismissOverflow(animated: true, notify: true) }
+            }
+            toggle.onClick = nil
+        } else {
+            button.onClick = { [weak self] in
+                item.action()
+                if self?.isOpen == true { self?.dismissOverflow(animated: true, notify: true) }
+            }
+        }
+    }
+
+    private func primaryWidth(of control: NSView) -> CGFloat {
+        if let button = control as? FluentAppBarButton { return button.primaryContentSize.width }
+        return 5 * fluentControlSize.metricScale
     }
 
     private func applyTheme() {
@@ -289,6 +373,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         overflowHost?.update(theme: theme)
         overflowPresenter?.theme = theme
         needsDisplay = true
+        needsLayout = true
     }
 
     private func recomputeDynamicOverflow(for totalWidth: CGFloat) {
@@ -308,7 +393,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             return
         }
 
-        let widths = primaryControls.map { max(0, $0.intrinsicContentSize.width) }
+        let widths = primaryControls.map { max(0, primaryWidth(of: $0)) }
         var remaining = widths.reduce(0, +)
         guard remaining > available else {
             updateOverflowIndexes(result)
@@ -382,10 +467,6 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             : .removingFromOverflow
         overflowedPrimaryIndexes = next
         onDynamicOverflowItemsChanging?(action)
-        if isOpen {
-            dismissOverflow(animated: false, notify: false)
-            presentOverflow(animated: false)
-        }
         invalidateIntrinsicContentSize()
     }
 
@@ -428,8 +509,9 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             let control = primaryControls[index]
             control.userInterfaceLayoutDirection = userInterfaceLayoutDirection
             let isMoved = overflowed.contains(index)
-            control.isHidden = hidesContent || isMoved
-            guard !control.isHidden else { continue }
+            control.isHidden = hidesContent || (isMoved && !isOpen)
+            // An overflowed primary is visible in its menu, never laid out as a strip command.
+            if isMoved && isOpen { continue }
             if control.superview !== self {
                 control.removeFromSuperview()
                 addSubview(control, positioned: .below, relativeTo: moreButton)
@@ -443,6 +525,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
                 separator.useOverflowStyle = false
                 separator.isCompact = !isOpen
             }
+            guard !control.isHidden else { continue }
             let size = control.intrinsicContentSize
             if rtl != leadingAligned {
                 control.frame = CGRect(x: commandLeading, y: 0, width: size.width, height: barHeight)
@@ -475,7 +558,8 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private var overflowControlsInOrder: [NSView] {
         var result = overflowedPrimaryIndexes.sorted().map { primaryControls[$0] }
         if !result.isEmpty, !secondaryControls.isEmpty {
-            result.append(FluentAppBarSeparator(useOverflowStyle: true))
+            overflowGroupSeparator.theme = theme
+            result.append(overflowGroupSeparator)
         }
         result.append(contentsOf: secondaryControls)
         return result
@@ -483,56 +567,73 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
 
     private func presentOverflow(animated: Bool) {
         guard !isOpen, let anchorWindow = window else { return }
-        let controls = overflowControlsInOrder
+        overflowGeneration += 1
         restoreFirstResponder = anchorWindow.firstResponder
+        // Preserve the opening device while content changes; refreshes are not new interactions.
+        overflowInputDeviceType = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
         isOpen = true
         primaryButtons.forEach { $0.isCompact = false }
         arrangePrimaryStrip()
+        updateOverflowPresentation(animated: animated)
         notifyIntrinsicHeightChanged()
+        moreButton.isExpanded = true
+        setAccessibilityExpanded(true)
+        onIsOpenChanged?(true)
+    }
 
-        // A compact bar with bottom labels still opens to the full 64-point primary template even
-        // when it has no secondary rows. This is why Auto shows More for bottom-labeled commands.
+    private func updateOverflowPresentation(animated: Bool) {
+        guard isOpen, let anchorWindow = window else { return }
+        let controls = overflowControlsInOrder
         guard !controls.isEmpty else {
-            moreButton.isExpanded = true
-            setAccessibilityExpanded(true)
-            onIsOpenChanged?(true)
+            if let panel = overflowPanel {
+                overflowPresenter?.update(controls: [])
+                panel.parent?.removeChildWindow(panel)
+                panel.orderOut(nil)
+                anchorWindow.makeFirstResponder(moreButton)
+            }
+            overflowPanel = nil
+            overflowHost = nil
+            overflowPresenter = nil
+            removeDismissMonitors()
             return
         }
 
-        // `AppBarButton::m_inputDeviceTypeUsedToOpenOverflow`: touch opens use TouchInputMode spacing.
-        let device = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
-        overflowInputDeviceType = device
-        let presenter = FluentCommandBarOverflowPresenter(
-            controls: controls, theme: theme,
-            rowHeight: device == .touch ? FluentCommandBarOverflowPresenter.touchRowHeight : FluentCommandBarOverflowPresenter.rowHeight)
-        presenter.onDismiss = { [weak self] in self?.dismissOverflow(animated: true, notify: true) }
+        let presenter: FluentCommandBarOverflowPresenter
+        let panel: FluentCommandBarPanel
+        let host: FluentPopupTransitionHost
+        let isNew = overflowPanel == nil
+        if let existingPanel = overflowPanel, let existingPresenter = overflowPresenter, let existingHost = overflowHost {
+            panel = existingPanel
+            presenter = existingPresenter
+            host = existingHost
+            presenter.update(controls: controls)
+        } else {
+            presenter = FluentCommandBarOverflowPresenter(controls: controls, theme: theme,
+                rowHeight: overflowInputDeviceType == .touch ? FluentCommandBarOverflowPresenter.touchRowHeight : FluentCommandBarOverflowPresenter.rowHeight)
+            presenter.onDismiss = { [weak self] in self?.dismissOverflow(animated: true, notify: true) }
+            panel = FluentCommandBarPanel(contentRect: NSRect(origin: .zero, size: presenter.preferredSize),
+                styleMask: [.borderless], backing: .buffered, defer: false)
+            panel.isOpaque = false
+            panel.backgroundColor = .clear
+            panel.hasShadow = false
+            panel.level = .popUpMenu
+            panel.collectionBehavior = [.transient, .fullScreenAuxiliary]
+            panel.hidesOnDeactivate = true
+            host = FluentPopupTransitionHost(content: presenter, theme: theme,
+                cornerRadius: theme.designTokens.cardCornerRadius, name: "FluentKit.CommandBar.Overflow")
+            host.frame = NSRect(origin: .zero, size: presenter.preferredSize)
+            host.autoresizingMask = [.width, .height]
+            panel.contentView = host
+            anchorWindow.addChildWindow(panel, ordered: .above)
+            overflowPanel = panel
+            overflowHost = host
+            overflowPresenter = presenter
+            installDismissMonitors()
+        }
+        panel.appearance = anchorWindow.effectiveAppearance
         presenter.userInterfaceLayoutDirection = userInterfaceLayoutDirection
         controls.forEach { $0.userInterfaceLayoutDirection = userInterfaceLayoutDirection }
         let size = presenter.preferredSize
-        let panel = FluentCommandBarPanel(
-            contentRect: NSRect(origin: .zero, size: size),
-            styleMask: [.borderless],
-            backing: .buffered,
-            defer: false
-        )
-        panel.isOpaque = false
-        panel.backgroundColor = .clear
-        panel.hasShadow = false
-        panel.level = .popUpMenu
-        panel.collectionBehavior = [.transient, .fullScreenAuxiliary]
-        panel.hidesOnDeactivate = true
-        panel.appearance = anchorWindow.effectiveAppearance
-
-        let host = FluentPopupTransitionHost(
-            content: presenter,
-            theme: theme,
-            cornerRadius: theme.designTokens.cardCornerRadius,
-            name: "FluentKit.CommandBar.Overflow"
-        )
-        host.frame = NSRect(origin: .zero, size: size)
-        host.autoresizingMask = [.width, .height]
-        panel.contentView = host
-
         let anchor = anchorWindow.convertToScreen(convert(bounds, to: nil))
         let visible = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? anchor
         let spaceBelow = anchor.minY - visible.minY
@@ -540,33 +641,28 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         let preferredX = userInterfaceLayoutDirection == .rightToLeft ? anchor.minX : anchor.maxX - size.width
         var origin = NSPoint(
             x: min(max(preferredX, visible.minX + 4), max(visible.maxX - size.width - 4, visible.minX + 4)),
-            y: opensBelow ? anchor.minY - size.height : anchor.maxY
-        )
+            y: opensBelow ? anchor.minY - size.height : anchor.maxY)
         origin.y = min(max(origin.y, visible.minY + 4), max(visible.maxY - size.height - 4, visible.minY + 4))
-
-        anchorWindow.addChildWindow(panel, ordered: .above)
-        panel.setFrameOrigin(origin)
-        overflowPanel = panel
-        overflowHost = host
-        overflowPresenter = presenter
-        installDismissMonitors()
-        panel.makeKeyAndOrderFront(nil)
-        panel.makeFirstResponder(presenter.firstFocusableControl)
-        fluentPrepareMenuPopupEntrance(
-            host: host,
-            edge: opensBelow ? .top : .bottom,
-            motion: FluentMotion.controlNormal,
-            closedRatio: 0.5,
-            reduceMotion: reduceMotion || !animated
-        )
-        moreButton.isExpanded = true
-        setAccessibilityExpanded(true)
-        onIsOpenChanged?(true)
+        let resized = host.bounds.size != size
+        panel.setFrame(NSRect(origin: origin, size: size), display: true)
+        host.layoutSubtreeIfNeeded()
+        // The entrance mask otherwise retains the popup's original dimensions and can hide
+        // newly inserted rows after a live resize. Interrupt that entrance at its fully open state.
+        if resized { host.settlePresentation() }
+        presenter.layoutSubtreeIfNeeded()
+        if isNew {
+            panel.makeKeyAndOrderFront(nil)
+            panel.makeFirstResponder(presenter.firstFocusableControl ?? presenter)
+            fluentPrepareMenuPopupEntrance(host: host, edge: opensBelow ? .top : .bottom,
+                motion: FluentMotion.controlNormal, closedRatio: 0.5, reduceMotion: reduceMotion || !animated)
+        }
     }
 
     private func dismissOverflow(animated: Bool, notify: Bool) {
         guard isOpen || overflowPanel != nil else { return }
         removeDismissMonitors()
+        overflowGeneration += 1
+        let generation = overflowGeneration
         let panel = overflowPanel
         let host = overflowHost
         overflowPanel = nil
@@ -575,17 +671,20 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         isOpen = false
 
         let finish = { [weak self, weak panel] in
-            guard let self else { return }
             if let panel {
                 panel.parent?.removeChildWindow(panel)
                 panel.orderOut(nil)
             }
+            // A delayed exit must not take controls or focus away from a newly opened popup.
+            guard let self, self.overflowGeneration == generation, !self.isOpen else { return }
             // Reparent every primary object, including commands that remain logically overflowed.
             // Those commands stay hidden in the strip but must not remain owned by a dismissed
             // presenter or lose identity when a later wider measure restores them.
             for control in self.primaryControls {
-                control.removeFromSuperview()
-                self.addSubview(control, positioned: .below, relativeTo: self.moreButton)
+                if control.superview !== self {
+                    control.removeFromSuperview()
+                    self.addSubview(control, positioned: .below, relativeTo: self.moreButton)
+                }
             }
             self.secondaryControls.forEach { $0.removeFromSuperview() }
             self.primaryButtons.forEach {
@@ -789,8 +888,12 @@ private final class FluentCommandBarPanel: NSPanel {
 }
 
 private final class FluentCommandBarOverflowPresenter: NSView {
-    let controls: [NSView]
-    let preferredSize: NSSize
+    private(set) var controls: [NSView] = []
+    var preferredSize: NSSize {
+        let width = min(max(controls.map { $0.intrinsicContentSize.width }.max() ?? 160, 160), 480)
+        let height = controls.reduce(CGFloat(8)) { $0 + ($1 is FluentAppBarSeparator ? 9 : rowHeight) }
+        return NSSize(width: width, height: min(height, 640))
+    }
     var onDismiss: (() -> Void)?
     var theme: FluentTheme {
         didSet {
@@ -802,37 +905,43 @@ private final class FluentCommandBarOverflowPresenter: NSView {
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { true }
 
-    /// Overflow label padding 0,5,0,8 (`AppBarButtonOverflowTextLabelPadding`); TouchInputMode uses
-    /// `AppBarButtonOverflowTextTouchMargin` 0,9,0,12, eight points taller.
+    /// TouchInputMode adds eight points to the source overflow label margins.
     static let rowHeight: CGFloat = 40
     static let touchRowHeight: CGFloat = 48
     let rowHeight: CGFloat
 
     init(controls: [NSView], theme: FluentTheme, rowHeight: CGFloat = FluentCommandBarOverflowPresenter.rowHeight) {
-        self.controls = controls
         self.theme = theme
         self.rowHeight = rowHeight
-        let width = min(max(controls.map { $0.intrinsicContentSize.width }.max() ?? 160, 160), 480)
-        let height = controls.reduce(CGFloat(8)) { total, view in
-            total + (view is FluentAppBarSeparator ? 9 : rowHeight)
-        }
-        preferredSize = NSSize(width: width, height: min(height, 640))
-        super.init(frame: NSRect(origin: .zero, size: preferredSize))
+        super.init(frame: .zero)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.CommandBar.OverflowPresenter")
         setAccessibilityElement(true)
         setAccessibilityRole(.menu)
         fluentSetDefaultAccessibilityTitle("Command bar overflow")
-        for control in controls {
+        update(controls: controls)
+        setFrameSize(preferredSize)
+    }
+
+    func update(controls nextControls: [NSView]) {
+        let focused = window?.firstResponder as? NSView
+        let wasCommandFocused = controls.contains { $0 === focused }
+        for control in controls where !nextControls.contains(where: { $0 === control }) && control.superview === self {
             control.removeFromSuperview()
-            addSubview(control)
+        }
+        controls = nextControls
+        for control in controls {
+            if control.superview !== self { control.removeFromSuperview(); addSubview(control) }
+            control.isHidden = false
             control.userInterfaceLayoutDirection = userInterfaceLayoutDirection
-            if let button = control as? FluentAppBarButton {
-                button.useOverflowStyle = true
-            } else if let separator = control as? FluentAppBarSeparator {
-                separator.useOverflowStyle = true
-            }
+            if let button = control as? FluentAppBarButton { button.useOverflowStyle = true }
+            if let separator = control as? FluentAppBarSeparator { separator.useOverflowStyle = true }
+        }
+        if wasCommandFocused,
+           !controls.contains(where: { $0 === focused && $0.acceptsFirstResponder }) {
+            window?.makeFirstResponder(firstFocusableControl ?? self)
         }
         setAccessibilityChildren(controls.filter { !($0 is FluentAppBarSeparator) })
+        needsLayout = true
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -929,10 +1038,6 @@ public struct FluentCommandBarView: FluentUpdatablePrimitiveView {
         return true
     }
     private func apply(to bar: FluentCommandBar, context: FluentRenderContext, replaceCommands: Bool) {
-        if replaceCommands {
-            bar.primaryCommands = primaryCommands
-            bar.secondaryCommands = secondaryCommands
-        }
         bar.primaryCommandAlignment = primaryCommandAlignment
         bar.defaultLabelPosition = defaultLabelPosition
         bar.overflowButtonVisibility = overflowButtonVisibility
@@ -940,5 +1045,8 @@ public struct FluentCommandBarView: FluentUpdatablePrimitiveView {
         bar.closedDisplayMode = closedDisplayMode
         bar.theme = context.theme
         bar.reduceMotion = context.reduceMotion
+        if replaceCommands {
+            bar.setCommands(primary: primaryCommands, secondary: secondaryCommands)
+        }
     }
 }

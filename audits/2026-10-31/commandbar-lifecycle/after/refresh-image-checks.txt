@@ -1,0 +1,8 @@
+light-ltr bar: open and five-refresh PNG bytes identical
+light-ltr popup: open and five-refresh PNG bytes identical
+light-rtl bar: open and five-refresh PNG bytes identical
+light-rtl popup: open and five-refresh PNG bytes identical
+dark-ltr bar: open and five-refresh PNG bytes identical
+dark-ltr popup: open and five-refresh PNG bytes identical
+dark-rtl bar: open and five-refresh PNG bytes identical
+dark-rtl popup: open and five-refresh PNG bytes identical

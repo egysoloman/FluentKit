@@ -7,6 +7,10 @@ public enum FluentCommandBarItemKind: Hashable, Sendable {
 }
 
 public struct FluentCommandBarItem {
+    /// Stable identity for in-place CommandBar updates and moves between command groups.
+    /// Use unique IDs when inserting/reordering; omitted IDs retain identity by group and position.
+    public let id: AnyHashable?
+    let toggleAction: ((Bool) -> Void)?
     public let title: String
     public let systemImageName: String?
     public let icon: FluentIconSource?
@@ -21,6 +25,7 @@ public struct FluentCommandBarItem {
     public let action: () -> Void
 
     public init(
+        id: AnyHashable? = nil,
         _ title: String,
         systemImageName: String? = nil,
         icon: FluentIconSource? = nil,
@@ -31,6 +36,8 @@ public struct FluentCommandBarItem {
         labelPosition: FluentCommandBarLabelPosition = .default,
         action: @escaping () -> Void
     ) {
+        self.id = id
+        toggleAction = nil
         self.title = title
         self.systemImageName = systemImageName
         self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
@@ -44,6 +51,8 @@ public struct FluentCommandBarItem {
     }
 
     private init(
+        id: AnyHashable? = nil,
+        toggleAction: ((Bool) -> Void)? = nil,
         title: String,
         systemImageName: String?,
         icon: FluentIconSource? = nil,
@@ -55,6 +64,8 @@ public struct FluentCommandBarItem {
         labelPosition: FluentCommandBarLabelPosition,
         action: @escaping () -> Void
     ) {
+        self.id = id
+        self.toggleAction = toggleAction
         self.title = title
         self.systemImageName = systemImageName
         self.icon = icon ?? systemImageName.map(FluentIconSource.systemSymbol)
@@ -68,6 +79,7 @@ public struct FluentCommandBarItem {
     }
 
     public static func toggle(
+        id: AnyHashable? = nil,
         _ title: String,
         systemImageName: String? = nil,
         icon: FluentIconSource? = nil,
@@ -80,6 +92,8 @@ public struct FluentCommandBarItem {
         action: @escaping (Bool) -> Void
     ) -> FluentCommandBarItem {
         FluentCommandBarItem(
+            id: id,
+            toggleAction: action,
             title: title,
             systemImageName: systemImageName,
             icon: icon,
@@ -98,9 +112,11 @@ public struct FluentCommandBarItem {
     }
 
     public static func separator(
+        id: AnyHashable? = nil,
         dynamicOverflowOrder: Int = 0
     ) -> FluentCommandBarItem {
         FluentCommandBarItem(
+            id: id,
             title: "",
             systemImageName: nil,
             isEnabled: false,

@@ -1,0 +1,326 @@
+[
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : true,
+    "openEvents" : [
+
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "open",
+    "retainedPrimaryCount" : 4,
+    "retainedSecondaryCount" : 1,
+    "sameFocus" : true,
+    "samePanel" : true,
+    "variant" : "light-ltr",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : false,
+    "openEvents" : [
+      false
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "refresh",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "light-ltr",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 1,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true
+    ],
+    "overflow" : [
+      3
+    ],
+    "phase" : "wide",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "light-ltr",
+    "width" : 360,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 3,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true,
+      true
+    ],
+    "overflow" : [
+      1,
+      2,
+      3
+    ],
+    "phase" : "narrow",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "light-ltr",
+    "width" : 160,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : true,
+    "openEvents" : [
+
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "open",
+    "retainedPrimaryCount" : 4,
+    "retainedSecondaryCount" : 1,
+    "sameFocus" : true,
+    "samePanel" : true,
+    "variant" : "light-rtl",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : false,
+    "openEvents" : [
+      false
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "refresh",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "light-rtl",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 1,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true
+    ],
+    "overflow" : [
+      3
+    ],
+    "phase" : "wide",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "light-rtl",
+    "width" : 360,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 3,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true,
+      true
+    ],
+    "overflow" : [
+      1,
+      2,
+      3
+    ],
+    "phase" : "narrow",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "light-rtl",
+    "width" : 160,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : true,
+    "openEvents" : [
+
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "open",
+    "retainedPrimaryCount" : 4,
+    "retainedSecondaryCount" : 1,
+    "sameFocus" : true,
+    "samePanel" : true,
+    "variant" : "dark-ltr",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : false,
+    "openEvents" : [
+      false
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "refresh",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "dark-ltr",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 1,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true
+    ],
+    "overflow" : [
+      3
+    ],
+    "phase" : "wide",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "dark-ltr",
+    "width" : 360,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 3,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true,
+      true
+    ],
+    "overflow" : [
+      1,
+      2,
+      3
+    ],
+    "phase" : "narrow",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "dark-ltr",
+    "width" : 160,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : true,
+    "openEvents" : [
+
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "open",
+    "retainedPrimaryCount" : 4,
+    "retainedSecondaryCount" : 1,
+    "sameFocus" : true,
+    "samePanel" : true,
+    "variant" : "dark-rtl",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 2,
+    "isOpen" : false,
+    "openEvents" : [
+      false
+    ],
+    "overflow" : [
+      2,
+      3
+    ],
+    "phase" : "refresh",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "dark-rtl",
+    "width" : 200,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 1,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true
+    ],
+    "overflow" : [
+      3
+    ],
+    "phase" : "wide",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "dark-rtl",
+    "width" : 360,
+    "windowsComparison" : "pending"
+  },
+  {
+    "hiddenOverflowCount" : 3,
+    "isOpen" : true,
+    "openEvents" : [
+      false,
+      true,
+      true,
+      true
+    ],
+    "overflow" : [
+      1,
+      2,
+      3
+    ],
+    "phase" : "narrow",
+    "retainedPrimaryCount" : 0,
+    "retainedSecondaryCount" : 0,
+    "sameFocus" : false,
+    "samePanel" : false,
+    "variant" : "dark-rtl",
+    "width" : 160,
+    "windowsComparison" : "pending"
+  }
+]
