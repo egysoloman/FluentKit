@@ -13,20 +13,18 @@ public struct FluentControlSizeView<Content: FluentView>: FluentUpdatablePrimiti
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentControlSizeHost(content: content._mount(in: context), size: size)
-        host.updateContent = { [content] native, updateContext in content._update(native, in: updateContext) }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentControlSizeHost else { return false }
-        guard host.updateContent?(host.contentView, context) ?? false else { return false }
+        guard content._update(host.contentView, in: context) else { return false }
         host.update(size: size)
         return true
     }
 }
 
 private final class FluentControlSizeHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     init(content: NSView, size: FluentControlSize) {

@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Declarative accessibility, focus, lifecycle, form, command, dialog, toolbar and related wrappers
+  now forward current content and actions instead of replaying their first mounted value.
+  SettingsCard refreshes its saved trailing-action callback for native appearance changes.
+  FocusScope releases its host correctly, and combined accessibility labels use updated children.
+
 - ComboBox updates an already-open popup when its host receives a new theme, including native
   AppKit embeddings without an AppearanceCoordinator. The popup stays open with its selection
   intact; temporary transition imagery is settled before repainting.

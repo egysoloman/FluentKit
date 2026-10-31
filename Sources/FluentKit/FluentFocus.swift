@@ -71,22 +71,18 @@ public struct FluentFocusedView<Content: FluentView>: FluentUpdatablePrimitiveVi
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentFocusHost(content: content._mount(in: context), binding: binding)
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentFocusHost else { return false }
         host.update(binding: binding)
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentFocusHost: NSView {
     var binding: FluentBinding<Bool>
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var observerID: UUID?
     private var windowObservation: NSKeyValueObservation?
@@ -199,20 +195,16 @@ public struct FluentInitialFocusView<Content: FluentView>: FluentUpdatablePrimit
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentInitialFocusHost(content: content._mount(in: context))
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentInitialFocusHost else { return false }
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentInitialFocusHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var didRequestFocus = false
 
@@ -269,24 +261,18 @@ public struct FluentFocusScopeView<Content: FluentView>: FluentUpdatablePrimitiv
         // Configure immediately so programmatic mounts have a deterministic key-view chain
         // even before AppKit performs the first window/layout pass.
         host.configureKeyViewLoop()
-        host.updateContent = { [content] nativeView, updateContext in
-            let updated = content._update(nativeView, in: updateContext)
-            host.configureKeyViewLoop()
-            return updated
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentFocusScopeHost else { return false }
-        let updated = host.updateContent?(host.contentView, context) ?? false
+        let updated = content._update(host.contentView, in: context)
         host.configureKeyViewLoop()
         return updated
     }
 }
 
 private final class FluentFocusScopeHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private weak var observedWindow: NSWindow?
 

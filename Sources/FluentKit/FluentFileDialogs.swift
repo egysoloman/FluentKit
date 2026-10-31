@@ -257,9 +257,6 @@ public struct FluentFileImporterView<Content: FluentView>: FluentUpdatablePrimit
             presenter: presenter,
             completion: completion
         )
-        host.updateContent = { [content] native, updateContext in
-            content._update(native, in: updateContext)
-        }
         return host
     }
 
@@ -271,7 +268,7 @@ public struct FluentFileImporterView<Content: FluentView>: FluentUpdatablePrimit
             presenter: presenter,
             completion: completion
         )
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
@@ -292,9 +289,6 @@ public struct FluentFileExporterView<Content: FluentView>: FluentUpdatablePrimit
             presenter: presenter,
             completion: completion
         )
-        host.updateContent = { [content] native, updateContext in
-            content._update(native, in: updateContext)
-        }
         return host
     }
 
@@ -306,7 +300,7 @@ public struct FluentFileExporterView<Content: FluentView>: FluentUpdatablePrimit
             presenter: presenter,
             completion: completion
         )
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
@@ -343,7 +337,6 @@ public extension FluentView {
 }
 
 private final class FluentFileImporterHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     private var isPresented: FluentBinding<Bool>
@@ -493,7 +486,6 @@ private final class FluentFileImporterHost: NSView {
 }
 
 private final class FluentFileExporterHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     private var isPresented: FluentBinding<Bool>

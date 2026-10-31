@@ -57,19 +57,17 @@ public struct FluentAccessibilityGroupView<Content: FluentView>: FluentUpdatable
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentAccessibilityGroupHost(content: content._mount(in: context), label: label, hint: hint, identifier: identifier)
-        host.updateContent = { [content] nativeView, updateContext in content._update(nativeView, in: updateContext) }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentAccessibilityGroupHost else { return false }
         host.update(label: label, hint: hint, identifier: identifier)
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentAccessibilityGroupHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     init(content: NSView, label: String?, hint: String?, identifier: String?) {

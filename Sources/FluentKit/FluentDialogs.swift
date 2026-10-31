@@ -45,21 +45,17 @@ public struct FluentConfirmationDialog<Content: FluentView>: FluentUpdatablePrim
             isPresented: isPresented,
             actions: actions
         )
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentConfirmationDialogHost else { return false }
         host.update(title: title, message: message, isPresented: isPresented, actions: actions)
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentConfirmationDialogHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var title: String
     private var message: String

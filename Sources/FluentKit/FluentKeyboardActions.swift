@@ -31,7 +31,6 @@ public struct FluentKeyboardActionView<Content: FluentView>: FluentUpdatablePrim
             isDefaultEnabled: isDefaultEnabled,
             isCancelEnabled: isCancelEnabled
         )
-        host.updateContent = { [content] native, updateContext in content._update(native, in: updateContext) }
         return host
     }
 
@@ -43,12 +42,11 @@ public struct FluentKeyboardActionView<Content: FluentView>: FluentUpdatablePrim
             isDefaultEnabled: isDefaultEnabled,
             isCancelEnabled: isCancelEnabled
         )
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentKeyboardActionHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var defaultAction: (() -> Void)?
     private var cancelAction: (() -> Void)?

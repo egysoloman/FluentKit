@@ -72,16 +72,13 @@ public struct FluentCommandsView<Content: FluentView>: FluentUpdatablePrimitiveV
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentCommandHost(content: content._mount(in: context), commands: commands)
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentCommandHost else { return false }
         host.commands = commands
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
@@ -318,7 +315,6 @@ private extension NSEvent.ModifierFlags {
 
 private final class FluentCommandHost: NSView {
     var commands: [FluentCommand]
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     init(content: NSView, commands: [FluentCommand]) {

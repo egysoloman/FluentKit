@@ -15,20 +15,18 @@ public struct FluentDragSource<Content: FluentView>: FluentUpdatablePrimitiveVie
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentDragSourceHost(payload: payload, content: content._mount(in: context))
-        host.updateContent = { [content] nativeView, updateContext in content._update(nativeView, in: updateContext) }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentDragSourceHost else { return false }
         host.payload = payload
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentDragSourceHost: NSView {
     var payload: NSPasteboardWriting
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var dragStart: NSPoint?
 
@@ -104,7 +102,6 @@ public struct FluentDropTarget<Content: FluentView>: FluentUpdatablePrimitiveVie
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentDropTargetHost(types: types, onDrop: onDrop, content: content._mount(in: context))
-        host.updateContent = { [content] nativeView, updateContext in content._update(nativeView, in: updateContext) }
         return host
     }
 
@@ -113,14 +110,13 @@ public struct FluentDropTarget<Content: FluentView>: FluentUpdatablePrimitiveVie
         host.types = types
         host.onDrop = onDrop
         host.registerForDraggedTypes(types)
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentDropTargetHost: NSView {
     var types: [NSPasteboard.PasteboardType]
     var onDrop: ([NSPasteboardItem]) -> Void
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var isDropTargeted = false { didSet { needsDisplay = true } }
 

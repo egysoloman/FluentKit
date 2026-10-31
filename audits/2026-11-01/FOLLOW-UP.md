@@ -12,8 +12,8 @@
 | 4 | **本批圆角裁切与禁用文字刷新已修复。** 三种输入控件清除原生布局补偿，Search/Secure 补齐禁用外观通知。 | 64 个状态及 1×/2× 像素检查中，容器内额外 4pt 宽度消失、四角保留；实际 IME 310/270/480pt 声明宽度与绘制相符。两项新测试旧代码 40 处失败，当前 379 项全过，门禁通过。见 `search-chrome/REPORT.md`。 |
 | 5 | **框架建议浮层已修；实际 IME 分支仍开放。** AutoSuggestBox 现在跟随祖先滚动/移动，完全裁切时关闭。 | 108 个动态状态通过，380 项测试及门禁通过。实际 IME 隔离探针发现原生行锚点导致 6pt 边框重叠、缩放后需再次发布才回位；尚需验证真实 IMK 传入矩形及回调，不算已修。录屏候选条归属仍待确认，参见 `candidate-popup/REPORT.md`。继续检查屏幕边界、展开候选、选词、关闭、主题；不以模拟 marked-text 代替真实输入法验收。 |
 | 6 | **本批已修 NavigationView、IME 页面/标题栏及 FlipView 中断。** | 前者 60 个框架状态、16 个实际 IME 状态、100 个 Gallery 联合状态通过，见 `page-motion/REPORT.md`。FlipView 另有 108 个状态：中断突变 215pt→0，原生内容 0×0 布局修复；最多挂载 5 页，384 项测试及门禁通过，见 `flip-motion/REPORT.md`。真实触摸、高刷/复杂页帧时、Windows 逐帧对拍仍开放。 |
-| 7 | **本批 IME 系统主题及已有 ComboBox 浮层已修；当前继续包装层审查。** | 63 个实际 IME 状态和 21 个 Gallery 状态通过，编辑器、组合文字、焦点、菜单和候选实例保留；显式 light/dark 不受模拟系统切换影响。385 项测试及门禁通过，见 `system-theme/REPORT.md`。全局系统设置事件与下述旧内容捕获仍单独验收。 |
-| 8 | 集成复验：菜单/下拉框尺寸、Switch、返回按钮，以及上述修复的互相影响。 | 已修项在新框架客户端中复验：触控板走桌面密度、直接触摸仍保留自己的尺寸；Switch 滑块状态与轨道；返回按压/取消/隐藏/快速导航。完成构建、原生验证和 Release 门禁，同时保存实际状态截图/录屏。 |
+| 7 | **本批 IME 系统主题、ComboBox 浮层与包装层旧内容已修。** | 63 个实际 IME 状态和 21 个 Gallery 状态通过，编辑器、组合文字、焦点、菜单和候选实例保留；显式 light/dark 不受模拟系统切换影响，见 `system-theme/REPORT.md`。另独立复现并修复 24 条旧内容路径，87 状态错误属性 144→0，392 项测试及门禁通过，见 `wrapper-content/REPORT.md`。全局系统设置事件仍需实机验收。 |
+| 8 | **正在集成复验**：菜单/下拉框尺寸、Switch、返回按钮，以及上述修复的互相影响。 | 已修项在新框架客户端中复验：触控板走桌面密度、直接触摸仍保留自己的尺寸；Switch 滑块状态与轨道；返回按压/取消/隐藏/快速导航。完成构建、原生验证和 Release 门禁，同时保存实际状态截图/录屏。 |
 
 ## 已处理项与明确边界
 
@@ -23,7 +23,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前批次已通过 385 项测试、原生验证、Gallery 构建和 Release 质量门禁；实际 IME Release 产品也构建通过。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前框架批次已通过 392 项测试、原生验证、Gallery 构建和 Release 质量门禁；实际 IME Release 产品正做最终联动构建。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 
@@ -31,7 +31,7 @@
 2. **Claude 修改及后续报告**：独立核对见 `../2026-10-30/CLAUDE_REVIEW.md`。6 处 body 简化已验证；“builder 最多 10 个”和“原生控件必须包装”已由编译反例澄清。Xcode Preview、可恢复 snapshot API、可选 URL 导航策略、文档整理和有实测支持的构建优化继续保留；不按推断做破坏性改名或无收益的大拆分。日期耦合 CI 已迁至固定入口。
 3. **交接剩余能力**：TreeView 示例/生命周期已修，仍需多条目拖动、展开动画及真实拖放验收；Collection、CommandBar/MenuBar、AutoSuggestBox、SplitButton 已有独立修复批次，仍保留其报告中的长尾状态与完整行为差距。Calendar/FlipView 的剩余事项见 ROADMAP 的 follow-up，不因已有样例标记为完成。
 4. **跨平台与实机**：Windows 同尺寸、缩放、字体与状态对拍，真实触摸、真实中文输入与 VoiceOver 分别验收。MapControl 网络、相机权限场景及 AnimatedVisualPlayer 的 Lottie 支持等已知限制仍保持原范围，不能用样例挂载通过代替。
-5. **包装层后续审查**：导航/Undo scope 的旧内容捕获已修；Accessibility、Lifecycle、Dialog、Command、ControlSizing 等包装层还有同类代码模式，需结合各自更新路径逐项复现。与主题漏更新/缓存正文一并追查，不能只修一个示例就宣称所有包装层正确。
+5. **包装层审查结果**：导航/Undo scope 之后，又独立复现并修复 Accessibility、Lifecycle、Dialog、Command、ControlSizing、SettingsCard 等 24 条旧内容路径，保留 5 条正常路径对照，见 `wrapper-content/REPORT.md`。覆盖当前内置包装器，第三方组合及真实 VoiceOver 仍单独验收。
 
 ## 每批的执行与提交
 

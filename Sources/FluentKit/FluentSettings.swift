@@ -55,7 +55,11 @@ public struct FluentSettingsCardView<Action: FluentView>: FluentUpdatablePrimiti
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentSettingsCardHost else { return false }
-        guard host.updateAction?(host.actionView, context) ?? false else { return false }
+        guard action._update(host.actionView, in: context) else { return false }
+        // Native appearance transactions also refresh the trailing action between renders.
+        host.updateAction = { [action] nativeView, updateContext in
+            action._update(nativeView, in: updateContext)
+        }
         host.update(
             title: title,
             description: description,

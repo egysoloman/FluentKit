@@ -63,21 +63,17 @@ public struct FluentToolbarView<Content: FluentView>: FluentUpdatablePrimitiveVi
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentToolbarHost(content: content._mount(in: context), items: items, context: context)
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentToolbarHost else { return false }
         host.update(items: items, context: context)
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentToolbarHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     private var coordinator: FluentToolbarCoordinator

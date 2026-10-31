@@ -110,16 +110,14 @@ public struct FluentAccessibilityElementView<Content: FluentView>: FluentUpdatab
             hint: hint,
             identifier: identifier
         )
-        host.updateContent = { [content] native, updateContext in
-            content._update(native, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentSemanticAccessibilityHost else { return false }
+        guard content._update(host.contentView, in: context) else { return false }
         host.update(behavior: behavior, label: label, hint: hint, identifier: identifier)
-        return host.updateContent?(host.contentView, context) ?? false
+        return true
     }
 }
 
@@ -175,16 +173,13 @@ public struct FluentDynamicAccessibilityView<Content: FluentView>: FluentUpdatab
             label: label,
             value: value
         )
-        host.updateContent = { [content] native, updateContext in
-            content._update(native, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentDynamicAccessibilityHost else { return false }
         host.update(label: label, value: value)
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
@@ -198,9 +193,6 @@ public struct FluentFocusAnnouncementView<Content: FluentView>: FluentUpdatableP
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentFocusAnnouncementHost(content: content._mount(in: context), message: message, priority: priority)
-        host.updateContent = { [content] native, updateContext in
-            content._update(native, in: updateContext)
-        }
         return host
     }
 
@@ -208,7 +200,7 @@ public struct FluentFocusAnnouncementView<Content: FluentView>: FluentUpdatableP
         guard let host = view as? FluentFocusAnnouncementHost else { return false }
         host.message = message
         host.priority = priority
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
@@ -257,7 +249,6 @@ public extension FluentView {
 }
 
 private final class FluentSemanticAccessibilityHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     private var behavior: FluentAccessibilityChildBehavior
@@ -329,7 +320,6 @@ private final class FluentSemanticAccessibilityHost: NSView {
 }
 
 private final class FluentDynamicAccessibilityHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     private var labelBinding: FluentBinding<String>?
@@ -389,7 +379,6 @@ private final class FluentDynamicAccessibilityHost: NSView {
 }
 
 private final class FluentFocusAnnouncementHost: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     var message: String
     var priority: FluentAccessibilityAnnouncementPriority

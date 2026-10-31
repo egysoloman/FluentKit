@@ -58,16 +58,13 @@ public struct FluentFormField<Content: FluentView>: FluentUpdatablePrimitiveView
             content: content._mount(in: context),
             theme: context.theme
         )
-        host.updateContent = { [content] native, updateContext in content._update(native, in: updateContext) }
-        host.makeContent = { [content] updateContext in content._mount(in: updateContext) }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentFormFieldHost else { return false }
-        if !(host.updateContent?(host.contentView, context) ?? false),
-           let makeContent = host.makeContent {
-            host.replaceContent(makeContent(context))
+        if !content._update(host.contentView, in: context) {
+            host.replaceContent(content._mount(in: context))
         }
         host.update(
             title: title,
@@ -85,8 +82,6 @@ private final class FluentFormFieldHost: NSView {
     let helpLabel = NSTextField(labelWithString: "")
     let validationLabel = NSTextField(labelWithString: "")
     let contentContainer = NSView()
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
-    var makeContent: ((FluentRenderContext) -> NSView)?
     var contentView: NSView { contentContainer.subviews[0] }
 
     init(
@@ -209,13 +204,12 @@ public struct FluentFormSection<Content: FluentView>: FluentUpdatablePrimitiveVi
             content: content._mount(in: context),
             theme: context.theme
         )
-        host.updateContent = { [content] native, updateContext in content._update(native, in: updateContext) }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentFormSectionHost else { return false }
-        guard host.updateContent?(host.contentView, context) ?? false else { return false }
+        guard content._update(host.contentView, in: context) else { return false }
         host.update(title: title, footer: footer, theme: context.theme)
         return true
     }
@@ -226,7 +220,6 @@ private final class FluentFormSectionHost: NSView {
     let divider = NSBox()
     let contentContainer = NSView()
     let footerLabel = NSTextField(labelWithString: "")
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { contentContainer.subviews[0] }
 
     init(title: String, footer: String?, content: NSView, theme: FluentTheme) {
@@ -301,13 +294,12 @@ public struct FluentLabeledContent<Content: FluentView>: FluentUpdatablePrimitiv
             content: content._mount(in: context),
             theme: context.theme
         )
-        host.updateContent = { [content] native, updateContext in content._update(native, in: updateContext) }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentLabeledContentHost else { return false }
-        guard host.updateContent?(host.contentView, context) ?? false else { return false }
+        guard content._update(host.contentView, in: context) else { return false }
         host.update(title: title, labelWidth: labelWidth, theme: context.theme)
         return true
     }
@@ -316,7 +308,6 @@ public struct FluentLabeledContent<Content: FluentView>: FluentUpdatablePrimitiv
 private final class FluentLabeledContentHost: NSView {
     let label = NSTextField(labelWithString: "")
     let contentContainer = NSView()
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { contentContainer.subviews[0] }
     private var widthConstraint: NSLayoutConstraint!
 

@@ -1,0 +1,34 @@
+Building for debugging...
+[1 / 1]
+[2 / 16] FluentKit
+[15 / 29] FluentKit
+[23 / 34] FluentKit
+[25 / 33] FluentGallery-product
+[30 / 34] FluentKitTests-product
+[34 / 37] FluentGallery-product
+[37 / 41] FluentKitTests-product
+[41 / 44] FluentKitValidation-product
+Build complete! (17.68秒)
+Test Suite 'Selected tests' started at 2026-11-01 04:09:49.940.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 04:09:49.941.
+Test Suite 'WrapperContentUpdateTests' started at 2026-11-01 04:09:49.941.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WrapperContentUpdateTests.swift:92: error: -[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("Before")")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WrapperContentUpdateTests.swift:94: error: -[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("After")")
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' failed (0.459 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' passed (0.022 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' passed (0.020 seconds).
+Test Suite 'WrapperContentUpdateTests' failed at 2026-11-01 04:09:50.446.
+	 Executed 5 tests, with 2 failures (0 unexpected) in 0.505 (0.506) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 04:09:50.446.
+	 Executed 5 tests, with 2 failures (0 unexpected) in 0.505 (0.506) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 04:09:50.446.
+	 Executed 5 tests, with 2 failures (0 unexpected) in 0.505 (0.507) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

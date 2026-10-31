@@ -156,9 +156,6 @@ public struct FluentTeachingTip<Content: FluentView, TipContent: FluentView>: Fl
             configuration: configuration,
             context: context
         )
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
@@ -170,7 +167,7 @@ public struct FluentTeachingTip<Content: FluentView, TipContent: FluentView>: Fl
             configuration: configuration,
             context: context
         )
-        return host.updateContent?(host.anchorContent, context) ?? false
+        return content._update(host.anchorContent, in: context)
     }
 }
 
@@ -292,7 +289,6 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         case closing
     }
 
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var anchorContent: NSView { subviews[0] }
 
     private var tipContent: TipContent

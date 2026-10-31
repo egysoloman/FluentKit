@@ -1,0 +1,30 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[9 / 19] FluentKit
+[13 / 18] FluentGallery-product
+[17 / 22] FluentKitTests-product
+[21 / 23] FluentKitTests-product
+[22 / 26] FluentKitTests-product
+[25 / 26] FluentKitValidation-product
+Build complete! (6.07秒)
+Test Suite 'Selected tests' started at 2026-11-01 04:12:37.265.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 04:12:37.266.
+Test Suite 'WrapperContentUpdateTests' started at 2026-11-01 04:12:37.266.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' passed (0.079 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' passed (0.034 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' passed (0.021 seconds).
+Test Suite 'WrapperContentUpdateTests' passed at 2026-11-01 04:12:37.404.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.138 (0.139) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 04:12:37.404.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.138 (0.139) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 04:12:37.404.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.138 (0.140) seconds

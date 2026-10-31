@@ -154,9 +154,6 @@ public struct FluentContentDialog<Content: FluentView, DialogContent: FluentView
             onClosed: onClosed,
             context: context
         )
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
@@ -170,7 +167,7 @@ public struct FluentContentDialog<Content: FluentView, DialogContent: FluentView
             onClosed: onClosed,
             context: context
         )
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
@@ -224,7 +221,6 @@ public extension FluentView {
 }
 
 private final class FluentContentDialogHost<DialogContent: FluentView>: NSView {
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     private var dialogContent: DialogContent

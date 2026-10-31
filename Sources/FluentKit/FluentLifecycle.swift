@@ -14,9 +14,6 @@ public struct FluentLifecycleView<Content: FluentView>: FluentUpdatablePrimitive
             onAppear: onAppearAction,
             onDisappear: onDisappearAction
         )
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
@@ -24,14 +21,13 @@ public struct FluentLifecycleView<Content: FluentView>: FluentUpdatablePrimitive
         guard let host = view as? FluentLifecycleHost else { return false }
         host.onAppear = onAppearAction
         host.onDisappear = onDisappearAction
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentLifecycleHost: NSView {
     var onAppear: (() -> Void)?
     var onDisappear: (() -> Void)?
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var hasAppeared = false
 
@@ -73,22 +69,18 @@ public struct FluentHoverView<Content: FluentView>: FluentUpdatablePrimitiveView
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let host = FluentHoverHost(content: content._mount(in: context), action: action)
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
         return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentHoverHost else { return false }
         host.action = action
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentHoverHost: NSView {
     var action: (Bool) -> Void
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
     private var isInside = false
 
