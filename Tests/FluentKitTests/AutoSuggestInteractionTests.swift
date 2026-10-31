@@ -223,6 +223,52 @@ final class AutoSuggestInteractionTests: XCTestCase {
         XCTAssertEqual(events.last?.reason, .programmaticChange)
     }
 
+    @MainActor func testPopupTracksScrollingAncestor() throws {
+        _ = NSApplication.shared
+        let state = FluentState(wrappedValue: "")
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in Array(self.values.prefix(2)) }, maxSuggestionListHeight: 84)
+            ._makeView(in: .init(reduceMotion: true))
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 300, width: 460, height: 360),
+                              styleMask: [.titled], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false; defer { window.close() }
+        let scroll = NSScrollView(frame: NSRect(x: 20, y: 20, width: 400, height: 300))
+        let document = NSView(frame: NSRect(x: 0, y: 0, width: 400, height: 1000))
+        document.addSubview(view); scroll.documentView = document
+        view.frame = NSRect(x: 20, y: 120, width: 300, height: view.intrinsicContentSize.height)
+        window.contentView!.addSubview(scroll); window.makeKeyAndOrderFront(nil)
+        scroll.contentView.scroll(to: .zero); scroll.reflectScrolledClipView(scroll.contentView)
+        view.layoutSubtreeIfNeeded()
+        _ = try type("Ap", in: view)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        let field = try field(view)
+        let previousAnchor = window.convertToScreen(field.convert(field.bounds, to: nil))
+        let previousPopup = panel.frame
+        let origin = scroll.contentView.bounds.origin
+        scroll.contentView.scroll(to: NSPoint(x: origin.x, y: origin.y + 35))
+        scroll.reflectScrolledClipView(scroll.contentView)
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.03))
+        let movedAnchor = window.convertToScreen(field.convert(field.bounds, to: nil))
+        XCTAssertEqual(abs(movedAnchor.minY - previousAnchor.minY), 35, accuracy: 0.5)
+        XCTAssertEqual(panel.frame.minY - previousPopup.minY, movedAnchor.minY - previousAnchor.minY, accuracy: 0.5)
+        let beforeParentMove = panel.frame
+        scroll.setFrameOrigin(NSPoint(x: scroll.frame.minX + 15, y: scroll.frame.minY + 7))
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.03))
+        XCTAssertEqual(panel.frame.minX - beforeParentMove.minX, 15, accuracy: 0.5)
+        XCTAssertEqual(panel.frame.minY - beforeParentMove.minY, 7, accuracy: 0.5)
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: 500))
+        scroll.reflectScrolledClipView(scroll.contentView)
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.03))
+        XCTAssertEqual(window.childWindows?.count ?? 0, 0, "A fully clipped input must not leave detached suggestions")
+        scroll.contentView.scroll(to: .zero)
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.03))
+        XCTAssertEqual(window.childWindows?.count ?? 0, 0, "Scrolling back must not reopen stale suggestions")
+        _ = try type("App", in: view)
+        let reopened = try XCTUnwrap(window.childWindows?.first)
+        let currentAnchor = window.convertToScreen(field.convert(field.bounds, to: nil))
+        XCTAssertEqual(currentAnchor.minY - reopened.frame.maxY, 2, accuracy: 0.5)
+        XCTAssertEqual(reopened.frame.minX, currentAnchor.minX, accuracy: 0.5)
+    }
+
     @MainActor func testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen() throws {
         let state = FluentState(wrappedValue: "")
         var count = 2

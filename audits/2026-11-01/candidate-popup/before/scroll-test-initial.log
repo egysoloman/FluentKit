@@ -1,0 +1,22 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[8 / 11] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+[12 / 14] FluentKitTests-product
+Build complete! (2.26秒)
+Test Suite 'Selected tests' started at 2026-11-01 02:06:05.335.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 02:06:05.336.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-11-01 02:06:05.336.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:252: error: -[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("-35.0") +/- ("0.5")
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor]' failed (0.836 seconds).
+Test Suite 'AutoSuggestInteractionTests' failed at 2026-11-01 02:06:06.172.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.836 (0.836) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 02:06:06.172.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.836 (0.836) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 02:06:06.172.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.836 (0.837) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

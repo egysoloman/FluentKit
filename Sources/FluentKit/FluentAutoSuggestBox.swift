@@ -778,6 +778,8 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
     private var localMonitor: Any?
     private var globalMonitor: Any?
     private var windowObservers: [NSObjectProtocol] = []
+    private var anchorGeometryObservers: [NSObjectProtocol] = []
+    private var observedAncestorIDs: [ObjectIdentifier] = []
     private weak var appearanceCoordinator: FluentAppearanceCoordinator?
     private var appearanceRegistration: UUID?
 
@@ -869,6 +871,7 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         self.transitionHost = transitionHost
         self.suggestionsView = suggestionsView
         popup.orderFront(nil)
+        observeAnchorGeometry()
         installOutsideClickMonitors()
         for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification] {
             windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: anchorWindow, queue: .main) { [weak self] _ in self?.reposition() })
@@ -902,6 +905,12 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
             dismiss(animated: false)
             return
         }
+        guard !anchor.isHiddenOrHasHiddenAncestor,
+              !anchor.bounds.intersection(anchor.visibleRect).isEmpty else {
+            dismiss(animated: false)
+            return
+        }
+        observeAnchorGeometry()
         let size = preferredSize(suggestionCount: suggestionsView?.count ?? 0)
         guard size.height > 0 else { dismiss(animated: false); return }
         let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
@@ -934,6 +943,7 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
     }
 
     private func dismiss(animated: Bool, notify: Bool) {
+        removeAnchorGeometryObservers()
         guard let popupPanel = panel else {
             if notify { onDismiss() }
             return
@@ -975,6 +985,34 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         let leading = rtl ? anchorRect.maxX - size.width : anchorRect.minX
         let x = min(max(leading, visibleFrame.minX + 4), max(visibleFrame.maxX - size.width - 4, visibleFrame.minX + 4))
         return NSPoint(x: x, y: max(visibleFrame.minY, y))
+    }
+
+    private func observeAnchorGeometry() {
+        // A child NSPanel follows its window, but not the input's scrolling/layout ancestors.
+        // AppKit posts these view notifications by default; leave client notification flags alone.
+        var ancestors: [NSView] = []
+        var current = anchor
+        while let view = current {
+            ancestors.append(view)
+            current = view.superview
+        }
+        let identifiers = ancestors.map(ObjectIdentifier.init)
+        guard identifiers != observedAncestorIDs else { return }
+        removeAnchorGeometryObservers()
+        observedAncestorIDs = identifiers
+        for view in ancestors {
+            for name in [NSView.frameDidChangeNotification, NSView.boundsDidChangeNotification] {
+                anchorGeometryObservers.append(NotificationCenter.default.addObserver(
+                    forName: name, object: view, queue: .main
+                ) { [weak self] _ in self?.reposition() })
+            }
+        }
+    }
+
+    private func removeAnchorGeometryObservers() {
+        anchorGeometryObservers.forEach(NotificationCenter.default.removeObserver)
+        anchorGeometryObservers.removeAll()
+        observedAncestorIDs.removeAll()
     }
 
     private func installOutsideClickMonitors() {

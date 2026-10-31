@@ -1,0 +1,176 @@
+[
+  {
+    "canBecomeKey" : false,
+    "caret" : [
+      633,
+      896,
+      0,
+      19
+    ],
+    "editorFocused" : true,
+    "field" : [
+      601,
+      889,
+      310,
+      32
+    ],
+    "fieldGap" : -6,
+    "isVisible" : true,
+    "lineGap" : 1,
+    "marked" : true,
+    "panel" : [
+      633,
+      745,
+      578,
+      150
+    ],
+    "state" : "present",
+    "visibleShadows" : 1,
+    "xError" : 0
+  },
+  {
+    "canBecomeKey" : false,
+    "caret" : [
+      728,
+      896,
+      0,
+      19
+    ],
+    "editorFocused" : true,
+    "field" : [
+      696,
+      889,
+      480,
+      32
+    ],
+    "fieldGap" : -6,
+    "isVisible" : true,
+    "lineGap" : 1,
+    "marked" : true,
+    "panel" : [
+      633,
+      745,
+      578,
+      150
+    ],
+    "state" : "resize-before-publish",
+    "visibleShadows" : 1,
+    "xError" : -95
+  },
+  {
+    "canBecomeKey" : false,
+    "caret" : [
+      728,
+      896,
+      0,
+      19
+    ],
+    "editorFocused" : true,
+    "field" : [
+      696,
+      889,
+      480,
+      32
+    ],
+    "fieldGap" : -6,
+    "isVisible" : true,
+    "lineGap" : 1,
+    "marked" : true,
+    "panel" : [
+      728,
+      745,
+      578,
+      150
+    ],
+    "state" : "resize-after-publish",
+    "visibleShadows" : 1,
+    "xError" : 0
+  },
+  {
+    "canBecomeKey" : false,
+    "caret" : [
+      728,
+      896,
+      0,
+      19
+    ],
+    "editorFocused" : true,
+    "field" : [
+      696,
+      889,
+      480,
+      32
+    ],
+    "fieldGap" : -6,
+    "isVisible" : false,
+    "lineGap" : 1,
+    "marked" : true,
+    "panel" : [
+      728,
+      745,
+      578,
+      150
+    ],
+    "state" : "dismiss",
+    "visibleShadows" : 0,
+    "xError" : 0
+  },
+  {
+    "canBecomeKey" : false,
+    "caret" : [
+      728,
+      896,
+      0,
+      19
+    ],
+    "editorFocused" : true,
+    "field" : [
+      696,
+      889,
+      480,
+      32
+    ],
+    "fieldGap" : -6,
+    "isVisible" : true,
+    "lineGap" : 1,
+    "marked" : true,
+    "panel" : [
+      728,
+      745,
+      578,
+      150
+    ],
+    "state" : "reopen",
+    "visibleShadows" : 1,
+    "xError" : 0
+  },
+  {
+    "canBecomeKey" : false,
+    "caret" : [
+      728,
+      896,
+      0,
+      19
+    ],
+    "editorFocused" : true,
+    "field" : [
+      696,
+      889,
+      480,
+      32
+    ],
+    "fieldGap" : -6,
+    "isVisible" : false,
+    "lineGap" : 1,
+    "marked" : true,
+    "panel" : [
+      728,
+      745,
+      578,
+      150
+    ],
+    "state" : "empty",
+    "visibleShadows" : 0,
+    "xError" : 0
+  }
+]

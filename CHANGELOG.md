@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AutoSuggestBox suggestions now follow scrolling and moving ancestor views. A fully clipped
+  input closes its suggestions; scrolling back does not reopen stale results, and new input
+  reopens the popup at the current anchor without moving keyboard focus.
+
 - TextField, SearchBox and SecureField now align their custom chrome with the allocated frame.
   Removing native bezel alignment insets prevents an extra 4pt of width and clipped corners in
   containers. SearchBox and SecureField also refresh placeholder/text appearance immediately
