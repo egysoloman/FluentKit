@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added AnimatedVisualPlayer (AutoPlay loop, play/pause/resume/stop/progress, playback rate,
+  stretch, fallback content) and AnimatedIcon (WinUI marker lookup order, coalesced state changes,
+  Cut/QueueOne/SpeedUpQueueOne queues, 20ms and Reduce Motion cuts, pointer-driven states, fallback
+  symbol) over a `FluentAnimatedVisualSource` protocol, with Back, ChevronDownSmall, Settings,
+  GlobalNavigationButton and Find sources on WinUI's marker timelines. Lottie JSON is not supported.
+
 - Added ParallaxView: a background arranged larger by the shift and translated with WinUI's clamped
   parallax formula behind scrolling content, with relative/absolute source offsets, max shift
   ratio and 10% under/overpan. Fixed frame-laid-out hosts in Pivot, SwipeControl, SemanticZoom,

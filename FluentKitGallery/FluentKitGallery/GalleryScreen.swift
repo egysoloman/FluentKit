@@ -24,6 +24,8 @@ struct GalleryScreen: FluentView {
     @FluentState private var sezoZoomedIn = true
     @FluentState private var asbStatus = "Use the annotated rail to navigate"
     @FluentState private var ptrRefreshing = false
+    @FluentState private var animatedAutoPlay = true
+    private let animatedPlayer = FluentAnimatedVisualPlayerController()
     @FluentState private var ptrItems = ["Quarterly report", "Design review", "Lunch on Friday"]
     @FluentState private var sezoStatus = "Choose a letter in the zoomed-out view"
     private let sezoGroups = ["A": ["Ada", "Alan", "Anita"], "B": ["Bea", "Bjarne"], "G": ["Grace", "Guido"], "K": ["Ken", "Katherine"], "L": ["Linus", "Lin"]]
@@ -560,6 +562,32 @@ struct GalleryScreen: FluentView {
                 .frame(width: 380, height: 260)
                 FluentText("The background moves more slowly than the list; it reaches its 160pt shift at the end of scrolling.",
                     style: .caption, color: theme.textSecondary)
+            })
+        case .AnimatedIcon:
+            return FluentAnyView(FluentVStack(spacing: 10) {
+                FluentHStack(spacing: 20) {
+                    FluentAnimatedIcon(source: FluentBuiltInAnimatedIconSource(.back), size: 32)
+                    FluentAnimatedIcon(source: FluentBuiltInAnimatedIconSource(.chevronDownSmall), size: 32)
+                    FluentAnimatedIcon(source: FluentBuiltInAnimatedIconSource(.settings), size: 32)
+                    FluentAnimatedIcon(source: FluentBuiltInAnimatedIconSource(.globalNavigationButton), size: 32)
+                    FluentAnimatedIcon(source: FluentBuiltInAnimatedIconSource(.find), size: 32)
+                    FluentAnimatedIcon(source: nil, fallbackSymbol: "star", size: 32)
+                }
+                FluentText("Hover and press each icon. The last one has no source and shows its fallback symbol.",
+                    style: .caption, color: theme.textSecondary)
+            })
+        case .AnimatedVisualPlayer:
+            return FluentAnyView(FluentVStack(spacing: 10) {
+                FluentAnimatedVisualPlayer(source: FluentBuiltInAnimatedIconSource(.settings), controller: animatedPlayer,
+                                           autoPlay: animatedAutoPlay)
+                    .frame(width: 120, height: 120)
+                FluentHStack(spacing: 8) {
+                    FluentButtonView("Play once") { animatedPlayer.play(from: 0, to: 1) }
+                    FluentButtonView("Pause") { animatedPlayer.pause() }
+                    FluentButtonView("Resume") { animatedPlayer.resume() }
+                    FluentButtonView("Stop") { animatedPlayer.stop() }
+                }
+                FluentToggleView("AutoPlay", isOn: $animatedAutoPlay)
             })
         case .BreadcrumbBar:
             return FluentAnyView(FluentVStack(spacing: 10) {

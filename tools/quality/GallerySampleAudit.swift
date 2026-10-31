@@ -46,6 +46,8 @@ import FluentKit
                     case "AnnotatedScrollBar": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnnotatedScrollBar" })
                     case "PullToRefresh": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.RefreshContainer" })
                     case "ParallaxView": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.ParallaxView" })
+                    case "AnimatedIcon": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnimatedIcon" })
+                    case "AnimatedVisualPlayer": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnimatedVisualPlayer" })
                     default: break
                     }
                     window.close()

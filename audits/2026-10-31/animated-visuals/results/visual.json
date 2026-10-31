@@ -1,0 +1,38 @@
+[
+  {
+    "glyphs" : "approximations of the WinUI Lottie sources",
+    "state" : "Normal",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "glyphs" : "approximations of the WinUI Lottie sources",
+    "state" : "PointerOver",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "glyphs" : "approximations of the WinUI Lottie sources",
+    "state" : "Pressed",
+    "variant" : "light",
+    "windowsComparison" : "pending"
+  },
+  {
+    "glyphs" : "approximations of the WinUI Lottie sources",
+    "state" : "Normal",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "glyphs" : "approximations of the WinUI Lottie sources",
+    "state" : "PointerOver",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  },
+  {
+    "glyphs" : "approximations of the WinUI Lottie sources",
+    "state" : "Pressed",
+    "variant" : "dark",
+    "windowsComparison" : "pending"
+  }
+]
