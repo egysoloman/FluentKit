@@ -28,6 +28,18 @@ struct GalleryScreen: FluentView {
     @FluentState private var mapCenter = FluentGeopoint(latitude: 47.6150, longitude: -122.3450)
     @FluentState private var mapZoom = 13.0
     @FluentState private var cameraRunning = false
+    @FluentState private var sampleToggleOn = false
+    @FluentState private var sampleRepeatCount = 0
+    @FluentState private var sampleNavigationSelection: String? = "home"
+    @FluentState private var sampleTabs = ["Document 1", "Document 2", "Document 3"]
+    @FluentState private var sampleTabIndex = 0
+    @FluentState private var sampleTeachingTipOpen = false
+    @FluentState private var sampleCommandStatus = "none"
+    @FluentState private var sampleRichText = NSAttributedString(string: "Rich text with **formatting** commands.")
+    @FluentState private var sampleClipboardText = "Hello from FluentKit"
+    @FluentState private var sampleClipboardStatus = "Nothing copied yet"
+    @FluentState private var sampleImporterOpen = false
+    @FluentState private var sampleImporterStatus = "No file picked"
     @FluentState private var cameraStatus = "Camera off"
     private let cameraCapture = FluentCameraCapture()
     @FluentState private var mapControlsVisible = true
@@ -633,6 +645,117 @@ struct GalleryScreen: FluentView {
                         }
                     }
                 }
+            })
+        case .ToggleButton:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentToggleButtonView("Bold", isOn: $sampleToggleOn)
+                FluentText(sampleToggleOn ? "On" : "Off", style: .caption, color: theme.textSecondary)
+            })
+        case .RepeatButton:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentRepeatButtonView("Click and hold") { sampleRepeatCount += 1 }
+                FluentText("Number of clicks: \(sampleRepeatCount)", style: .caption, color: theme.textSecondary)
+            })
+        case .StackPanel:
+            return FluentAnyView(FluentVStack(spacing: 12) {
+                FluentText("Vertical StackPanel", style: .bodyStrong)
+                FluentHStack(spacing: 8) {
+                    FluentText("Item 1", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                    FluentText("Item 2", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                    FluentText("Item 3", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                }
+                FluentText("Horizontal StackPanel inside a vertical one.", style: .caption, color: theme.textSecondary)
+            })
+        case .Grid:
+            return FluentAnyView(FluentGrid(columns: 3, spacing: 8) {
+                FluentText("Row 0, Col 0", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                FluentText("Row 0, Col 1", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                FluentText("Row 0, Col 2", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                FluentText("Row 1, Col 0", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                FluentText("Row 1, Col 1", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+                FluentText("Row 1, Col 2", style: .body).padding(8).background(theme.cardFill, cornerRadius: 4)
+            })
+        case .SplitView:
+            return FluentAnyView(FluentSplitView(sidebarWidth: 160, sidebar: {
+                FluentVStack(spacing: 6) {
+                    FluentText("Inbox", style: .body)
+                    FluentText("Sent", style: .body)
+                    FluentText("Archive", style: .body)
+                }.padding(12)
+            }, detail: {
+                FluentText("Select a folder to see its messages.", style: .body, color: theme.textSecondary).padding(12)
+            }).frame(width: 440, height: 200))
+        case .NavigationView:
+            return FluentAnyView(FluentNavigationView([
+                FluentNavigationItem(id: "home", title: "Home", systemImageName: "house"),
+                FluentNavigationItem(id: "music", title: "Music", systemImageName: "music.note"),
+                FluentNavigationItem(id: "photos", title: "Photos", systemImageName: "photo")
+            ], selection: $sampleNavigationSelection, paneDisplayMode: .left, openPaneLength: 180) {
+                FluentText("Selected: \(sampleNavigationSelection ?? "none")", style: .subtitle).padding(16)
+            }.frame(width: 460, height: 240))
+        case .TabView:
+            return FluentAnyView(FluentTabView(items: sampleTabs.map { name in
+                FluentTabItem(id: name, title: name, systemImage: "doc") {
+                    FluentText("Content of \(name)", style: .body).padding(12)
+                }
+            }, selectedIndex: $sampleTabIndex, onAddTabButtonClick: {
+                sampleTabs.append("Document \(sampleTabs.count + 1)")
+            }, onTabCloseRequested: { index in
+                if sampleTabs.indices.contains(index), sampleTabs.count > 1 { sampleTabs.remove(at: index) }
+            }).frame(width: 460, height: 200))
+        case .TeachingTip:
+            return FluentAnyView(FluentTeachingTip(isPresented: $sampleTeachingTipOpen, title: "Change themes without hassle",
+                subtitle: "It's easier than ever to see control samples in both light and dark theme!",
+                systemImageName: "paintpalette", closeButtonTitle: "Got it", content: {
+                    FluentButtonView("Show TeachingTip") { sampleTeachingTipOpen = true }
+                }, tip: { FluentText("", style: .caption) }))
+        case .TitleBar:
+            return FluentAnyView(FluentTitleBar(title: "FluentKit Gallery", subtitle: "Preview", systemImageName: "app",
+                                               isBackButtonVisible: true, isPaneToggleButtonVisible: true,
+                                               extendsIntoWindowChrome: false)
+                .frame(width: 460, height: 48))
+        case .CommandBarFlyout:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentButtonView("Show CommandBarFlyout") {}
+                    .commandBarFlyout(primaryCommands: {
+                        FluentCommandBarItem("Share", systemImageName: "square.and.arrow.up") { sampleCommandStatus = "Share" }
+                        FluentCommandBarItem("Save", systemImageName: "square.and.arrow.down") { sampleCommandStatus = "Save" }
+                        FluentCommandBarItem("Delete", systemImageName: "trash") { sampleCommandStatus = "Delete" }
+                    }, secondaryCommands: {
+                        FluentCommandBarItem("Resize") { sampleCommandStatus = "Resize" }
+                        FluentCommandBarItem("Move") { sampleCommandStatus = "Move" }
+                    })
+                FluentText("Last command: \(sampleCommandStatus)", style: .caption, color: theme.textSecondary)
+            })
+        case .RichEditBox:
+            return FluentAnyView(FluentNativeView(FluentRichTextEditor($sampleRichText, placeholder: "Type formatted text…", minimumHeight: 140))
+                .frame(width: 440, height: 160))
+        case .Clipboard:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentBoundTextField($sampleClipboardText, placeholder: "Text to copy")
+                FluentHStack(spacing: 8) {
+                    FluentButtonView("Copy") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(sampleClipboardText, forType: .string)
+                        sampleClipboardStatus = "Copied \"\(sampleClipboardText)\""
+                    }
+                    FluentButtonView("Paste") {
+                        sampleClipboardStatus = "Clipboard: \(NSPasteboard.general.string(forType: .string) ?? "(no text)")"
+                    }
+                }
+                FluentText(sampleClipboardStatus, style: .caption, color: theme.textSecondary)
+            })
+        case .StoragePickers:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentButtonView("Pick a file") { sampleImporterOpen = true }
+                    .fileImporter(isPresented: $sampleImporterOpen,
+                                  configuration: FluentFileImportConfiguration(prompt: "Open")) { result in
+                        switch result {
+                        case let .success(urls): sampleImporterStatus = "Picked: \(urls.map(\.lastPathComponent).joined(separator: ", "))"
+                        case let .failure(error): sampleImporterStatus = "No file: \(error.localizedDescription)"
+                        }
+                    }
+                FluentText(sampleImporterStatus, style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:
             return FluentAnyView(FluentVStack(spacing: 10) {

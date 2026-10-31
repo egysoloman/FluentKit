@@ -64,3 +64,26 @@ final class SingleChildStackTests: XCTestCase {
         }
     }
 }
+
+final class GridStarSizingTests: XCTestCase {
+    @MainActor
+    func testGridColumnsAndRowsShareSpaceEqually() throws {
+        _ = NSApplication.shared
+        let grid = try XCTUnwrap(FluentGrid(columns: 3, spacing: 8) {
+            FluentText("Wide first cell content")
+            FluentText("B")
+            FluentText("C")
+            FluentText("D")
+            FluentText("E")
+            FluentText("F")
+        }._makeView(in: FluentRenderContext(reduceMotion: true)) as? NSGridView)
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 300), styleMask: [.titled], backing: .buffered, defer: true)
+        window.contentView = grid
+        window.contentView?.layoutSubtreeIfNeeded()
+        let widths = (0..<3).map { grid.column(at: $0).width > 0 ? grid.column(at: $0).width : (grid.cell(atColumnIndex: $0, rowIndex: 0).contentView?.frame.width ?? 0) }
+        XCTAssertEqual(widths[0], widths[1], accuracy: 1)
+        XCTAssertEqual(widths[1], widths[2], accuracy: 1)
+        let heights = (0..<2).map { grid.cell(atColumnIndex: 0, rowIndex: $0).contentView?.frame.height ?? 0 }
+        XCTAssertEqual(heights[0], heights[1], accuracy: 1)
+    }
+}

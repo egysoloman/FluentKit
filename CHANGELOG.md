@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added direct Gallery samples for ToggleButton, RepeatButton, StackPanel, Grid, SplitView,
+  NavigationView, TabView, TeachingTip, TitleBar, CommandBarFlyout, RichEditBox, Clipboard and
+  StoragePickers. FluentGrid now shares space equally across columns and rows like WinUI's default
+  star sizing.
+
 - Flyouts now pick touch or pointer layouts from the device that opened them, as WinUI's
   InputDeviceTypeUsedToOpen: MenuFlyout default vs narrow padding, ComboBox touch item padding and
   240pt minimum popup width, taller CommandBar overflow rows, and primary text commands only for

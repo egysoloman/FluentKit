@@ -178,7 +178,30 @@ public struct FluentGrid<Content: FluentView>: FluentUpdatablePrimitiveView {
         let grid = NSGridView(views: rows)
         grid.rowSpacing = spacing
         grid.columnSpacing = spacing
+        Self.applyStarSizing(to: grid)
         return grid
+    }
+
+    /// WinUI Grid's default `*` row and column definitions share the available space equally and
+    /// stretch each child in its cell; NSGridView alone hands spare space to one column.
+    static func applyStarSizing(to grid: NSGridView) {
+        grid.xPlacement = .fill
+        grid.yPlacement = .fill
+        func content(_ column: Int, _ row: Int) -> NSView? {
+            guard column < grid.numberOfColumns, row < grid.numberOfRows else { return nil }
+            return grid.cell(atColumnIndex: column, rowIndex: row).contentView
+        }
+        var constraints: [NSLayoutConstraint] = []
+        if let reference = content(0, 0) {
+            for column in 1..<max(grid.numberOfColumns, 1) {
+                if let view = content(column, 0) { constraints.append(view.widthAnchor.constraint(equalTo: reference.widthAnchor)) }
+            }
+            for row in 1..<max(grid.numberOfRows, 1) {
+                if let view = content(0, row) { constraints.append(view.heightAnchor.constraint(equalTo: reference.heightAnchor)) }
+            }
+        }
+        constraints.forEach { $0.identifier = "FluentKit.Grid.StarSizing"; $0.priority = .defaultHigh }
+        NSLayoutConstraint.activate(constraints)
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {

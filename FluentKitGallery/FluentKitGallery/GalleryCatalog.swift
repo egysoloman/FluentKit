@@ -220,6 +220,19 @@ enum GallerySampleID: String, CaseIterable {
     case AnimatedVisualPlayer
     case MapControl
     case CaptureElementPreview
+    case ToggleButton
+    case RepeatButton
+    case StackPanel
+    case Grid
+    case SplitView
+    case NavigationView
+    case TabView
+    case TeachingTip
+    case TitleBar
+    case CommandBarFlyout
+    case RichEditBox
+    case Clipboard
+    case StoragePickers
     case BreadcrumbBar
     case Slider
     case ProgressBar
