@@ -48,3 +48,19 @@ final class ManualHostLayoutTests: XCTestCase {
         XCTAssertEqual(annotated.contentHost.frame.width, annotated.scrollView.contentSize.width)
     }
 }
+
+final class SingleChildStackTests: XCTestCase {
+    @MainActor
+    func testStacksAcceptASingleChildOfAnyType() throws {
+        _ = NSApplication.shared
+        let context = FluentRenderContext(reduceMotion: true)
+        let vertical = FluentVStack(spacing: 4) { FluentText("Only child") }
+        let horizontal = FluentHStack(spacing: 4) { FluentButtonView("Only button") {} }
+        let list = FluentVStack(spacing: 4) { FluentForEach(["a", "b"], id: { $0 }) { FluentText($0) } }
+        for view in [FluentAnyView(vertical), FluentAnyView(horizontal), FluentAnyView(list)] {
+            let host = FluentViewHost(view, context: context)
+            host.layoutSubtreeIfNeeded()
+            XCTAssertFalse(host.subviews.isEmpty)
+        }
+    }
+}

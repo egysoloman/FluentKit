@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added CaptureElement camera preview (AVFoundation preview layer with stretch, mirroring and
+  placeholder) and FluentCameraCapture (permission, devices, start/stop with explicit errors). The
+  Gallery app declares camera access. FluentVStack/FluentHStack now accept a single child of any type.
+
 - Added MapControl backed by MapKit: two-way center and Web Mercator zoom level, icon layer synced
   by id, interactive controls toggle and element clicks. The Gallery app now allows outgoing network
   connections for map tiles.

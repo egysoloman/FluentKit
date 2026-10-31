@@ -49,6 +49,7 @@ import FluentKit
                     case "AnimatedIcon": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnimatedIcon" })
                     case "AnimatedVisualPlayer": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnimatedVisualPlayer" })
                     case "MapControl": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.MapControl" })
+                    case "CaptureElementPreview": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.CaptureElement" })
                     default: break
                     }
                     window.close()

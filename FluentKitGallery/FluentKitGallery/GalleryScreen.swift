@@ -27,6 +27,9 @@ struct GalleryScreen: FluentView {
     @FluentState private var animatedAutoPlay = true
     @FluentState private var mapCenter = FluentGeopoint(latitude: 47.6150, longitude: -122.3450)
     @FluentState private var mapZoom = 13.0
+    @FluentState private var cameraRunning = false
+    @FluentState private var cameraStatus = "Camera off"
+    private let cameraCapture = FluentCameraCapture()
     @FluentState private var mapControlsVisible = true
     @FluentState private var mapStatus = "Pan, zoom or click a pin"
     private let animatedPlayer = FluentAnimatedVisualPlayerController()
@@ -605,6 +608,31 @@ struct GalleryScreen: FluentView {
                 FluentText(String(format: "Center %.4f, %.4f · Zoom %.2f · %@", mapCenter.latitude, mapCenter.longitude, mapZoom, mapStatus),
                     style: .caption, color: theme.textSecondary)
                 FluentToggleView("Interactive controls", isOn: $mapControlsVisible)
+            })
+        case .CaptureElementPreview:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentCaptureElement(session: cameraRunning ? cameraCapture.session : nil, stretch: .uniformToFill,
+                                     placeholder: FluentAnyView(FluentText(cameraStatus, style: .body, color: .white).padding(16)))
+                    .frame(width: 400, height: 260)
+                FluentHStack(spacing: 8) {
+                    FluentButtonView(cameraRunning ? "Stop camera" : "Start camera") {
+                        if cameraRunning {
+                            cameraCapture.stop()
+                            cameraRunning = false
+                            cameraStatus = "Camera stopped"
+                        } else {
+                            FluentCameraCapture.requestAccess { granted in
+                                guard granted else { cameraStatus = "Camera access was denied"; return }
+                                do {
+                                    try cameraCapture.start()
+                                    cameraRunning = true
+                                } catch {
+                                    cameraStatus = "Camera unavailable: \(error)"
+                                }
+                            }
+                        }
+                    }
+                }
             })
         case .BreadcrumbBar:
             return FluentAnyView(FluentVStack(spacing: 10) {
