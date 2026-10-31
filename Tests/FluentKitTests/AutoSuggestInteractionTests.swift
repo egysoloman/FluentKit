@@ -397,11 +397,22 @@ final class AutoSuggestInteractionTests: XCTestCase {
     @MainActor func testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset() throws {
         for rtl in [false, true] {
             let state = FluentState(wrappedValue: "")
-            let view = FluentAutoSuggestBox(state.projectedValue, querySystemImageName: "magnifyingglass", suggestions: { _ in self.values })
+            let suggestionsReady = expectation(description: "Initial suggestions are available (RTL=\(rtl))")
+            var didRequestSuggestions = false
+            let view = FluentAutoSuggestBox(state.projectedValue, querySystemImageName: "magnifyingglass", suggestions: { query in
+                if query == "Ap", !didRequestSuggestions {
+                    didRequestSuggestions = true; suggestionsReady.fulfill()
+                }
+                return self.values
+            })
                 ._makeView(in: .init(reduceMotion: true, layoutDirection: rtl ? .rightToLeft : .leftToRight))
             let window = mount(view)
             defer { window.close() }
             let editor = try type("Ap", in: view)
+            // A fixed 190ms wait does not guarantee that the 180ms debounce ran under load.
+            // Preview assertions require its result, rather than a particular scheduler speed.
+            wait(for: [suggestionsReady], timeout: 2)
+            XCTAssertNotNil(window.childWindows?.first, "Suggestions must be open before keyboard preview")
             func assertVisible(_ text: String, file: StaticString = #filePath, line: UInt = #line) throws {
                 view.layoutSubtreeIfNeeded()
                 let manager = try XCTUnwrap(editor.layoutManager)

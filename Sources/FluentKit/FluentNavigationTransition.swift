@@ -122,12 +122,22 @@ final class FluentNavigationContentPresenter<ID: Hashable>: NSView {
             return
         }
 
+        // An interrupted entrance can still be transparent while an older page is visible.
+        // Preserve that visible composite before removing either entry, not just `current`.
+        let interruptedImage = !appearanceDidChange && !context.reduceMotion && mode != .none && mode != .suppress && hasActiveTransition
+            ? capturePresentation() : nil
         let replacement = FluentNavigationContentEntry(content: content, context: context)
         addPage(replacement)
         let hasLayoutSlot = bounds.width > 0 && bounds.height > 0
         if hasLayoutSlot { layoutSubtreeIfNeeded() }
 
-        let outgoing = current
+        let outgoing: FluentNavigationContentEntry
+        if let interruptedImage {
+            outgoing = FluentNavigationContentEntry(snapshot: interruptedImage, frame: bounds, context: context)
+            addPage(outgoing, below: replacement)
+        } else {
+            outgoing = current
+        }
         current = replacement
         currentIdentity = identity
         transitionGeneration &+= 1
@@ -163,10 +173,54 @@ final class FluentNavigationContentPresenter<ID: Hashable>: NSView {
         animationCoordinator.cancelAll(on: layers)
     }
 
-    private func addPage(_ entry: FluentNavigationContentEntry) {
+    private func addPage(_ entry: FluentNavigationContentEntry, below other: NSView? = nil) {
         entry.frame = bounds
         entry.autoresizingMask = [.width, .height]
-        addSubview(entry)
+        if let other { addSubview(entry, positioned: .below, relativeTo: other) }
+        else { addSubview(entry) }
+    }
+
+    private var hasActiveTransition: Bool {
+        subviews.count > 1 || layer?.animation(forKey: "fluent.navigation.page.cleanup") != nil
+    }
+
+    private func capturePresentation() -> CGImage? {
+        guard bounds.width > 0, bounds.height > 0, let layer else { return nil }
+        layoutSubtreeIfNeeded(); displayIfNeeded(); CATransaction.flush()
+        let scale = window?.backingScaleFactor ?? 1
+        guard let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil,
+            pixelsWide: Int(ceil(bounds.width * scale)), pixelsHigh: Int(ceil(bounds.height * scale)),
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0),
+              let context = NSGraphicsContext(bitmapImageRep: bitmap)?.cgContext else { return nil }
+        context.scaleBy(x: scale, y: scale)
+        if isFlipped { context.translateBy(x: 0, y: bounds.height); context.scaleBy(x: 1, y: -1) }
+        (layer.presentation() ?? layer).render(in: context)
+        return bitmap.cgImage
+    }
+
+    private func settleAfterGeometryChange() {
+        guard hasActiveTransition else { return }
+        transitionGeneration &+= 1
+        settle(on: current)
+    }
+
+    override func setFrameSize(_ newSize: NSSize) {
+        let changed = frame.size != newSize
+        super.setFrameSize(newSize)
+        if changed { settleAfterGeometryChange() }
+    }
+
+    override func setBoundsSize(_ newSize: NSSize) {
+        let changed = bounds.size != newSize
+        super.setBoundsSize(newSize)
+        if changed { settleAfterGeometryChange() }
+    }
+
+    override func setBoundsOrigin(_ newOrigin: NSPoint) {
+        let changed = bounds.origin != newOrigin
+        super.setBoundsOrigin(newOrigin)
+        if changed { settleAfterGeometryChange() }
     }
 
     private func transitionDirection(from old: ID?, to new: ID?, orderedIDs: [ID]) -> FluentNavigationTransitionDirection {
@@ -512,6 +566,7 @@ final class FluentNavigationContentPresenter<ID: Hashable>: NSView {
 
 private final class FluentNavigationContentEntry: NSView {
     let host: FluentViewHost<FluentAnyView>
+    private var snapshotLayer: CALayer?
 
     init(content: FluentAnyView, context: FluentRenderContext) {
         host = FluentViewHost(content, context: context)
@@ -531,6 +586,29 @@ private final class FluentNavigationContentEntry: NSView {
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    convenience init(snapshot: CGImage, frame: NSRect, context: FluentRenderContext) {
+        self.init(content: FluentAnyView(FluentEmptyView()), context: context)
+        self.frame = frame
+        host.isHidden = true
+        let image = CALayer()
+        image.contents = snapshot; image.frame = bounds; image.contentsGravity = .resize
+        image.name = "FluentKit.NavigationView.InterruptedSnapshot"
+        layer?.addSublayer(image); snapshotLayer = image
+    }
+
+    override func layout() {
+        super.layout()
+        if let snapshotLayer {
+            CATransaction.begin(); CATransaction.setDisableActions(true)
+            snapshotLayer.frame = bounds
+            CATransaction.commit()
+        }
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        snapshotLayer == nil ? super.hitTest(point) : nil
+    }
 
     func update(content: FluentAnyView, context: FluentRenderContext) {
         host.update(content, context: context)

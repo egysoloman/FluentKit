@@ -1,0 +1,14 @@
+{
+  "navigation_states": 60,
+  "settings_states": 16,
+  "snapshot_mean_rgb_error": {
+    "baseline-final": {
+      "initial": 0.3255208333333333,
+      "interrupt": 118.66375000000001
+    },
+    "after": {
+      "initial": 0.0,
+      "interrupt": 0.4345833333333333
+    }
+  }
+}

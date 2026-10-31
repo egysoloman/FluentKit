@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- NavigationView preserves the visible frame when a second navigation interrupts an entrance,
+  preventing a blank page while the intermediate and destination pages are transparent. Resizing
+  settles the current destination and removes temporary snapshots; ordinary transitions keep
+  their existing modes and timings.
+
 - AutoSuggestBox suggestions now follow scrolling and moving ancestor views. A fully clipped
   input closes its suggestions; scrolling back does not reopen stale results, and new input
   reopens the popup at the current anchor without moving keyboard focus.

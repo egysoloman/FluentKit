@@ -1,0 +1,25 @@
+Building for debugging...
+[1 / 1]
+[2 / 15] FluentKit
+[4 / 17] FluentKit
+[6 / 19] FluentKit
+[14 / 24] FluentKit
+[16 / 24] FluentGallery-product
+[21 / 25] FluentKitTests-product
+[24 / 29] FluentKitValidation-product
+[27 / 33] FluentGallery-product
+[27 / 33] FluentKitTests-product
+[31 / 36] FluentKitTests-product
+[33 / 36] FluentKitValidation-product
+Build complete! (16.73秒)
+Test Suite 'Selected tests' started at 2026-11-01 02:41:21.546.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 02:41:21.547.
+Test Suite 'NavigationInterruptionTests' started at 2026-11-01 02:41:21.547.
+Test Case '-[FluentKitTests.NavigationInterruptionTests testRapidNavigationKeepsVisibleOutgoingPageUntilReplacementEnters]' started.
+Test Case '-[FluentKitTests.NavigationInterruptionTests testRapidNavigationKeepsVisibleOutgoingPageUntilReplacementEnters]' passed (0.766 seconds).
+Test Suite 'NavigationInterruptionTests' passed at 2026-11-01 02:41:22.313.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.766 (0.766) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 02:41:22.313.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.766 (0.766) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 02:41:22.313.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.766 (0.767) seconds

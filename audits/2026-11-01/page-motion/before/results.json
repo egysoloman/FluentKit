@@ -1,0 +1,13 @@
+{
+  "initialOverlayFrames" : [
+    "{{0, 0}, {300, 160}}"
+  ],
+  "reduceMotion" : false,
+  "resizedIncomingAnimations" : 1,
+  "resizedOverlayFrames" : [
+    "{{0, 0}, {300, 160}}"
+  ],
+  "resizedViewport" : "{{0, 0}, {420, 160}}",
+  "settledIncomingAnimations" : 0,
+  "settledOverlays" : 0
+}
