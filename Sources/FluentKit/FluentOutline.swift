@@ -191,10 +191,10 @@ enum FluentTreeCheckState: Equatable {
 
 private final class FluentOutlineItem<ID: Hashable>: NSObject {
     let id: ID
-    let content: FluentAnyView
-    let hasUnrealizedChildren: Bool
+    var content: FluentAnyView
+    var hasUnrealizedChildren: Bool
     weak var parent: FluentOutlineItem<ID>?
-    private(set) var children: [FluentOutlineItem<ID>] = []
+    var children: [FluentOutlineItem<ID>] = []
 
     init(node: FluentOutlineNode<ID>, parent: FluentOutlineItem<ID>? = nil) {
         id = node.id
@@ -202,7 +202,6 @@ private final class FluentOutlineItem<ID: Hashable>: NSObject {
         hasUnrealizedChildren = node.hasUnrealizedChildren
         self.parent = parent
         super.init()
-        children = node.children.map { FluentOutlineItem(node: $0, parent: self) }
     }
 
     var isExpandable: Bool { !children.isEmpty || hasUnrealizedChildren }
@@ -336,13 +335,47 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
 
     private func rebuild(_ nodes: [FluentOutlineNode<ID>], preservingExpansion: Bool) {
         let expanded = preservingExpansion ? expandedIDsInView() : []
-        roots = nodes.map { FluentOutlineItem(node: $0) }
-        itemsByID.removeAll(keepingCapacity: true)
-        for item in roots.flatMap(\.subtree) { itemsByID[item.id] = item }
+        let selectedID = outlineView.selectedRow >= 0
+            ? (outlineView.item(atRow: outlineView.selectedRow) as? FluentOutlineItem<ID>)?.id : nil
+        let previousItems = itemsByID
+        var nextItems: [ID: FluentOutlineItem<ID>] = [:]
+        var structureChanged = roots.map(\.id) != nodes.map(\.id)
+        func reconcile(_ node: FluentOutlineNode<ID>, parent: FluentOutlineItem<ID>?) -> FluentOutlineItem<ID> {
+            let item: FluentOutlineItem<ID>
+            if let existing = previousItems[node.id] {
+                item = existing
+                if item.children.map(\.id) != node.children.map(\.id)
+                    || item.hasUnrealizedChildren != node.hasUnrealizedChildren { structureChanged = true }
+                item.content = node.content
+                item.hasUnrealizedChildren = node.hasUnrealizedChildren
+                item.parent = parent
+            } else {
+                item = FluentOutlineItem(node: node, parent: parent)
+                structureChanged = true
+            }
+            nextItems[item.id] = item
+            item.children = node.children.map { reconcile($0, parent: item) }
+            return item
+        }
+        roots = nodes.map { reconcile($0, parent: nil) }
+        itemsByID = nextItems
+        // Content and theme updates reconcile visible cells in place. Reload only when the tree
+        // topology changes; otherwise NSOutlineView discards otherwise stable native rows.
+        guard structureChanged else { return }
+        let wasApplyingSelection = isApplyingSelection
+        let wasApplyingExpansion = isApplyingExpansion
+        isApplyingSelection = true
         isApplyingExpansion = true
+        defer {
+            isApplyingSelection = wasApplyingSelection
+            isApplyingExpansion = wasApplyingExpansion
+        }
         outlineView.reloadData()
         expand(expanded)
-        isApplyingExpansion = false
+        if let selectedID, let item = itemsByID[selectedID] {
+            let row = outlineView.row(forItem: item)
+            if row >= 0 { outlineView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false) }
+        }
     }
 
     private func expandedIDsInView() -> Set<ID> {
@@ -431,7 +464,11 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
             let normalized = normalizedChecks(raw)
             checkedIDs = normalized
             if normalized != raw {
-                DispatchQueue.main.async { if binding.get() == raw { binding.set(normalized) } }
+                let generation = observerGeneration
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, self.observerGeneration == generation, binding.get() == raw else { return }
+                    binding.set(normalized)
+                }
             }
         case .some(.none), nil:
             outlineView.deselectAll(nil)
@@ -865,6 +902,8 @@ final class FluentOutlineCellHost: NSTableCellView {
     private var reduceMotion = false
     private var leadingConstraint: NSLayoutConstraint?
     private var trailingConstraint: NSLayoutConstraint?
+    private var rtlLeadingConstraint: NSLayoutConstraint?
+    private var rtlTrailingConstraint: NSLayoutConstraint?
     private var onToggleExpansion: (() -> Void)?
     private var onToggleCheck: (() -> Void)?
 
@@ -892,8 +931,15 @@ final class FluentOutlineCellHost: NSTableCellView {
         mount(content, context: context)
         let leading = FluentTreeViewMetrics.contentLeading(depth: layout.depth, isMultiple: layout.isMultiple)
         // The content column sits inside the 4pt presenter margin on both sides.
-        leadingConstraint?.constant = layout.isRightToLeft ? FluentTreeViewMetrics.presenterMarginX : leading
-        trailingConstraint?.constant = -(layout.isRightToLeft ? leading : FluentTreeViewMetrics.presenterMarginX)
+        leadingConstraint?.constant = leading
+        trailingConstraint?.constant = -FluentTreeViewMetrics.presenterMarginX
+        rtlLeadingConstraint?.constant = FluentTreeViewMetrics.presenterMarginX
+        rtlTrailingConstraint?.constant = -leading
+        let ltr = [leadingConstraint, trailingConstraint].compactMap { $0 }
+        let rtl = [rtlLeadingConstraint, rtlTrailingConstraint].compactMap { $0 }
+        NSLayoutConstraint.deactivate(layout.isRightToLeft ? ltr : rtl)
+        NSLayoutConstraint.activate(layout.isRightToLeft ? rtl : ltr)
+        needsLayout = true
         applyLayers(animated: wasExpanded != nil && wasExpanded != layout.isExpanded && !reduceMotion)
         if let state = layout.checkState {
             setAccessibilityValue(state == .checked ? 1 : (state == .mixed ? 2 : 0))
@@ -907,12 +953,13 @@ final class FluentOutlineCellHost: NSTableCellView {
         contentView = mounted
         addSubview(mounted)
         mounted.translatesAutoresizingMaskIntoConstraints = false
-        let leading = mounted.leadingAnchor.constraint(equalTo: leadingAnchor)
-        let trailing = mounted.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
-        leadingConstraint = leading
-        trailingConstraint = trailing
+        // Use physical anchors: the tree explicitly mirrors its chevron/indentation metrics.
+        // RTL needs a trailing equality, not a leading equality plus a trailing upper bound.
+        leadingConstraint = mounted.leftAnchor.constraint(equalTo: leftAnchor)
+        trailingConstraint = mounted.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor)
+        rtlLeadingConstraint = mounted.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor)
+        rtlTrailingConstraint = mounted.rightAnchor.constraint(equalTo: rightAnchor)
         NSLayoutConstraint.activate([
-            leading, trailing,
             mounted.topAnchor.constraint(greaterThanOrEqualTo: topAnchor,
                                          constant: FluentTreeViewMetrics.presenterMarginY + FluentTreeViewMetrics.contentPaddingTop),
             mounted.centerYAnchor.constraint(equalTo: centerYAnchor,

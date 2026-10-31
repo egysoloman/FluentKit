@@ -1337,6 +1337,11 @@ of complete visual parity with Windows.
   array and comparing structure still costs O(n); this API does not promise constant-time arbitrary data updates.
 - `FluentObservable` and `FluentState` deduplicate concrete Equatable values. Custom values can
   supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
+- TreeView reconciles native nodes by stable ID and updates visible content in place when the
+  topology is unchanged. Structural updates still reload the outline; reconciliation still walks
+  the supplied nodes. Reordering preserves selection by ID. The interactive Gallery sample covers
+  tri-state selection, lazy loading and expansion; multi-item drag and row expansion animation
+  remain pending. See the [TreeView follow-up audit](audits/2026-10-31/treeview-lifecycle/REPORT.md).
 - Typography uses Caption 12, Body 14, BodyLarge 18, Subtitle 20, Title 28, TitleLarge 40 and Display 68.
   Legacy aliases map `largeTitle` to `titleLarge`, `title2` to `subtitle`, `headline` to `bodyStrong`
   and `callout` to `body`. `FluentTypography(overrides:fontProvider:)` supports per-style size, weight,

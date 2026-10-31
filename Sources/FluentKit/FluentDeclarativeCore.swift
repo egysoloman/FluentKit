@@ -311,7 +311,7 @@ public struct FluentHStackView: FluentPrimitiveView {
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let stack = NSStackView()
+        let stack = FluentHorizontalStackView()
         stack.orientation = .horizontal
         stack.alignment = alignment
         stack.spacing = spacing
@@ -322,7 +322,7 @@ public struct FluentHStackView: FluentPrimitiveView {
     }
 
     public func _update(_ nativeView: NSView, in context: FluentRenderContext) -> Bool {
-        guard let stack = nativeView as? NSStackView,
+        guard let stack = nativeView as? FluentHorizontalStackView,
               let children = Optional(content.children ?? [content]),
               stack.arrangedSubviews.count == children.count else { return false }
         stack.spacing = spacing
@@ -338,6 +338,16 @@ public struct FluentHStackView: FluentPrimitiveView {
             }
         }
         return true
+    }
+}
+
+private final class FluentHorizontalStackView: NSStackView {
+    override func setFrameSize(_ newSize: NSSize) {
+        let widthChanged = frame.width != newSize.width
+        super.setFrameSize(newSize)
+        // A gravity-area stack can shrink after its parent finishes layout. Its RTL
+        // children must then be arranged against the new bounds, not the old width.
+        if widthChanged { needsLayout = true }
     }
 }
 

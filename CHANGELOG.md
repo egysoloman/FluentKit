@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TreeView retains native node and cell identity for content-only updates, preserves unbound
+  selection through stable-ID reordering, and prevents queued normalization from writing to a
+  detached selection binding. RTL row content now follows the mirrored chevron column.
+- Added an interactive TreeView Gallery sample for single/tri-state selection, lazy children,
+  expansion, invocation and single-item reordering. The quality gate mounts this sample.
+- Fixed nested FluentHStack RTL buttons retaining positions from an old, wider layout after
+  the stack shrinks; native spacing and intrinsic button sizes are preserved.
 - TreeView (`FluentOutline`, now also `FluentTreeView`): WinUI TreeViewItem rows (32pt, 16pt
   indentation, chevron column, accent selection pill), `FluentTreeViewSelection` with tri-state
   multiple selection, `.expandedIDs`, `.onExpanding` (for `hasUnrealizedChildren`), `.onCollapsed`,

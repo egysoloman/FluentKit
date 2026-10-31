@@ -893,6 +893,7 @@ struct GalleryScreen: FluentView {
                 suggestions: { query in ["Documents", "Downloads", "Desktop"].filter { $0.localizedCaseInsensitiveContains(query) }.map { .init(id: $0, title: $0) } }).frame(width: 320))
         case .ListView:
             return FluentAnyView(FluentListView(Array(0..<5000)) { FluentText("Item \($0)") }.contentVersion { $0 }.frame(width: 420, height: 320))
+        case .TreeView: return FluentAnyView(TreeViewGallerySample())
         case .GridView:
             return FluentAnyView(FluentGridView(Array(0..<100)) { FluentText("Item \($0)") }.contentVersion { $0 }.frame(width: 420, height: 320))
         case .InfoBadge:

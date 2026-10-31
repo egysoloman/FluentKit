@@ -258,6 +258,7 @@ enum GallerySampleID: String, CaseIterable {
     case AutoSuggestBox
     case ListView
     case GridView
+    case TreeView
     case InfoBadge
     case InfoBar
     case TextBlock
