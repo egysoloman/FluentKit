@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Pivot now pans interactively with direct touch on macOS 27, trackpad swipes and horizontal mouse
+  wheels: content follows the gesture with the neighbouring item visible, carousel and clipped
+  static headers follow WinUI's header curves, non-wrapping ends rubber-band, and releases snap to
+  the adjacent item or back based on projected velocity. Vertical swipes stay with enclosing
+  scroll views and mouse drags do not pan.
+
 - Added Pivot with source-derived header geometry, accent selection pipe, static and carousel
   header modes, carousel-only wrapping, locked mode, hover navigation buttons, header and
   Ctrl+Tab/PageUp/PageDown keyboard navigation, RTL, optional title and left/right header slots,

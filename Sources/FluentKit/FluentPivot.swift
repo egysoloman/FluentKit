@@ -134,7 +134,7 @@ final class FluentPivotControl: NSControl {
     override var isFlipped: Bool { true }
 
     private(set) var context: FluentRenderContext
-    private var configuration = FluentPivotConfiguration(
+    fileprivate var configuration = FluentPivotConfiguration(
         items: [], selection: nil, title: nil, isLocked: false,
         isHeaderItemsCarouselEnabled: true, leftHeader: nil, rightHeader: nil, onSelectionChanged: nil
     )
@@ -144,8 +144,8 @@ final class FluentPivotControl: NSControl {
 
     private let titleField = NSTextField(labelWithString: "")
     private let headerClipper = FluentPivotFlippedView()
-    private let headerStrip = FluentPivotFlippedView()
-    private let contentContainer = FluentPivotFlippedView()
+    fileprivate let headerStrip = FluentPivotFlippedView()
+    fileprivate let contentContainer = FluentPivotFlippedView()
     let previousButton = FluentPivotNavigationButton(direction: .previous)
     let nextButton = FluentPivotNavigationButton(direction: .next)
     private let focusLayer = CAShapeLayer()
@@ -162,7 +162,19 @@ final class FluentPivotControl: NSControl {
     private var animationGeneration: UInt64 = 0
     private(set) var isTransitioning = false
     private var staticHeaderOffset: CGFloat = 0
-    private let animationCoordinator = FluentAnimationCoordinator()
+    fileprivate let animationCoordinator = FluentAnimationCoordinator()
+    /// Interactive pan state shared by trackpad scrolling, direct touch and wheel input.
+    /// `panOffset` is logical: negative reveals the next item, positive the previous one.
+    private(set) var isPanning = false
+    private(set) var panOffset: CGFloat = 0
+    fileprivate var panSamples: [(time: TimeInterval, delta: CGFloat)] = []
+    fileprivate var scrollGesture: FluentPivotScrollGesture = .idle
+    fileprivate var lastWheelStep: (time: TimeInterval, direction: Int)?
+    private(set) var touchPanRecognizer: NSPanGestureRecognizer?
+    fileprivate var touchPanStart: CGFloat = 0
+    /// Logical header displacement while panning. Applied to header frames, not to the strip's
+    /// backing-layer transform, which AppKit owns and may reset.
+    private(set) var panHeaderShift: CGFloat = 0
 
     init(context: FluentRenderContext) {
         self.context = context
@@ -205,6 +217,7 @@ final class FluentPivotControl: NSControl {
         focusLayer.zPosition = 10
         layer?.addSublayer(focusLayer)
         animationCoordinator.reduceMotion = context.reduceMotion
+        installTouchPanRecognizer()
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
@@ -215,6 +228,9 @@ final class FluentPivotControl: NSControl {
 
     func update(configuration next: FluentPivotConfiguration, context: FluentRenderContext) {
         removeSelectionObserver()
+        if isPanning, configuration.items.count != next.items.count || next.isLocked {
+            cancelInteractivePan(animated: false)
+        }
         let headersChanged = configuration.items.map(\.header) != next.items.map(\.header)
         let lockChanged = configuration.isLocked != next.isLocked
         configuration = next
@@ -345,7 +361,8 @@ final class FluentPivotControl: NSControl {
         commit(to: index, direction: usesStaticHeaders ? nil : .next, animated: true)
     }
 
-    private func commit(to index: Int, direction: FluentPivotNavigationDirection?, animated: Bool) {
+    fileprivate func commit(to index: Int, direction: FluentPivotNavigationDirection?, animated: Bool) {
+        if isPanning { cancelInteractivePan(animated: false) }
         let oldIndex = selectedIndex
         let contentHadFocus = contentHosts.indices.contains(oldIndex) && ownsFirstResponder(in: contentHosts[oldIndex])
         selectedIndex = index
@@ -457,7 +474,7 @@ final class FluentPivotControl: NSControl {
     }
 
     /// Settles every content host. An interrupted transition must not leave an old page visible.
-    private func showCurrent(exceptOutgoing outgoing: Int? = nil) {
+    fileprivate func showCurrent(exceptOutgoing outgoing: Int? = nil) {
         if outgoing == nil {
             isTransitioning = false
             animationGeneration &+= 1
@@ -488,7 +505,7 @@ final class FluentPivotControl: NSControl {
         return insets.top + ceil(titleField.intrinsicContentSize.height) + insets.bottom
     }
 
-    private func contentFrame() -> NSRect {
+    fileprivate func contentFrame() -> NSRect {
         let width = max(0, contentContainer.bounds.width - 2 * FluentPivotMetrics.itemMargin)
         return NSRect(x: min(FluentPivotMetrics.itemMargin, contentContainer.bounds.width / 2), y: 0,
                       width: width, height: contentContainer.bounds.height)
@@ -528,10 +545,11 @@ final class FluentPivotControl: NSControl {
 
         contentContainer.frame = NSRect(x: 0, y: top + rowHeight, width: bounds.width,
                                         height: max(0, bounds.height - top - rowHeight))
-        if !isTransitioning {
+        if !isTransitioning, !isPanning {
             for host in contentHosts { host.frame = contentFrame() }
         }
         layoutHeaders(animatedFrom: nil)
+        if isPanning { applyPanVisuals() }
         updateHeaderTracking()
         updateFocusVisual()
     }
@@ -548,7 +566,7 @@ final class FluentPivotControl: NSControl {
 
     private var logicalPositions: [CGFloat] = []
 
-    private func layoutHeaders(animatedFrom previousSelectedPosition: CGFloat?) {
+    fileprivate func layoutHeaders(animatedFrom previousSelectedPosition: CGFloat?) {
         let widths = headerWidths()
         let total = widths.reduce(0, +)
         let viewport = headerClipper.bounds.width
@@ -560,13 +578,19 @@ final class FluentPivotControl: NSControl {
         if usesStaticHeaders {
             var x: CGFloat = 0
             for index in widths.indices { positions[index] = x; x += widths[index] }
-            if clipped, widths.indices.contains(selectedIndex) {
-                let before = positions[selectedIndex]
-                let after = total - before - widths[selectedIndex]
-                staticHeaderOffset = FluentPivotMetrics.headerShiftOffset(
-                    before: before, selected: widths[selectedIndex], after: after, viewport: viewport)
-            } else {
-                staticHeaderOffset = 0
+            func shift(for index: Int) -> CGFloat {
+                guard clipped, widths.indices.contains(index) else { return 0 }
+                let before = positions[index]
+                let after = total - before - widths[index]
+                return FluentPivotMetrics.headerShiftOffset(
+                    before: before, selected: widths[index], after: after, viewport: viewport)
+            }
+            staticHeaderOffset = shift(for: selectedIndex)
+            // PivotCurveGenerator::GetStaticCurveSegments: during a pan the static strip follows
+            // the curve between the current and the neighbouring item's shift offsets.
+            if isPanning, let neighbor = panNeighbor, let width = panSectionWidth, width > 0 {
+                let fraction = min(abs(panOffset) / width, 1)
+                staticHeaderOffset += (shift(for: neighbor) - staticHeaderOffset) * fraction
             }
         } else {
             staticHeaderOffset = 0
@@ -577,6 +601,11 @@ final class FluentPivotControl: NSControl {
                 positions[index] = x
                 x += widths[index]
             }
+            // While panning toward the previous item, its header enters from the leading edge.
+            if isPanning, panOffset > 0, widths.count > 1 {
+                let previous = (start + widths.count - 1) % widths.count
+                positions[previous] = -widths[previous]
+            }
         }
         logicalPositions = positions
         let isRTL = userInterfaceLayoutDirection == .rightToLeft
@@ -584,7 +613,7 @@ final class FluentPivotControl: NSControl {
         CATransaction.setDisableActions(true)
         headerStrip.frame = NSRect(x: 0, y: 0, width: max(viewport, total), height: headerClipper.bounds.height)
         for (index, item) in headerItems.enumerated() {
-            let x = positions[index] - staticHeaderOffset
+            let x = positions[index] - staticHeaderOffset + panHeaderShift
             let width = widths[index]
             item.frame = NSRect(x: isRTL ? viewport - x - width : x, y: 0, width: width,
                                 height: FluentPivotMetrics.headerHeight)
@@ -643,6 +672,7 @@ final class FluentPivotControl: NSControl {
         didSet {
             guard oldValue != isEnabled else { return }
             if !isEnabled, ownsFirstResponder(in: self) { window?.makeFirstResponder(nil) }
+            if !isEnabled { cancelInteractivePan(animated: false) }
             updateHeaderStates(animatedLock: false)
             updateFocusVisual()
         }
@@ -740,7 +770,7 @@ final class FluentPivotControl: NSControl {
         }
     }
 
-    private func ownsFirstResponder(in root: NSView) -> Bool {
+    fileprivate func ownsFirstResponder(in root: NSView) -> Bool {
         guard let responder = window?.firstResponder else { return false }
         if let editor = responder as? NSTextView, let delegate = editor.delegate as? NSView,
            delegate === root || delegate.isDescendant(of: root) { return true }
@@ -1043,5 +1073,316 @@ final class FluentPivotNavigationButton: NSView {
         guard !isHidden else { return false }
         onClick?()
         return true
+    }
+}
+
+enum FluentPivotScrollGesture: Equatable {
+    case idle
+    case undecided(dx: CGFloat, dy: CGFloat)
+    case owned
+    case rejected
+}
+
+// MARK: - Interactive pan (trackpad, direct touch, wheel)
+
+extension FluentPivotControl: NSGestureRecognizerDelegate {
+    /// Distance a trackpad gesture travels before its axis is decided.
+    static let panAxisThreshold: CGFloat = 4
+    /// Projection window used to emulate ScrollViewer inertia for MandatorySingle snapping.
+    static let panProjectionTime: CGFloat = 0.25
+    private static let panSettleKey = "fluent.pivot.pan"
+
+    var panSectionWidth: CGFloat? {
+        let width = contentContainer.bounds.width
+        return width > 0 ? width : nil
+    }
+
+    /// The item revealed by the current pan, honoring carousel-only wrapping.
+    var panNeighbor: Int? {
+        neighbor(towardNext: panOffset < 0, active: panOffset != 0)
+    }
+
+    private func neighbor(towardNext: Bool, active: Bool) -> Int? {
+        let count = configuration.items.count
+        guard active, count > 1, selectedIndex >= 0 else { return nil }
+        if towardNext {
+            return selectedIndex < count - 1 ? selectedIndex + 1 : (shouldWrap ? 0 : nil)
+        }
+        return selectedIndex > 0 ? selectedIndex - 1 : (shouldWrap ? count - 1 : nil)
+    }
+
+    var canBeginInteractivePan: Bool {
+        isEnabled && !configuration.isLocked && configuration.items.count > 1 && selectedIndex >= 0
+            && panSectionWidth != nil
+    }
+
+    /// Starts (or takes over a settling) pan. Returns the logical offset the new gesture starts from.
+    @discardableResult
+    func beginInteractivePan() -> CGFloat? {
+        guard canBeginInteractivePan else { return nil }
+        animationCoordinator.cancelValueAnimation(key: Self.panSettleKey)
+        if isPanning { return panOffset }
+        if isTransitioning { showCurrent() }
+        if let layer = headerStrip.layer { animationCoordinator.cancel(layer: layer, key: "fluent.pivot.headerShift") }
+        isPanning = true
+        panOffset = 0
+        panSamples = []
+        return 0
+    }
+
+    /// Applies a logical translation. ScrollViewer `MandatorySingle` limits travel to one item;
+    /// past a non-wrapping end the offset is damped like an elastic overpan.
+    func updateInteractivePan(translation: CGFloat) {
+        guard isPanning, let width = panSectionWidth else { return }
+        panOffset = max(-width, min(width, translation))
+        if panNeighbor == nil, panOffset != 0 {
+            let magnitude = abs(translation)
+            let damped = (1 - 1 / (magnitude * 0.55 / width + 1)) * width
+            panOffset = translation < 0 ? -damped : damped
+        }
+        applyPanVisuals()
+    }
+
+    /// Ends a pan with a logical velocity in points per second. The projected position decides
+    /// between finishing on the neighbouring item and snapping back (`PivotStateMachine`
+    /// `InFinishTransition` / `InSnapBackInertial`).
+    func endInteractivePan(velocity: CGFloat) {
+        guard isPanning, let width = panSectionWidth else { return }
+        let projected = panOffset + velocity * Self.panProjectionTime
+        let sameSide = panOffset == 0 || (projected < 0) == (panOffset < 0)
+        let target = sameSide && abs(projected) > width / 2
+            ? neighbor(towardNext: projected < 0, active: true) : nil
+        let final: CGFloat = target == nil ? 0 : (projected < 0 ? -width : width)
+        settlePan(to: final, velocity: velocity, target: target)
+    }
+
+    func cancelInteractivePan(animated: Bool) {
+        guard isPanning else { return }
+        if animated {
+            settlePan(to: 0, velocity: 0, target: nil)
+        } else {
+            animationCoordinator.cancelValueAnimation(key: Self.panSettleKey)
+            finishPan(target: nil, direction: nil)
+        }
+    }
+
+    private func settlePan(to final: CGFloat, velocity: CGFloat, target: Int?) {
+        let direction: FluentPivotNavigationDirection? = target == nil ? nil : (final < 0 ? .next : .previous)
+        let distance = abs(final - panOffset)
+        guard distance > 0.5, !context.reduceMotion else {
+            finishPan(target: target, direction: direction)
+            return
+        }
+        // Velocity-matched deceleration, bounded by the 0.4s flick duration of PivotStateMachine.
+        let duration = min(max(Double(distance / max(abs(velocity), 1)), 0.15), 0.4)
+        animationCoordinator.animateValue(
+            key: Self.panSettleKey,
+            from: panOffset,
+            to: final,
+            motion: FluentMotionToken(duration: duration, curve: .controlFastOutSlowIn),
+            animated: true,
+            update: { [weak self] value in
+                guard let self, self.isPanning else { return }
+                self.panOffset = value
+                self.applyPanVisuals()
+            },
+            completion: { [weak self] in self?.finishPan(target: target, direction: direction) }
+        )
+    }
+
+    private func finishPan(target: Int?, direction: FluentPivotNavigationDirection?) {
+        guard isPanning else { return }
+        isPanning = false
+        panOffset = 0
+        panSamples = []
+        panHeaderShift = 0
+        if let target, target != selectedIndex {
+            // Content already rests on the target, so the commit itself does not fly.
+            commit(to: target, direction: direction, animated: false)
+        } else {
+            showCurrent()
+            layoutHeaders(animatedFrom: nil)
+        }
+    }
+
+    /// Places the selected and neighbouring items and moves the headers with the pan. Dynamic
+    /// headers travel by the outgoing (next) or incoming (previous) header's width per section,
+    /// as in `PivotCurveGenerator::GetDynamicCurveSegments`.
+    func applyPanVisuals() {
+        guard isPanning, let width = panSectionWidth else { return }
+        let isRTL = userInterfaceLayoutDirection == .rightToLeft
+        let base = contentFrame()
+        let neighbor = panNeighbor
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for (index, host) in contentHosts.enumerated() {
+            host.layer?.removeAllAnimations()
+            host.layer?.transform = CATransform3DIdentity
+            host.layer?.opacity = 1
+            let logicalX: CGFloat?
+            if index == selectedIndex {
+                logicalX = panOffset
+            } else if index == neighbor {
+                logicalX = panOffset + (panOffset < 0 ? width : -width)
+            } else {
+                logicalX = nil
+            }
+            host.isHidden = logicalX == nil
+            if let logicalX { host.frame = base.offsetBy(dx: isRTL ? -logicalX : logicalX, dy: 0) }
+        }
+        CATransaction.commit()
+        layoutHeaders(animatedFrom: nil)
+        var headerShift: CGFloat = 0
+        if !usesStaticHeaders, let neighbor, headerItems.indices.contains(selectedIndex) {
+            let fraction = max(-1, min(1, panOffset / width))
+            let travel = headerItems[fraction < 0 ? selectedIndex : neighbor].preferredWidth(theme: context.theme)
+            headerShift = fraction * travel
+        }
+        if panHeaderShift != headerShift {
+            panHeaderShift = headerShift
+            layoutHeaders(animatedFrom: nil)
+        }
+    }
+
+    private func recordPanSample(_ delta: CGFloat, at time: TimeInterval) {
+        panSamples.append((time, delta))
+        panSamples.removeAll { time - $0.time > 0.1 }
+    }
+
+    private var sampledPanVelocity: CGFloat {
+        guard let first = panSamples.first, let last = panSamples.last else { return 0 }
+        let span = max(last.time - first.time, 1.0 / 120.0)
+        return panSamples.reduce(0) { $0 + $1.delta } / CGFloat(span)
+    }
+
+    // MARK: Trackpad and wheel
+
+    override func scrollWheel(with event: NSEvent) {
+        guard isEnabled else { super.scrollWheel(with: event); return }
+        let logicalDX = userInterfaceLayoutDirection == .rightToLeft ? -event.scrollingDeltaX : event.scrollingDeltaX
+        if !event.momentumPhase.isEmpty {
+            // Momentum after a pan Pivot owned is replaced by its own settle animation.
+            if scrollGesture != .owned { super.scrollWheel(with: event) }
+            if event.momentumPhase.contains(.ended) || event.momentumPhase.contains(.cancelled) { scrollGesture = .idle }
+            return
+        }
+        if event.phase.isEmpty {
+            handleDiscreteWheel(event, logicalDX: logicalDX)
+            return
+        }
+        if event.phase.contains(.began) {
+            scrollGesture = .undecided(dx: 0, dy: 0)
+        }
+        if event.phase.contains(.began) || event.phase.contains(.changed) {
+            switch scrollGesture {
+            case let .undecided(dx, dy):
+                let nextDX = dx + logicalDX
+                let nextDY = dy + event.scrollingDeltaY
+                guard hypot(nextDX, nextDY) >= Self.panAxisThreshold else {
+                    scrollGesture = .undecided(dx: nextDX, dy: nextDY)
+                    return
+                }
+                if abs(nextDX) > abs(nextDY), let start = beginInteractivePan() {
+                    FluentFocusVisibility.markPointerInteraction(in: window)
+                    scrollGesture = .owned
+                    recordPanSample(nextDX, at: event.timestamp)
+                    updateInteractivePan(translation: start + nextDX)
+                } else {
+                    scrollGesture = .rejected
+                    super.scrollWheel(with: event)
+                }
+            case .owned:
+                recordPanSample(logicalDX, at: event.timestamp)
+                updateInteractivePan(translation: panOffsetBeforeDamping + logicalDX)
+            case .rejected, .idle:
+                super.scrollWheel(with: event)
+            }
+            return
+        }
+        if event.phase.contains(.ended) || event.phase.contains(.cancelled) {
+            switch scrollGesture {
+            case .owned:
+                if event.phase.contains(.cancelled) { cancelInteractivePan(animated: true) }
+                else { endInteractivePan(velocity: sampledPanVelocity) }
+                // Keep ownership so the trailing momentum events are consumed.
+                return
+            case .rejected:
+                super.scrollWheel(with: event)
+            case .undecided, .idle:
+                break
+            }
+            scrollGesture = .idle
+            return
+        }
+        super.scrollWheel(with: event)
+    }
+
+    /// Undamped logical translation equivalent to the current offset, so trackpad deltas keep
+    /// accumulating naturally while an elastic overpan is shown.
+    private var panOffsetBeforeDamping: CGFloat {
+        guard let width = panSectionWidth, panNeighbor == nil, panOffset != 0 else { return panOffset }
+        let fraction = min(abs(panOffset) / width, 0.999)
+        let raw = (1 / (1 - fraction) - 1) * width / 0.55
+        return panOffset < 0 ? -raw : raw
+    }
+
+    /// A horizontal mouse wheel without gesture phases moves one item per burst.
+    private func handleDiscreteWheel(_ event: NSEvent, logicalDX: CGFloat) {
+        guard abs(logicalDX) > abs(event.scrollingDeltaY), logicalDX != 0, !configuration.isLocked else {
+            super.scrollWheel(with: event)
+            return
+        }
+        let direction = logicalDX < 0 ? 1 : -1
+        let isBurst = lastWheelStep.map { $0.direction == direction && event.timestamp - $0.time <= 0.2 } ?? false
+        lastWheelStep = (event.timestamp, direction)
+        guard !isBurst else { return }
+        if !move(direction > 0 ? .next : .previous, wrap: shouldWrap) { super.scrollWheel(with: event) }
+    }
+
+    // MARK: Direct touch (macOS 27)
+
+    func installTouchPanRecognizer() {
+        guard #available(macOS 27, *) else { return }
+        let recognizer = NSPanGestureRecognizer(target: self, action: #selector(handleTouchPan(_:)))
+        recognizer.allowedTouchTypes = [.direct]
+        // Mouse drags do not pan a WinUI Pivot; only fingers on a touch screen do.
+        recognizer.buttonMask = 0
+        recognizer.minimumNumberOfTouches = 1
+        recognizer.maximumNumberOfTouches = 1
+        recognizer.isCancellableByScrollGesture = true
+        recognizer.delegate = self
+        addGestureRecognizer(recognizer)
+        touchPanRecognizer = recognizer
+    }
+
+    @objc func handleTouchPan(_ recognizer: NSPanGestureRecognizer) {
+        let sign: CGFloat = userInterfaceLayoutDirection == .rightToLeft ? -1 : 1
+        let translation = recognizer.translation(in: self).x * sign
+        switch recognizer.state {
+        case .began:
+            guard let start = beginInteractivePan() else {
+                recognizer.isEnabled = false
+                recognizer.isEnabled = true
+                return
+            }
+            FluentFocusVisibility.markPointerInteraction(in: window)
+            touchPanStart = start
+            updateInteractivePan(translation: start + translation)
+        case .changed:
+            updateInteractivePan(translation: touchPanStart + translation)
+        case .ended:
+            endInteractivePan(velocity: recognizer.velocity(in: self).x * sign)
+        case .cancelled, .failed:
+            cancelInteractivePan(animated: true)
+        default:
+            break
+        }
+    }
+
+    /// Horizontal-dominant touches pan the Pivot; vertical ones are left to enclosing scrollers.
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: NSGestureRecognizer) -> Bool {
+        guard gestureRecognizer === touchPanRecognizer, let pan = gestureRecognizer as? NSPanGestureRecognizer else { return true }
+        let velocity = pan.velocity(in: self)
+        return canBeginInteractivePan && abs(velocity.x) > abs(velocity.y)
     }
 }
