@@ -5011,7 +5011,7 @@ require(
     "collection suppresses duplicate AppKit focus chrome"
 )
 let sectionedFlowLayout = nativeSectionedCollection?.collectionViewLayout as? NSCollectionViewFlowLayout
-require(sectionedFlowLayout?.headerReferenceSize.height == 34, "sectioned collection reserves native supplementary header space")
+require(sectionedFlowLayout?.headerReferenceSize.height == FluentCollectionLayout.defaultHeaderHeight, "sectioned collection reserves the WinUI ListViewHeaderItem height (44 + 4 margin)")
 require((sectionedFlowLayout?.itemSize.width ?? 0) >= 120, "adaptive grid resolves a usable native item width")
 require(
     abs((sectionedFlowLayout?.headerReferenceSize.width ?? 0) - 416) <= 1,

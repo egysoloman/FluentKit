@@ -17,6 +17,16 @@ public struct FluentListView<ItemID: Hashable, Content: FluentView>: FluentUpdat
     private let itemStyle: any FluentCollectionItemStyle
     private let content: (ItemID) -> Content
     private var contentVersion: ((ItemID) -> AnyHashable)?
+    private var scrollIntoViewRequest: FluentBinding<ItemID?>?
+    private var scrollIntoViewAlignment: FluentScrollIntoViewAlignment = .default
+
+    /// `ListViewBase.ScrollIntoView`: set the binding to an item to scroll to it; it resets to nil.
+    public func scrollIntoView(_ request: FluentBinding<ItemID?>, alignment: FluentScrollIntoViewAlignment = .default) -> Self {
+        var copy = self
+        copy.scrollIntoViewRequest = request
+        copy.scrollIntoViewAlignment = alignment
+        return copy
+    }
 
     public func contentVersion(_ version: @escaping (ItemID) -> AnyHashable) -> Self {
         var copy = self
@@ -115,6 +125,7 @@ public struct FluentListView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                     itemStyle: itemStyle
                 ) { item in FluentAnyView(content(item)) }
                 .withOptionalContentVersion(contentVersion)
+                .withOptionalScrollIntoView(scrollIntoViewRequest, alignment: scrollIntoViewAlignment)
             )
         }
         return FluentAnyView(
@@ -133,6 +144,7 @@ public struct FluentListView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                 itemStyle: itemStyle
             ) { item in FluentAnyView(content(item)) }
                 .withOptionalContentVersion(contentVersion)
+                .withOptionalScrollIntoView(scrollIntoViewRequest, alignment: scrollIntoViewAlignment)
         )
     }
 }
@@ -155,6 +167,16 @@ public struct FluentGridView<ItemID: Hashable, Content: FluentView>: FluentUpdat
     private let itemStyle: any FluentCollectionItemStyle
     private let content: (ItemID) -> Content
     private var contentVersion: ((ItemID) -> AnyHashable)?
+    private var scrollIntoViewRequest: FluentBinding<ItemID?>?
+    private var scrollIntoViewAlignment: FluentScrollIntoViewAlignment = .default
+
+    /// `ListViewBase.ScrollIntoView`: set the binding to an item to scroll to it; it resets to nil.
+    public func scrollIntoView(_ request: FluentBinding<ItemID?>, alignment: FluentScrollIntoViewAlignment = .default) -> Self {
+        var copy = self
+        copy.scrollIntoViewRequest = request
+        copy.scrollIntoViewAlignment = alignment
+        return copy
+    }
 
     public func contentVersion(_ version: @escaping (ItemID) -> AnyHashable) -> Self {
         var copy = self
@@ -258,6 +280,7 @@ public struct FluentGridView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                     itemStyle: itemStyle
                 ) { item in FluentAnyView(content(item)) }
                 .withOptionalContentVersion(contentVersion)
+                .withOptionalScrollIntoView(scrollIntoViewRequest, alignment: scrollIntoViewAlignment)
             )
         }
         return FluentAnyView(
@@ -276,6 +299,7 @@ public struct FluentGridView<ItemID: Hashable, Content: FluentView>: FluentUpdat
                 itemStyle: itemStyle
             ) { item in FluentAnyView(content(item)) }
                 .withOptionalContentVersion(contentVersion)
+                .withOptionalScrollIntoView(scrollIntoViewRequest, alignment: scrollIntoViewAlignment)
         )
     }
 }
@@ -284,5 +308,10 @@ private extension FluentCollection {
     func withOptionalContentVersion(_ version: ((ItemID) -> AnyHashable)?) -> Self {
         if let version { return contentVersion(version) }
         return self
+    }
+
+    func withOptionalScrollIntoView(_ request: FluentBinding<ItemID?>?, alignment: FluentScrollIntoViewAlignment) -> Self {
+        guard let request else { return self }
+        return scrollIntoView(request, alignment: alignment)
     }
 }

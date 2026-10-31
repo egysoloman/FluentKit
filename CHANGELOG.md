@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ListView/GridView group headers follow WinUI's ListViewHeaderItem: 48pt default height
+  (`FluentCollectionLayout.defaultHeaderHeight`, was 34), 12,8,12,0 padding and a 1pt BaseLow
+  divider. Group headers are sticky by default; `.areStickyGroupHeadersEnabled(false)` opts out.
+- Added `.scrollIntoView(_:alignment:)` to FluentCollection, FluentListView and FluentGridView. The
+  binding is cleared after scrolling, and `.leading` keeps the item clear of a pinned group header.
 - Fixed `.frame(width:height:)` losing to content hugging (both at 750): explicit sizes now use
   priority 999, so a 32pt row stays 32pt in fitting-size layouts such as ForEach.
 - FluentForEach now follows the axis and alignment of an enclosing FluentHStack/FluentVStack, and

@@ -8,6 +8,13 @@ public enum FluentListViewSelectionMode: String, CaseIterable, Hashable, Sendabl
     case extended
 }
 
+/// `ScrollIntoViewAlignment`: `.default` scrolls the least needed to show the item; `.leading`
+/// brings it to the top (leading) edge.
+public enum FluentScrollIntoViewAlignment: Hashable, Sendable {
+    case `default`
+    case leading
+}
+
 /// Controls the WinUI multi-select check visual owned by each collection item.
 public enum FluentSelectionCheckmarkVisibility: String, CaseIterable, Hashable, Sendable {
     /// Shows the check visual for Multiple selection and hides it for the other modes.
@@ -53,6 +60,10 @@ public struct FluentCollectionLayout: Equatable {
     public let spacing: CGFloat
     public let headerHeight: CGFloat
 
+    /// `ListViewHeaderItemMinHeight` / `GridViewHeaderItemMinHeight` (44) plus the header item's
+    /// 4pt bottom margin.
+    public static let defaultHeaderHeight: CGFloat = 48
+
     private init(
         kind: Kind,
         minimumItemWidth: CGFloat,
@@ -70,7 +81,7 @@ public struct FluentCollectionLayout: Equatable {
     public static func list(
         rowHeight: CGFloat = 40,
         spacing: CGFloat = 0,
-        headerHeight: CGFloat = 34
+        headerHeight: CGFloat = FluentCollectionLayout.defaultHeaderHeight
     ) -> FluentCollectionLayout {
         FluentCollectionLayout(
             kind: .list,
@@ -85,7 +96,7 @@ public struct FluentCollectionLayout: Equatable {
         minimumItemWidth: CGFloat = 160,
         itemHeight: CGFloat = 88,
         spacing: CGFloat = 10,
-        headerHeight: CGFloat = 34
+        headerHeight: CGFloat = FluentCollectionLayout.defaultHeaderHeight
     ) -> FluentCollectionLayout {
         FluentCollectionLayout(
             kind: .adaptiveGrid,
@@ -116,9 +127,29 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
     private let header: ((SectionID) -> FluentAnyView)?
 
     private var contentVersion: ((ItemID) -> AnyHashable)?
+    private var areStickyGroupHeadersEnabled = true
+    private var scrollIntoViewRequest: FluentBinding<ItemID?>?
+    private var scrollIntoViewAlignment: FluentScrollIntoViewAlignment = .default
 
     /// Opt in to skipping unchanged row content. Include every captured row dependency in the
     /// version. Without a version, visible rows update conservatively on each parent render.
+    /// `ItemsStackPanel/ItemsWrapGrid.AreStickyGroupHeadersEnabled` (on by default): a section's
+    /// header stays pinned to the top while its items scroll.
+    /// `ListViewBase.ScrollIntoView`: setting the binding to an item scrolls it into view (once the
+    /// item exists), after which the binding is reset to nil.
+    public func scrollIntoView(_ request: FluentBinding<ItemID?>, alignment: FluentScrollIntoViewAlignment = .default) -> Self {
+        var copy = self
+        copy.scrollIntoViewRequest = request
+        copy.scrollIntoViewAlignment = alignment
+        return copy
+    }
+
+    public func areStickyGroupHeadersEnabled(_ enabled: Bool) -> Self {
+        var copy = self
+        copy.areStickyGroupHeadersEnabled = enabled
+        return copy
+    }
+
     public func contentVersion(_ version: @escaping (ItemID) -> AnyHashable) -> Self {
         var copy = self
         copy.contentVersion = version
@@ -260,6 +291,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
             header: header,
             context: context
         )
+        view.setStickyGroupHeaders(areStickyGroupHeadersEnabled)
+        view.setScrollIntoView(scrollIntoViewRequest.map(FluentCollectionIdentityBinding.init), alignment: scrollIntoViewAlignment)
         return view
     }
 
@@ -282,6 +315,8 @@ public struct FluentCollection<SectionID: Hashable, ItemID: Hashable>: FluentUpd
             header: header,
             context: context
         )
+        collection.setStickyGroupHeaders(areStickyGroupHeadersEnabled)
+        collection.setScrollIntoView(scrollIntoViewRequest.map(FluentCollectionIdentityBinding.init), alignment: scrollIntoViewAlignment)
         return true
     }
 }
@@ -487,6 +522,7 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
     NSScrollView, NSCollectionViewDelegate, NSDraggingSource, FluentFillWidthProviding {
     // Keep the initial flow-layout geometry valid while the scroll host is still being mounted.
     private let collectionView = FluentCollectionNativeView(frame: NSRect(x: 0, y: 0, width: 16, height: 16))
+    var nativeCollectionView: NSCollectionView { collectionView }
     private let flowLayout = NSCollectionViewFlowLayout()
     private var snapshot = FluentCollectionSnapshot<SectionID, ItemID>()
     private var layoutSpec = FluentCollectionLayout.list()
@@ -751,6 +787,69 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
         }
         refreshVisibleContent(force: environmentChanged)
         if !mustApply { applySelection() }
+        applyScrollRequest()
+    }
+
+    func setStickyGroupHeaders(_ enabled: Bool) {
+        guard flowLayout.sectionHeadersPinToVisibleBounds != enabled else { return }
+        flowLayout.sectionHeadersPinToVisibleBounds = enabled
+        flowLayout.invalidateLayout()
+    }
+
+    var areStickyGroupHeadersEnabled: Bool { flowLayout.sectionHeadersPinToVisibleBounds }
+
+    private var scrollRequest: FluentCollectionIdentityBinding?
+    private var scrollRequestObserverID: UUID?
+    private var scrollRequestGeneration: UInt64 = 0
+    private(set) var scrollAlignment: FluentScrollIntoViewAlignment = .default
+    private(set) var lastScrolledItem: AnyHashable?
+
+    fileprivate func setScrollIntoView(_ request: FluentCollectionIdentityBinding?, alignment: FluentScrollIntoViewAlignment) {
+        scrollRequestGeneration &+= 1
+        if let scrollRequestObserverID { scrollRequest?.removeObserver?(scrollRequestObserverID) }
+        scrollRequestObserverID = nil
+        scrollRequest = request
+        scrollAlignment = alignment
+        let generation = scrollRequestGeneration
+        scrollRequestObserverID = request?.observe? { [weak self] _ in
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.scrollRequestGeneration == generation else { return }
+                self.applyScrollRequest()
+            }
+        }
+        applyScrollRequest()
+    }
+
+    /// Scrolls to a requested item once it is in the data source and the viewport is usable, then
+    /// clears the request. Unknown items stay pending until a snapshot adds them.
+    func applyScrollRequest() {
+        guard let request = scrollRequest, let itemID = request.get(), hasUsableViewport,
+              let indexPath = diffableDataSource.indexPath(for: itemID) else { return }
+        collectionView.layoutSubtreeIfNeeded()
+        guard let item = collectionView.collectionViewLayout?.layoutAttributesForItem(at: indexPath)?.frame,
+              let clip = collectionView.enclosingScrollView?.contentView else { return }
+        // A pinned group header covers the top of the viewport, so the item must land below it.
+        let pinnedHeader = header != nil && flowLayout.sectionHeadersPinToVisibleBounds ? layoutSpec.headerHeight : 0
+        let visible = clip.bounds
+        var y = visible.minY
+        switch scrollAlignment {
+        case .leading:
+            y = item.minY - pinnedHeader
+        case .default:
+            if item.minY - pinnedHeader < visible.minY {
+                y = item.minY - pinnedHeader
+            } else if item.maxY > visible.maxY {
+                y = item.maxY - visible.height
+            }
+        }
+        let maxY = max(0, collectionView.frame.height - visible.height)
+        y = min(max(y, 0), maxY)
+        if abs(y - visible.minY) > 0.5 {
+            clip.scroll(to: NSPoint(x: visible.minX, y: y))
+            collectionView.enclosingScrollView?.reflectScrolledClipView(clip)
+        }
+        lastScrolledItem = itemID
+        request.set(nil)
     }
 
     private func configureLayout() {
@@ -2217,19 +2316,33 @@ private final class FluentSectionedCollectionCell: NSView {
     }
 }
 
+/// `ListViewHeaderItem` / `GridViewHeaderItem`: content inset 12,8,12,0 above a 1pt divider
+/// (`ListViewHeaderItemDividerStroke`, BaseLow) that sits 8pt below it with the same side insets.
+/// The background stays transparent, as WinUI's header item background is.
 private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewElement {
+    static let contentInsets = NSEdgeInsets(top: 8, left: 12, bottom: 0, right: 12)
+    static let dividerSpacing: CGFloat = 8
+
     var sectionIndex: Int?
-    private var contentView: NSView?
+    private(set) var contentView: NSView?
+    let dividerLayer = CALayer()
+
+    override var isFlipped: Bool { true }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
+        wantsLayer = true
+        dividerLayer.name = "FluentKit.Collection.HeaderDivider"
+        layer?.addSublayer(dividerLayer)
         setAccessibilityElement(true)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     func update(content: FluentAnyView, context: FluentRenderContext) {
-        if let contentView, content._update(contentView, in: context) { return }
+        let base: NSColor = context.theme.isDark ? .white : .black
+        dividerLayer.backgroundColor = (context.theme.isHighContrast ? context.theme.textPrimary : base.withAlphaComponent(0.2)).cgColor
+        if let contentView, content._update(contentView, in: context) { needsLayout = true; return }
         contentView?.removeFromSuperview()
         let mounted = content._mount(in: context)
         contentView = mounted
@@ -2237,10 +2350,23 @@ private final class FluentSectionedCollectionHeader: NSView, NSCollectionViewEle
         mounted.translatesAutoresizingMaskIntoConstraints = false
         mounted.setContentHuggingPriority(.defaultLow, for: .horizontal)
         mounted.setContentCompressionResistancePriority(.required, for: .horizontal)
+        let insets = Self.contentInsets
         NSLayoutConstraint.activate([
-            mounted.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            mounted.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
-            mounted.centerYAnchor.constraint(equalTo: centerYAnchor)
+            mounted.leadingAnchor.constraint(equalTo: leadingAnchor, constant: insets.left),
+            mounted.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -insets.right),
+            mounted.topAnchor.constraint(equalTo: topAnchor, constant: insets.top)
         ])
+        needsLayout = true
+    }
+
+    override func layout() {
+        super.layout()
+        guard let contentView else { return }
+        let insets = Self.contentInsets
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        dividerLayer.frame = NSRect(x: insets.left, y: contentView.frame.maxY + Self.dividerSpacing,
+                                    width: max(0, bounds.width - insets.left - insets.right), height: 1)
+        CATransaction.commit()
     }
 }
