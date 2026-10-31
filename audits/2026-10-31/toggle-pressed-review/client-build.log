@@ -1,0 +1,8 @@
+Building for production...
+[1 / 1]
+[2 / 5] FluentIME-product
+[3 / 6] FluentIME-product
+/Users/stars/Downloads/Fluent IME/Package.swift: FluentIME-product: ld: warning: building for macOS-13.0, but linking with dylib '/opt/homebrew/opt/librime/lib/librime.1.dylib' which was built for newer version 27.0
+[5 / 6] FluentIME-product
+[6 / 6] FluentIME-product
+Build complete! (6.72秒)

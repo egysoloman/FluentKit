@@ -1,0 +1,1 @@
+e8f689c5d103b836900c62dc8f4700e89391faa480f68d48db803b59d6d75018  SettingsWindow.swift (after targeted patch)

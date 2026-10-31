@@ -1,0 +1,1 @@
+5957988e8a5e713140858baf62898c06118ff8128879fcfd048da9fbc47bca97  SettingsWindow.swift (read-only review)
