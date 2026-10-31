@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- WindowShell's shared chrome tint and cutout mask now commit resize geometry together without
+  implicit animations. This removes a separate right/bottom color seam in Gallery window zoom,
+  including geometry updates reported by the content surfaces.
+
 - Material backgrounds now resize with their containing view during window zoom. Disabling
   implicit geometry animations prevents the opaque fallback and Mica tint from lagging behind
   the new window bounds and briefly exposing a different color at the right and bottom edges.

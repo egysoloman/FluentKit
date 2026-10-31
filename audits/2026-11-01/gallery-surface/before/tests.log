@@ -1,0 +1,52 @@
+Building for debugging...
+[Planning deferred tasks]
+[1 / 1]
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+Build complete! (2.21秒)
+Test Suite 'Selected tests' started at 2026-11-01 00:50:04.300.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 00:50:04.302.
+Test Suite 'WindowSurfaceResizeTests' started at 2026-11-01 00:50:04.302.
+Test Case '-[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf36145e0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf36145a0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf3614680>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf3614640>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf34b4e40>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf34b5060>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf3616220>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf36161e0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4493b80>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4493b40>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4493c20>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4493be0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4447380>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4447320>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4447420>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf44473e0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf44e36c0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf44e3680>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf44e3780>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf44e3740>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4564240>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf45649c0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf45642e0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf45642a0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4619900>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf46198c0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf46199a0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf4619960>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf461b8c0>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf461b880>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:51: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf461b960>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/WindowSurfaceResizeTests.swift:52: error: -[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation] : XCTAssertNil failed: "<CABasicAnimation: 0x7bf461b920>"
+Test Case '-[FluentKitTests.WindowSurfaceResizeTests testSharedChromeTintAndMaskFollowResizeWithoutExtraAnimation]' failed (0.732 seconds).
+Test Suite 'WindowSurfaceResizeTests' failed at 2026-11-01 00:50:05.035.
+	 Executed 1 test, with 32 failures (0 unexpected) in 0.732 (0.733) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 00:50:05.035.
+	 Executed 1 test, with 32 failures (0 unexpected) in 0.732 (0.733) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 00:50:05.035.
+	 Executed 1 test, with 32 failures (0 unexpected) in 0.732 (0.735) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

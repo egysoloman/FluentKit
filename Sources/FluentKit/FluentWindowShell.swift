@@ -730,7 +730,6 @@ private final class FluentWindowSharedChromeHost: NSView {
 
     override func layout() {
         super.layout()
-        tintLayer.frame = bounds
         updateTintMask()
     }
 
@@ -753,6 +752,13 @@ private final class FluentWindowSharedChromeHost: NSView {
     }
 
     private func updateTintMask() {
+        // Content surfaces notify us independently of this view's layout. Commit both the tint
+        // and its cutout mask together, without a second resize animation during window zoom.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        defer { CATransaction.commit() }
+        tintLayer.frame = bounds
+        tintMaskLayer.frame = bounds
         let surfaces = contentSurfaces(in: contentHost)
         guard !surfaces.isEmpty else {
             tintMaskLayer.path = nil
@@ -764,7 +770,6 @@ private final class FluentWindowSharedChromeHost: NSView {
             guard let contentPath = surface.clipPath(convertedTo: self) else { continue }
             path.addPath(contentPath)
         }
-        tintMaskLayer.frame = bounds
         tintMaskLayer.path = path
     }
 
