@@ -1,0 +1,59 @@
+[
+  {
+    "event" : "mouse",
+    "location" : "{30, 312}",
+    "type" : 1
+  },
+  {
+    "event" : "mouse",
+    "location" : "{30, 312}",
+    "type" : 2
+  },
+  {
+    "event" : "mouse",
+    "location" : "{68, 376}",
+    "type" : 1
+  },
+  {
+    "event" : "mouse",
+    "location" : "{68, 376}",
+    "type" : 2
+  },
+  {
+    "event" : "mouse",
+    "location" : "{200, 408}",
+    "type" : 1
+  },
+  {
+    "event" : "writer",
+    "row" : 1
+  },
+  {
+    "event" : "mouse",
+    "location" : "{200, 360}",
+    "type" : 6
+  },
+  {
+    "event" : "begin",
+    "rows" : [
+      1
+    ]
+  },
+  {
+    "components" : [
+      {
+        "frame" : "{{0, 0}, {440, 32}}",
+        "key" : "icon"
+      },
+      {
+        "frame" : "{{36, 6}, {20, 20}}",
+        "key" : "FluentKit.TreeView.Count"
+      }
+    ],
+    "event" : "image"
+  },
+  {
+    "event" : "end",
+    "operation" : 0
+  }
+]

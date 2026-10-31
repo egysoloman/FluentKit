@@ -1,0 +1,40 @@
+Building for debugging...
+[Planning deferred tasks]
+[6 / 30] FluentKit_FluentKit
+[6 / 29] FluentKit
+[19 / 42] FluentKit
+[24 / 44] FluentGallery-product
+[28 / 48] FluentKit
+[28 / 48] FluentGallery-product
+[29 / 48] FluentKit
+[31 / 48] FluentKit
+[34 / 47] FluentKitTests-product
+[44 / 60] FluentKitTests-product
+[45 / 60] FluentKitTests-product
+[47 / 60] FluentKitTests-product
+[51 / 59] FluentKitTests-product
+[53 / 60] FluentKitTests-product
+[55 / 64] FluentKitTests-product
+[57 / 64] FluentKitTests-product
+[59 / 62] FluentKitValidation-product
+[60 / 62] FluentKitValidation-product
+[62 / 62] FluentKitValidation-product
+Build complete! (42.81秒)
+Test Suite 'Selected tests' started at 2026-11-01 04:44:18.447.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 04:44:18.447.
+Test Suite 'TreeViewDropValidationTests' started at 2026-11-01 04:44:18.447.
+Test Case '-[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewDropValidationTests.swift:13: error: -[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes] : XCTAssertNil failed: "FluentTreeViewMove<String>(id: "a", parentID: Optional("child"), index: 0)" - A node cannot move into its descendant
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewDropValidationTests.swift:14: error: -[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes] : XCTAssertNil failed: "FluentTreeViewMove<String>(id: "a", parentID: Optional("a"), index: 1)" - A node cannot contain itself
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewDropValidationTests.swift:15: error: -[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes] : XCTAssertNil failed: "FluentTreeViewMove<String>(id: "a", parentID: nil, index: 1)" - Unknown parents are not the root
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewDropValidationTests.swift:16: error: -[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes] : XCTAssertNil failed: "FluentTreeViewMove<String>(id: "a", parentID: nil, index: 98)" - Do not deliver an invalid insertion index
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/TreeViewDropValidationTests.swift:17: error: -[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes] : XCTAssertNil failed: "FluentTreeViewMove<String>(id: "a", parentID: nil, index: 0)" - Only -1 has drop-on-item meaning
+Test Case '-[FluentKitTests.TreeViewDropValidationTests testSingleMoveRejectsCyclesUnknownParentsAndInvalidIndexes]' failed (0.352 seconds).
+Test Suite 'TreeViewDropValidationTests' failed at 2026-11-01 04:44:18.799.
+	 Executed 1 test, with 5 failures (0 unexpected) in 0.352 (0.352) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 04:44:18.800.
+	 Executed 1 test, with 5 failures (0 unexpected) in 0.352 (0.352) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 04:44:18.800.
+	 Executed 1 test, with 5 failures (0 unexpected) in 0.352 (0.353) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

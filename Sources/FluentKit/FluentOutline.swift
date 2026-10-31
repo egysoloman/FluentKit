@@ -38,6 +38,14 @@ public struct FluentTreeViewMove<ID: Hashable> {
     public let index: Int
 }
 
+/// One atomic subtree move. Remove all `ids` from their old parents, then insert them in this
+/// order at `index` under `parentID` (nil means roots). Descendants of moved roots are omitted.
+public struct FluentTreeViewItemsMove<ID: Hashable> {
+    public let ids: [ID]
+    public let parentID: ID?
+    public let index: Int
+}
+
 public typealias FluentTreeView<ID: Hashable> = FluentOutline<ID>
 public typealias FluentTreeViewNode<ID: Hashable> = FluentOutlineNode<ID>
 
@@ -54,6 +62,7 @@ public struct FluentOutline<ID: Hashable>: FluentUpdatablePrimitiveView {
     private var onCollapsed: ((ID) -> Void)?
     private var onItemInvoked: ((ID) -> Void)?
     private var onMove: ((FluentTreeViewMove<ID>) -> Void)?
+    private var onMoveItems: ((FluentTreeViewItemsMove<ID>) -> Void)?
 
     public init(
         nodes: [FluentOutlineNode<ID>],
@@ -103,10 +112,22 @@ public struct FluentOutline<ID: Hashable>: FluentUpdatablePrimitiveView {
     }
 
     /// `CanReorderItems`: enables drag-and-drop reordering. The tree is declarative, so the app
-    /// applies the move to its data.
+    /// applies the move to its data. This compatibility API moves the dragged row only.
+    /// Use `onMoveItems` for checked-subtree moves. The last move handler modifier wins.
     public func onMove(_ action: @escaping (FluentTreeViewMove<ID>) -> Void) -> Self {
         var copy = self
         copy.onMove = action
+        copy.onMoveItems = nil
+        return copy
+    }
+
+    /// Moves the checked subtrees together in multiple-selection mode; with no checks, moves
+    /// the dragged row. Selection order is preserved (initial Set bindings use tree order).
+    /// The callback runs once, and the application applies the entire move to its data.
+    public func onMoveItems(_ action: @escaping (FluentTreeViewItemsMove<ID>) -> Void) -> Self {
+        var copy = self
+        copy.onMoveItems = action
+        copy.onMove = nil
         return copy
     }
 
@@ -128,7 +149,7 @@ public struct FluentOutline<ID: Hashable>: FluentUpdatablePrimitiveView {
     private var configuration: FluentOutlineConfiguration<ID> {
         FluentOutlineConfiguration(nodes: nodes, selection: selection, rowHeight: rowHeight, expandedIDs: expandedIDs,
                                    onExpanding: onExpanding, onCollapsed: onCollapsed, onItemInvoked: onItemInvoked,
-                                   onMove: onMove)
+                                   onMove: onMove, onMoveItems: onMoveItems)
     }
 
     private func validateIDs() {
@@ -149,6 +170,7 @@ struct FluentOutlineConfiguration<ID: Hashable> {
     var onCollapsed: ((ID) -> Void)?
     var onItemInvoked: ((ID) -> Void)?
     var onMove: ((FluentTreeViewMove<ID>) -> Void)?
+    var onMoveItems: ((FluentTreeViewItemsMove<ID>) -> Void)?
 }
 
 /// TreeViewItem template metrics (`TreeView_themeresources.xaml`, `TreeViewItem.xaml`).
@@ -243,6 +265,27 @@ final class FluentTreeNativeOutlineView: NSOutlineView {
         if keyHandler?(event) == true { return }
         super.keyDown(with: event)
     }
+
+    override func mouseDown(with event: NSEvent) {
+        if handleAccessoryMouseDown(event) { return }
+        super.mouseDown(with: event)
+    }
+
+    /// NSOutlineView consumes row mouse events before plain NSView cell hosts receive them.
+    /// Route our drawn accessories here, while leaving row content and native dragging to AppKit.
+    func handleAccessoryMouseDown(_ event: NSEvent) -> Bool {
+        let point = convert(event.locationInWindow, from: nil)
+        let row = row(at: point)
+        guard row >= 0, let cell = view(atColumn: 0, row: row, makeIfNecessary: true) as? FluentOutlineCellHost else { return false }
+        let local = cell.convert(point, from: self)
+        guard let action = cell.accessoryAction(at: local) else { return false }
+        window?.makeFirstResponder(self)
+        if !cell.checkBoxFrame.isEmpty, cell.checkBoxFrame.insetBy(dx: -6, dy: -6).contains(local) {
+            selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        }
+        action()
+        return true
+    }
 }
 
 final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSource, NSOutlineViewDelegate {
@@ -262,8 +305,12 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     private var isApplyingExpansion = false
     /// Multiple selection: the IDs whose check box is fully checked.
     private(set) var checkedIDs: Set<ID> = []
+    private var checkedOrder: [ID] = []
     private static var dragType: NSPasteboard.PasteboardType { NSPasteboard.PasteboardType("com.fluentkit.treeview.node") }
-    private var draggedItem: FluentOutlineItem<ID>?
+    private var draggedItems: [FluentOutlineItem<ID>] = []
+    private var isBatchDrag = false
+    private var topologyGeneration = 0
+    private var validatedDrop: (generation: Int, parent: ObjectIdentifier?, index: Int)?
 
     init(theme: FluentTheme) {
         self.theme = theme
@@ -362,6 +409,10 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
         // Content and theme updates reconcile visible cells in place. Reload only when the tree
         // topology changes; otherwise NSOutlineView discards otherwise stable native rows.
         guard structureChanged else { return }
+        // Hover expansion may load children during a drag. Keep the session, but require a new
+        // native validation before accepting an insertion index from the changed topology.
+        topologyGeneration += 1
+        validatedDrop = nil
         let wasApplyingSelection = isApplyingSelection
         let wasApplyingExpansion = isApplyingExpansion
         isApplyingSelection = true
@@ -450,6 +501,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
         defer { isApplyingSelection = false }
         switch configuration?.selection {
         case let .single(binding):
+            checkedIDs = []; checkedOrder = []
             guard let binding else { return }
             guard let id = binding.get(), let item = itemsByID[id] else {
                 outlineView.deselectAll(nil)
@@ -462,7 +514,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
         case let .multiple(binding):
             let raw = binding.get()
             let normalized = normalizedChecks(raw)
-            checkedIDs = normalized
+            updateChecks(normalized)
             if normalized != raw {
                 let generation = observerGeneration
                 DispatchQueue.main.async { [weak self] in
@@ -471,6 +523,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
                 }
             }
         case .some(.none), nil:
+            checkedIDs = []; checkedOrder = []
             outlineView.deselectAll(nil)
         }
     }
@@ -486,6 +539,13 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     }
 
     // MARK: Multiple selection
+
+    private func updateChecks(_ next: Set<ID>) {
+        checkedOrder.removeAll { !next.contains($0) }
+        let existing = Set(checkedOrder)
+        checkedOrder += roots.flatMap(\.subtree).map(\.id).filter { next.contains($0) && !existing.contains($0) }
+        checkedIDs = next
+    }
 
     /// `ViewModel::UpdateSelection`: a checked node checks its subtree, and each parent with
     /// children is checked only when every child is.
@@ -530,7 +590,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
         } else {
             next.formUnion(subtree)
         }
-        checkedIDs = normalizedChecks(next)
+        updateChecks(normalizedChecks(next))
         refreshVisibleRows()
         binding.set(checkedIDs)
         context.invalidate?()
@@ -687,7 +747,7 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
     // MARK: Drag reorder
 
     func outlineView(_ outlineView: NSOutlineView, pasteboardWriterForItem item: Any) -> NSPasteboardWriting? {
-        guard configuration?.onMove != nil, let item = item as? FluentOutlineItem<ID> else { return nil }
+        guard canMove, let item = item as? FluentOutlineItem<ID> else { return nil }
         let pasteboardItem = NSPasteboardItem()
         pasteboardItem.setString(String(outlineView.row(forItem: item)), forType: Self.dragType)
         return pasteboardItem
@@ -695,46 +755,131 @@ final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSour
 
     func outlineView(_ outlineView: NSOutlineView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint,
                      forItems draggedItems: [Any]) {
-        draggedItem = draggedItems.first as? FluentOutlineItem<ID>
+        guard let item = draggedItems.first as? FluentOutlineItem<ID> else { return }
+        beginDragging(item.id)
+        guard isBatchDrag, isMultiple, checkedIDs.count > 1 else { return }
+        let badge = Self.dragCountImage(checkedIDs.count, theme: theme)
+        let row = outlineView.row(forItem: item)
+        guard let cell = outlineView.view(atColumn: 0, row: row, makeIfNecessary: false) as? FluentOutlineCellHost else { return }
+        let box = cell.checkBoxFrame
+        session.enumerateDraggingItems(options: [], for: outlineView, classes: [NSPasteboardItem.self], searchOptions: [:]) { dragging, index, _ in
+            guard index == 0, let components = dragging.imageComponents else { return }
+            let overlay = NSDraggingImageComponent(key: .init("FluentKit.TreeView.Count"))
+            overlay.contents = badge
+            overlay.frame = NSRect(x: box.midX - badge.size.width / 2, y: box.midY - badge.size.height / 2,
+                                   width: badge.size.width, height: badge.size.height)
+            dragging.imageComponentsProvider = { components + [overlay] }
+        }
+    }
+
+    static func dragCountImage(_ count: Int, theme: FluentTheme) -> NSImage {
+        let label = NSAttributedString(string: String(count), attributes: [.font: theme.typography.font(for: .caption),
+                                                                          .foregroundColor: NSColor.white])
+        let size = NSSize(width: max(20, ceil(label.size().width) + 8), height: 20)
+        return NSImage(size: size, flipped: false) { rect in
+            let path = NSBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), xRadius: 4, yRadius: 4)
+            theme.accent.setFill(); path.fill()
+            NSColor.white.setStroke(); path.lineWidth = 1; path.stroke()
+            label.draw(at: NSPoint(x: (size.width - label.size().width) / 2, y: (size.height - label.size().height) / 2))
+            return true
+        }
     }
 
     func outlineView(_ outlineView: NSOutlineView, draggingSession session: NSDraggingSession, endedAt screenPoint: NSPoint,
                      operation: NSDragOperation) {
-        draggedItem = nil
+        draggedItems = []
+        validatedDrop = nil
     }
 
     func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?,
                      proposedChildIndex index: Int) -> NSDragOperation {
-        guard let dragged = draggedItem else { return [] }
-        if let target = item as? FluentOutlineItem<ID>, target === dragged || target.isDescendant(of: dragged) { return [] }
+        validatedDrop = nil
+        guard info.draggingSource as? NSOutlineView === outlineView,
+              dropPlan(to: item, proposedIndex: index) != nil else { return [] }
+        validatedDrop = (topologyGeneration, (item as? FluentOutlineItem<ID>).map(ObjectIdentifier.init), index)
         return .move
     }
 
     func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
-        guard let dragged = draggedItem, let onMove = configuration?.onMove else { return false }
+        guard info.draggingSource as? NSOutlineView === outlineView, let validated = validatedDrop,
+              validated.generation == topologyGeneration, validated.index == index,
+              validated.parent == (item as? FluentOutlineItem<ID>).map(ObjectIdentifier.init) else { return false }
+        return acceptMove(to: item, proposedIndex: index)
+    }
+
+    private var canMove: Bool { configuration?.onMove != nil || configuration?.onMoveItems != nil }
+
+    @discardableResult
+    func beginDragging(_ id: ID) -> [ID] {
+        draggedItems = []
+        validatedDrop = nil
+        guard canMove, let anchor = itemsByID[id] else { return [] }
+        if case let .multiple(binding) = configuration?.selection { updateChecks(normalizedChecks(binding.get())) }
+        isBatchDrag = configuration?.onMoveItems != nil
+        if isBatchDrag, isMultiple, !checkedIDs.isEmpty {
+            var seen = Set<ID>()
+            for id in checkedOrder {
+                guard var item = itemsByID[id] else { continue }
+                while let parent = item.parent, checkedIDs.contains(parent.id) { item = parent }
+                if seen.insert(item.id).inserted { draggedItems.append(item) }
+            }
+        } else {
+            draggedItems = [anchor]
+        }
+        return draggedItems.map(\.id)
+    }
+
+    private func dropPlan(to item: Any?, proposedIndex: Int) -> FluentTreeViewItemsMove<ID>? {
+        guard canMove, !draggedItems.isEmpty, isBatchDrag == (configuration?.onMoveItems != nil),
+              draggedItems.allSatisfy({ itemsByID[$0.id] === $0 }) else { return nil }
+        let rootIDs = Set(draggedItems.map(\.id))
+        for item in draggedItems {
+            var ancestor = item.parent
+            while let current = ancestor {
+                if rootIDs.contains(current.id) { return nil }
+                ancestor = current.parent
+            }
+        }
         let parent = item as? FluentOutlineItem<ID>
-        guard let move = Self.move(dragged, toParent: parent, proposedIndex: index, roots: roots) else { return false }
-        onMove(move)
+        if item != nil, parent == nil { return nil }
+        if let parent, itemsByID[parent.id] !== parent { return nil }
+        return Self.move(draggedItems, toParent: parent, proposedIndex: proposedIndex, roots: roots)
+    }
+
+    @discardableResult
+    func acceptMove(to item: Any?, proposedIndex: Int) -> Bool {
+        guard let move = dropPlan(to: item, proposedIndex: proposedIndex) else { return false }
+        let batch = isBatchDrag
+        draggedItems = [] // Clear before application code can reenter or rebuild this tree.
+        validatedDrop = nil
+        if batch { configuration?.onMoveItems?(move) }
+        else { configuration?.onMove?(FluentTreeViewMove(id: move.ids[0], parentID: move.parentID, index: move.index)) }
         context.invalidate?()
         return true
     }
 
     /// Converts AppKit's proposed index (before removal; -1 for "onto the item") into the index
-    /// after the dragged node leaves its old place, as WinUI's reordered collection reports it.
-    fileprivate static func move(_ dragged: FluentOutlineItem<ID>, toParent parent: FluentOutlineItem<ID>?, proposedIndex: Int,
-                                 roots: [FluentOutlineItem<ID>]) -> FluentTreeViewMove<ID>? {
+    /// after all moved roots have left their old places. Validation and acceptance share this plan.
+    private static func move(_ dragged: [FluentOutlineItem<ID>], toParent parent: FluentOutlineItem<ID>?, proposedIndex: Int,
+                             roots: [FluentOutlineItem<ID>]) -> FluentTreeViewItemsMove<ID>? {
+        guard !dragged.isEmpty else { return nil }
+        if let parent, dragged.contains(where: { parent === $0 || parent.isDescendant(of: $0) }) { return nil }
         let siblings = parent?.children ?? roots
-        var index = proposedIndex == NSOutlineViewDropOnItemIndex ? siblings.count : proposedIndex
-        if let oldIndex = siblings.firstIndex(where: { $0 === dragged }) {
-            if oldIndex < index { index -= 1 }
-            if parent === dragged.parent, oldIndex == index { return nil }
-        }
-        return FluentTreeViewMove(id: dragged.id, parentID: parent?.id, index: max(0, index))
+        let proposed = proposedIndex == NSOutlineViewDropOnItemIndex ? siblings.count : proposedIndex
+        guard (0...siblings.count).contains(proposed) else { return nil }
+        let ids = Set(dragged.map(\.id))
+        let index = proposed - siblings.prefix(proposed).filter { ids.contains($0.id) }.count
+        var remaining = siblings.filter { !ids.contains($0.id) }.map(\.id)
+        remaining.insert(contentsOf: dragged.map(\.id), at: index)
+        if remaining == siblings.map(\.id) { return nil }
+        return FluentTreeViewItemsMove(ids: dragged.map(\.id), parentID: parent?.id, index: index)
     }
 
     func simulateMove(_ id: ID, toParent parentID: ID?, proposedIndex: Int) -> FluentTreeViewMove<ID>? {
         guard let dragged = itemsByID[id] else { return nil }
-        return Self.move(dragged, toParent: parentID.flatMap { itemsByID[$0] }, proposedIndex: proposedIndex, roots: roots)
+        if let parentID, itemsByID[parentID] == nil { return nil }
+        guard let move = Self.move([dragged], toParent: parentID.flatMap { itemsByID[$0] }, proposedIndex: proposedIndex, roots: roots) else { return nil }
+        return FluentTreeViewMove(id: id, parentID: move.parentID, index: move.index)
     }
 
     // MARK: Row visuals
@@ -1039,18 +1184,20 @@ final class FluentOutlineCellHost: NSTableCellView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        let point = convert(event.locationInWindow, from: nil)
+        if let action = accessoryAction(at: convert(event.locationInWindow, from: nil)) { action(); return }
+        super.mouseDown(with: event)
+    }
+
+    func accessoryAction(at point: NSPoint) -> (() -> Void)? {
         if layoutState?.isMultiple == true, checkBoxFrame.insetBy(dx: -6, dy: -6).contains(point) {
-            onToggleCheck?()
-            return
+            return onToggleCheck
         }
         // `ExpandCollapseChevron` spans its 14pt padding as a hit target.
         if layoutState?.isExpandable == true,
            chevronFrame.insetBy(dx: -FluentTreeViewMetrics.chevronPadding / 2, dy: -8).contains(point) {
-            onToggleExpansion?()
-            return
+            return onToggleExpansion
         }
-        super.mouseDown(with: event)
+        return nil
     }
 
     func performChevronClick() { onToggleExpansion?() }

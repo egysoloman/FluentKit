@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TreeView adds `onMoveItems` for atomic checked-subtree reordering, preserving selection order
+  and omitting descendants already carried by a selected ancestor. The drag image shows the
+  selected-node count. Existing `onMove` stays a single-row callback. Drop validation rejects
+  cycles, invalid indices, stale topology and foreign sources; lazy loading may continue a drag
+  after the destination is validated again. Gallery applies the whole group in one data update.
+  Native outline clicks now reach the drawn checkbox/chevron, and lazy Gallery loading preserves
+  nodes already moved into the folder. Physical drag/drop acceptance remains open in the audit.
+
 - Declarative accessibility, focus, lifecycle, form, command, dialog, toolbar and related wrappers
   now forward current content and actions instead of replaying their first mounted value.
   SettingsCard refreshes its saved trailing-action callback for native appearance changes.

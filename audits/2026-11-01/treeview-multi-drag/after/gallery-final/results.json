@@ -1,0 +1,542 @@
+[
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : -1,
+    "state" : "mixed",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : 0,
+    "state" : "checked",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 7,
+    "selectedRow" : 3,
+    "state" : "lazy-loaded",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 3,
+    "selectedRow" : 1,
+    "state" : "collapsed",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : 4,
+    "state" : "single",
+    "variant" : "light",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : -1,
+    "state" : "mixed",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : 0,
+    "state" : "checked",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 7,
+    "selectedRow" : 3,
+    "state" : "lazy-loaded",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 3,
+    "selectedRow" : 1,
+    "state" : "collapsed",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{0, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{108, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{108, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : 4,
+    "state" : "single",
+    "variant" : "dark",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{504, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{504, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{404, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{404, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : -1,
+    "state" : "mixed",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{504, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{504, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{404, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{404, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : 0,
+    "state" : "checked",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{504, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{504, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(0.0, 132.0, 600.0, 32.0) b=(0.0, 0.0, 600.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{404, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{404, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 7,
+    "selectedRow" : 3,
+    "state" : "lazy-loaded",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(404.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{504, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{100, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(404.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{404, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 3,
+    "selectedRow" : 1,
+    "state" : "collapsed",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  },
+  {
+    "buttons" : [
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(404.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{504, 132}, {96, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{100, 0}, {96, 32}}",
+        "title" : "Collapse all"
+      },
+      {
+        "ancestors" : [
+          "FluentHorizontalStackView: f=(404.0, 132.0, 196.0, 32.0) b=(0.0, 0.0, 196.0, 32.0)",
+          "FluentVerticalStackView: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "FluentViewHost<TreeViewGallerySample>: f=(0.0, 0.0, 600.0, 500.0) b=(0.0, 0.0, 600.0, 500.0)",
+          "NSThemeFrame: f=(0.0, 0.0, 600.0, 532.0) b=(0.0, 0.0, 600.0, 532.0)"
+        ],
+        "frame" : "{{404, 132}, {88, 32}}",
+        "hidden" : false,
+        "layerFrame" : "{{0, 0}, {88, 32}}",
+        "title" : "Reset tree"
+      }
+    ],
+    "renderMethod" : "CALayer.render",
+    "rowHeight" : 32,
+    "rows" : 5,
+    "selectedRow" : 4,
+    "state" : "single",
+    "variant" : "rtl",
+    "voiceOver" : "pending",
+    "windowsComparison" : "pending"
+  }
+]

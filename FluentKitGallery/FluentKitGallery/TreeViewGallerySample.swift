@@ -34,7 +34,7 @@ struct TreeViewGallerySample: FluentView {
         static func load(_ id: String, in entries: inout [Entry]) {
             for index in entries.indices {
                 if entries[index].id == id, entries[index].isUnrealized {
-                    entries[index].children = [Entry(id: "remote-a", title: "Shared document"), Entry(id: "remote-b", title: "Reference")]
+                    entries[index].children += [Entry(id: "remote-a", title: "Shared document"), Entry(id: "remote-b", title: "Reference")]
                     entries[index].isUnrealized = false
                     return
                 }
@@ -56,6 +56,19 @@ struct TreeViewGallerySample: FluentView {
             }
         }
     }
+
+    /// Apply one declarative move atomically, including drops into an unloaded folder.
+    func moveEntries(_ ids: [String], to parentID: String?, at index: Int) {
+        var next = entries
+        let moved = ids.compactMap { Entry.remove($0, from: &next) }
+        guard moved.count == ids.count else { return }
+        for (offset, entry) in moved.enumerated() {
+            guard Entry.insert(entry, parentID: parentID, index: index + offset, into: &next) else { return }
+        }
+        entries = next
+        status = "Moved \(moved.map(\.title).joined(separator: ", "))"
+    }
+
     var body: some FluentView {
         FluentVStack(spacing: 12) {
             FluentToggleView("Multiple selection", isOn: $multiple)
@@ -69,13 +82,8 @@ struct TreeViewGallerySample: FluentView {
                 }
                 .onCollapsed { status = "Collapsed \($0)" }
                 .onItemInvoked { status = "Invoked \($0)" }
-                .onMove { move in
-                    var next = entries
-                    if let entry = Entry.remove(move.id, from: &next),
-                       Entry.insert(entry, parentID: move.parentID, index: move.index, into: &next) {
-                        entries = next
-                        status = "Moved \(entry.title)"
-                    }
+                .onMoveItems { move in
+                    moveEntries(move.ids, to: move.parentID, at: move.index)
                 }
                 .frame(width: 440, height: 280)
             FluentHStack(spacing: 12) {
@@ -90,7 +98,7 @@ struct TreeViewGallerySample: FluentView {
             }
             FluentText(multiple ? "Checked: \(checked.count)" : "Selected: \(selected ?? "none")")
             FluentText(status, style: .caption)
-            FluentText("Drag one item to move it. Use arrow keys to browse and Space to toggle a check box.", style: .caption)
+            FluentText("Drag checked subtrees together. Space toggles a check box.", style: .caption)
         }
     }
 }

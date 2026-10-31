@@ -1420,8 +1420,14 @@ of complete visual parity with Windows.
 - TreeView reconciles native nodes by stable ID and updates visible content in place when the
   topology is unchanged. Structural updates still reload the outline; reconciliation still walks
   the supplied nodes. Reordering preserves selection by ID. The interactive Gallery sample covers
-  tri-state selection, lazy loading and expansion; multi-item drag and row expansion animation
-  remain pending. See the [TreeView follow-up audit](audits/2026-10-31/treeview-lifecycle/REPORT.md).
+  tri-state selection, lazy loading and expansion. `onMoveItems` reports an atomic move of the
+  checked subtrees: remove every `move.ids` root first, then insert them in order under
+  `move.parentID` starting at `move.index`. Descendants move with their selected ancestor.
+  Selection order is preserved; initial unordered Set selections use tree order. With no checks,
+  it moves the dragged row. Existing `onMove` remains a single-row callback; the last move-handler
+  modifier wins. Native drag/drop acceptance, cross-tree transfer and row expansion animation
+  remain pending. See the
+  [TreeView multi-drag audit](audits/2026-11-01/treeview-multi-drag/REPORT.md).
 - Typography uses Caption 12, Body 14, BodyLarge 18, Subtitle 20, Title 28, TitleLarge 40 and Display 68.
   Legacy aliases map `largeTitle` to `titleLarge`, `title2` to `subtitle`, `headline` to `bodyStrong`
   and `callout` to `body`. `FluentTypography(overrides:fontProvider:)` supports per-style size, weight,
