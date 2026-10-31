@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Flyouts now pick touch or pointer layouts from the device that opened them, as WinUI's
+  InputDeviceTypeUsedToOpen: MenuFlyout default vs narrow padding, ComboBox touch item padding and
+  240pt minimum popup width, taller CommandBar overflow rows, and primary text commands only for
+  touch and pen (a Ctrl-click is a mouse). FlipView, Pivot and SemanticZoom pointer-only buttons
+  ignore touch.
+
 - Added CaptureElement camera preview (AVFoundation preview layer with stretch, mirroring and
   placeholder) and FluentCameraCapture (permission, devices, start/stop with explicit errors). The
   Gallery app declares camera access. FluentVStack/FluentHStack now accept a single child of any type.

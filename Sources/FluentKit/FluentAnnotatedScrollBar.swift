@@ -346,7 +346,7 @@ final class FluentAnnotatedScrollBarView: NSView {
 
     override func mouseMoved(with event: NSEvent) {
         guard canScroll else { return }
-        showHoverVisuals(atRailOffset: railOffset(for: event), isTouch: event.subtype == .touch)
+        showHoverVisuals(atRailOffset: railOffset(for: event), isTouch: FluentInputDeviceTracker.isTouch(event))
     }
 
     override func mouseExited(with event: NSEvent) {
@@ -359,21 +359,21 @@ final class FluentAnnotatedScrollBarView: NSView {
         guard canScroll, railFrame.contains(point) else { return }
         isPressed = true
         let offset = railOffset(for: event)
-        showHoverVisuals(atRailOffset: offset, isTouch: event.subtype == .touch)
+        showHoverVisuals(atRailOffset: offset, isTouch: FluentInputDeviceTracker.isTouch(event))
         scrollTo(offset / scrollOffsetToLabelOffsetFactor, kind: .click)
     }
 
     override func mouseDragged(with event: NSEvent) {
         guard isPressed else { return }
         let offset = railOffset(for: event)
-        showHoverVisuals(atRailOffset: offset, isTouch: event.subtype == .touch)
+        showHoverVisuals(atRailOffset: offset, isTouch: FluentInputDeviceTracker.isTouch(event))
         scrollTo(offset / scrollOffsetToLabelOffsetFactor, kind: .drag)
     }
 
     override func mouseUp(with event: NSEvent) {
         isPressed = false
         // Non-mouse pointers hide their hover visuals on release (`OnVerticalGridPointerReleased`).
-        if event.subtype == .touch || !railFrame.contains(convert(event.locationInWindow, from: nil)) {
+        if FluentInputDeviceTracker.isTouch(event) || !railFrame.contains(convert(event.locationInWindow, from: nil)) {
             hideHoverVisuals()
         }
     }

@@ -115,6 +115,8 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private weak var overflowPanel: FluentCommandBarPanel?
     private weak var overflowHost: FluentPopupTransitionHost?
     private weak var overflowPresenter: FluentCommandBarOverflowPresenter?
+    private(set) var overflowInputDeviceType: FluentInputDeviceType = .none
+    var overflowRowHeight: CGFloat? { overflowPresenter?.rowHeight }
     private weak var restoreFirstResponder: NSResponder?
     private var localMonitor: Any?
     private var globalMonitor: Any?
@@ -497,7 +499,12 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             return
         }
 
-        let presenter = FluentCommandBarOverflowPresenter(controls: controls, theme: theme)
+        // `AppBarButton::m_inputDeviceTypeUsedToOpenOverflow`: touch opens use TouchInputMode spacing.
+        let device = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
+        overflowInputDeviceType = device
+        let presenter = FluentCommandBarOverflowPresenter(
+            controls: controls, theme: theme,
+            rowHeight: device == .touch ? FluentCommandBarOverflowPresenter.touchRowHeight : FluentCommandBarOverflowPresenter.rowHeight)
         presenter.onDismiss = { [weak self] in self?.dismissOverflow(animated: true, notify: true) }
         presenter.userInterfaceLayoutDirection = userInterfaceLayoutDirection
         controls.forEach { $0.userInterfaceLayoutDirection = userInterfaceLayoutDirection }
@@ -795,12 +802,19 @@ private final class FluentCommandBarOverflowPresenter: NSView {
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { true }
 
-    init(controls: [NSView], theme: FluentTheme) {
+    /// Overflow label padding 0,5,0,8 (`AppBarButtonOverflowTextLabelPadding`); TouchInputMode uses
+    /// `AppBarButtonOverflowTextTouchMargin` 0,9,0,12, eight points taller.
+    static let rowHeight: CGFloat = 40
+    static let touchRowHeight: CGFloat = 48
+    let rowHeight: CGFloat
+
+    init(controls: [NSView], theme: FluentTheme, rowHeight: CGFloat = FluentCommandBarOverflowPresenter.rowHeight) {
         self.controls = controls
         self.theme = theme
+        self.rowHeight = rowHeight
         let width = min(max(controls.map { $0.intrinsicContentSize.width }.max() ?? 160, 160), 480)
         let height = controls.reduce(CGFloat(8)) { total, view in
-            total + (view is FluentAppBarSeparator ? 9 : 40)
+            total + (view is FluentAppBarSeparator ? 9 : rowHeight)
         }
         preferredSize = NSSize(width: width, height: min(height, 640))
         super.init(frame: NSRect(origin: .zero, size: preferredSize))
@@ -827,7 +841,7 @@ private final class FluentCommandBarOverflowPresenter: NSView {
         super.layout()
         var y: CGFloat = 4
         for control in controls {
-            let height: CGFloat = control is FluentAppBarSeparator ? 9 : 40
+            let height: CGFloat = control is FluentAppBarSeparator ? 9 : rowHeight
             control.frame = CGRect(x: 0, y: y, width: bounds.width, height: height)
             y += height
         }

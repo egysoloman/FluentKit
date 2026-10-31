@@ -39,6 +39,18 @@ public final class FluentInputDeviceTracker {
         return typesByWindow.object(forKey: window)?.value ?? lastDeviceType
     }
 
+    /// The device behind the interaction being handled right now (`InputDeviceTypeUsedToOpen`):
+    /// the current AppKit event when it identifies one, otherwise the window's last device. This
+    /// also covers the first interaction, before the monitor has seen any event.
+    public func deviceTypeForCurrentInteraction(in window: NSWindow?) -> FluentInputDeviceType {
+        installIfNeeded()
+        if let event = NSApp.currentEvent, let type = Self.deviceType(for: event) {
+            record(type, in: window ?? event.window)
+            return type
+        }
+        return lastDeviceType(in: window)
+    }
+
     /// Lets controls report input that AppKit does not deliver as an event, such as a direct
     /// touch recognized by a gesture recognizer.
     public func record(_ type: FluentInputDeviceType, in window: NSWindow?) {
@@ -52,6 +64,20 @@ public final class FluentInputDeviceTracker {
         }
     }
 
+    /// Whether a pointer event came from a touch screen. `subtype` is only valid for mouse
+    /// events; reading it from enter/exit or other events raises, so those report false.
+    public static func isTouch(_ event: NSEvent) -> Bool {
+        switch event.type {
+        case .leftMouseDown, .leftMouseUp, .leftMouseDragged, .rightMouseDown, .rightMouseUp, .rightMouseDragged,
+             .otherMouseDown, .otherMouseUp, .otherMouseDragged, .mouseMoved:
+            return event.subtype == .touch
+        case .directTouch:
+            return true
+        default:
+            return false
+        }
+    }
+
     /// Classifies an AppKit event, or returns nil for events that do not change the device.
     public static func deviceType(for event: NSEvent) -> FluentInputDeviceType? {
         switch event.type {
@@ -62,6 +88,7 @@ public final class FluentInputDeviceTracker {
         case .tabletPoint, .tabletProximity:
             return .pen
         case .leftMouseDown, .rightMouseDown, .otherMouseDown:
+            if isTouch(event) { return .touch }
             switch event.subtype {
             case .touch: return .touch
             case .tabletPoint, .tabletProximity: return .pen

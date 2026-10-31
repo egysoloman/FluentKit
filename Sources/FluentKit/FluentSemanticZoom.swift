@@ -377,11 +377,15 @@ final class FluentSemanticZoomControl: NSView {
     /// `OnPointerMoved`: a mouse or pen pointer (never touch) shows the button in the zoomed-in view.
     override func mouseMoved(with event: NSEvent) {
         super.mouseMoved(with: event)
-        guard event.subtype != .touch, FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch else { return }
+        guard !FluentInputDeviceTracker.isTouch(event), FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch else { return }
         showZoomOutButtonIfAllowed()
     }
 
-    override func mouseEntered(with event: NSEvent) { mouseMoved(with: event) }
+    override func mouseEntered(with event: NSEvent) {
+        // Enter/exit events carry no subtype; the window's last device decides.
+        guard FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch else { return }
+        showZoomOutButtonIfAllowed()
+    }
 
     func showZoomOutButtonIfAllowed() {
         guard isZoomedIn, canChangeViews, configuration?.isZoomOutButtonEnabled == true, !isTransitioning else { return }

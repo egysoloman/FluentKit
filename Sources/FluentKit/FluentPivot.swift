@@ -698,7 +698,8 @@ final class FluentPivotControl: NSControl {
 
     /// `m_isMouseOrPenPointerOverHeaders`: touch never reveals the navigation buttons.
     override func mouseEntered(with event: NSEvent) {
-        guard FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch, event.subtype != .touch else { return }
+        // Enter/exit events carry no subtype; the window's last device decides.
+        guard FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch else { return }
         setPointerOverHeaders(true)
     }
     override func mouseExited(with event: NSEvent) { setPointerOverHeaders(false) }

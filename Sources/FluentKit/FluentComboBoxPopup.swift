@@ -5,6 +5,8 @@ private enum FluentComboBoxPopupMetrics {
     static let popupHorizontalPadding: CGFloat = 0
     static let popupVerticalPadding: CGFloat = 4
     static let rowHeight: CGFloat = 36
+    /// `ComboBoxItemThemeTouchPadding` (11,11,11,13) instead of the default 11,5,11,7: 12pt taller.
+    static let touchRowHeight: CGFloat = 48
     static let rowHorizontalMargin: CGFloat = 5
     static let rowVerticalMargin: CGFloat = 2
     static let rowCornerRadius: CGFloat = 3
@@ -15,6 +17,8 @@ private enum FluentComboBoxPopupMetrics {
     static let pillPressedHeight: CGFloat = 10
     static let pillCornerRadius: CGFloat = 1.5
     static let popupMinimumWidth: CGFloat = 80
+    /// `ComboBoxPopupThemeTouchMinWidth`.
+    static let popupTouchMinimumWidth: CGFloat = 240
     static let maximumVisibleItemCount = 15
     static let maximumVisibleItemsOnOneSide = 7
 }
@@ -45,6 +49,12 @@ final class FluentComboBoxPopup: NSObject {
     private let onMove: (Int) -> Void
     private let onCommit: (Int) -> Void
     private let onDismiss: () -> Void
+    /// `ComboBox::m_inputDeviceTypeUsedToOpen`: touch opens use the TouchInputMode item padding
+    /// and minimum popup width.
+    private(set) var inputDeviceTypeUsedToOpen: FluentInputDeviceType = .none
+    var rowHeight: CGFloat {
+        inputDeviceTypeUsedToOpen == .touch ? FluentComboBoxPopupMetrics.touchRowHeight : FluentComboBoxPopupMetrics.rowHeight
+    }
 
     init(
         titles: [String],
@@ -71,10 +81,12 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     var isPresented: Bool { panel?.isVisible == true }
+    var presentedPanelSize: NSSize? { panel?.frame.size }
 
     func present(relativeTo anchor: NSView) {
         guard !titles.isEmpty, let anchorWindow = anchor.window else { return }
         self.anchor = anchor
+        inputDeviceTypeUsedToOpen = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
         registerAppearanceUpdates(from: anchorWindow)
         let centeredIndex = selectedIndex ?? keyboardIndex ?? 0
         let visibleRange = placement == .selectionCentered
@@ -107,6 +119,7 @@ final class FluentComboBoxPopup: NSObject {
             theme: theme,
             layoutDirection: layoutDirection,
             reduceMotion: reduceMotion,
+            rowHeight: rowHeight,
             initialVisibleRange: visibleRange,
             onMove: { [weak self] index in
                 self?.keyboardIndex = index
@@ -213,12 +226,14 @@ final class FluentComboBoxPopup: NSObject {
         }
         return NSSize(
             width: max(
-                FluentComboBoxPopupMetrics.popupMinimumWidth,
+                inputDeviceTypeUsedToOpen == .touch
+                    ? FluentComboBoxPopupMetrics.popupTouchMinimumWidth
+                    : FluentComboBoxPopupMetrics.popupMinimumWidth,
                 anchor?.bounds.width ?? 0,
                 ceil(widest + 58)
             ),
             height: FluentComboBoxPopupMetrics.popupVerticalPadding * 2
-                + CGFloat(visibleItemCount) * FluentComboBoxPopupMetrics.rowHeight
+                + CGFloat(visibleItemCount) * rowHeight
         )
     }
 
@@ -239,8 +254,8 @@ final class FluentComboBoxPopup: NSObject {
 
     private func rowCenterFromTop(for index: Int, firstVisibleIndex: Int) -> CGFloat {
         FluentComboBoxPopupMetrics.popupVerticalPadding
-            + CGFloat(max(index - firstVisibleIndex, 0)) * FluentComboBoxPopupMetrics.rowHeight
-            + FluentComboBoxPopupMetrics.rowHeight / 2
+            + CGFloat(max(index - firstVisibleIndex, 0)) * rowHeight
+            + rowHeight / 2
     }
 
     private func clamped(_ origin: NSPoint, size: NSSize, visibleFrame: NSRect) -> NSPoint {
@@ -372,6 +387,7 @@ private final class FluentComboBoxPopupView: NSView {
         row.setPointerOver(hovering)
     }
     private var geometryObservers: [NSObjectProtocol] = []
+    let rowHeight: CGFloat
 
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { true }
@@ -383,6 +399,7 @@ private final class FluentComboBoxPopupView: NSView {
         theme: FluentTheme,
         layoutDirection: NSUserInterfaceLayoutDirection,
         reduceMotion: Bool,
+        rowHeight: CGFloat = FluentComboBoxPopupMetrics.rowHeight,
         initialVisibleRange: Range<Int>,
         onMove: @escaping (Int) -> Void,
         onCommit: @escaping (Int) -> Void,
@@ -394,6 +411,7 @@ private final class FluentComboBoxPopupView: NSView {
         self.theme = theme
         self.layoutDirection = layoutDirection
         self.reduceMotion = reduceMotion
+        self.rowHeight = rowHeight
         self.onMove = onMove
         self.onCommit = onCommit
         self.onDismiss = onDismiss
@@ -450,21 +468,21 @@ private final class FluentComboBoxPopupView: NSView {
             x: 0,
             y: 0,
             width: scrollView.contentSize.width,
-            height: CGFloat(titles.count) * FluentComboBoxPopupMetrics.rowHeight
+            height: CGFloat(titles.count) * rowHeight
         )
         for (index, row) in rows.enumerated() {
             row.frame = NSRect(
                 x: 0,
-                y: CGFloat(index) * FluentComboBoxPopupMetrics.rowHeight,
+                y: CGFloat(index) * rowHeight,
                 width: rowsHost.bounds.width,
-                height: FluentComboBoxPopupMetrics.rowHeight
+                height: rowHeight
             )
         }
         if let pendingScrollIndex {
             scrollView.contentView.scroll(
                 to: NSPoint(
                     x: 0,
-                    y: CGFloat(pendingScrollIndex) * FluentComboBoxPopupMetrics.rowHeight
+                    y: CGFloat(pendingScrollIndex) * rowHeight
                 )
             )
             scrollView.reflectScrolledClipView(scrollView.contentView)

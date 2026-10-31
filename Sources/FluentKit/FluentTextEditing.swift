@@ -81,9 +81,9 @@ final class FluentTextEditingSession {
             return true
         }
 
-        // WinUI routes mouse context commands through the secondary row presenter. The compact
-        // icon-first command bar is reserved for input devices that prefer primary commands.
-        let commands = textCommands(prefersPrimaryCommands: event.type != .rightMouseDown)
+        // `FlyoutBase::OnOpening`: touch and pen set InputDevicePrefersPrimaryCommands and get the
+        // compact icon-first command bar; mouse and keyboard use the secondary row presenter.
+        let commands = textCommands(prefersPrimaryCommands: Self.prefersPrimaryCommands(for: event, in: window))
         guard !commands.isEmpty else { return true }
         let presented = FluentTextCommandFlyout(
             commands: commands,
@@ -154,6 +154,14 @@ final class FluentTextEditingSession {
            editor.selectedRange() != preservedSelection {
             editor.setSelectedRange(preservedSelection)
         }
+    }
+
+    /// Classifies the opening event and records it, falling back to the window's last device.
+    static func prefersPrimaryCommands(for event: NSEvent, in window: NSWindow?) -> Bool {
+        let device = FluentInputDeviceTracker.deviceType(for: event)
+            ?? FluentInputDeviceTracker.shared.lastDeviceType(in: window)
+        FluentInputDeviceTracker.shared.record(device, in: window)
+        return device.prefersPrimaryCommands
     }
 
     private func textCommands(prefersPrimaryCommands: Bool) -> [FluentTextCommand] {

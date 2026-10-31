@@ -181,6 +181,8 @@ public final class FluentMenuFlyout {
     private weak var appearanceCoordinator: FluentAppearanceCoordinator?
     private var appearanceRegistration: UUID?
     private var layoutDirection: NSUserInterfaceLayoutDirection = .leftToRight
+    /// `FlyoutBase::m_inputDeviceTypeUsedToOpen`, captured when the root menu opens.
+    private(set) var inputDeviceTypeUsedToOpen: FluentInputDeviceType = .none
 
     /// Called after the root presenter has been removed from its panel.
     /// Button-like controls use this to clear their open visual state.
@@ -216,6 +218,16 @@ public final class FluentMenuFlyout {
     /// Whether the application-owned flyout panel is currently presented.
     public var isPresented: Bool { panel != nil }
 
+    /// `MenuFlyoutItemBase`: NarrowPadding (11,4,11,5) when opened with mouse, pen or keyboard; the
+    /// default padding (11,8,11,9) otherwise, including touch. A desktop open with no recorded
+    /// device keeps the narrow rows. Submenus inherit the root's choice.
+    var usesNarrowPadding: Bool {
+        if let owner { return owner.usesNarrowPadding }
+        return inputDeviceTypeUsedToOpen != .touch
+    }
+
+    var itemHeight: CGFloat { usesNarrowPadding ? FluentMenuPresenterView.narrowItemHeight : FluentMenuPresenterView.touchItemHeight }
+
     public func present(
         relativeTo anchor: NSView,
         at point: NSPoint? = nil,
@@ -227,6 +239,7 @@ public final class FluentMenuFlyout {
         }
         dismissBranch(animated: false)
         guard !items.isEmpty, let anchorWindow = anchor.window else { return }
+        inputDeviceTypeUsedToOpen = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
         anchorView = anchor
         registerAppearanceUpdates(from: anchorWindow)
         layoutDirection = anchor.userInterfaceLayoutDirection
@@ -236,7 +249,8 @@ public final class FluentMenuFlyout {
         let size = FluentMenuPresenterView.preferredSize(
             for: items,
             theme: theme,
-            minimumWidth: resolvedMinimumWidth
+            minimumWidth: resolvedMinimumWidth,
+            itemHeight: itemHeight
         )
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
         let screenPoint = point.map { anchorWindow.convertPoint(toScreen: anchor.convert($0, to: nil)) }
@@ -301,9 +315,9 @@ public final class FluentMenuFlyout {
         var top: CGFloat = 2
         for (index, item) in items.enumerated() {
             if index == selectedIndex {
-                return top + 2 + 16
+                return top + itemHeight / 2
             }
-            top += item.isSeparator ? 9 : 36
+            top += item.isSeparator ? 9 : itemHeight
         }
         return nil
     }
@@ -324,7 +338,7 @@ public final class FluentMenuFlyout {
         // Rows draw with the parent's resolved FlowDirection. Inherit that value explicitly;
         // reading the row's AppKit default here would send RTL submenus to the trailing side.
         layoutDirection = owner?.layoutDirection ?? anchor.userInterfaceLayoutDirection
-        let size = FluentMenuPresenterView.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth)
+        let size = FluentMenuPresenterView.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth, itemHeight: itemHeight)
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
         let visibleFrame = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
         let rightToLeft = layoutDirection == .rightToLeft
@@ -358,7 +372,8 @@ public final class FluentMenuFlyout {
             items: items,
             theme: theme,
             layoutDirection: direction,
-            minimumWidth: presenterMinimumWidth
+            minimumWidth: presenterMinimumWidth,
+            itemHeight: itemHeight
         )
         let size = presenter.preferredSize
         let panel = FluentMenuPanel(
@@ -591,6 +606,11 @@ private final class FluentMenuPresenterView: NSView {
     private let items: [FluentMenuItem]
     private var theme: FluentTheme
     private let layoutDirection: NSUserInterfaceLayoutDirection
+    /// Row pitch: 32pt rows plus the 2pt MenuFlyoutItemMargin above and below for narrow padding;
+    /// the default (touch) padding adds 4pt above and below the content.
+    static let narrowItemHeight: CGFloat = 36
+    static let touchItemHeight: CGFloat = 44
+    let itemHeight: CGFloat
     private var itemRows: [Int: FluentMenuItemRow] = [:]
     private var typeahead = ""
     private var typeaheadResetWorkItem: DispatchWorkItem?
@@ -608,12 +628,14 @@ private final class FluentMenuPresenterView: NSView {
         items: [FluentMenuItem],
         theme: FluentTheme,
         layoutDirection: NSUserInterfaceLayoutDirection,
-        minimumWidth: CGFloat
+        minimumWidth: CGFloat,
+        itemHeight: CGFloat = FluentMenuPresenterView.narrowItemHeight
     ) {
         self.items = items
         self.theme = theme
         self.layoutDirection = layoutDirection
-        preferredSize = Self.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth)
+        self.itemHeight = itemHeight
+        preferredSize = Self.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth, itemHeight: itemHeight)
         super.init(frame: NSRect(origin: .zero, size: preferredSize))
         userInterfaceLayoutDirection = layoutDirection
         setAccessibilityElement(true)
@@ -638,14 +660,14 @@ private final class FluentMenuPresenterView: NSView {
                 showsCheckPlaceholder: showsCheckPlaceholder,
                 showsIconPlaceholder: showsIconPlaceholder
             )
-            row.frame = NSRect(x: 4, y: y + 2, width: preferredSize.width - 8, height: 32)
+            row.frame = NSRect(x: 4, y: y + 2, width: preferredSize.width - 8, height: itemHeight - 4)
             row.onHoverChange = { [weak self] row, hovering in
                 self?.setHoveredRow(row, index: index, hovering: hovering)
             }
             row.onInvoke = { [weak self] in self?.invoke(index) }
             addSubview(row)
             itemRows[index] = row
-            y += 36
+            y += itemHeight
         }
         // MenuFlyout has no persistent selected-row background. Check state is represented only by
         // its checkmark; pointer-over and explicit keyboard navigation own transient row fills.
@@ -808,7 +830,8 @@ private final class FluentMenuPresenterView: NSView {
         if let matching { select(matching, announce: true, keyboard: true) }
     }
 
-    static func preferredSize(for items: [FluentMenuItem], theme: FluentTheme, minimumWidth: CGFloat) -> NSSize {
+    static func preferredSize(for items: [FluentMenuItem], theme: FluentTheme, minimumWidth: CGFloat,
+                              itemHeight: CGFloat = narrowItemHeight) -> NSSize {
         let font = theme.typography.font(for: .body)
         let placeholderCount = (items.contains { !$0.isSeparator && $0.reservesCheckSlot } ? 1 : 0)
             + (items.contains { !$0.isSeparator && $0.icon != nil } ? 1 : 0)
@@ -819,7 +842,7 @@ private final class FluentMenuPresenterView: NSView {
                 + (item.hasSubmenu ? 36 : 0)
             return max(result, titleWidth + CGFloat(placeholderCount * 28) + trailingWidth)
         }
-        let height = 4 + items.reduce(CGFloat(0)) { $0 + ($1.isSeparator ? 9 : 36) }
+        let height = 4 + items.reduce(CGFloat(0)) { $0 + ($1.isSeparator ? 9 : itemHeight) }
         // 11pt narrow padding lives inside each row, while the source template also applies a
         // separate 4pt MenuFlyoutItemMargin on both horizontal edges.
         return NSSize(width: max(minimumWidth, ceil(widest + 30)), height: max(8, height))
@@ -1257,5 +1280,12 @@ private final class FluentContextMenuHost: NSView {
 public extension FluentView {
     func contextMenu(@FluentMenuBuilder items: () -> [FluentMenuItem]) -> FluentContextMenuView<Self> {
         FluentContextMenuView(content: self, items: items())
+    }
+}
+
+/// Test access to the presenter's source-derived size for a given row pitch.
+enum FluentMenuPresenterViewProbe {
+    static func size(items: [FluentMenuItem], theme: FluentTheme = .current, minimumWidth: CGFloat = 180, itemHeight: CGFloat) -> NSSize {
+        FluentMenuPresenterView.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth, itemHeight: itemHeight)
     }
 }

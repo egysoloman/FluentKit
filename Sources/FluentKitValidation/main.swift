@@ -3585,14 +3585,21 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
         "text command flyout dismisses through the shared Fluent keyboard path"
     )
 
-    searchField.rightMouseDown(
-        with: toggleMouseEvent(
+    // FlyoutBase::OnOpening: only touch (and pen) prefer primary commands, so open from a
+    // touch-subtyped press rather than a plain mouse click.
+    let touchPress: NSEvent = {
+        let mouse = toggleMouseEvent(
             .leftMouseDown,
             at: NSPoint(x: expectedTextRect.minX + 12, y: expectedTextRect.midY),
             in: searchField,
             eventNumber: 95
         )
-    )
+        guard let cgEvent = mouse.cgEvent?.copy() else { return mouse }
+        cgEvent.setIntegerValueField(.mouseEventSubtype, value: Int64(NSEvent.EventSubtype.touch.rawValue))
+        return NSEvent(cgEvent: cgEvent) ?? mouse
+    }()
+    require(touchPress.subtype == .touch, "validation can synthesize a touch-subtyped press")
+    searchField.rightMouseDown(with: touchPress)
     require(
         waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
         "TextCommandBarFlyout supports an input-device-preferred primary command composition"

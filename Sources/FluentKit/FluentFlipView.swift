@@ -226,8 +226,15 @@ private final class FluentFlipViewHost: NSControl {
         updateFocusVisual()
     }
 
-    override func mouseEntered(with event: NSEvent) { revealNavigationButtons() }
-    override func mouseMoved(with event: NSEvent) { revealNavigationButtons() }
+    /// `FlipView::OnPointerMoved`: only mouse and pen pointers reveal the navigation buttons.
+    override func mouseEntered(with event: NSEvent) { revealForPointer(isTouch: false) }
+    override func mouseMoved(with event: NSEvent) { revealForPointer(isTouch: FluentInputDeviceTracker.isTouch(event)) }
+
+    /// Enter/exit events carry no subtype, so they rely on the window's last device alone.
+    private func revealForPointer(isTouch: Bool) {
+        guard !isTouch, FluentInputDeviceTracker.shared.lastDeviceType(in: window) != .touch else { return }
+        revealNavigationButtons()
+    }
 
     private func navigationPointerChanged(_ inside: Bool, button: FluentFlipViewButton) {
         guard isEnabled else { return }
