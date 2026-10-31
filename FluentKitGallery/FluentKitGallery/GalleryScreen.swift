@@ -21,6 +21,9 @@ struct GalleryScreen: FluentView {
     private let pivotSections = ["All", "Unread", "Flagged", "Urgent"]
     @FluentState private var swipeMessages = ["Team meeting notes", "Invoice #2041", "Weekend plans"]
     @FluentState private var swipeStatus = "No command invoked"
+    @FluentState private var sezoZoomedIn = true
+    @FluentState private var sezoStatus = "Choose a letter in the zoomed-out view"
+    private let sezoGroups = ["A": ["Ada", "Alan", "Anita"], "B": ["Bea", "Bjarne"], "G": ["Grace", "Guido"], "K": ["Ken", "Katherine"], "L": ["Linus", "Lin"]]
     @FluentState private var breadcrumbItems = [
         FluentBreadcrumbBarItem("Home", id: "home", systemImageName: "house"),
         FluentBreadcrumbBarItem("Documents", id: "documents", systemImageName: "folder"),
@@ -466,6 +469,44 @@ struct GalleryScreen: FluentView {
                 FluentText(swipeStatus, style: .caption, color: theme.textSecondary)
                 FluentButtonView("Reset") { swipeMessages = ["Team meeting notes", "Invoice #2041", "Weekend plans"] }
                 FluentText("Swipe with two fingers on the trackpad or with a finger on a touch screen. VoiceOver lists each command as an action.",
+                    style: .caption, color: theme.textSecondary)
+            })
+        case .SemanticZoom:
+            return FluentAnyView(FluentVStack(spacing: 10) {
+                FluentSemanticZoom(
+                    isZoomedInViewActive: $sezoZoomedIn,
+                    isZoomOutButtonEnabled: true,
+                    onViewChangeCompleted: { zoomedIn, destination in
+                        if zoomedIn, let letter = destination as? String { sezoStatus = "Jumped to \(letter)" }
+                    },
+                    zoomedInView: {
+                        FluentVStack(spacing: 6) {
+                            FluentAnyView(FluentForEach(Array(sezoGroups.keys).sorted(), id: { $0 }) { letter in
+                                FluentVStack(spacing: 2) {
+                                    FluentText(letter, style: .bodyStrong, color: theme.accent)
+                                    FluentText((sezoGroups[letter] ?? []).joined(separator: " · "), style: .body)
+                                }
+                            })
+                        }
+                        .padding(12)
+                        .frame(width: 420, height: 240)
+                    },
+                    zoomedOutView: { proxy in
+                        FluentHStack(spacing: 8) {
+                            FluentButtonView("A") { proxy.zoomIn(to: "A") }
+                            FluentButtonView("B") { proxy.zoomIn(to: "B") }
+                            FluentButtonView("G") { proxy.zoomIn(to: "G") }
+                            FluentButtonView("K") { proxy.zoomIn(to: "K") }
+                            FluentButtonView("L") { proxy.zoomIn(to: "L") }
+                        }
+                        .padding(12)
+                        .frame(width: 420, height: 240)
+                    }
+                )
+                .frame(width: 420, height: 240)
+                FluentToggleView("Zoomed-in view active", isOn: $sezoZoomedIn)
+                FluentText(sezoStatus, style: .caption, color: theme.textSecondary)
+                FluentText("Pinch on the trackpad or touch screen, or press Ctrl/⌘ with minus or plus. Move the mouse to reveal the zoom-out button.",
                     style: .caption, color: theme.textSecondary)
             })
         case .BreadcrumbBar:

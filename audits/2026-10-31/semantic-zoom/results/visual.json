@@ -1,0 +1,74 @@
+[
+  {
+    "buttonVisible" : false,
+    "state" : "zoomed-in",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending",
+    "zoomedIn" : true
+  },
+  {
+    "buttonVisible" : true,
+    "state" : "zoom-out-button",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending",
+    "zoomedIn" : true
+  },
+  {
+    "buttonVisible" : false,
+    "state" : "zoomed-out",
+    "touchScreen" : "pending device",
+    "variant" : "light",
+    "windowsComparison" : "pending",
+    "zoomedIn" : false
+  },
+  {
+    "buttonVisible" : false,
+    "state" : "zoomed-in",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending",
+    "zoomedIn" : true
+  },
+  {
+    "buttonVisible" : true,
+    "state" : "zoom-out-button",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending",
+    "zoomedIn" : true
+  },
+  {
+    "buttonVisible" : false,
+    "state" : "zoomed-out",
+    "touchScreen" : "pending device",
+    "variant" : "dark",
+    "windowsComparison" : "pending",
+    "zoomedIn" : false
+  },
+  {
+    "buttonVisible" : false,
+    "state" : "zoomed-in",
+    "touchScreen" : "pending device",
+    "variant" : "rtl",
+    "windowsComparison" : "pending",
+    "zoomedIn" : true
+  },
+  {
+    "buttonVisible" : true,
+    "state" : "zoom-out-button",
+    "touchScreen" : "pending device",
+    "variant" : "rtl",
+    "windowsComparison" : "pending",
+    "zoomedIn" : true
+  },
+  {
+    "buttonVisible" : false,
+    "state" : "zoomed-out",
+    "touchScreen" : "pending device",
+    "variant" : "rtl",
+    "windowsComparison" : "pending",
+    "zoomedIn" : false
+  }
+]

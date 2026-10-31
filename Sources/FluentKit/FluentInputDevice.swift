@@ -295,3 +295,87 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
     /// Asked before a touch gesture begins; defaults to allowing it.
     var onBeginAllowed: () -> Bool = { true }
 }
+
+/// One pinch gesture, fed by trackpad `magnify` events and macOS 27 direct-touch pinches.
+/// Reports the cumulative scale (1 at the start of the gesture).
+final class FluentMagnifyGestureDriver: NSObject, NSGestureRecognizerDelegate {
+    private weak var view: NSView?
+    var onBeginAllowed: () -> Bool = { true }
+    var onBegin: () -> Bool = { true }
+    var onChange: (CGFloat) -> Void = { _ in }
+    var onEnd: (CGFloat) -> Void = { _ in }
+    var onCancel: () -> Void = {}
+
+    private(set) var isActive = false
+    private(set) var touchRecognizer: NSMagnificationGestureRecognizer?
+    private var trackpadScale: CGFloat = 1
+
+    init(view: NSView) {
+        self.view = view
+        super.init()
+        installTouchRecognizer()
+    }
+
+    /// Returns true when the event was consumed; otherwise forward it to super.
+    func handleMagnify(_ event: NSEvent) -> Bool {
+        if event.phase.contains(.began) {
+            guard onBeginAllowed(), onBegin() else { return false }
+            isActive = true
+            trackpadScale = 1
+            FluentInputDeviceTracker.shared.record(.mouse, in: view?.window)
+        }
+        guard isActive else { return false }
+        if event.phase.contains(.began) || event.phase.contains(.changed) {
+            trackpadScale = max(0.05, trackpadScale * (1 + event.magnification))
+            onChange(trackpadScale)
+        }
+        if event.phase.contains(.ended) {
+            isActive = false
+            onEnd(trackpadScale)
+        } else if event.phase.contains(.cancelled) {
+            isActive = false
+            onCancel()
+        }
+        return true
+    }
+
+    private func installTouchRecognizer() {
+        guard #available(macOS 27, *), let view else { return }
+        let recognizer = NSMagnificationGestureRecognizer(target: self, action: #selector(handleTouchMagnify(_:)))
+        recognizer.allowedTouchTypes = [.direct]
+        recognizer.delegate = self
+        view.addGestureRecognizer(recognizer)
+        touchRecognizer = recognizer
+    }
+
+    @objc func handleTouchMagnify(_ recognizer: NSMagnificationGestureRecognizer) {
+        let scale = max(0.05, 1 + recognizer.magnification)
+        switch recognizer.state {
+        case .began:
+            guard onBegin() else {
+                recognizer.isEnabled = false
+                recognizer.isEnabled = true
+                return
+            }
+            isActive = true
+            FluentInputDeviceTracker.shared.record(.touch, in: view?.window)
+            onChange(scale)
+        case .changed:
+            if isActive { onChange(scale) }
+        case .ended:
+            guard isActive else { return }
+            isActive = false
+            onEnd(scale)
+        case .cancelled, .failed:
+            guard isActive else { return }
+            isActive = false
+            onCancel()
+        default:
+            break
+        }
+    }
+
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: NSGestureRecognizer) -> Bool {
+        gestureRecognizer !== touchRecognizer || onBeginAllowed()
+    }
+}

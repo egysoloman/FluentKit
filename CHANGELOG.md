@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added SemanticZoom with pinch (trackpad and macOS 27 touch) using WinUI's 0.5 zoom floor and 5%
+  switch threshold, Ctrl/⌘ minus/plus, optional Ctrl+wheel, the opt-in pointer-only zoom-out
+  button, CanChangeViews, a two-way binding, and a proxy that carries the chosen group back to the
+  app. The shared input foundation gains a pinch driver. Gallery sample added with partial coverage.
+
 - Added SwipeControl with Reveal and Execute modes on left/right (RTL-mirrored) or top/bottom
   sides, WinUI's 100pt threshold and open/close rules, BehaviorOnInvoked, single-open and
   outside-press dismissal, touch and trackpad input through the shared pan driver, and VoiceOver

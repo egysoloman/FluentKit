@@ -42,6 +42,7 @@ import FluentKit
                     case "TimePicker": precondition(mountedViews.contains { $0 is FluentTimePicker })
                     case "Pivot": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.Pivot" })
                     case "SwipeControl": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.SwipeControl" })
+                    case "SemanticZoom": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.SemanticZoom" })
                     default: break
                     }
                     window.close()
