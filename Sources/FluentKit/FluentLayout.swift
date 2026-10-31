@@ -293,8 +293,12 @@ private class FluentLayoutContainer: NSView, FluentFillWidthProviding {
         heightConstraint?.isActive = false
         widthConstraint = width.map { widthAnchor.constraint(equalToConstant: $0) }
         heightConstraint = height.map { heightAnchor.constraint(equalToConstant: $0) }
-        widthConstraint?.priority = .defaultHigh
-        heightConstraint?.priority = .defaultHigh
+        // An explicit frame is decisive (WinUI Width/Height, SwiftUI frame): it must beat the
+        // child's content hugging and compression resistance, which are commonly 750 and would
+        // otherwise tie with it, yet still yield to required constraints instead of conflicting.
+        let explicitSize = NSLayoutConstraint.Priority(rawValue: 999)
+        widthConstraint?.priority = explicitSize
+        heightConstraint?.priority = explicitSize
         widthConstraint?.identifier = "FluentKit.IdealWidth"
         heightConstraint?.identifier = "FluentKit.IdealHeight"
         if let widthConstraint { widthConstraint.isActive = true }

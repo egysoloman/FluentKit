@@ -5077,7 +5077,8 @@ let idealHeightConstraints = descendantConstraints(in: sizingItem.view).filter {
 require(
     abs(sizingItem.view.frame.height - 112) <= 0.5
         && idealHeightConstraints.contains {
-            abs($0.constant - 96) <= 0.001 && $0.priority == .defaultHigh
+            // An explicit frame is a strong ideal (above content hugging) but never required.
+            abs($0.constant - 96) <= 0.001 && $0.priority >= .defaultHigh && $0.priority < .required
         }
         && !idealHeightConstraints.contains { $0.priority == .required },
     "collection cell owns the 112pt item height while nested frame heights remain overridable ideals"

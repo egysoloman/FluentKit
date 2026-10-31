@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Fixed `.frame(width:height:)` losing to content hugging (both at 750): explicit sizes now use
+  priority 999, so a 32pt row stays 32pt in fitting-size layouts such as ForEach.
+- FluentForEach now follows the axis and alignment of an enclosing FluentHStack/FluentVStack, and
+  when `spacing` is omitted it uses that stack's spacing. Behavior change: an unspaced ForEach
+  directly inside a FluentVStack now uses the stack's spacing (12 by default) instead of 8.
+
 - Added direct Gallery samples for ToggleButton, RepeatButton, StackPanel, Grid, SplitView,
   NavigationView, TabView, TeachingTip, TitleBar, CommandBarFlyout, RichEditBox, Clipboard and
   StoragePickers. FluentGrid now shares space equally across columns and rows like WinUI's default

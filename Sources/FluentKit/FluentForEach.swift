@@ -2,17 +2,19 @@ import AppKit
 
 /// A data-driven declarative collection that reuses native row views by stable identity.
 /// It is intentionally separate from FluentList: ForEach participates in the surrounding layout,
-/// while FluentList adds scrolling, selection, and virtualization.
+/// while FluentList adds scrolling, selection, and virtualization. Inside a FluentHStack or
+/// FluentVStack it follows that stack's axis and alignment; without an explicit `spacing` it also
+/// uses the stack's spacing (8 elsewhere).
 public struct FluentForEach<Data: RandomAccessCollection, ID: Hashable, Content: FluentView>: FluentUpdatablePrimitiveView {
     private let data: Data
     private let id: (Data.Element) -> ID
     private let rowContent: (Data.Element) -> Content
-    private let spacing: CGFloat
+    private let spacing: CGFloat?
 
     public init(
         _ data: Data,
         id: @escaping (Data.Element) -> ID,
-        spacing: CGFloat = 8,
+        spacing: CGFloat? = nil,
         @FluentViewBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.data = data
@@ -24,7 +26,7 @@ public struct FluentForEach<Data: RandomAccessCollection, ID: Hashable, Content:
     public init(
         _ data: Data,
         id: KeyPath<Data.Element, ID>,
-        spacing: CGFloat = 8,
+        spacing: CGFloat? = nil,
         @FluentViewBuilder content: @escaping (Data.Element) -> Content
     ) {
         self.init(data, id: { $0[keyPath: id] }, spacing: spacing, content: content)
@@ -66,10 +68,12 @@ private final class FluentForEachHost: NSView {
     private let stack = NSStackView()
     private var records: [FluentForEachRecord] = []
     private var views: [NSView] = []
-    private var spacing: CGFloat
+    /// Nil inherits the enclosing stack's spacing.
+    private var spacing: CGFloat?
     private var context = FluentRenderContext()
+    static let defaultSpacing: CGFloat = 8
 
-    init(spacing: CGFloat) {
+    init(spacing: CGFloat?) {
         self.spacing = spacing
         super.init(frame: .zero)
         setAccessibilityElement(true)
@@ -77,7 +81,7 @@ private final class FluentForEachHost: NSView {
         fluentSetDefaultAccessibilityLabel("Items")
         stack.orientation = .vertical
         stack.alignment = .leading
-        stack.spacing = spacing
+        stack.spacing = spacing ?? Self.defaultSpacing
         stack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stack)
         NSLayoutConstraint.activate([
@@ -98,7 +102,28 @@ private final class FluentForEachHost: NSView {
         updateAccessibilityChildren()
     }
 
-    func update(rows newRecords: [FluentForEachRecord], spacing: CGFloat, context: FluentRenderContext) {
+    var orientation: NSUserInterfaceLayoutOrientation { stack.orientation }
+    var effectiveSpacing: CGFloat { stack.spacing }
+
+    override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        adoptEnclosingStack()
+    }
+
+    /// Follows the axis, alignment and (unless set explicitly) spacing of an enclosing stack.
+    private func adoptEnclosingStack() {
+        guard let parent = superview as? NSStackView else {
+            stack.orientation = .vertical
+            stack.alignment = .leading
+            stack.spacing = spacing ?? Self.defaultSpacing
+            return
+        }
+        stack.orientation = parent.orientation
+        stack.alignment = parent.alignment
+        stack.spacing = spacing ?? parent.spacing
+    }
+
+    func update(rows newRecords: [FluentForEachRecord], spacing: CGFloat?, context: FluentRenderContext) {
         let oldIDs = records.map(\.id)
         let newIDs = newRecords.map(\.id)
         let canReuseByID = Set(oldIDs).count == oldIDs.count && Set(newIDs).count == newIDs.count
@@ -142,7 +167,7 @@ private final class FluentForEachHost: NSView {
         views = nextViews
         self.spacing = spacing
         self.context = context
-        stack.spacing = spacing
+        adoptEnclosingStack()
         updateAccessibilityChildren()
     }
 

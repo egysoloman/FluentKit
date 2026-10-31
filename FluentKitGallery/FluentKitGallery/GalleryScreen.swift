@@ -505,23 +505,21 @@ struct GalleryScreen: FluentView {
                     },
                     zoomedInView: {
                         FluentVStack(spacing: 6) {
-                            FluentAnyView(FluentForEach(Array(sezoGroups.keys).sorted(), id: { $0 }) { letter in
+                            FluentForEach(Array(sezoGroups.keys).sorted(), id: { $0 }) { letter in
                                 FluentVStack(spacing: 2) {
                                     FluentText(letter, style: .bodyStrong, color: theme.accent)
                                     FluentText((sezoGroups[letter] ?? []).joined(separator: " · "), style: .body)
                                 }
-                            })
+                            }
                         }
                         .padding(12)
                         .frame(width: 420, height: 240)
                     },
                     zoomedOutView: { proxy in
                         FluentHStack(spacing: 8) {
-                            FluentButtonView("A") { proxy.zoomIn(to: "A") }
-                            FluentButtonView("B") { proxy.zoomIn(to: "B") }
-                            FluentButtonView("G") { proxy.zoomIn(to: "G") }
-                            FluentButtonView("K") { proxy.zoomIn(to: "K") }
-                            FluentButtonView("L") { proxy.zoomIn(to: "L") }
+                            FluentForEach(Array(sezoGroups.keys).sorted(), id: { $0 }) { letter in
+                                FluentButtonView(letter) { proxy.zoomIn(to: letter) }
+                            }
                         }
                         .padding(12)
                         .frame(width: 420, height: 240)
