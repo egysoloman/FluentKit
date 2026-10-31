@@ -4,50 +4,131 @@ import AppKit
 public struct FluentOutlineNode<ID: Hashable> {
     public let id: ID
     public let children: [FluentOutlineNode<ID>]
+    /// `TreeViewNode.HasUnrealizedChildren`: shows the chevron before the children are loaded.
+    /// Load them in `onExpanding` and supply them on the next update.
+    public let hasUnrealizedChildren: Bool
     fileprivate let content: FluentAnyView
 
     public init<Content: FluentView>(
         id: ID,
         children: [FluentOutlineNode<ID>] = [],
+        hasUnrealizedChildren: Bool = false,
         @FluentViewBuilder content: () -> Content
     ) {
         self.id = id
         self.children = children
+        self.hasUnrealizedChildren = hasUnrealizedChildren
         self.content = FluentAnyView(content())
     }
 }
 
-/// A native hierarchical collection backed by `NSOutlineView`. The native host preserves
-/// expansion and selection by stable node ID while row contents reconcile in place.
+/// `TreeViewSelectionMode`. Multiple selection uses tri-state check boxes: checking a node checks
+/// its subtree, and a parent is checked, mixed or unchecked from its children.
+public enum FluentTreeViewSelection<ID: Hashable> {
+    case none
+    case single(FluentBinding<ID?>?)
+    case multiple(FluentBinding<Set<ID>>)
+}
+
+/// Where a dragged node was dropped: `index` is its position among `parentID`'s children (nil for
+/// the roots) after it has been removed from its old place.
+public struct FluentTreeViewMove<ID: Hashable> {
+    public let id: ID
+    public let parentID: ID?
+    public let index: Int
+}
+
+public typealias FluentTreeView<ID: Hashable> = FluentOutline<ID>
+public typealias FluentTreeViewNode<ID: Hashable> = FluentOutlineNode<ID>
+
+/// A WinUI-style TreeView backed by `NSOutlineView`. Rows use the TreeViewItem template (32pt
+/// rows with a 4,2 margin, 16pt indentation per level, a chevron column and the 3x16 accent
+/// selection pill). The native host preserves expansion and selection by stable node ID while row
+/// contents reconcile in place.
 public struct FluentOutline<ID: Hashable>: FluentUpdatablePrimitiveView {
     private let nodes: [FluentOutlineNode<ID>]
-    private let selection: FluentBinding<ID?>?
+    private let selection: FluentTreeViewSelection<ID>
     private let rowHeight: CGFloat
+    private var expandedIDs: FluentBinding<Set<ID>>?
+    private var onExpanding: ((ID) -> Void)?
+    private var onCollapsed: ((ID) -> Void)?
+    private var onItemInvoked: ((ID) -> Void)?
+    private var onMove: ((FluentTreeViewMove<ID>) -> Void)?
 
     public init(
         nodes: [FluentOutlineNode<ID>],
         selectionID: FluentBinding<ID?>? = nil,
         rowHeight: CGFloat = 32
     ) {
+        self.init(nodes: nodes, selection: .single(selectionID), rowHeight: rowHeight)
+    }
+
+    public init(
+        nodes: [FluentOutlineNode<ID>],
+        selection: FluentTreeViewSelection<ID>,
+        rowHeight: CGFloat = 32
+    ) {
         self.nodes = nodes
-        self.selection = selectionID
+        self.selection = selection
         self.rowHeight = max(rowHeight, 20)
         validateIDs()
+    }
+
+    /// Two-way expansion state by node ID.
+    public func expandedIDs(_ binding: FluentBinding<Set<ID>>) -> Self {
+        var copy = self
+        copy.expandedIDs = binding
+        return copy
+    }
+
+    /// `TreeView.Expanding`: runs before a node expands, the place to load unrealized children.
+    public func onExpanding(_ action: @escaping (ID) -> Void) -> Self {
+        var copy = self
+        copy.onExpanding = action
+        return copy
+    }
+
+    /// `TreeView.Collapsed`.
+    public func onCollapsed(_ action: @escaping (ID) -> Void) -> Self {
+        var copy = self
+        copy.onCollapsed = action
+        return copy
+    }
+
+    /// `TreeView.ItemInvoked`: a click, Return, or Space outside multiple selection.
+    public func onItemInvoked(_ action: @escaping (ID) -> Void) -> Self {
+        var copy = self
+        copy.onItemInvoked = action
+        return copy
+    }
+
+    /// `CanReorderItems`: enables drag-and-drop reordering. The tree is declarative, so the app
+    /// applies the move to its data.
+    public func onMove(_ action: @escaping (FluentTreeViewMove<ID>) -> Void) -> Self {
+        var copy = self
+        copy.onMove = action
+        return copy
     }
 
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
         let view = FluentOutlineView<ID>(theme: context.theme)
-        view.setNodes(nodes, selection: selection, rowHeight: rowHeight, context: context)
+        view.update(configuration, context: context, initial: true)
         return view
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let outline = view as? FluentOutlineView<ID> else { return false }
         validateIDs()
-        outline.update(nodes, selection: selection, rowHeight: rowHeight, context: context)
+        outline.update(configuration, context: context, initial: false)
         return true
+    }
+
+    private var configuration: FluentOutlineConfiguration<ID> {
+        FluentOutlineConfiguration(nodes: nodes, selection: selection, rowHeight: rowHeight, expandedIDs: expandedIDs,
+                                   onExpanding: onExpanding, onCollapsed: onCollapsed, onItemInvoked: onItemInvoked,
+                                   onMove: onMove)
     }
 
     private func validateIDs() {
@@ -59,31 +140,131 @@ public struct FluentOutline<ID: Hashable>: FluentUpdatablePrimitiveView {
     }
 }
 
+struct FluentOutlineConfiguration<ID: Hashable> {
+    var nodes: [FluentOutlineNode<ID>]
+    var selection: FluentTreeViewSelection<ID>
+    var rowHeight: CGFloat
+    var expandedIDs: FluentBinding<Set<ID>>?
+    var onExpanding: ((ID) -> Void)?
+    var onCollapsed: ((ID) -> Void)?
+    var onItemInvoked: ((ID) -> Void)?
+    var onMove: ((FluentTreeViewMove<ID>) -> Void)?
+}
+
+/// TreeViewItem template metrics (`TreeView_themeresources.xaml`, `TreeViewItem.xaml`).
+enum FluentTreeViewMetrics {
+    static let presenterMarginX: CGFloat = 4
+    static let presenterMarginY: CGFloat = 2
+    static let contentPaddingTop: CGFloat = 3
+    static let contentPaddingBottom: CGFloat = 5
+    static let indentation: CGFloat = 16
+    static let glyphSize: CGFloat = 12
+    /// `ExpandCollapseChevron` padding 14,0; 0,0,14,0 in multiple selection.
+    static let chevronPadding: CGFloat = 14
+    /// `MultiSelectCheckBox`: Width 32, Margin 10,0,0,0.
+    static let checkBoxLeading: CGFloat = 10
+    static let checkBoxWidth: CGFloat = 32
+    static let indicatorSize = NSSize(width: 3, height: 16)
+    static let cornerRadius: CGFloat = 4
+
+    static func chevronFrame(depth: Int, isMultiple: Bool, rowHeight: CGFloat) -> NSRect {
+        var x = presenterMarginX + CGFloat(depth) * indentation
+        if isMultiple { x += checkBoxLeading + checkBoxWidth } else { x += chevronPadding }
+        return NSRect(x: x, y: (rowHeight - glyphSize) / 2, width: glyphSize, height: glyphSize)
+    }
+
+    static func checkBoxFrame(depth: Int, boxSize: CGFloat, rowHeight: CGFloat) -> NSRect {
+        let x = presenterMarginX + CGFloat(depth) * indentation + checkBoxLeading + (checkBoxWidth - boxSize) / 2
+        return NSRect(x: x, y: (rowHeight - boxSize) / 2, width: boxSize, height: boxSize)
+    }
+
+    static func contentLeading(depth: Int, isMultiple: Bool) -> CGFloat {
+        chevronFrame(depth: depth, isMultiple: isMultiple, rowHeight: 0).maxX + chevronPadding
+    }
+}
+
+enum FluentTreeCheckState: Equatable {
+    case unchecked
+    case checked
+    case mixed
+}
+
 private final class FluentOutlineItem<ID: Hashable>: NSObject {
     let id: ID
     let content: FluentAnyView
+    let hasUnrealizedChildren: Bool
     weak var parent: FluentOutlineItem<ID>?
     private(set) var children: [FluentOutlineItem<ID>] = []
 
     init(node: FluentOutlineNode<ID>, parent: FluentOutlineItem<ID>? = nil) {
         id = node.id
         content = node.content
+        hasUnrealizedChildren = node.hasUnrealizedChildren
         self.parent = parent
         super.init()
         children = node.children.map { FluentOutlineItem(node: $0, parent: self) }
     }
+
+    var isExpandable: Bool { !children.isEmpty || hasUnrealizedChildren }
+
+    var depth: Int {
+        var depth = 0
+        var current = parent
+        while let next = current {
+            depth += 1
+            current = next.parent
+        }
+        return depth
+    }
+
+    func isDescendant(of other: FluentOutlineItem<ID>) -> Bool {
+        var current = parent
+        while let next = current {
+            if next === other { return true }
+            current = next.parent
+        }
+        return false
+    }
+
+    var subtree: [FluentOutlineItem<ID>] { [self] + children.flatMap(\.subtree) }
 }
 
-private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSource, NSOutlineViewDelegate {
-    private let outlineView = NSOutlineView(frame: .zero)
+/// The outline view draws no native disclosure triangle or indentation; the cell lays both out.
+final class FluentTreeNativeOutlineView: NSOutlineView {
+    var keyHandler: ((NSEvent) -> Bool)?
+
+    override func frameOfOutlineCell(atRow row: Int) -> NSRect { .zero }
+
+    override func frameOfCell(atColumn column: Int, row: Int) -> NSRect {
+        let frame = super.frameOfCell(atColumn: column, row: row)
+        return NSRect(x: 0, y: frame.minY, width: bounds.width, height: frame.height)
+    }
+
+    override func keyDown(with event: NSEvent) {
+        if keyHandler?(event) == true { return }
+        super.keyDown(with: event)
+    }
+}
+
+final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineViewDataSource, NSOutlineViewDelegate {
+    let outlineView = FluentTreeNativeOutlineView(frame: .zero)
     private var roots: [FluentOutlineItem<ID>] = []
     private var itemsByID: [ID: FluentOutlineItem<ID>] = [:]
-    private var selection: FluentBinding<ID?>?
-    private var observedSelection: FluentBinding<ID?>?
+    private var configuration: FluentOutlineConfiguration<ID>?
+    private var observedSingle: FluentBinding<ID?>?
+    private var observedMultiple: FluentBinding<Set<ID>>?
+    private var observedExpansion: FluentBinding<Set<ID>>?
     private var selectionObserverID: UUID?
+    private var expansionObserverID: UUID?
+    private var observerGeneration = 0
     private var context = FluentRenderContext()
     private var theme: FluentTheme
     private var isApplyingSelection = false
+    private var isApplyingExpansion = false
+    /// Multiple selection: the IDs whose check box is fully checked.
+    private(set) var checkedIDs: Set<ID> = []
+    private static var dragType: NSPasteboard.PasteboardType { NSPasteboard.PasteboardType("com.fluentkit.treeview.node") }
+    private var draggedItem: FluentOutlineItem<ID>?
 
     init(theme: FluentTheme) {
         self.theme = theme
@@ -104,8 +285,20 @@ private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineView
         outlineView.backgroundColor = .clear
         outlineView.allowsEmptySelection = true
         outlineView.focusRingType = .none
+        outlineView.indentationPerLevel = 0
+        outlineView.intercellSpacing = .zero
+        outlineView.selectionHighlightStyle = .regular
+        outlineView.style = .plain
+        outlineView.autoresizesOutlineColumn = false
+        outlineView.columnAutoresizingStyle = .uniformColumnAutoresizingStyle
         outlineView.setAccessibilityRole(.outline)
         outlineView.fluentSetDefaultAccessibilityLabel("Outline")
+        outlineView.keyHandler = { [weak self] event in self?.handleKey(event) ?? false }
+        outlineView.target = self
+        outlineView.action = #selector(rowClicked)
+        outlineView.registerForDraggedTypes([Self.dragType])
+        outlineView.setDraggingSourceOperationMask(.move, forLocal: true)
+        outlineView.draggingDestinationFeedbackStyle = .regular
         documentView = outlineView
         setAccessibilityRole(.outline)
         fluentSetDefaultAccessibilityLabel("Outline")
@@ -113,79 +306,294 @@ private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineView
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func setNodes(
-        _ nodes: [FluentOutlineNode<ID>],
-        selection: FluentBinding<ID?>?,
-        rowHeight: CGFloat,
-        context: FluentRenderContext
-    ) {
-        self.selection = selection
-        self.context = context
-        theme = context.theme
-        outlineView.rowHeight = rowHeight
-        rebuild(nodes, preservingExpansion: false)
-        installSelectionObserver()
-        applySelection()
+    deinit { removeObservers() }
+
+    var isMultiple: Bool {
+        if case .multiple = configuration?.selection { return true }
+        return false
     }
 
-    func update(
-        _ nodes: [FluentOutlineNode<ID>],
-        selection: FluentBinding<ID?>?,
-        rowHeight: CGFloat,
-        context: FluentRenderContext
-    ) {
-        self.selection = selection
+    private var isSelectionEnabled: Bool {
+        if case .some(.none) = configuration?.selection { return false }
+        return true
+    }
+
+    private var isRightToLeft: Bool { context.layoutDirection.appKitValue == .rightToLeft }
+
+    func update(_ next: FluentOutlineConfiguration<ID>, context: FluentRenderContext, initial: Bool) {
+        configuration = next
         self.context = context
         theme = context.theme
-        outlineView.rowHeight = rowHeight
-        rebuild(nodes, preservingExpansion: true)
-        installSelectionObserver()
+        outlineView.rowHeight = next.rowHeight
+        outlineView.userInterfaceLayoutDirection = context.layoutDirection.appKitValue
+        outlineView.allowsMultipleSelection = false
+        rebuild(next.nodes, preservingExpansion: !initial)
+        installObservers()
+        applyExpansion()
         applySelection()
+        refreshVisibleRows()
     }
 
     private func rebuild(_ nodes: [FluentOutlineNode<ID>], preservingExpansion: Bool) {
-        let expandedIDs = preservingExpansion ? Set(itemsByID.compactMap { id, item in
-            outlineView.isItemExpanded(item) ? id : nil
-        }) : []
+        let expanded = preservingExpansion ? expandedIDsInView() : []
         roots = nodes.map { FluentOutlineItem(node: $0) }
         itemsByID.removeAll(keepingCapacity: true)
-        func index(_ items: [FluentOutlineItem<ID>]) {
-            for item in items {
-                itemsByID[item.id] = item
-                index(item.children)
-            }
-        }
-        index(roots)
+        for item in roots.flatMap(\.subtree) { itemsByID[item.id] = item }
+        isApplyingExpansion = true
         outlineView.reloadData()
-        for id in expandedIDs {
-            if let item = itemsByID[id] { outlineView.expandItem(item) }
+        expand(expanded)
+        isApplyingExpansion = false
+    }
+
+    private func expandedIDsInView() -> Set<ID> {
+        Set(itemsByID.compactMap { id, item in outlineView.isItemExpanded(item) ? id : nil })
+    }
+
+    /// Expands outer nodes first so inner ones have rows to expand into.
+    private func expand(_ ids: Set<ID>) {
+        let items = ids.compactMap { itemsByID[$0] }.sorted { $0.depth < $1.depth }
+        for item in items { outlineView.expandItem(item) }
+    }
+
+    private func removeObservers() {
+        if let selectionObserverID {
+            observedSingle?.removeObserver(selectionObserverID)
+            observedMultiple?.removeObserver(selectionObserverID)
+        }
+        if let expansionObserverID { observedExpansion?.removeObserver(expansionObserverID) }
+        selectionObserverID = nil
+        expansionObserverID = nil
+    }
+
+    private func installObservers() {
+        removeObservers()
+        observerGeneration += 1
+        let generation = observerGeneration
+        observedSingle = nil
+        observedMultiple = nil
+        switch configuration?.selection {
+        case let .single(binding?):
+            observedSingle = binding
+            selectionObserverID = binding.observe { [weak self] _ in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, self.observerGeneration == generation else { return }
+                    self.applySelection()
+                }
+            }
+        case let .multiple(binding):
+            observedMultiple = binding
+            selectionObserverID = binding.observe { [weak self] _ in
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, self.observerGeneration == generation else { return }
+                    self.applySelection()
+                    self.refreshVisibleRows()
+                }
+            }
+        default:
+            break
+        }
+        observedExpansion = configuration?.expandedIDs
+        expansionObserverID = observedExpansion?.observe { [weak self] _ in
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.observerGeneration == generation else { return }
+                self.applyExpansion()
+            }
         }
     }
 
-    private func installSelectionObserver() {
-        if let selectionObserverID { observedSelection?.removeObserver(selectionObserverID) }
-        observedSelection = selection
-        selectionObserverID = selection?.observe { [weak self] _ in
-            DispatchQueue.main.async { [weak self] in self?.applySelection() }
+    private func applyExpansion() {
+        guard let wanted = configuration?.expandedIDs?.get() else { return }
+        isApplyingExpansion = true
+        defer { isApplyingExpansion = false }
+        let current = expandedIDsInView()
+        for id in current.subtracting(wanted) {
+            if let item = itemsByID[id] { outlineView.collapseItem(item) }
         }
+        expand(wanted.subtracting(current))
     }
 
     private func applySelection() {
         isApplyingSelection = true
         defer { isApplyingSelection = false }
-        guard let id = selection?.get(), let item = itemsByID[id] else {
+        switch configuration?.selection {
+        case let .single(binding):
+            guard let binding else { return }
+            guard let id = binding.get(), let item = itemsByID[id] else {
+                outlineView.deselectAll(nil)
+                if binding.get() != nil { binding.set(nil) }
+                return
+            }
+            reveal(item)
+            let row = outlineView.row(forItem: item)
+            if row >= 0 { outlineView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false) }
+        case let .multiple(binding):
+            let raw = binding.get()
+            let normalized = normalizedChecks(raw)
+            checkedIDs = normalized
+            if normalized != raw {
+                DispatchQueue.main.async { if binding.get() == raw { binding.set(normalized) } }
+            }
+        case .some(.none), nil:
             outlineView.deselectAll(nil)
-            if selection?.get() != nil { selection?.set(nil) }
-            return
         }
+    }
+
+    private func reveal(_ item: FluentOutlineItem<ID>) {
+        var ancestors: [FluentOutlineItem<ID>] = []
         var parent = item.parent
         while let current = parent {
-            outlineView.expandItem(current)
+            ancestors.insert(current, at: 0)
             parent = current.parent
         }
-        let row = outlineView.row(forItem: item)
-        if row >= 0 { outlineView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false) }
+        for ancestor in ancestors { outlineView.expandItem(ancestor) }
     }
+
+    // MARK: Multiple selection
+
+    /// `ViewModel::UpdateSelection`: a checked node checks its subtree, and each parent with
+    /// children is checked only when every child is.
+    private func normalizedChecks(_ ids: Set<ID>) -> Set<ID> {
+        var result = Set<ID>()
+        for id in ids {
+            guard let item = itemsByID[id] else { continue }
+            result.formUnion(item.subtree.map(\.id))
+        }
+        func settle(_ item: FluentOutlineItem<ID>) {
+            guard !item.children.isEmpty else { return }
+            item.children.forEach(settle)
+            if item.children.allSatisfy({ result.contains($0.id) }) { result.insert(item.id) } else { result.remove(item.id) }
+        }
+        roots.forEach(settle)
+        return result
+    }
+
+    func checkState(of id: ID) -> FluentTreeCheckState {
+        guard let item = itemsByID[id] else { return .unchecked }
+        return checkState(of: item)
+    }
+
+    private func checkState(of item: FluentOutlineItem<ID>) -> FluentTreeCheckState {
+        if checkedIDs.contains(item.id) { return .checked }
+        guard !item.children.isEmpty else { return .unchecked }
+        return item.subtree.dropFirst().contains { checkedIDs.contains($0.id) } ? .mixed : .unchecked
+    }
+
+    /// `TreeViewItem::ToggleSelection`: mixed and unchecked nodes become checked.
+    func toggleCheck(_ id: ID) {
+        guard case let .multiple(binding) = configuration?.selection, let item = itemsByID[id] else { return }
+        var next = checkedIDs
+        let subtree = Set(item.subtree.map(\.id))
+        if checkState(of: item) == .checked {
+            next.subtract(subtree)
+            var parent = item.parent
+            while let current = parent {
+                next.remove(current.id)
+                parent = current.parent
+            }
+        } else {
+            next.formUnion(subtree)
+        }
+        checkedIDs = normalizedChecks(next)
+        refreshVisibleRows()
+        binding.set(checkedIDs)
+        context.invalidate?()
+    }
+
+    // MARK: Expansion
+
+    func toggleExpansion(_ id: ID) {
+        guard let item = itemsByID[id], item.isExpandable else { return }
+        if outlineView.isItemExpanded(item) {
+            outlineView.collapseItem(item)
+        } else {
+            outlineView.expandItem(item)
+        }
+    }
+
+    func isExpanded(_ id: ID) -> Bool {
+        itemsByID[id].map { outlineView.isItemExpanded($0) } ?? false
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, shouldExpandItem item: Any) -> Bool {
+        if !isApplyingExpansion, let item = item as? FluentOutlineItem<ID> { configuration?.onExpanding?(item.id) }
+        return true
+    }
+
+    func outlineViewItemDidExpand(_ notification: Notification) {
+        expansionDidChange(notification, collapsed: false)
+    }
+
+    func outlineViewItemDidCollapse(_ notification: Notification) {
+        expansionDidChange(notification, collapsed: true)
+    }
+
+    private func expansionDidChange(_ notification: Notification, collapsed: Bool) {
+        guard let item = notification.userInfo?["NSObject"] as? FluentOutlineItem<ID> else { return }
+        refresh(item)
+        guard !isApplyingExpansion else { return }
+        if collapsed { configuration?.onCollapsed?(item.id) }
+        if let binding = configuration?.expandedIDs {
+            var next = binding.get()
+            if collapsed { next.remove(item.id) } else { next.insert(item.id) }
+            if next != binding.get() { binding.set(next) }
+        }
+        context.invalidate?()
+    }
+
+    // MARK: Input
+
+    @objc private func rowClicked() {
+        let row = outlineView.clickedRow
+        guard row >= 0, let item = outlineView.item(atRow: row) as? FluentOutlineItem<ID> else { return }
+        invoke(item)
+    }
+
+    private func invoke(_ item: FluentOutlineItem<ID>) {
+        configuration?.onItemInvoked?(item.id)
+    }
+
+    /// `TreeViewItem::OnKeyDown` and `HandleExpandCollapse`.
+    func handleKey(_ event: NSEvent) -> Bool {
+        let row = outlineView.selectedRow
+        guard row >= 0, let item = outlineView.item(atRow: row) as? FluentOutlineItem<ID> else { return false }
+        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        guard modifiers.subtracting([.numericPad, .function]).isEmpty else { return false }
+        let collapseKey: UInt16 = isRightToLeft ? 124 : 123
+        let expandKey: UInt16 = isRightToLeft ? 123 : 124
+        switch event.keyCode {
+        case collapseKey:
+            if outlineView.isItemExpanded(item) {
+                outlineView.collapseItem(item)
+            } else if let parent = item.parent {
+                select(parent)
+            }
+            return true
+        case expandKey:
+            if !outlineView.isItemExpanded(item), item.isExpandable {
+                outlineView.expandItem(item)
+            } else if let child = item.children.first {
+                select(child)
+            }
+            return true
+        case 49 where isMultiple:
+            toggleCheck(item.id)
+            return true
+        case 36, 76, 49:
+            invoke(item)
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func select(_ item: FluentOutlineItem<ID>) {
+        let row = outlineView.row(forItem: item)
+        guard row >= 0 else { return }
+        outlineView.selectRowIndexes(IndexSet(integer: row), byExtendingSelection: false)
+        outlineView.scrollRowToVisible(row)
+    }
+
+    // MARK: Data source
 
     func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         (item as? FluentOutlineItem<ID>)?.children.count ?? roots.count
@@ -196,8 +604,19 @@ private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineView
     }
 
     func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
-        guard let item = item as? FluentOutlineItem<ID> else { return false }
-        return !item.children.isEmpty
+        (item as? FluentOutlineItem<ID>)?.isExpandable ?? false
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, rowViewForItem item: Any) -> NSTableRowView? {
+        let reuseID = NSUserInterfaceItemIdentifier("FluentKit.TreeView.Row")
+        let row = outlineView.makeView(withIdentifier: reuseID, owner: self) as? FluentTreeRowView ?? FluentTreeRowView()
+        row.identifier = reuseID
+        return row
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, didAdd rowView: NSTableRowView, forRow row: Int) {
+        guard let item = outlineView.item(atRow: row) as? FluentOutlineItem<ID> else { return }
+        configureRow(rowView as? FluentTreeRowView, item: item)
     }
 
     func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
@@ -206,12 +625,17 @@ private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineView
         let cell = outlineView.makeView(withIdentifier: reuseID, owner: self) as? FluentOutlineCellHost
             ?? FluentOutlineCellHost()
         cell.identifier = reuseID
-        cell.update(content: item.content, context: context)
+        configureCell(cell, item: item)
         return cell
     }
 
+    func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
+        isSelectionEnabled || isMultiple
+    }
+
     func outlineViewSelectionDidChange(_ notification: Notification) {
-        guard !isApplyingSelection else { return }
+        refreshVisibleRows()
+        guard !isApplyingSelection, case let .single(binding) = configuration?.selection else { return }
         let selected: ID?
         if outlineView.selectedRow >= 0,
            let item = outlineView.item(atRow: outlineView.selectedRow) as? FluentOutlineItem<ID> {
@@ -219,30 +643,369 @@ private final class FluentOutlineView<ID: Hashable>: NSScrollView, NSOutlineView
         } else {
             selected = nil
         }
-        selection?.set(selected)
+        binding?.set(selected)
         context.invalidate?()
     }
 
-    deinit {
-        if let selectionObserverID { observedSelection?.removeObserver(selectionObserverID) }
+    // MARK: Drag reorder
+
+    func outlineView(_ outlineView: NSOutlineView, pasteboardWriterForItem item: Any) -> NSPasteboardWriting? {
+        guard configuration?.onMove != nil, let item = item as? FluentOutlineItem<ID> else { return nil }
+        let pasteboardItem = NSPasteboardItem()
+        pasteboardItem.setString(String(outlineView.row(forItem: item)), forType: Self.dragType)
+        return pasteboardItem
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, draggingSession session: NSDraggingSession, willBeginAt screenPoint: NSPoint,
+                     forItems draggedItems: [Any]) {
+        draggedItem = draggedItems.first as? FluentOutlineItem<ID>
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, draggingSession session: NSDraggingSession, endedAt screenPoint: NSPoint,
+                     operation: NSDragOperation) {
+        draggedItem = nil
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?,
+                     proposedChildIndex index: Int) -> NSDragOperation {
+        guard let dragged = draggedItem else { return [] }
+        if let target = item as? FluentOutlineItem<ID>, target === dragged || target.isDescendant(of: dragged) { return [] }
+        return .move
+    }
+
+    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex index: Int) -> Bool {
+        guard let dragged = draggedItem, let onMove = configuration?.onMove else { return false }
+        let parent = item as? FluentOutlineItem<ID>
+        guard let move = Self.move(dragged, toParent: parent, proposedIndex: index, roots: roots) else { return false }
+        onMove(move)
+        context.invalidate?()
+        return true
+    }
+
+    /// Converts AppKit's proposed index (before removal; -1 for "onto the item") into the index
+    /// after the dragged node leaves its old place, as WinUI's reordered collection reports it.
+    fileprivate static func move(_ dragged: FluentOutlineItem<ID>, toParent parent: FluentOutlineItem<ID>?, proposedIndex: Int,
+                                 roots: [FluentOutlineItem<ID>]) -> FluentTreeViewMove<ID>? {
+        let siblings = parent?.children ?? roots
+        var index = proposedIndex == NSOutlineViewDropOnItemIndex ? siblings.count : proposedIndex
+        if let oldIndex = siblings.firstIndex(where: { $0 === dragged }) {
+            if oldIndex < index { index -= 1 }
+            if parent === dragged.parent, oldIndex == index { return nil }
+        }
+        return FluentTreeViewMove(id: dragged.id, parentID: parent?.id, index: max(0, index))
+    }
+
+    func simulateMove(_ id: ID, toParent parentID: ID?, proposedIndex: Int) -> FluentTreeViewMove<ID>? {
+        guard let dragged = itemsByID[id] else { return nil }
+        return Self.move(dragged, toParent: parentID.flatMap { itemsByID[$0] }, proposedIndex: proposedIndex, roots: roots)
+    }
+
+    // MARK: Row visuals
+
+    private func refreshVisibleRows() {
+        let range = outlineView.rows(in: outlineView.visibleRect)
+        guard range.length > 0 else { return }
+        for row in range.location..<(range.location + range.length) { refresh(row: row) }
+    }
+
+    private func refresh(_ item: FluentOutlineItem<ID>) {
+        let row = outlineView.row(forItem: item)
+        if row >= 0 { refresh(row: row) }
+    }
+
+    private func refresh(row: Int) {
+        guard let item = outlineView.item(atRow: row) as? FluentOutlineItem<ID> else { return }
+        configureRow(outlineView.rowView(atRow: row, makeIfNecessary: false) as? FluentTreeRowView, item: item)
+        if let cell = outlineView.view(atColumn: 0, row: row, makeIfNecessary: false) as? FluentOutlineCellHost {
+            configureCell(cell, item: item)
+        }
+    }
+
+    private func configureRow(_ row: FluentTreeRowView?, item: FluentOutlineItem<ID>) {
+        guard let row else { return }
+        let checked = isMultiple && checkState(of: item) == .checked
+        row.configure(theme: theme, isMultiple: isMultiple, isChecked: checked, isRightToLeft: isRightToLeft,
+                      reduceMotion: context.reduceMotion)
+    }
+
+    private func configureCell(_ cell: FluentOutlineCellHost, item: FluentOutlineItem<ID>) {
+        let id = item.id
+        cell.update(
+            content: item.content,
+            context: context,
+            layout: FluentOutlineCellHost.Layout(
+                depth: item.depth,
+                isMultiple: isMultiple,
+                isExpandable: item.isExpandable,
+                isExpanded: outlineView.isItemExpanded(item),
+                checkState: isMultiple ? checkState(of: item) : nil,
+                rowHeight: outlineView.rowHeight,
+                isRightToLeft: isRightToLeft
+            ),
+            onToggleExpansion: { [weak self] in self?.toggleExpansion(id) },
+            onToggleCheck: { [weak self] in self?.toggleCheck(id) }
+        )
     }
 }
 
-private final class FluentOutlineCellHost: NSTableCellView {
-    private var contentView: NSView?
+/// TreeViewItem's `ContentPresenterGrid`: a rounded fill inset 4,2 and the selection pill.
+final class FluentTreeRowView: NSTableRowView {
+    override var isFlipped: Bool { true }
+    let fillLayer = CALayer()
+    let indicatorLayer = CALayer()
+    private var theme = FluentTheme.current
+    private var isMultiple = false
+    private var isChecked = false
+    private var isRightToLeft = false
+    private var isPointerOver = false
+    private var trackingArea: NSTrackingArea?
 
-    func update(content: FluentAnyView, context: FluentRenderContext) {
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+        fillLayer.cornerRadius = FluentTreeViewMetrics.cornerRadius
+        indicatorLayer.cornerRadius = 1.5
+        layer?.addSublayer(fillLayer)
+        layer?.addSublayer(indicatorLayer)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func configure(theme: FluentTheme, isMultiple: Bool, isChecked: Bool, isRightToLeft: Bool, reduceMotion: Bool) {
+        self.theme = theme
+        self.isMultiple = isMultiple
+        self.isChecked = isChecked
+        self.isRightToLeft = isRightToLeft
+        applyAppearance()
+    }
+
+    override var isSelected: Bool {
+        didSet { applyAppearance() }
+    }
+
+    override func drawSelection(in dirtyRect: NSRect) {}
+    override func drawBackground(in dirtyRect: NSRect) {}
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let trackingArea { removeTrackingArea(trackingArea) }
+        let area = NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInActiveApp, .inVisibleRect], owner: self)
+        addTrackingArea(area)
+        trackingArea = area
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        isPointerOver = true
+        applyAppearance()
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        isPointerOver = false
+        applyAppearance()
+    }
+
+    /// Whether the row shows the TreeViewItem "Selected" visual state.
+    var showsSelected: Bool { isMultiple ? isChecked : isSelected }
+
+    func applyAppearance() {
+        let selected = showsSelected
+        let fill: NSColor = switch (selected, isPointerOver) {
+        case (true, true): theme.subtleFillTertiary
+        case (true, false): theme.subtleFillSecondary
+        case (false, true): theme.subtleFillSecondary
+        case (false, false): .clear
+        }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        fillLayer.backgroundColor = fill.cgColor
+        if theme.isHighContrast, selected {
+            fillLayer.borderColor = theme.textPrimary.cgColor
+            fillLayer.borderWidth = 1
+        } else {
+            fillLayer.borderWidth = 0
+        }
+        indicatorLayer.backgroundColor = theme.accentFillDefault.cgColor
+        // Multiple selection shows the check box instead of the pill.
+        indicatorLayer.opacity = selected && !isMultiple ? 1 : 0
+        CATransaction.commit()
+        needsLayout = true
+    }
+
+    override func layout() {
+        super.layout()
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        let inset = bounds.insetBy(dx: FluentTreeViewMetrics.presenterMarginX, dy: FluentTreeViewMetrics.presenterMarginY)
+        fillLayer.frame = inset
+        let size = FluentTreeViewMetrics.indicatorSize
+        let x = isRightToLeft ? inset.maxX - size.width : inset.minX
+        indicatorLayer.frame = NSRect(x: x, y: inset.midY - size.height / 2, width: size.width, height: size.height)
+        CATransaction.commit()
+    }
+}
+
+final class FluentOutlineCellHost: NSTableCellView {
+    struct Layout: Equatable {
+        var depth: Int
+        var isMultiple: Bool
+        var isExpandable: Bool
+        var isExpanded: Bool
+        var checkState: FluentTreeCheckState?
+        var rowHeight: CGFloat
+        var isRightToLeft: Bool
+    }
+
+    override var isFlipped: Bool { true }
+    private(set) var contentView: NSView?
+    let chevronLayer = FluentChevronPrimitiveLayer()
+    let checkBoxLayer = CALayer()
+    let checkMarkLayer = CAShapeLayer()
+    private(set) var layoutState: Layout?
+    private var theme = FluentTheme.current
+    private var reduceMotion = false
+    private var leadingConstraint: NSLayoutConstraint?
+    private var trailingConstraint: NSLayoutConstraint?
+    private var onToggleExpansion: (() -> Void)?
+    private var onToggleCheck: (() -> Void)?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        wantsLayer = true
+        layer?.addSublayer(chevronLayer)
+        checkBoxLayer.addSublayer(checkMarkLayer)
+        checkMarkLayer.fillColor = nil
+        checkMarkLayer.lineCap = .round
+        checkMarkLayer.lineJoin = .round
+        layer?.addSublayer(checkBoxLayer)
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    func update(content: FluentAnyView, context: FluentRenderContext, layout: Layout,
+                onToggleExpansion: @escaping () -> Void, onToggleCheck: @escaping () -> Void) {
+        let wasExpanded = layoutState?.isExpanded
+        layoutState = layout
+        theme = context.theme
+        reduceMotion = context.reduceMotion
+        self.onToggleExpansion = onToggleExpansion
+        self.onToggleCheck = onToggleCheck
+        mount(content, context: context)
+        let leading = FluentTreeViewMetrics.contentLeading(depth: layout.depth, isMultiple: layout.isMultiple)
+        // The content column sits inside the 4pt presenter margin on both sides.
+        leadingConstraint?.constant = layout.isRightToLeft ? FluentTreeViewMetrics.presenterMarginX : leading
+        trailingConstraint?.constant = -(layout.isRightToLeft ? leading : FluentTreeViewMetrics.presenterMarginX)
+        applyLayers(animated: wasExpanded != nil && wasExpanded != layout.isExpanded && !reduceMotion)
+        if let state = layout.checkState {
+            setAccessibilityValue(state == .checked ? 1 : (state == .mixed ? 2 : 0))
+        }
+    }
+
+    private func mount(_ content: FluentAnyView, context: FluentRenderContext) {
         if let contentView, content._update(contentView, in: context) { return }
         contentView?.removeFromSuperview()
         let mounted = content._mount(in: context)
         contentView = mounted
         addSubview(mounted)
         mounted.translatesAutoresizingMaskIntoConstraints = false
+        let leading = mounted.leadingAnchor.constraint(equalTo: leadingAnchor)
+        let trailing = mounted.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor)
+        leadingConstraint = leading
+        trailingConstraint = trailing
         NSLayoutConstraint.activate([
-            mounted.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
-            mounted.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
-            mounted.topAnchor.constraint(equalTo: topAnchor, constant: 3),
-            mounted.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3)
+            leading, trailing,
+            mounted.topAnchor.constraint(greaterThanOrEqualTo: topAnchor,
+                                         constant: FluentTreeViewMetrics.presenterMarginY + FluentTreeViewMetrics.contentPaddingTop),
+            mounted.centerYAnchor.constraint(equalTo: centerYAnchor,
+                                             constant: (FluentTreeViewMetrics.contentPaddingTop - FluentTreeViewMetrics.contentPaddingBottom) / 2)
         ])
     }
+
+    private func mirrored(_ rect: NSRect) -> NSRect {
+        guard layoutState?.isRightToLeft == true else { return rect }
+        return NSRect(x: bounds.width - rect.maxX, y: rect.minY, width: rect.width, height: rect.height)
+    }
+
+    var chevronFrame: NSRect {
+        guard let layoutState else { return .zero }
+        return mirrored(FluentTreeViewMetrics.chevronFrame(depth: layoutState.depth, isMultiple: layoutState.isMultiple,
+                                                           rowHeight: bounds.height))
+    }
+
+    var checkBoxFrame: NSRect {
+        guard let layoutState, layoutState.isMultiple else { return .zero }
+        let size = checkBoxAppearance(checked: false).boxSize
+        return mirrored(FluentTreeViewMetrics.checkBoxFrame(depth: layoutState.depth, boxSize: size, rowHeight: bounds.height))
+    }
+
+    private func checkBoxAppearance(checked: Bool) -> FluentCheckBoxAppearance {
+        FluentAutomaticCheckBoxStyle().appearance(for: FluentCheckBoxStyleConfiguration(
+            isChecked: checked, isEnabled: true, isPointerOver: false, controlSize: .regular, theme: theme))
+    }
+
+    override func layout() {
+        super.layout()
+        applyLayers(animated: false)
+    }
+
+    private func applyLayers(animated: Bool) {
+        guard let layoutState else { return }
+        let direction: FluentChevronDirection = layoutState.isExpanded ? .down : (layoutState.isRightToLeft ? .left : .right)
+        chevronLayer.isHidden = !layoutState.isExpandable
+        chevronLayer.update(frame: chevronFrame, color: theme.textPrimary, state: .normal, direction: direction,
+                            animated: animated)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        if let state = layoutState.checkState {
+            let appearance = checkBoxAppearance(checked: state != .unchecked)
+            checkBoxLayer.isHidden = false
+            checkBoxLayer.frame = checkBoxFrame
+            checkBoxLayer.cornerRadius = appearance.cornerRadius
+            checkBoxLayer.backgroundColor = appearance.fillColor.cgColor
+            checkBoxLayer.borderColor = appearance.borderColor.cgColor
+            checkBoxLayer.borderWidth = appearance.borderWidth
+            checkMarkLayer.frame = checkBoxLayer.bounds
+            checkMarkLayer.strokeColor = appearance.markColor.cgColor
+            checkMarkLayer.lineWidth = 1.5
+            checkMarkLayer.path = Self.markPath(for: state, in: checkBoxLayer.bounds)
+        } else {
+            checkBoxLayer.isHidden = true
+        }
+        CATransaction.commit()
+    }
+
+    /// The CheckBox check glyph, or the indeterminate dash for a partly checked parent.
+    static func markPath(for state: FluentTreeCheckState, in bounds: CGRect) -> CGPath? {
+        let path = CGMutablePath()
+        let w = bounds.width
+        switch state {
+        case .unchecked:
+            return nil
+        case .checked:
+            path.move(to: CGPoint(x: w * 0.27, y: w * 0.52))
+            path.addLine(to: CGPoint(x: w * 0.43, y: w * 0.68))
+            path.addLine(to: CGPoint(x: w * 0.74, y: w * 0.34))
+        case .mixed:
+            path.move(to: CGPoint(x: w * 0.3, y: w * 0.5))
+            path.addLine(to: CGPoint(x: w * 0.7, y: w * 0.5))
+        }
+        return path
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        if layoutState?.isMultiple == true, checkBoxFrame.insetBy(dx: -6, dy: -6).contains(point) {
+            onToggleCheck?()
+            return
+        }
+        // `ExpandCollapseChevron` spans its 14pt padding as a hit target.
+        if layoutState?.isExpandable == true,
+           chevronFrame.insetBy(dx: -FluentTreeViewMetrics.chevronPadding / 2, dy: -8).contains(point) {
+            onToggleExpansion?()
+            return
+        }
+        super.mouseDown(with: event)
+    }
+
+    func performChevronClick() { onToggleExpansion?() }
+    func performCheckBoxClick() { onToggleCheck?() }
 }

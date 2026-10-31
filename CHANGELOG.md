@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TreeView (`FluentOutline`, now also `FluentTreeView`): WinUI TreeViewItem rows (32pt, 16pt
+  indentation, chevron column, accent selection pill), `FluentTreeViewSelection` with tri-state
+  multiple selection, `.expandedIDs`, `.onExpanding` (for `hasUnrealizedChildren`), `.onCollapsed`,
+  `.onItemInvoked`, `.onMove` drag reordering, and WinUI Left/Right/Space/Return keyboard behavior.
 - ListView/GridView group headers follow WinUI's ListViewHeaderItem: 48pt default height
   (`FluentCollectionLayout.defaultHeaderHeight`, was 34), 12,8,12,0 padding and a 1pt BaseLow
   divider. Group headers are sticky by default; `.areStickyGroupHeadersEnabled(false)` opts out.
