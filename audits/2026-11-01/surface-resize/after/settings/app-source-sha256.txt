@@ -1,0 +1,11 @@
+c560c3448109dc6011f8446d52a5afb6c29b9010a40b617e345e97b7fec2e0b5  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/CandidateView.swift
+f425c78fa04c3b94ea683f0ba6eed8a686efb48a45609aa6cbac342ed5718823  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/EmojiPanel.swift
+ecf571c48321a97cbaa184fff33fd555708b3930130ad58377512b3ef01c8109  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/FluentEmojiImage.swift
+518435fdb43344ab3eb5c2e40567c85958033b23acea8cc8e521b17eb09816cb  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/FluentInputController.swift
+b60e12ca526c2434a33d9e0d0c28a37261015bfc3727f8f6678a33509bc1b7a6  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/IMEChrome.swift
+b911ad605fd6a0e068a8fd9a6356b06a43d94ab7385212125910bc8e17a4278c  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/IMEPageMotion.swift
+768a28525971c07140cc24e943e6794202455f397bafe41108f186ac129ecafc  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/Preferences.swift
+b2a3f4b014d1977bb52bd6dd6288862a45aa572bf37cd31192ebc9960795d1f8  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/ReferencePreview.swift
+a6cc6e02ba28bfca1a85cd67a3b601698512b969a59065c10f2935e2dbaa33d3  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/Runtime.swift
+4e4b367255bba8e3c8a3bc1aa5e7946a55e6fe684f5f07eccbdcac6003e8f202  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/SettingsGlyph.swift
+679204faeb0f03010c9dfe64133c06263db7d09d784690f50d5d54b8947c0bb6  /Users/stars/Downloads/Fluent IME/Sources/FluentIME/SettingsWindow.swift

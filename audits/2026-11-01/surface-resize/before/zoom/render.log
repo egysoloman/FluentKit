@@ -1,0 +1,128 @@
+initial root (0.0, 0.0, 640.0, 805.0) layered true
+FluentMaterialView (0.0, 0.0, 640.0, 805.0) (0.0, 0.0, 640.0, 805.0)
+ layer CAHostingLayer (0.0, 0.0, 640.0, 805.0) presentation Optional((0.0, 0.0, 640.0, 805.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 640.0, 805.0) presentation Optional((0.0, 0.0, 640.0, 805.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 640.0, 805.0) presentation Optional((0.0, 0.0, 640.0, 805.0)) animation nil
+IMEFlippedView (22.0, 68.0, 594.0, 44.0) (0.0, 0.0, 594.0, 44.0)
+NSScrollView (24.0, 136.0, 616.0, 669.0) (0.0, 0.0, 616.0, 669.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 640.0, 48.0) (0.0, 0.0, 640.0, 48.0)
+zoom-00 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 708.3457149333439, 811.4652704189425)) animation Optional(["position", "bounds"])
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 708.3457149333439, 811.4652704189425)) animation Optional(["position", "bounds"])
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-01 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1262.0232672204154, 862.8159661119242)) animation Optional(["position", "bounds"])
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1262.0232672204154, 862.8159661119242)) animation Optional(["position", "bounds"])
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-02 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1492.9742370313388, 884.2354600425917)) animation Optional(["position", "bounds"])
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1492.9742370313388, 884.2354600425917)) animation Optional(["position", "bounds"])
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-03 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-04 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-05 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-06 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-07 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-08 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-09 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-10 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-11 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+zoom-12 root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+enlarged-settled root (0.0, 0.0, 1512.0, 886.0) layered true
+FluentMaterialView (0.0, 0.0, 1512.0, 886.0) (0.0, 0.0, 1512.0, 886.0)
+ layer CAHostingLayer (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 1512.0, 886.0) presentation Optional((0.0, 0.0, 1512.0, 886.0)) animation nil
+IMEFlippedView (22.0, 68.0, 1466.0, 44.0) (0.0, 0.0, 1466.0, 44.0)
+NSScrollView (24.0, 136.0, 1488.0, 750.0) (0.0, 0.0, 1488.0, 750.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 1512.0, 48.0) (0.0, 0.0, 1512.0, 48.0)
+restored root (0.0, 0.0, 640.0, 837.0) layered true
+FluentMaterialView (0.0, 0.0, 640.0, 837.0) (0.0, 0.0, 640.0, 837.0)
+ layer CAHostingLayer (0.0, 0.0, 640.0, 837.0) presentation Optional((0.0, 0.0, 640.0, 837.0)) animation nil
+ layer FluentKit.Material.OpaqueFallback (0.0, 0.0, 640.0, 837.0) presentation Optional((0.0, 0.0, 640.0, 837.0)) animation nil
+ layer FluentKit.Material.MicaTint (0.0, 0.0, 640.0, 837.0) presentation Optional((0.0, 0.0, 640.0, 837.0)) animation nil
+IMEFlippedView (22.0, 68.0, 594.0, 44.0) (0.0, 0.0, 594.0, 44.0)
+NSScrollView (24.0, 136.0, 616.0, 701.0) (0.0, 0.0, 616.0, 701.0)
+FluentViewHost<FluentTitleBar> (0.0, 0.0, 640.0, 48.0) (0.0, 0.0, 640.0, 48.0)

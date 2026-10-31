@@ -1,0 +1,1040 @@
+{
+  "before": {
+    "surface_samples": 32,
+    "animated_samples": 6,
+    "largest_width_gap": 803.6542850666561,
+    "records": [
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          708.3457149333439,
+          811.4652704189425
+        ],
+        "animated": true
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          708.3457149333439,
+          811.4652704189425
+        ],
+        "animated": true
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1262.0232672204154,
+          862.8159661119242
+        ],
+        "animated": true
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1262.0232672204154,
+          862.8159661119242
+        ],
+        "animated": true
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1492.9742370313388,
+          884.2354600425917
+        ],
+        "animated": true
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1492.9742370313388,
+          884.2354600425917
+        ],
+        "animated": true
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "animated": false
+      }
+    ]
+  },
+  "after": {
+    "surface_samples": 32,
+    "animated_samples": 0,
+    "largest_width_gap": 0.0,
+    "records": [
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          805.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          1512.0,
+          886.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.OpaqueFallback",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "animated": false
+      },
+      {
+        "layer": "FluentKit.Material.MicaTint",
+        "model": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "presentation": [
+          0.0,
+          0.0,
+          640.0,
+          837.0
+        ],
+        "animated": false
+      }
+    ]
+  }
+}

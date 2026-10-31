@@ -1,0 +1,302 @@
+[
+  {
+    "sizes" : [
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "light-0-400-collapsed"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 160,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 164,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "light-0-400-expanded"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 1160
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 1160
+      }
+    ],
+    "variant" : "light-1-1200-collapsed"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 160,
+        "id" : "FluentKit.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 1160
+      },
+      {
+        "height" : 164,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 1160
+      }
+    ],
+    "variant" : "light-1-1200-expanded"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "light-2-400-collapsed"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 160,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 164,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "light-2-400-expanded"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "dark-0-400-collapsed"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 160,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 164,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "dark-0-400-expanded"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 1160
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 1160
+      }
+    ],
+    "variant" : "dark-1-1200-collapsed"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 160,
+        "id" : "FluentKit.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 1160
+      },
+      {
+        "height" : 164,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 1160
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 1160
+      }
+    ],
+    "variant" : "dark-1-1200-expanded"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "dark-2-400-collapsed"
+  },
+  {
+    "sizes" : [
+      {
+        "height" : 160,
+        "id" : "FluentKit.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 48,
+        "id" : "FluentKit.Expander.Header",
+        "width" : 360
+      },
+      {
+        "height" : 164,
+        "id" : "FluentKit.Settings.Expander",
+        "width" : 360
+      },
+      {
+        "height" : 64,
+        "id" : "FluentKit.Settings.Expander.Header",
+        "width" : 360
+      }
+    ],
+    "variant" : "dark-2-400-expanded"
+  }
+]

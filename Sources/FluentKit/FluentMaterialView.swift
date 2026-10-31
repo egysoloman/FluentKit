@@ -118,9 +118,14 @@ public final class FluentMaterialView: NSVisualEffectView {
 
     public override func layout() {
         super.layout()
+        // Window zoom already animates the containing view. A second implicit bounds/position
+        // animation on these layers exposes AppKit's backing color at the growing edges.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         fallbackLayer.frame = bounds
         tintLayer.frame = bounds
         glassBackendView?.frame = bounds
+        CATransaction.commit()
     }
 
     private func applyMaterial() {

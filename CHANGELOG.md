@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Material backgrounds now resize with their containing view during window zoom. Disabling
+  implicit geometry animations prevents the opaque fallback and Mica tint from lagging behind
+  the new window bounds and briefly exposing a different color at the right and bottom edges.
+
 - TitleBar back/forward buttons now animate the arrow inward on press and spring back on release,
   with RTL mirroring and reduced-motion support. Pointer release outside cancels; re-entry restores
   the press. Space activates once on key-up, Return ignores repeat, and hidden/disabled controls
