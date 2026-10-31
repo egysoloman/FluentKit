@@ -17,6 +17,8 @@
 
 ## 已处理项与明确边界
 
+当前折叠卡已有实际 Gallery 失败基线，见 `expander-layout/REPORT.md`：内层收起多出 98pt 空白，重开路径后内层展开被裁掉 49pt；固定 520pt 的 Expander 子视图实际为 549pt。下一步修复自然测量和尺寸优先级，尚未关闭该项。
+
 - `44e71c8`：触控板 `.touch` subtype 被误判为触屏，已修 ComboBox/MenuFlyout 等共享分类。依据及状态图：`../2026-10-31/pointer-popup-density/REPORT.md`。不代表真实触屏验收。
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。

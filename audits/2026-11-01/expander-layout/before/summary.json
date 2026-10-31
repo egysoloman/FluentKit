@@ -1,0 +1,16 @@
+[
+  {
+    "variant": "light",
+    "surplusHeightAfterInnerCollapse": 98,
+    "missingHeightAfterInnerExpand": 49,
+    "contentWidth": 549,
+    "parentWidth": 520
+  },
+  {
+    "variant": "dark",
+    "surplusHeightAfterInnerCollapse": 98,
+    "missingHeightAfterInnerExpand": 49,
+    "contentWidth": 549,
+    "parentWidth": 520
+  }
+]
