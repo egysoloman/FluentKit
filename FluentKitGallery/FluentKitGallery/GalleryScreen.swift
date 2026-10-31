@@ -25,6 +25,10 @@ struct GalleryScreen: FluentView {
     @FluentState private var asbStatus = "Use the annotated rail to navigate"
     @FluentState private var ptrRefreshing = false
     @FluentState private var animatedAutoPlay = true
+    @FluentState private var mapCenter = FluentGeopoint(latitude: 47.6150, longitude: -122.3450)
+    @FluentState private var mapZoom = 13.0
+    @FluentState private var mapControlsVisible = true
+    @FluentState private var mapStatus = "Pan, zoom or click a pin"
     private let animatedPlayer = FluentAnimatedVisualPlayerController()
     @FluentState private var ptrItems = ["Quarterly report", "Design review", "Lunch on Friday"]
     @FluentState private var sezoStatus = "Choose a letter in the zoomed-out view"
@@ -588,6 +592,19 @@ struct GalleryScreen: FluentView {
                     FluentButtonView("Stop") { animatedPlayer.stop() }
                 }
                 FluentToggleView("AutoPlay", isOn: $animatedAutoPlay)
+            })
+        case .MapControl:
+            return FluentAnyView(FluentVStack(spacing: 8) {
+                FluentMapControl(center: $mapCenter, zoomLevel: $mapZoom, icons: [
+                    FluentMapIcon(id: "space-needle", location: FluentGeopoint(latitude: 47.6205, longitude: -122.3493), title: "Space Needle"),
+                    FluentMapIcon(id: "pike-place", location: FluentGeopoint(latitude: 47.6097, longitude: -122.3422), title: "Pike Place Market")
+                ], interactiveControlsVisible: mapControlsVisible, onMapElementClick: { icon in
+                    mapStatus = "Clicked \(icon.title ?? icon.id)"
+                })
+                .frame(width: 440, height: 280)
+                FluentText(String(format: "Center %.4f, %.4f · Zoom %.2f · %@", mapCenter.latitude, mapCenter.longitude, mapZoom, mapStatus),
+                    style: .caption, color: theme.textSecondary)
+                FluentToggleView("Interactive controls", isOn: $mapControlsVisible)
             })
         case .BreadcrumbBar:
             return FluentAnyView(FluentVStack(spacing: 10) {

@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Added MapControl backed by MapKit: two-way center and Web Mercator zoom level, icon layer synced
+  by id, interactive controls toggle and element clicks. The Gallery app now allows outgoing network
+  connections for map tiles.
+
 - Added AnimatedVisualPlayer (AutoPlay loop, play/pause/resume/stop/progress, playback rate,
   stretch, fallback content) and AnimatedIcon (WinUI marker lookup order, coalesced state changes,
   Cut/QueueOne/SpeedUpQueueOne queues, 20ms and Reduce Motion cuts, pointer-driven states, fallback

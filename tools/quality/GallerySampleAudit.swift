@@ -48,6 +48,7 @@ import FluentKit
                     case "ParallaxView": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.ParallaxView" })
                     case "AnimatedIcon": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnimatedIcon" })
                     case "AnimatedVisualPlayer": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.AnimatedVisualPlayer" })
+                    case "MapControl": precondition(mountedViews.contains { $0.identifier?.rawValue == "FluentKit.MapControl" })
                     default: break
                     }
                     window.close()
