@@ -188,24 +188,19 @@ public struct FluentUndoScopeView<Content: FluentView>: FluentUpdatablePrimitive
     public func _makeView(in context: FluentRenderContext) -> NSView {
         var nested = context
         nested.undoCoordinator = coordinator
-        let host = FluentUndoScopeHost(content: content._mount(in: nested), coordinator: coordinator)
-        host.updateContent = { [content] nativeView, updateContext in
-            var childContext = updateContext
-            childContext.undoCoordinator = coordinator
-            return content._update(nativeView, in: childContext)
-        }
-        return host
+        return FluentUndoScopeHost(content: content._mount(in: nested), coordinator: coordinator)
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentUndoScopeHost, host.coordinator === coordinator else { return false }
-        return host.updateContent?(host.contentView, context) ?? false
+        var nested = context
+        nested.undoCoordinator = coordinator
+        return content._update(host.contentView, in: nested)
     }
 }
 
 private final class FluentUndoScopeHost: NSView {
     let coordinator: FluentUndoCoordinator
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     init(content: NSView, coordinator: FluentUndoCoordinator) {

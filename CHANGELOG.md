@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Navigation-history and undo scopes now forward the latest declarative content and action
+  captures instead of replaying their first mounted value. Gallery routes can replace the page
+  body; compatible native views retain identity and child undo environments remain intact.
+
 - WindowShell's shared chrome tint and cutout mask now commit resize geometry together without
   implicit animations. This removes a separate right/bottom color seam in Gallery window zoom,
   including geometry updates reported by the content surfaces.

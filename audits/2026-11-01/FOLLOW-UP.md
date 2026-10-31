@@ -7,7 +7,7 @@
 | 顺序 | 状态与任务 | 关闭该项需要的证据 |
 | --- | --- | --- |
 | 1 | **已修两处，继续集成验收：背景异常。** IME 材质层和 Gallery 窗口壳独立的染色层/遮罩分别修复。Gallery 修复后 136 个染色/遮罩采样几何同步，四组初始图像像素不变；见 `surface-resize/REPORT.md`、`gallery-surface/REPORT.md`。 | 缩放背景证据已保存；切页验收发现 Gallery 的导航/Undo scope 使用旧内容，必须先解除该阻碍，再复验真正切页后的背景。不能把仅改变侧栏选择的截图算成页面切换成功。 |
-| 2 | **当前：Gallery Expander／设置折叠卡布局错乱。** 先修复阻止 Gallery 正文更新的 scope 内容捕获问题（`scope-refresh`：4 个新测试、8 个失败断言）；随后检查实际嵌套卡。固定内容的 12 个静态宽度状态正常，不能排除实际 Gallery 的嵌套测量问题。 | 使用 Gallery 的 Interactive sample 外层设置卡和内层 Expander；检查内层展开后外层高度、下方兄弟位置、滚动范围、内容裁切；覆盖快速展开/收起、动画中缩放、向上展开、RTL、Reduce Motion、内容替换和深浅色。用布局坐标和实际渲染证明恢复，不以静态 fittingSize 代替。 |
+| 2 | **当前：Gallery Expander／设置折叠卡布局错乱。** 阻止 Gallery 正文更新的 scope 内容捕获问题已修（`scope-refresh/REPORT.md`：4 个新测试、8 个失败断言；实际 Gallery 导航 0/10→10/10，370 测试通过）。现在检查真实嵌套卡。固定内容的 12 个静态宽度状态正常，不能排除动态测量问题。 | 使用 Gallery 的 Interactive sample 外层设置卡和内层 Expander；检查内层展开后外层高度、下方兄弟位置、滚动范围、内容裁切；覆盖快速展开/收起、动画中缩放、向上展开、RTL、Reduce Motion、内容替换和深浅色。用布局坐标和实际渲染证明恢复，不以静态 fittingSize 代替。 |
 | 3 | 待处理：搜索文字与图标对齐。 | 在 IME 标题栏和普通页面中比较占位符、已输入文字、活动 editor、组合文字、选区和光标的基线与边距；覆盖中文/英文、1×/2×、RTL，不只调整截图中的一个常数。 |
 | 4 | 待处理：搜索圆角、焦点描边和底线。 | 对照 WinUI 对应模板，分别验证 Normal/Hover/Focused/Disabled，检查四角裁切与下沿 2pt 焦点线；窄/宽窗口及深浅色下不露原生叠层。 |
 | 5 | 待处理：搜索相关候选浮层。 | 先区分框架 AutoSuggestBox 建议框和 Fluent IME 的真实组合候选窗（录屏出现后者）。分别检查光标/字段锚点、屏幕边界、移动/缩放、展开候选、滚动、键盘选词、Esc/失焦关闭、旧异步结果和主题更新；不把已有模拟 marked-text 测试当作真实 IME 验收。 |
@@ -29,6 +29,7 @@
 2. **Claude 修改及后续报告**：独立核对见 `../2026-10-30/CLAUDE_REVIEW.md`。6 处 body 简化已验证；“builder 最多 10 个”和“原生控件必须包装”已由编译反例澄清。Xcode Preview、可恢复 snapshot API、可选 URL 导航策略、文档整理和有实测支持的构建优化继续保留；不按推断做破坏性改名或无收益的大拆分。日期耦合 CI 已迁至固定入口。
 3. **交接剩余能力**：TreeView 示例/生命周期已修，仍需多条目拖动、展开动画及真实拖放验收；Collection、CommandBar/MenuBar、AutoSuggestBox、SplitButton 已有独立修复批次，仍保留其报告中的长尾状态与完整行为差距。Calendar/FlipView 的剩余事项见 ROADMAP 的 follow-up，不因已有样例标记为完成。
 4. **跨平台与实机**：Windows 同尺寸、缩放、字体与状态对拍，真实触摸、真实中文输入与 VoiceOver 分别验收。MapControl 网络、相机权限场景及 AnimatedVisualPlayer 的 Lottie 支持等已知限制仍保持原范围，不能用样例挂载通过代替。
+5. **包装层后续审查**：导航/Undo scope 的旧内容捕获已修；Accessibility、Lifecycle、Dialog、Command、ControlSizing 等包装层还有同类代码模式，需结合各自更新路径逐项复现。与主题漏更新/缓存正文一并追查，不能只修一个示例就宣称所有包装层正确。
 
 ## 每批的执行与提交
 

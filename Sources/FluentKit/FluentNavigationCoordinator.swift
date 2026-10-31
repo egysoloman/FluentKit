@@ -170,29 +170,24 @@ public struct FluentNavigationHistoryScopeView<Content: FluentView, Route: Hasha
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let host = FluentNavigationHistoryScopeHost(
+        FluentNavigationHistoryScopeHost(
             content: content._mount(in: context),
             coordinator: coordinator,
             onNavigate: onNavigate
         )
-        host.updateContent = { [content] nativeView, updateContext in
-            content._update(nativeView, in: updateContext)
-        }
-        return host
     }
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentNavigationHistoryScopeHost<Route>,
               host.coordinator === coordinator else { return false }
         host.onNavigate = onNavigate
-        return host.updateContent?(host.contentView, context) ?? false
+        return content._update(host.contentView, in: context)
     }
 }
 
 private final class FluentNavigationHistoryScopeHost<Route: Hashable & Sendable>: NSView {
     let coordinator: FluentNavigationCoordinator<Route>
     var onNavigate: (Route) -> Void
-    var updateContent: ((NSView, FluentRenderContext) -> Bool)?
     var contentView: NSView { subviews[0] }
 
     init(
