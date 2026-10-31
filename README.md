@@ -709,13 +709,15 @@ Pass `orientation: .vertical` for Up/Down navigation and top/bottom buttons; hor
 Left/Right with RTL mirroring. Both support Home/End and single-page trackpad/direct-touch settling.
 Traditional wheel bursts advance once until a 200 ms pause or direction reversal; Control+wheel,
 cross-axis trackpad gestures and eligible traditional wheel events at a boundary chain to the parent.
-Same-axis phased gestures at a boundary currently return elastically rather than chaining.
+A new outward phased gesture at a settled first/last page also chains, preserving the original
+begin event, small initial deltas and momentum. Inward gestures stay owned by the pager.
 Navigation buttons are 16×38 horizontally and 38×16 vertically, with a 1pt margin and three-second
 idle hiding. Selection is clamped, or `-1` when empty; rejected or redirected binding setters are
 respected. Disabled lazy pages inherit and restore their own enabled state.
 
 The Gallery demonstrates 1,000 pages, orientation changes and stable-ID insertion/removal. Coverage
-remains partial: exact DirectManipulation physics and boundary chaining, complete item-container
+remains partial: exact DirectManipulation physics and residual scroll transfer after an already
+owned gesture reaches an edge, complete item-container
 semantics, button glyph/material fidelity, Windows screenshots, physical touch and real VoiceOver
 acceptance remain open. Gesture settling is a local macOS adaptation of single-page snapping.
 

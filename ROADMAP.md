@@ -11,13 +11,15 @@ FluentKit aims to become a complete, modern declarative UI framework for native 
 - No markup compatibility layer and no copied implementation code.
 - MIT-licensed framework code with the reference-project notice kept separate.
 
-## FlipView follow-up (2026-10-31)
+## FlipView follow-up (2026-11-01)
 
 - Available: bounded lazy page content, stable-ID selection/identity, horizontal/vertical paging,
   phased drag rendering and single-page settling, reentrant binding reconciliation and Gallery example.
-- Pending: full item-container semantics, exact DirectManipulation physics and same-axis phased
-  boundary chaining, navigation button glyph/material parity, physical touch, Windows pixels and VoiceOver.
-- Evidence: [virtualization and interaction audit](audits/2026-10-31/flip-view-virtualization/REPORT.md).
+  New outward gestures at a settled edge chain with their complete original event sequence.
+- Pending: full item-container semantics, exact DirectManipulation physics and residual scroll transfer
+  after an owned gesture reaches an edge, navigation button glyph/material parity, physical touch, Windows pixels and VoiceOver.
+- Evidence: [virtualization and interaction audit](audits/2026-10-31/flip-view-virtualization/REPORT.md) and
+  [boundary scroll audit](audits/2026-11-01/scroll-chaining/REPORT.md).
 
 ## Calendar follow-up (2026-10-31)
 

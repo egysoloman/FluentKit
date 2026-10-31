@@ -1257,11 +1257,13 @@ extension FluentPivotControl {
     }
 
     override func scrollWheel(with event: NSEvent) {
-        guard isEnabled, panDriver.handleScrollWheel(event) else {
+        guard isEnabled, panDriver.handleScrollWheel(event, replayUnclaimed: forwardScrollWheel) else {
             super.scrollWheel(with: event)
             return
         }
     }
+
+    private func forwardScrollWheel(_ event: NSEvent) { super.scrollWheel(with: event) }
 
     /// Undamped logical translation equivalent to the current offset, so a resumed gesture
     /// continues naturally while an elastic overpan is shown.

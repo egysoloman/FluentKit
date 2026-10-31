@@ -227,7 +227,7 @@ final class FluentFlipViewHost: NSControl {
             return
         }
         if !event.phase.isEmpty || !event.momentumPhase.isEmpty {
-            if panDriver?.handleScrollWheel(event) != true { super.scrollWheel(with: event) }
+            if panDriver?.handleScrollWheel(event, replayUnclaimed: forwardScrollWheel) != true { super.scrollWheel(with: event) }
             return
         }
         let horizontal = abs(event.scrollingDeltaX) > abs(event.scrollingDeltaY)
@@ -244,6 +244,8 @@ final class FluentFlipViewHost: NSControl {
         lastWheelDirection = direction
         select(target, animated: true)
     }
+
+    private func forwardScrollWheel(_ event: NSEvent) { super.scrollWheel(with: event) }
 
     override func accessibilityPerformIncrement() -> Bool { accessibilityMove(1) }
     override func accessibilityPerformDecrement() -> Bool { accessibilityMove(-1) }
@@ -561,6 +563,7 @@ final class FluentFlipViewHost: NSControl {
         panDriver?.detach()
         let driver = FluentPanGestureDriver(view: self, axis: orientation == .vertical ? .vertical : .horizontal)
         driver.onBeginAllowed = { [weak self] in self?.canBeginInteractivePan ?? false }
+        driver.onDirectionAllowed = { [weak self] in self?.allowsInteractivePan(toward: $0) ?? false }
         driver.onBegin = { [weak self] in self?.beginInteractivePan() }
         driver.onChange = { [weak self] in self?.updateInteractivePan(translation: $0) }
         driver.onEnd = { [weak self] in self?.endInteractivePan(velocity: $0) }
@@ -568,6 +571,15 @@ final class FluentFlipViewHost: NSControl {
         panDriver = driver
     }
     var canBeginInteractivePan: Bool { isEnabled && !isHiddenOrHasHiddenAncestor && source.count > 1 && pageExtent > 0 }
+    func allowsInteractivePan(toward direction: CGFloat) -> Bool {
+        guard canBeginInteractivePan else { return false }
+        // A visible partial page still belongs to this pager: allow grabbing a settle or
+        // transition in either direction. Once settled, outward gestures chain at both ends.
+        if isPanning || isTransitioning { return true }
+        if direction < 0 { return selectedIndex < source.count - 1 }
+        if direction > 0 { return selectedIndex > 0 }
+        return true
+    }
     @discardableResult func beginInteractivePan() -> CGFloat? {
         guard canBeginInteractivePan else { return nil }
         animationCoordinator.cancelValueAnimation(key: Self.settleKey)

@@ -136,12 +136,17 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
     static let axisThreshold: CGFloat = 4
     /// Window over which recent trackpad deltas form the release velocity.
     static let velocityWindow: TimeInterval = 0.1
+    /// Bound retained event objects when tiny alternating deltas never resolve an axis.
+    static let maximumBufferedScrollEvents = 32
 
     let axis: Axis
     private weak var view: NSView?
 
     /// Returns the translation the new gesture continues from, or nil to decline it.
     var onBegin: () -> CGFloat? = { 0 }
+    /// Logical direction at gesture acquisition. A bounded pager can yield outward motion
+    /// before claiming it, so an enclosing scroller receives the complete sequence.
+    var onDirectionAllowed: (CGFloat) -> Bool = { _ in true }
     var onChange: (CGFloat) -> Void = { _ in }
     /// Receives the logical release velocity in points per second.
     var onEnd: (CGFloat) -> Void = { _ in }
@@ -157,6 +162,7 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
     private var accumulated: CGFloat = 0
     private var samples: [(time: TimeInterval, delta: CGFloat)] = []
     private var lastStep: (time: TimeInterval, direction: Int)?
+    private var pendingScrollEvents: [NSEvent] = []
 
     private enum ScrollState: Equatable {
         case idle
@@ -176,6 +182,7 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
     func reset(notify: Bool = true) {
         let active = isActive
         isActive = false; scrollState = .idle; samples.removeAll(); accumulated = 0; lastStep = nil
+        pendingScrollEvents.removeAll()
         if let touchRecognizer { touchRecognizer.isEnabled = false; touchRecognizer.isEnabled = true }
         if notify && active { onCancel() }
     }
@@ -195,8 +202,10 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
 
     // MARK: Trackpad and wheel
 
-    /// Returns true when the event was consumed; otherwise the view should forward it to super.
-    func handleScrollWheel(_ event: NSEvent) -> Bool {
+    /// Returns true when the event was consumed; otherwise forward the current event to super.
+    /// Pass the same forwarding operation as `replayUnclaimed` so an axis/boundary rejection
+    /// delivers previously buffered events first, including the original `.began` and deltas.
+    func handleScrollWheel(_ event: NSEvent, replayUnclaimed: (NSEvent) -> Void) -> Bool {
         let along = (axis == .horizontal ? event.scrollingDeltaX : event.scrollingDeltaY) * sign
         let across = axis == .horizontal ? event.scrollingDeltaY : event.scrollingDeltaX
         if !event.momentumPhase.isEmpty {
@@ -209,6 +218,7 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
             return handleDiscreteWheel(event, along: along, across: across)
         }
         if event.phase.contains(.began) {
+            pendingScrollEvents.removeAll()
             scrollState = .undecided(along: 0, across: 0)
         }
         if event.phase.contains(.began) || event.phase.contains(.changed) {
@@ -216,11 +226,15 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
             case let .undecided(previousAlong, previousAcross):
                 let nextAlong = previousAlong + along
                 let nextAcross = previousAcross + across
-                guard hypot(nextAlong, nextAcross) >= Self.axisThreshold else {
+                if hypot(nextAlong, nextAcross) < Self.axisThreshold,
+                   pendingScrollEvents.count < Self.maximumBufferedScrollEvents {
                     scrollState = .undecided(along: nextAlong, across: nextAcross)
+                    pendingScrollEvents.append(event)
                     return true
                 }
-                if abs(nextAlong) > abs(nextAcross), let start = beginPan(device: .mouse) {
+                if hypot(nextAlong, nextAcross) >= Self.axisThreshold,
+                   abs(nextAlong) > abs(nextAcross), let start = beginPan(device: .mouse, direction: nextAlong) {
+                    pendingScrollEvents.removeAll()
                     scrollState = .owned
                     startTranslation = start
                     accumulated = nextAlong
@@ -229,6 +243,7 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
                     return true
                 }
                 scrollState = .rejected
+                replayPendingScrollEvents(using: replayUnclaimed)
                 return false
             case .owned:
                 accumulated += along
@@ -251,12 +266,21 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
             case .rejected:
                 scrollState = .idle
                 return false
-            case .undecided, .idle:
+            case .undecided:
                 scrollState = .idle
-                return true
+                replayPendingScrollEvents(using: replayUnclaimed)
+                return false
+            case .idle:
+                return false
             }
         }
         return false
+    }
+
+    private func replayPendingScrollEvents(using forward: (NSEvent) -> Void) {
+        let pending = pendingScrollEvents
+        pendingScrollEvents.removeAll()
+        pending.forEach(forward)
     }
 
     private var sampledVelocity: CGFloat {
@@ -275,8 +299,8 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
         return onDiscreteStep(direction, event)
     }
 
-    private func beginPan(device: FluentInputDeviceType) -> CGFloat? {
-        guard let start = onBegin() else { return nil }
+    private func beginPan(device: FluentInputDeviceType, direction: CGFloat) -> CGFloat? {
+        guard onBeginAllowed(), onDirectionAllowed(direction), let start = onBegin() else { return nil }
         isActive = true
         FluentInputDeviceTracker.shared.record(device, in: view?.window)
         FluentFocusVisibility.markPointerInteraction(in: view?.window)
@@ -315,7 +339,7 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
     @objc func handleTouchPan(_ recognizer: NSPanGestureRecognizer) {
         switch recognizer.state {
         case .began:
-            guard let start = beginPan(device: .touch) else {
+            guard let start = beginPan(device: .touch, direction: touchVelocity(recognizer)) else {
                 recognizer.isEnabled = false
                 recognizer.isEnabled = true
                 return
@@ -344,10 +368,10 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
               let view else { return true }
         let velocity = pan.velocity(in: view)
         let dominant = axis == .horizontal ? abs(velocity.x) > abs(velocity.y) : abs(velocity.y) > abs(velocity.x)
-        return dominant && onBeginAllowed()
+        return dominant && onBeginAllowed() && onDirectionAllowed(touchVelocity(pan))
     }
 
-    /// Asked before a touch gesture begins; defaults to allowing it.
+    /// Asked before a touch or trackpad gesture begins; defaults to allowing it.
     var onBeginAllowed: () -> Bool = { true }
 }
 

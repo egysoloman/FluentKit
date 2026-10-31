@@ -471,8 +471,10 @@ final class FluentSwipeControlView: NSView {
     }
 
     override func scrollWheel(with event: NSEvent) {
-        if !panDriver.handleScrollWheel(event) { super.scrollWheel(with: event) }
+        if !panDriver.handleScrollWheel(event, replayUnclaimed: forwardScrollWheel) { super.scrollWheel(with: event) }
     }
+
+    private func forwardScrollWheel(_ event: NSEvent) { super.scrollWheel(with: event) }
 
     // MARK: Accessibility
 

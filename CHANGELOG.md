@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- FlipView yields new outward trackpad gestures at a settled first/last page to enclosing
+  responders. Shared pan rejection now replays tentative events in order, preserving the original
+  begin phase and deltas for FlipView, Pivot and SwipeControl cross-axis handoff. Unresolved
+  jitter has a bounded 32-event buffer; inward paging still consumes its own momentum.
+
 - Fixed trackpad clicks being misclassified as touchscreen input: AppKit's mouse `.touch`
   subtype also represents indirect trackpad input. ComboBox and MenuFlyout now retain desktop
   geometry for trackpads; CommandBar, text command surfaces, SplitButton and hover policies share
