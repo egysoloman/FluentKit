@@ -204,6 +204,7 @@ enum GalleryCatalog {
 enum GallerySampleID: String, CaseIterable {
     case Button
     case MenuFlyout
+    case MenuBar
     case ToggleSwitch
     case CheckBox
     case RadioButton

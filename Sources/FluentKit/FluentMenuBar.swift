@@ -36,6 +36,10 @@ public struct FluentMenuBarItem {
 
 @resultBuilder
 public enum FluentMenuBarBuilder {
+    public static func buildExpression(_ item: FluentMenuBarItem) -> [FluentMenuBarItem] { [item] }
+    public static func buildExpression(_ items: [FluentMenuBarItem]) -> [FluentMenuBarItem] { items }
+    public static func buildBlock(_ components: [FluentMenuBarItem]...) -> [FluentMenuBarItem] { components.flatMap { $0 } }
+    @_disfavoredOverload
     public static func buildBlock(_ components: FluentMenuBarItem...) -> [FluentMenuBarItem] { components }
     public static func buildOptional(_ component: [FluentMenuBarItem]?) -> [FluentMenuBarItem] { component ?? [] }
     public static func buildEither(first component: [FluentMenuBarItem]) -> [FluentMenuBarItem] { component }
@@ -58,10 +62,15 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         didSet {
             guard oldValue != theme else { return }
             itemViews.forEach { $0.theme = theme }
+            updateOpenMenu()
+            invalidateIntrinsicContentSize()
+            needsLayout = true
             needsDisplay = true
         }
     }
-    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+    public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
+        didSet { if oldValue != reduceMotion { updateOpenMenu() } }
+    }
     public var fluentControlSize: FluentControlSize = .regular {
         didSet {
             guard oldValue != fluentControlSize else { return }
@@ -131,11 +140,18 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
                 x += width + 2 * margin
             }
         }
+        flyout?.reposition()
     }
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        closeMenu()
         installAccessKeyMonitor()
+    }
+
+    public override func setFrameOrigin(_ newOrigin: NSPoint) {
+        super.setFrameOrigin(newOrigin)
+        flyout?.reposition()
     }
 
     public func openItem(at index: Int) {
@@ -149,7 +165,7 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         flyout?.dismiss(animated: false)
         suppressDismissCallback = false
         flyout = nil
-        if let old = openItemIndex { itemViews[old].isSelected = false }
+        if let old = openItemIndex, itemViews.indices.contains(old) { itemViews[old].isSelected = false }
         openItemIndex = nil
     }
 
@@ -201,32 +217,67 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
     }
 
     private func synchronizeItems(previous: [FluentMenuBarItem]) {
-        closeMenu()
-        if previous.map(\.id) == items.map(\.id), itemViews.count == items.count {
-            for index in items.indices { itemViews[index].update(item: items[index]) }
+        let oldControls = itemViews
+        let openControl = openItemIndex.flatMap { oldControls.indices.contains($0) ? oldControls[$0] : nil }
+        let focused = oldControls.first { $0 === window?.firstResponder }
+        var candidates: [AnyHashable: [FluentMenuBarItemControl]] = [:]
+        for (item, control) in zip(previous, oldControls) { candidates[item.id, default: []].append(control) }
+        itemViews = items.map { item in
+            let control: FluentMenuBarItemControl
+            if var matching = candidates[item.id], !matching.isEmpty {
+                control = matching.removeFirst()
+                candidates[item.id] = matching
+            } else { control = FluentMenuBarItemControl(item: item, theme: theme) }
+            control.update(item: item)
+            configure(control)
+            if control.superview !== self { addSubview(control) }
+            return control
+        }
+        candidates.values.flatMap { $0 }.forEach { $0.removeFromSuperview() }
+        if let openControl, let index = itemViews.firstIndex(where: { $0 === openControl }),
+           items[index].isEnabled, !items[index].items.isEmpty {
+            openItemIndex = index
+            needsLayout = true
+            layoutSubtreeIfNeeded()
+            updateOpenMenu()
         } else {
-            rebuildItems()
+            openControl?.isSelected = false
+            openItemIndex = nil
+            closeMenu()
+        }
+        if let focused {
+            let target = itemViews.contains(where: { $0 === focused }) && focused.acceptsFirstResponder
+                ? focused : itemViews.first { $0.acceptsFirstResponder }
+            window?.makeFirstResponder(target)
         }
         updateAccessibilityChildren()
         invalidateIntrinsicContentSize()
         needsLayout = true
     }
 
-    private func rebuildItems() {
-        itemViews.forEach { $0.removeFromSuperview() }
-        itemViews = items.enumerated().map { index, item in
-            let control = FluentMenuBarItemControl(item: item, theme: theme)
-            control.fluentControlSize = fluentControlSize
-            control.onInvoke = { [weak self] in self?.toggleItem(at: index) }
-            control.onHover = { [weak self] in self?.hoverItem(at: index) }
-            control.onHorizontalNavigation = { [weak self] offset in
-                self?.moveFromItem(at: index, physicalOffset: offset, open: false)
-            }
-            addSubview(control)
-            return control
+    private func configure(_ control: FluentMenuBarItemControl) {
+        control.theme = theme
+        control.fluentControlSize = fluentControlSize
+        control.onInvoke = { [weak self, weak control] in
+            guard let self, let control, let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
+            self.toggleItem(at: index)
         }
-        updateAccessibilityChildren()
+        control.onHover = { [weak self, weak control] in
+            guard let self, let control, let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
+            self.hoverItem(at: index)
+        }
+        control.onHorizontalNavigation = { [weak self, weak control] offset in
+            guard let self, let control, let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
+            self.moveFromItem(at: index, physicalOffset: offset, open: false)
+        }
     }
+
+    private func updateOpenMenu() {
+        guard let index = openItemIndex, items.indices.contains(index) else { return }
+        flyout?.update(items: items[index].items, theme: theme, reduceMotion: reduceMotion)
+    }
+
+    private func rebuildItems() { synchronizeItems(previous: []) }
 
     private func updateAccessibilityChildren() {
         let visible = itemViews.filter { !$0.isHidden }
@@ -258,7 +309,8 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
             reduceMotion: reduceMotion
         )
         next.onRootHorizontalNavigation = { [weak self] physicalOffset in
-            self?.moveFromItem(at: index, physicalOffset: physicalOffset, open: true)
+            guard let self, let current = self.openItemIndex else { return }
+            self.moveFromItem(at: current, physicalOffset: physicalOffset, open: true)
         }
         next.onDismiss = { [weak self, weak next] in
             guard let self, !self.suppressDismissCallback, self.flyout === next else { return }
@@ -315,9 +367,11 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
 
 private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfigurable {
     var item: FluentMenuBarItem
-    var theme: FluentTheme { didSet { needsDisplay = true } }
+    var theme: FluentTheme {
+        didSet { if oldValue != theme { invalidateIntrinsicContentSize(); needsDisplay = true } }
+    }
     var fluentControlSize: FluentControlSize = .regular {
-        didSet { invalidateIntrinsicContentSize(); needsDisplay = true }
+        didSet { if oldValue != fluentControlSize { invalidateIntrinsicContentSize(); needsDisplay = true } }
     }
     var isSelected = false {
         didSet { setAccessibilityExpanded(isSelected); needsDisplay = true }
@@ -340,6 +394,7 @@ private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfig
         setAccessibilityElement(true)
         setAccessibilityRole(.menuItem)
         setAccessibilityTitle(item.title)
+        isEnabled = item.isEnabled
         setAccessibilityEnabled(item.isEnabled)
         setAccessibilityExpanded(false)
     }
@@ -368,12 +423,14 @@ private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfig
     }
 
     func update(item: FluentMenuBarItem) {
+        let titleChanged = self.item.title != item.title
         self.item = item
         identifier = NSUserInterfaceItemIdentifier("FluentKit.MenuBar.Item.\(item.id)")
         setAccessibilityTitle(item.title)
+        isEnabled = item.isEnabled
         setAccessibilityEnabled(item.isEnabled)
         if !item.isEnabled { pointerOver = false; pressed = false; trackingPress = false }
-        invalidateIntrinsicContentSize()
+        if titleChanged { invalidateIntrinsicContentSize() }
         needsDisplay = true
     }
 
@@ -531,9 +588,9 @@ public struct FluentMenuBarView: FluentUpdatablePrimitiveView {
     }
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let menuBar = view as? FluentMenuBar else { return false }
-        menuBar.items = items
         menuBar.theme = context.theme
         menuBar.reduceMotion = context.reduceMotion
+        menuBar.items = items
         return true
     }
 }

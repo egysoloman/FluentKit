@@ -1,0 +1,21 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[8 / 11] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (1.91秒)
+Test Suite 'Selected tests' started at 2026-10-31 21:08:50.790.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 21:08:50.792.
+Test Suite 'MenuLifecycleTests' started at 2026-10-31 21:08:50.792.
+Test Case '-[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuLifecycleTests.swift:354: error: -[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed] : XCTAssertEqual failed: ("1") is not equal to ("0") - A queued action must lose authority when its presenter closes
+Test Case '-[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed]' failed (0.615 seconds).
+Test Suite 'MenuLifecycleTests' failed at 2026-10-31 21:08:51.407.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.615 (0.615) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 21:08:51.407.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.615 (0.615) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 21:08:51.407.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.615 (0.618) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -33,6 +33,7 @@ swiftc -parse-as-library -O -swift-version 5 -warnings-as-errors -I "$QUALITY_PR
     FluentKitGallery/FluentKitGallery/GalleryScreen.swift \
     FluentKitGallery/FluentKitGallery/ContentDialogGallerySample.swift \
     FluentKitGallery/FluentKitGallery/TreeViewGallerySample.swift \
+    FluentKitGallery/FluentKitGallery/MenuBarGallerySample.swift \
     "$QUALITY_FIXTURES/GallerySampleAudit.swift" "$QUALITY_PRODUCTS/FluentKit.o" -o "$QUALITY_BIN/GallerySampleAudit"
 "$QUALITY_BIN/GallerySampleAudit" > "$QUALITY_OUTPUT/GallerySampleAudit.json" 2> "$QUALITY_OUTPUT/GallerySampleAudit.log"
 swiftc -parse-as-library -O -swift-version 5 -warnings-as-errors -I "$QUALITY_PRODUCTS" \

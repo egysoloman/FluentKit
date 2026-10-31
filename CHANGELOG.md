@@ -4,6 +4,16 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- MenuBar preserves identified top-level controls, live menu panels, retained rows and open submenu
+  branches during updates/reordering. `FluentMenuItem` accepts an optional stable ID, and standalone
+  `FluentMenuFlyout.update(items:theme:reduceMotion:)` refreshes content without reopening the menu.
+  Disabled/removed branches close safely; delayed hover follows retained rows; popup geometry and
+  animation clips follow content, typography, anchor position and FlowDirection changes. Closed
+  presenters reject queued clicks and keyboard events rather than acting on reopened menus.
+- MenuBar/Menu builders now compose conditional branches, loops and arrays. Added a direct MenuBar
+  Gallery sample with delayed live updates, submenu actions, disabled states and access keys.
+- Context-menu refreshes update wrapped content and live menu actions; removing their host closes
+  the popup and detaches it from its window.
 - CommandBar reconciles command updates in place, preserving its open overflow panel and focus.
   Commands accept an optional stable `id`; `setCommands(primary:secondary:)` updates both groups
   atomically and retains identified controls across reorders/group moves. Without IDs, controls

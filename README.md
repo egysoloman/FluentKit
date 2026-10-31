@@ -34,6 +34,13 @@ command's group and position. Use `bar.setCommands(primary:secondary:)` to updat
 together; `FluentCommandBarView` does this automatically. Updated labels, actions, enabled states
 and toggle values take effect in the existing controls without invoking actions during rendering.
 
+MenuBar retains open menus and submenus during updates. Use stable `FluentMenuBarItem.id` values
+for top-level entries and unique `FluentMenuItem(id: ...)` values within each menu level when
+inserting or reordering rows. A standalone `FluentMenuFlyout` accepts `update(items:theme:reduceMotion:)`;
+empty menus dismiss their panel. Menu builders support conditions, loops and arrays. The
+[MenuBar Gallery sample](FluentKitGallery/FluentKitGallery/MenuBarGallerySample.swift) demonstrates
+an update while File › Export is open. Context-menu refreshes also update their wrapped content.
+
 Extended `FluentWindowShell` instances anchor page content below the title bar and fill the
 remaining viewport, including embedded `FluentNativeView` trees without an intrinsic height.
 
