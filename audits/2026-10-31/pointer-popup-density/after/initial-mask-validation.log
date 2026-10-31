@@ -1,0 +1,83 @@
+Building for debugging...
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[10 / 20] FluentKit
+[14 / 19] FluentGallery-product
+[20 / 25] FluentKitTests-product
+[26 / 30] FluentKitTests-product
+[29 / 30] FluentKitValidation-product
+Build complete! (6.48秒)
+Test Suite 'Selected tests' started at 2026-10-31 23:51:25.599.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 23:51:25.600.
+Test Suite 'InputFoundationTests' started at 2026-10-31 23:51:25.600.
+Test Case '-[FluentKitTests.InputFoundationTests testDriverOwnsAxisDominantTrackpadPansAndReportsVelocity]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testDriverOwnsAxisDominantTrackpadPansAndReportsVelocity]' passed (0.097 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testEventsAreClassifiedLikeWinUIInputDeviceTypes]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testEventsAreClassifiedLikeWinUIInputDeviceTypes]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testHorizontalDriverMirrorsInRightToLeftAndDeclinedPansFallThrough]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testHorizontalDriverMirrorsInRightToLeftAndDeclinedPansFallThrough]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testRecordingPostsOnlyWhenTheWindowDeviceChanges]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testRecordingPostsOnlyWhenTheWindowDeviceChanges]' passed (0.011 seconds).
+Test Case '-[FluentKitTests.InputFoundationTests testReleaseAfterHoldingStillHasNoStaleVelocityAndResetDetaches]' started.
+Test Case '-[FluentKitTests.InputFoundationTests testReleaseAfterHoldingStillHasNoStaleVelocityAndResetDetaches]' passed (0.000 seconds).
+Test Suite 'InputFoundationTests' passed at 2026-10-31 23:51:25.709.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.109 (0.110) seconds
+Test Suite 'InputModeLayoutTests' started at 2026-10-31 23:51:25.709.
+Test Case '-[FluentKitTests.InputModeLayoutTests testComboBoxPopupUsesTouchPaddingAndMinimumWidth]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testComboBoxPopupUsesTouchPaddingAndMinimumWidth]' passed (0.113 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testCommandBarOverflowRowsGrowForTouch]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testCommandBarOverflowRowsGrowForTouch]' passed (0.089 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers]' started.
+/Users/stars/Documents/WinUI-macOS/Sources/FluentKit/FluentInputDevice.swift:78: error: -[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers] : Invalid message sent to event "NSEvent: type=MouseMoved loc=(50,50) time=0.0 flags=0 win=0x0 winNum=46282 ctxt=0x0 evNum=0 click=0 buttonNumber=0 pressure=0 deltaX=0.000000 deltaY=0.000000 deviceID:0x0 subtype=0" (NSInternalInconsistencyException)
+Test Case '-[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers]' failed (0.478 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testMenuFlyoutUsesNarrowRowsForPointersAndDefaultRowsForTouch]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testMenuFlyoutUsesNarrowRowsForPointersAndDefaultRowsForTouch]' passed (0.093 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testTextCommandsPreferPrimaryForTouchAndPenOnly]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testTextCommandsPreferPrimaryForTouchAndPenOnly]' passed (0.028 seconds).
+Test Suite 'InputModeLayoutTests' failed at 2026-10-31 23:51:26.512.
+	 Executed 5 tests, with 1 failure (1 unexpected) in 0.802 (0.802) seconds
+Test Suite 'PointerDeviceRegressionTests' started at 2026-10-31 23:51:26.512.
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testDirectEvidenceAndNonMouseEventsStayDistinct]' started.
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testDirectEvidenceAndNonMouseEventsStayDistinct]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:25: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertFalse failed: throwing "NSInternalInconsistencyException: Invalid message sent to event "NSEvent: type=MouseMoved loc=(0,0) time=0.0 flags=0 win=0x0 winNum=0 ctxt=0x0 evNum=0 click=1 buttonNumber=0 pressure=1 deltaX=0.000000 deltaY=0.000000 deviceID:0x0 subtype=NSEventSubtypeTouch"" - Trackpad NSEventType(rawValue: 5)
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:26: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertEqual failed: throwing "NSInternalInconsistencyException: Invalid message sent to event "NSEvent: type=MouseMoved loc=(0,0) time=0.0 flags=0 win=0x0 winNum=0 ctxt=0x0 evNum=0 click=1 buttonNumber=0 pressure=1 deltaX=0.000000 deltaY=0.000000 deviceID:0x0 subtype=NSEventSubtypeTouch""
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch]' failed (0.002 seconds).
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows]' started.
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows]' passed (0.092 seconds).
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testWindowRecordsDoNotLeakTouchDensityAcrossWindows]' started.
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testWindowRecordsDoNotLeakTouchDensityAcrossWindows]' passed (0.000 seconds).
+Test Suite 'PointerDeviceRegressionTests' failed at 2026-10-31 23:51:26.606.
+	 Executed 4 tests, with 2 failures (2 unexpected) in 0.094 (0.094) seconds
+Test Suite 'SplitButtonInteractionTests' started at 2026-10-31 23:51:26.606.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testCheckedCallbackMayDisableControlWithoutCancelingAcceptedClick]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testCheckedCallbackMayDisableControlWithoutCancelingAcceptedClick]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachAndWindowCloseDismissMenusAndCancelPointerPress]' passed (0.065 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDetachedBindingDeliveryAndRejectingSetterCannotChangeCurrentToggle]' passed (0.316 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testDisabledInvocationAndAccessibilityMenuActionAreIndependent]' passed (0.134 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testHitTestingAtNonzeroOriginAndHiddenState]' passed (0.098 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testLiveThemeEmptyItemsAndWindowMovement]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testLiveThemeEmptyItemsAndWindowMovement]' passed (0.086 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testMouseAndTouchPaintCorrectRegionsInBothDirections]' started.
+/Users/stars/Documents/WinUI-macOS/Sources/FluentKit/FluentInputDevice.swift:78: error: -[FluentKitTests.SplitButtonInteractionTests testMouseAndTouchPaintCorrectRegionsInBothDirections] : Invalid message sent to event "NSEvent: type=MouseMoved loc=(70,156) time=0.0 flags=0 win=0x0 winNum=46301 ctxt=0x0 evNum=0 click=1 buttonNumber=0 pressure=1 deltaX=0.000000 deltaY=0.000000 deviceID:0x0 subtype=0" (NSInternalInconsistencyException)
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testMouseAndTouchPaintCorrectRegionsInBothDirections]' failed (0.035 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testObservationReuseAndStaleBackgroundDelivery]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testObservationReuseAndStaleBackgroundDelivery]' passed (0.103 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testOpenMenuRefreshKeepsRowsAndInvokesLatestAction]' passed (0.184 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testPointerCaptureCancellationAndKeyboardDismissal]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testPointerCaptureCancellationAndKeyboardDismissal]' passed (0.111 seconds).
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor]' started.
+Test Case '-[FluentKitTests.SplitButtonInteractionTests testShowIsIdempotentAndPlacementFollowsAnchor]' passed (0.092 seconds).
+Test Suite 'SplitButtonInteractionTests' failed at 2026-10-31 23:51:27.833.
+	 Executed 11 tests, with 1 failure (1 unexpected) in 1.226 (1.227) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 23:51:27.833.
+	 Executed 25 tests, with 4 failures (4 unexpected) in 2.230 (2.233) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 23:51:27.833.
+	 Executed 25 tests, with 4 failures (4 unexpected) in 2.230 (2.234) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

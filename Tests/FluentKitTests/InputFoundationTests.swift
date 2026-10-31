@@ -26,7 +26,7 @@ final class InputFoundationTests: XCTestCase {
         let key = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0,
                                    context: nil, characters: "a", charactersIgnoringModifiers: "a", isARepeat: false, keyCode: 0)!
         XCTAssertEqual(FluentInputDeviceTracker.deviceType(for: key), .keyboard)
-        XCTAssertNil(FluentInputDeviceTracker.deviceType(for: mouse(.leftMouseUp)), "Releases do not change the device")
+        XCTAssertEqual(FluentInputDeviceTracker.deviceType(for: mouse(.leftMouseUp)), .mouse, "Opening on release retains the actual pointer kind")
         XCTAssertTrue(FluentInputDeviceType.touch.prefersTouchLayout)
         XCTAssertTrue(FluentInputDeviceType.pen.prefersPrimaryCommands)
         XCTAssertFalse(FluentInputDeviceType.mouse.prefersPrimaryCommands)

@@ -1,0 +1,370 @@
+[
+  {
+    "device" : "mouse",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 0,
+    "variant" : "light-ltr-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : 0,
+    "variant" : "light-ltr-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 3,
+    "variant" : "light-ltr-trackpad",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : 3,
+    "variant" : "light-ltr-trackpad",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "light-ltr-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : -1,
+    "variant" : "light-ltr-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "light-ltr-direct-touch",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : -1,
+    "variant" : "light-ltr-direct-touch",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 0,
+    "variant" : "light-rtl-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : 0,
+    "variant" : "light-rtl-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 3,
+    "variant" : "light-rtl-trackpad",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : 3,
+    "variant" : "light-rtl-trackpad",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "light-rtl-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : -1,
+    "variant" : "light-rtl-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "light-rtl-direct-touch",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : -1,
+    "variant" : "light-rtl-direct-touch",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 0,
+    "variant" : "dark-ltr-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : 0,
+    "variant" : "dark-ltr-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 3,
+    "variant" : "dark-ltr-trackpad",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : 3,
+    "variant" : "dark-ltr-trackpad",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "dark-ltr-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : -1,
+    "variant" : "dark-ltr-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "dark-ltr-direct-touch",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : -1,
+    "variant" : "dark-ltr-direct-touch",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 0,
+    "variant" : "dark-rtl-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "mouse",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : 0,
+    "variant" : "dark-rtl-mouse",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : 3,
+    "variant" : "dark-rtl-trackpad",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : 3,
+    "variant" : "dark-rtl-trackpad",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 80,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "dark-rtl-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "keyboard",
+    "height" : 76,
+    "kind" : "menu",
+    "rowHeights" : [
+      32,
+      32
+    ],
+    "subtype" : -1,
+    "variant" : "dark-rtl-keyboard",
+    "width" : 180
+  },
+  {
+    "device" : "touch",
+    "height" : 104,
+    "kind" : "combo",
+    "rowHeights" : [
+
+    ],
+    "subtype" : -1,
+    "variant" : "dark-rtl-direct-touch",
+    "width" : 240
+  },
+  {
+    "device" : "touch",
+    "height" : 92,
+    "kind" : "menu",
+    "rowHeights" : [
+      40,
+      40
+    ],
+    "subtype" : -1,
+    "variant" : "dark-rtl-direct-touch",
+    "width" : 180
+  }
+]

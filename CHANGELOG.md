@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Fixed trackpad clicks being misclassified as touchscreen input: AppKit's mouse `.touch`
+  subtype also represents indirect trackpad input. ComboBox and MenuFlyout now retain desktop
+  geometry for trackpads; CommandBar, text command surfaces, SplitButton and hover policies share
+  the correction. Direct touch retains larger targets. Device records no longer leak between
+  unrelated windows or get overwritten by a stale `NSApp.currentEvent` after a recognized touch.
+
 - FlipView now lazily builds the current and adjacent pages, adds stable `id:` and vertical
   `orientation:` initializers, and tracks phased gestures before settling one page. Existing calls
   remain source-compatible; page-local state outside the cache is now released, so durable state

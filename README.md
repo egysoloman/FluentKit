@@ -725,6 +725,12 @@ hidden prefix from nearest to farthest. `ItemClicked` reports the original zero-
 the same controls provide Left/Right focus traversal, RTL mirroring, current-location semantics,
 keyboard invocation, and an accessibility-only view of the visible path.
 
+Popup density follows the input that opened it. Mouse, trackpad and keyboard use desktop rows:
+ComboBox row pitch 36pt and MenuFlyout row pitch 36pt (32pt painted row plus margins). Direct touch
+uses 48pt ComboBox rows with a 240pt minimum popup width, and 44pt MenuFlyout row pitch. Trackpad
+mouse events can have AppKit's `.touch` subtype; that alone does not select touch density. Input
+records are window-local, and direct gesture recognizers report their modality explicitly.
+
 Combo-box fields keep a native `NSComboBox` option/accessibility bridge while FluentKit owns the
 visible 32pt host, trailing glyph column, focus visuals, popup, and item template. Selection mode
 centers the current item over the closed faceplate and reveals the popup around that row. Editable

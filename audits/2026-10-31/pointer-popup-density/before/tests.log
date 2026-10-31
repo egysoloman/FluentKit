@@ -1,0 +1,36 @@
+Building for debugging...
+[Provisioning 3 / 7]
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[1 / 1]
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[14 / 19] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+[17 / 19] FluentKitTests-product
+Build complete! (3.34秒)
+Test Suite 'Selected tests' started at 2026-10-31 23:50:43.357.
+Test Suite 'FluentKitTests.xctest' started at 2026-10-31 23:50:43.360.
+Test Suite 'PointerDeviceRegressionTests' started at 2026-10-31 23:50:43.360.
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:25: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertFalse failed - Trackpad NSEventType(rawValue: 1)
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:26: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertEqual failed: ("Optional(FluentKit.FluentInputDeviceType.touch)") is not equal to ("Optional(FluentKit.FluentInputDeviceType.mouse)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:25: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertFalse failed - Trackpad NSEventType(rawValue: 3)
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:26: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertEqual failed: ("Optional(FluentKit.FluentInputDeviceType.touch)") is not equal to ("Optional(FluentKit.FluentInputDeviceType.mouse)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:25: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertFalse failed - Trackpad NSEventType(rawValue: 25)
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:26: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertEqual failed: ("Optional(FluentKit.FluentInputDeviceType.touch)") is not equal to ("Optional(FluentKit.FluentInputDeviceType.mouse)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:25: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch] : XCTAssertFalse failed - Trackpad NSEventType(rawValue: 5)
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadMouseSubtypeDoesNotMeanDirectScreenTouch]' failed (0.795 seconds).
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:40: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows] : XCTAssertEqual failed: ("48.0") is not equal to ("36.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:41: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows] : XCTAssertEqual failed: ("Optional(240.0)") is not equal to ("Optional(180.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PointerDeviceRegressionTests.swift:45: error: -[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows] : XCTAssertEqual failed: ("44.0") is not equal to ("36.0")
+Test Case '-[FluentKitTests.PointerDeviceRegressionTests testTrackpadOpensDesktopComboBoxAndMenuRows]' failed (0.196 seconds).
+Test Suite 'PointerDeviceRegressionTests' failed at 2026-10-31 23:50:44.352.
+	 Executed 2 tests, with 10 failures (0 unexpected) in 0.991 (0.991) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-10-31 23:50:44.352.
+	 Executed 2 tests, with 10 failures (0 unexpected) in 0.991 (0.991) seconds
+Test Suite 'Selected tests' failed at 2026-10-31 23:50:44.352.
+	 Executed 2 tests, with 10 failures (0 unexpected) in 0.991 (0.995) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -10,7 +10,7 @@ public enum FluentInputDeviceType: Hashable, Sendable {
     case pen
     case keyboard
 
-    /// WinUI treats touch and pen as devices that prefer primary commands and larger targets.
+    /// Only direct touch uses larger targets; pen prefers primary commands but pointer density.
     public var prefersTouchLayout: Bool { self == .touch }
     public var prefersPrimaryCommands: Bool { self == .touch || self == .pen }
 }
@@ -36,15 +36,18 @@ public final class FluentInputDeviceTracker {
     public func lastDeviceType(in window: NSWindow?) -> FluentInputDeviceType {
         installIfNeeded()
         guard let window else { return lastDeviceType }
-        return typesByWindow.object(forKey: window)?.value ?? lastDeviceType
+        return typesByWindow.object(forKey: window)?.value ?? .none
     }
 
     /// The device behind the interaction being handled right now (`InputDeviceTypeUsedToOpen`):
-    /// the current AppKit event when it identifies one, otherwise the window's last device. This
-    /// also covers the first interaction, before the monitor has seen any event.
+    /// the window's latest recorded interaction, falling back to a matching current event only
+    /// before that window has a record. macOS 27 control actions can run after event dispatch;
+    /// a stale `currentEvent` must not overwrite input explicitly recorded by a touch recognizer.
     public func deviceTypeForCurrentInteraction(in window: NSWindow?) -> FluentInputDeviceType {
         installIfNeeded()
-        if let event = NSApp.currentEvent, let type = Self.deviceType(for: event) {
+        if let window, let recorded = typesByWindow.object(forKey: window)?.value { return recorded }
+        if let event = NSApp.currentEvent, (window == nil || event.window === window),
+           let type = Self.deviceType(for: event) {
             record(type, in: window ?? event.window)
             return type
         }
@@ -58,19 +61,25 @@ public final class FluentInputDeviceTracker {
         lastDeviceType = type
         guard let window else { return }
         let previous = typesByWindow.object(forKey: window)?.value
-        typesByWindow.setObject(Box(type), forKey: window)
         if previous != type {
+            typesByWindow.setObject(Box(type), forKey: window)
             NotificationCenter.default.post(name: Self.didChangeNotification, object: window)
         }
     }
 
-    /// Whether a pointer event came from a touch screen. `subtype` is only valid for mouse
-    /// events; reading it from enter/exit or other events raises, so those report false.
+    /// Direct touch, not an indirect trackpad pointer. `EventSubtype.touch` also describes
+    /// trackpad-generated mouse events (Apple's Handling Trackpad Events guide). It cannot
+    /// distinguish screens. A mouse sequence explicitly associated with direct-touch events
+    /// supplies positive evidence; native touch recognizers also call `record(.touch, in:)`.
     public static func isTouch(_ event: NSEvent) -> Bool {
         switch event.type {
         case .leftMouseDown, .leftMouseUp, .leftMouseDragged, .rightMouseDown, .rightMouseUp, .rightMouseDragged,
-             .otherMouseDown, .otherMouseUp, .otherMouseDragged, .mouseMoved:
-            return event.subtype == .touch
+             .otherMouseDown, .otherMouseUp, .otherMouseDragged:
+            return event.associatedEventsMask.contains(.directTouch)
+        // `associatedEventsMask` raises for mouseMoved despite the header's broad wording.
+        // Hover movement is pointer input; a direct finger has no hover sequence.
+        case .mouseMoved:
+            return false
         case .directTouch:
             return true
         default:
@@ -87,14 +96,15 @@ public final class FluentInputDeviceTracker {
             return .touch
         case .tabletPoint, .tabletProximity:
             return .pen
-        case .leftMouseDown, .rightMouseDown, .otherMouseDown:
+        case .leftMouseDown, .leftMouseUp, .leftMouseDragged,
+             .rightMouseDown, .rightMouseUp, .rightMouseDragged,
+             .otherMouseDown, .otherMouseUp, .otherMouseDragged, .mouseMoved:
             if isTouch(event) { return .touch }
             switch event.subtype {
-            case .touch: return .touch
             case .tabletPoint, .tabletProximity: return .pen
             default: return .mouse
             }
-        case .scrollWheel, .mouseMoved, .swipe, .magnify, .rotate, .smartMagnify:
+        case .scrollWheel, .swipe, .magnify, .rotate, .smartMagnify:
             return .mouse
         default:
             return nil
@@ -103,8 +113,9 @@ public final class FluentInputDeviceTracker {
 
     func installIfNeeded() {
         guard monitors.isEmpty else { return }
-        let mask: NSEvent.EventTypeMask = [.keyDown, .leftMouseDown, .rightMouseDown, .otherMouseDown,
-            .scrollWheel, .tabletPoint, .tabletProximity, .directTouch, .swipe, .magnify, .rotate, .smartMagnify]
+        let mask: NSEvent.EventTypeMask = [.keyDown, .leftMouseDown, .leftMouseUp, .leftMouseDragged,
+            .rightMouseDown, .rightMouseUp, .rightMouseDragged, .otherMouseDown, .otherMouseUp, .otherMouseDragged,
+            .mouseMoved, .scrollWheel, .tabletPoint, .tabletProximity, .directTouch, .swipe, .magnify, .rotate, .smartMagnify]
         if let monitor = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] event in
             if let type = Self.deviceType(for: event) { self?.record(type, in: event.window) }
             return event

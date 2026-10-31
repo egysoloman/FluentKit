@@ -3485,14 +3485,17 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
     )
 
     editor.setSelectedRange(NSRange(location: 0, length: min(4, editor.string.utf16.count)))
-    searchField.rightMouseDown(
-        with: toggleMouseEvent(
-            .rightMouseDown,
+    let trackpadPress: NSEvent = {
+        let mouse = toggleMouseEvent(.rightMouseDown,
             at: NSPoint(x: expectedTextRect.minX + 12, y: expectedTextRect.midY),
-            in: searchField,
-            eventNumber: 91
-        )
-    )
+            in: searchField, eventNumber: 91)
+        let cgEvent = mouse.cgEvent!
+        cgEvent.setIntegerValueField(.mouseEventSubtype, value: Int64(NSEvent.EventSubtype.touch.rawValue))
+        return NSEvent(cgEvent: cgEvent)!
+    }()
+    require(FluentInputDeviceTracker.deviceType(for: trackpadPress) == .mouse,
+            "trackpad mouse subtype retains pointer command composition")
+    searchField.rightMouseDown(with: trackpadPress)
     require(
         waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
         "SearchBox replaces the AppKit context menu with an application-owned text command flyout"
@@ -3585,9 +3588,9 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
         "text command flyout dismisses through the shared Fluent keyboard path"
     )
 
-    // FlyoutBase::OnOpening: only touch (and pen) prefer primary commands, so open from a
-    // touch-subtyped press rather than a plain mouse click.
-    let touchPress: NSEvent = {
+    // FlyoutBase::OnOpening: pen (like direct touch) prefers primary commands. A mouse
+    // event's .touch subtype represents trackpads too, and is not a direct-touch fixture.
+    let penPress: NSEvent = {
         let mouse = toggleMouseEvent(
             .leftMouseDown,
             at: NSPoint(x: expectedTextRect.minX + 12, y: expectedTextRect.midY),
@@ -3595,11 +3598,11 @@ if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
             eventNumber: 95
         )
         guard let cgEvent = mouse.cgEvent?.copy() else { return mouse }
-        cgEvent.setIntegerValueField(.mouseEventSubtype, value: Int64(NSEvent.EventSubtype.touch.rawValue))
+        cgEvent.setIntegerValueField(.mouseEventSubtype, value: Int64(NSEvent.EventSubtype.tabletPoint.rawValue))
         return NSEvent(cgEvent: cgEvent) ?? mouse
     }()
-    require(touchPress.subtype == .touch, "validation can synthesize a touch-subtyped press")
-    searchField.rightMouseDown(with: touchPress)
+    require(FluentInputDeviceTracker.deviceType(for: penPress) == .pen, "validation can synthesize a pen press")
+    searchField.rightMouseDown(with: penPress)
     require(
         waitUntil(timeout: 0.20) { searchEditingWindow.childWindows?.count == 1 },
         "TextCommandBarFlyout supports an input-device-preferred primary command composition"
