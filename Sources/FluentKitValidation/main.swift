@@ -1755,6 +1755,20 @@ require(
     interactiveToggle.accessibilityPerformPress() && !interactiveToggleState.wrappedValue,
     "ToggleSwitch accessibility press uses the same single-commit path"
 )
+interactiveToggle.keyDown(with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveToggle, eventNumber: 12))
+require(!interactiveToggleState.wrappedValue, "ToggleSwitch Space keyDown does not commit")
+interactiveToggle.keyUp(with: toggleButtonKeyEvent(.keyUp, keyCode: 49, in: interactiveToggle, eventNumber: 13))
+require(interactiveToggleState.wrappedValue, "ToggleSwitch Space keyUp commits to its binding")
+interactiveToggle.keyDown(with: toggleButtonKeyEvent(.keyDown, keyCode: 36, in: interactiveToggle, eventNumber: 14))
+interactiveToggle.keyUp(with: toggleButtonKeyEvent(.keyUp, keyCode: 36, in: interactiveToggle, eventNumber: 15))
+require(interactiveToggleState.wrappedValue, "ToggleSwitch Return does not activate")
+interactiveToggle.keyDown(with: toggleButtonKeyEvent(.keyDown, keyCode: 49, in: interactiveToggle, eventNumber: 16))
+interactiveToggleState.wrappedValue = false
+drainMainQueue()
+interactiveToggle.keyUp(with: toggleButtonKeyEvent(.keyUp, keyCode: 49, in: interactiveToggle, eventNumber: 17))
+require(interactiveToggleState.wrappedValue, "ToggleSwitch release uses an updated model value")
+require(interactiveToggle.accessibilityPerformPress() && !interactiveToggleState.wrappedValue,
+        "ToggleSwitch accessibility activation remains immediate after keyboard input")
 interactiveToggle.isEnabled = false
 require(
     !interactiveToggle.accessibilityPerformPress() && !interactiveToggleState.wrappedValue,

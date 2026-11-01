@@ -1,0 +1,12 @@
+{"commits":0,"isOn":false,"kind":"ready","time":158810.23176604169}
+{"commits":0,"isOn":false,"keyCode":49,"kind":"keyDown","repeat":false,"time":158824.24845504167}
+{"commits":0,"isOn":false,"keyCode":49,"kind":"keyUp","repeat":false,"time":158825.17420920834}
+{"commits":1,"isOn":true,"kind":"valueChanged","time":158825.17477387501}
+{"commits":1,"isOn":true,"keyCode":36,"kind":"keyDown","repeat":false,"time":158840.89481370835}
+{"commits":1,"isOn":true,"keyCode":36,"kind":"parent-keyDown","repeat":false,"time":158840.89529125}
+{"commits":1,"isOn":true,"keyCode":36,"kind":"keyUp","repeat":false,"time":158840.89538616667}
+{"commits":1,"isOn":true,"keyCode":36,"kind":"parent-keyUp","repeat":false,"time":158840.89544125}
+{"commits":1,"isOn":true,"keyCode":49,"kind":"keyDown","repeat":false,"time":158845.39478166666}
+{"commits":1,"isOn":true,"keyCode":49,"kind":"keyUp","repeat":false,"time":158845.70763683334}
+{"commits":2,"isOn":false,"kind":"valueChanged","time":158845.70802316666}
+{"commits":2,"isOn":false,"keyCode":12,"kind":"keyDown","repeat":false,"time":158878.99458308335}

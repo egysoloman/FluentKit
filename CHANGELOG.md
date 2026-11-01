@@ -4,7 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
-No unreleased changes yet.
+- ToggleSwitch now commits ordinary keyboard activation on Space release and forwards
+  Return and navigation keys to the responder chain. Space does not enter the pointer
+  Pressed visual state. Pointer interaction suppresses overlapping keyboard releases;
+  binding changes preserve a pending Space and it toggles the latest value, as in WinUI.
+  Focus loss, hiding/detachment, window deactivation, disabling and explicit cancellation
+  discard pending activation. Accessibility activation remains immediate.
 
 ## [0.2.0] - 2026-11-01
 

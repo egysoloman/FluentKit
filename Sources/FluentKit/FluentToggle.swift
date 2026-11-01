@@ -77,6 +77,9 @@ public final class FluentToggle: NSControl {
     private let knobLayer = CALayer()
     private lazy var animationCoordinator = FluentAnimationCoordinator(reduceMotion: reduceMotion)
     private var pointerState: PointerState = .idle
+    // WinUI arms Space on key-down without entering the pointer Pressed state.
+    private var hasPendingSpace = false
+    private var windowResignObserver: NSObjectProtocol?
     private var isPointerOver = false
     private var lastLayoutSize = NSSize(width: -1, height: -1)
     private var lastLayoutDirection: NSUserInterfaceLayoutDirection?
@@ -240,14 +243,29 @@ public final class FluentToggle: NSControl {
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         updateFocusRing()
         switch event.keyCode {
-        case 36, 49:
+        case 49:
+            guard !isPressed else {
+                super.keyDown(with: event)
+                return
+            }
             guard !event.isARepeat else { return }
-            commitKeyboardToggle()
+            hasPendingSpace = true
         case 53:
             cancelInteraction(animated: true)
         default:
+            if !isPressed { hasPendingSpace = false }
             super.keyDown(with: event)
         }
+    }
+
+    public override func keyUp(with event: NSEvent) {
+        guard event.keyCode == 49, hasPendingSpace else {
+            super.keyUp(with: event)
+            return
+        }
+        hasPendingSpace = false
+        guard isEnabled, !isHiddenOrHasHiddenAncestor, !isPressed else { return }
+        commitActivation()
     }
 
     public override func cancelOperation(_ sender: Any?) {
@@ -258,7 +276,7 @@ public final class FluentToggle: NSControl {
 
     public override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
-        commitKeyboardToggle()
+        commitActivation()
         return true
     }
 
@@ -281,13 +299,41 @@ public final class FluentToggle: NSControl {
 
     public override func resignFirstResponder() -> Bool {
         let result = super.resignFirstResponder()
-        if result { updateFocusRing() }
+        if result {
+            cancelInteraction(animated: true)
+            updateFocusRing()
+        }
         return result
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        cancelInteraction(animated: false)
+    }
+
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if superview !== newSuperview { cancelInteraction(animated: false) }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if window !== newWindow { cancelInteraction(animated: false) }
+        super.viewWillMove(toWindow: newWindow)
     }
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
+        windowResignObserver = window.map {
+            NotificationCenter.default.addObserver(forName: NSWindow.didResignKeyNotification, object: $0, queue: .main) { [weak self] _ in
+                self?.cancelInteraction(animated: false)
+            }
+        }
         updateFocusRing()
+    }
+
+    deinit {
+        if let windowResignObserver { NotificationCenter.default.removeObserver(windowResignObserver) }
     }
 
     public override func viewDidChangeEffectiveAppearance() {
@@ -306,7 +352,9 @@ public final class FluentToggle: NSControl {
     }
 
     func setStateFromBinding(_ value: Bool) {
-        cancelInteraction(animated: false, refresh: false)
+        // Keep the existing external-drag-reset policy. An IsOn property change does
+        // not cancel WinUI's handled Space; key-up toggles the latest model value.
+        cancelPointerInteraction(animated: false, refresh: false)
         let callback = onValueChanged
         onValueChanged = nil
         isOn = value
@@ -343,12 +391,17 @@ public final class FluentToggle: NSControl {
         refreshAppearance(animated: false)
     }
 
-    private func commitKeyboardToggle() {
+    private func commitActivation() {
         cancelInteraction(animated: false, refresh: false)
         isOn.toggle()
     }
 
     private func cancelInteraction(animated: Bool, refresh: Bool = true) {
+        hasPendingSpace = false
+        cancelPointerInteraction(animated: animated, refresh: refresh)
+    }
+
+    private func cancelPointerInteraction(animated: Bool, refresh: Bool = true) {
         guard isPressed else { return }
         pointerState = .idle
         if refresh { refreshAppearance(animated: animated) }

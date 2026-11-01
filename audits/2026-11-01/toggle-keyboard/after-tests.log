@@ -1,0 +1,63 @@
+Building for debugging...
+[1 / 1]
+[2 / 15] FluentKit
+[4 / 17] FluentKit
+[8 / 21] FluentKit
+[17 / 27] FluentKit
+[19 / 27] FluentKit-product
+[19 / 27] FluentGallery-product
+[24 / 30] FluentKitTests-product
+[28 / 35] FluentGallery-product
+[30 / 37] FluentKitTests-product
+[34 / 41] FluentKitTests-product
+[36 / 41] FluentKitTests-product
+[36 / 39] FluentKitValidation-product
+[37 / 39] FluentKitValidation-product
+[39 / 39] FluentKitValidation-product
+Build complete! (41.04秒)
+Test Suite 'Selected tests' started at 2026-11-01 15:49:42.024.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 15:49:42.025.
+Test Suite 'ToggleAccessibilityTests' started at 2026-11-01 15:49:42.025.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testBoundSwitchExposesOneActionTargetAndPublishesOnlyOneChange]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testBoundSwitchExposesOneActionTargetAndPublishesOnlyOneChange]' passed (0.093 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting]' passed (0.013 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testContainExposesSemanticChildrenAndRespectsHiddenSubtrees]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testContainExposesSemanticChildrenAndRespectsHiddenSubtrees]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testHiddenSubtreeRestoresItsChildrenWithoutReplacingControlsOrChangingLayout]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testHiddenSubtreeRestoresItsChildrenWithoutReplacingControlsOrChangingLayout]' passed (0.008 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testMetadataCrossesTransparentWrappersButStopsAtSemanticGroups]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testMetadataCrossesTransparentWrappersButStopsAtSemanticGroups]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testReconciledSwitchActsOnNewBindingAndPreservesItsAccessibleIdentity]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testReconciledSwitchActsOnNewBindingAndPreservesItsAccessibleIdentity]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testSemanticGroupQueriesCurrentChildrenAfterReorderingAndRemoval]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testSemanticGroupQueriesCurrentChildrenAfterReorderingAndRemoval]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testStandaloneSwitchExposesNativeSemanticsAndNumericState]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testStandaloneSwitchExposesNativeSemanticsAndNumericState]' passed (0.001 seconds).
+Test Suite 'ToggleAccessibilityTests' passed at 2026-11-01 15:49:42.147.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.121 (0.122) seconds
+Test Suite 'ToggleKeyboardTests' started at 2026-11-01 15:49:42.147.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testAccessibilityActionCommitsImmediatelyAndConsumesPendingKeyboard]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testAccessibilityActionCommitsImmediatelyAndConsumesPendingKeyboard]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testCancellationCannotBeRearmedByAutoRepeat]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testCancellationCannotBeRearmedByAutoRepeat]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testLifecycleChangesCancelPendingRelease]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testLifecycleChangesCancelPendingRelease]' passed (0.015 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testModelChangesKeepKeyboardIntentAndUseLatestValue]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testModelChangesKeepKeyboardIntentAndUseLatestValue]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testOverlappingInputsFollowTheirReleaseOrder]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testOverlappingInputsFollowTheirReleaseOrder]' passed (0.006 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testPointerPressAndDragDoNotAcceptNewKeyboardActivation]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testPointerPressAndDragDoNotAcceptNewKeyboardActivation]' passed (0.015 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testReentrantCallbackCannotReuseTheSameKeyRelease]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testReentrantCallbackCannotReuseTheSameKeyRelease]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testReturnAndArrowKeysPropagateWithoutActivation]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testReturnAndArrowKeysPropagateWithoutActivation]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.ToggleKeyboardTests testSpaceCommitsOnceOnReleaseWithoutPointerPressedVisuals]' started.
+Test Case '-[FluentKitTests.ToggleKeyboardTests testSpaceCommitsOnceOnReleaseWithoutPointerPressedVisuals]' passed (0.008 seconds).
+Test Suite 'ToggleKeyboardTests' passed at 2026-11-01 15:49:42.211.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.064 (0.064) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 15:49:42.211.
+	 Executed 17 tests, with 0 failures (0 unexpected) in 0.184 (0.186) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 15:49:42.211.
+	 Executed 17 tests, with 0 failures (0 unexpected) in 0.184 (0.187) seconds

@@ -74,3 +74,12 @@
 CI 现在允许 30 分钟，质量工具使用前一步相同的 `.build` Release 模块、对象与资源，不再重复编译框架。所有原有构建、测试、诊断和质量检查继续执行。本地独立复验 native SwiftPM 的 Release 验证程序构建通过（123.76 秒，包含更新后的框架构建），随后复用同一产物的质量门禁全部通过（框架检查仅 0.27 秒）。见 `native-validation-release-build.log`、`reused-native-quality.log` 与 `reused-native-quality/`。Swift 6.4 的 native 引擎弃用提示仍属于主动复现旧构建引擎的工具提示。
 
 `27377-all-tests.log` 保存最新完整 491 项本地通过结果，无 AppKit 约束诊断。此批没有改运行时代码或测试。CI 与本机的编译耗时差异还需分别控制硬件、编译器和构建引擎后分析，不能仅凭两组耗时归因。
+
+
+## 发布完成补记（发布之后归档）
+
+`v0.2.0` 已于 2026-11-01 15:40（UTC+8）发布为 Latest 正式版：[Release](https://github.com/egysoloman/FluentKit/releases/tag/v0.2.0)。注释标签指向 `1c0fa093ac16a46fa47a6e99e86a42f67fcd621d`。[main CI #13](https://github.com/egysoloman/FluentKit/actions/runs/41284391532) 与 [tag CI #14](https://github.com/egysoloman/FluentKit/actions/runs/41285528739) 均已成功。
+
+main CI 的 491 项测试为 1 项平台能力跳过、0 失败，无 AppKit 约束诊断；全产品 Release 与全部质量门禁通过。最终原始日志作为 Release 附件保存：`FluentKit-0.2.0-CI.log`，209377 字节，SHA-256 `2dc85189456f4d46ff181f9905f49ec694fa1a78cd61925150df46fe623dda81`，已与 GitHub 的已上传附件摘要核对。
+
+后续修复继续记入 Unreleased 和独立审计，不把它们算入已发布的 0.2.0。

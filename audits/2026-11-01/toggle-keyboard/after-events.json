@@ -1,0 +1,80 @@
+[
+  {
+    "callbacks" : 0,
+    "case" : "space",
+    "isOn" : false,
+    "step" : "down"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "space",
+    "isOn" : false,
+    "step" : "repeat"
+  },
+  {
+    "callbacks" : 1,
+    "case" : "space",
+    "isOn" : true,
+    "step" : "up"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "unpaired-release",
+    "isOn" : false,
+    "step" : "up"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "return",
+    "isOn" : false,
+    "step" : "down"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "return",
+    "isOn" : false,
+    "step" : "up"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "cancel",
+    "isOn" : false,
+    "step" : "down"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "cancel",
+    "isOn" : false,
+    "step" : "cancel"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "cancel",
+    "isOn" : false,
+    "step" : "up"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "disable",
+    "isOn" : false,
+    "step" : "down"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "disable",
+    "isOn" : false,
+    "step" : "disabled"
+  },
+  {
+    "callbacks" : 0,
+    "case" : "disable",
+    "isOn" : false,
+    "step" : "up"
+  },
+  {
+    "callbacks" : 1,
+    "case" : "accessibility",
+    "isOn" : true,
+    "step" : "press"
+  }
+]
