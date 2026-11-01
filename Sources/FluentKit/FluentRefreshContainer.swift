@@ -106,14 +106,17 @@ final class FluentRefreshContainerView: NSView {
     private var bindingGeneration: UInt64 = 0
     private var isWritingBinding = false
     private var refreshGeneration: UInt64 = 0
+    private var contentWidth: NSLayoutConstraint!
+    private var contentHeight: NSLayoutConstraint!
+    private var minimumContentWidth: NSLayoutConstraint!
+    private var minimumContentHeight: NSLayoutConstraint!
+    private var lastContentSize = NSSize.zero
 
     init(content: FluentAnyView, configuration: FluentRefreshConfiguration, context: FluentRenderContext) {
         self.configuration = configuration
         self.context = context
         contentHost = FluentViewHost(content, context: context)
         super.init(frame: .zero)
-        // Hosts are laid out by frame; FluentViewHost otherwise opts out of autoresizing constraints.
-        contentHost.translatesAutoresizingMaskIntoConstraints = true
         identifier = NSUserInterfaceItemIdentifier("FluentKit.RefreshContainer")
         wantsLayer = true
         layer?.masksToBounds = true
@@ -123,6 +126,19 @@ final class FluentRefreshContainerView: NSView {
         scrollView.hasHorizontalScroller = !isVertical
         scrollView.autohidesScrollers = true
         documentView.addSubview(contentHost)
+        // Keep the scrolling axis free to measure its content. A frame-derived size mask
+        // would pin it to zero during mounting or to an obsolete size during an update.
+        contentWidth = contentHost.widthAnchor.constraint(equalToConstant: 0)
+        contentHeight = contentHost.heightAnchor.constraint(equalToConstant: 0)
+        minimumContentWidth = contentHost.widthAnchor.constraint(greaterThanOrEqualToConstant: 0)
+        minimumContentHeight = contentHost.heightAnchor.constraint(greaterThanOrEqualToConstant: 0)
+        [contentWidth, contentHeight].forEach { $0?.priority = .init(999) }
+        [minimumContentWidth, minimumContentHeight].forEach { $0?.priority = .defaultHigh }
+        NSLayoutConstraint.activate([
+            contentHost.leftAnchor.constraint(equalTo: documentView.leftAnchor),
+            contentHost.topAnchor.constraint(equalTo: documentView.topAnchor)
+        ])
+        updateContentConstraints()
         scrollView.documentView = documentView
         scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
         addSubview(scrollView)
@@ -148,6 +164,7 @@ final class FluentRefreshContainerView: NSView {
         removeBindingObserver()
         configuration = next
         self.context = context
+        updateContentConstraints()
         contentHost.update(content, context: context)
         scrollView.hasVerticalScroller = isVertical
         scrollView.hasHorizontalScroller = !isVertical
@@ -163,13 +180,25 @@ final class FluentRefreshContainerView: NSView {
         super.layout()
         scrollView.frame = bounds
         let viewport = scrollView.contentSize
+        updateContentConstraints()
         let fitting = contentHost.fittingSize
         let size = isVertical
             ? NSSize(width: viewport.width, height: max(fitting.height, viewport.height))
             : NSSize(width: max(fitting.width, viewport.width), height: viewport.height)
         documentView.frame = NSRect(origin: .zero, size: size)
-        contentHost.frame = documentView.bounds
         applyIndicator()
+    }
+
+    private func updateContentConstraints() {
+        let viewport = scrollView.contentSize
+        contentWidth.constant = max(viewport.width, 0)
+        contentHeight.constant = max(viewport.height, 0)
+        minimumContentWidth.constant = max(viewport.width, 0)
+        minimumContentHeight.constant = max(viewport.height, 0)
+        contentWidth.isActive = isVertical
+        contentHeight.isActive = !isVertical
+        minimumContentWidth.isActive = !isVertical
+        minimumContentHeight.isActive = isVertical
     }
 
     /// Distance the content currently stands away from its pull edge, including any held inset.
@@ -189,8 +218,16 @@ final class FluentRefreshContainerView: NSView {
 
     private func installScrollObservers() {
         scrollView.contentView.postsBoundsChangedNotifications = true
+        contentHost.postsFrameChangedNotifications = true
         let center = NotificationCenter.default
         observers = [
+            center.addObserver(forName: NSView.frameDidChangeNotification, object: contentHost, queue: .main) { [weak self] _ in
+                guard let self, self.contentHost.frame.size != self.lastContentSize else { return }
+                self.lastContentSize = self.contentHost.frame.size
+                // The content host can refresh its own state without updating this container.
+                // Publish its new natural extent to the scroll view on the next layout pass.
+                self.needsLayout = true
+            },
             center.addObserver(forName: NSView.boundsDidChangeNotification, object: scrollView.contentView, queue: .main) { [weak self] _ in
                 guard let self else { return }
                 if self.isInteractingForRefresh { self.interactionRatioChanged(min(1, self.pullDistance / FluentRefreshMetrics.pullDimension)) }
