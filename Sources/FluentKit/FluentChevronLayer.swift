@@ -81,8 +81,12 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         inverted: Bool = false,
         backingScale: CGFloat? = nil,
         preservingUnchangedAnimations: Bool = false,
+        reduceMotion: Bool? = nil,
         animated: Bool
     ) {
+        // The render context already resolves system defaults and explicit overrides.
+        // Do not let the coordinator's construction-time system value override that policy.
+        animationCoordinator.reduceMotion = reduceMotion ?? NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         invertedPath = inverted
         self.state = state
         self.visual = visual

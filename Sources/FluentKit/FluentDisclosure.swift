@@ -285,6 +285,7 @@ private final class FluentExpanderHeader: NSButton {
             direction: chevronDirection,
             backingScale: window?.backingScaleFactor,
             preservingUnchangedAnimations: window != nil && isEnabled && !context.reduceMotion,
+            reduceMotion: context.reduceMotion,
             animated: pendingChevronAnimation && hasLaidOutChevron && window != nil && isEnabled && !context.reduceMotion
         )
         hasLaidOutChevron = true

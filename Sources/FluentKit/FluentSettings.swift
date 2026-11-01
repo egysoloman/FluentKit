@@ -697,6 +697,7 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
             direction: direction,
             backingScale: window?.backingScaleFactor,
             preservingUnchangedAnimations: window != nil && isEnabled && !context.reduceMotion,
+            reduceMotion: context.reduceMotion,
             animated: animated && window != nil && isEnabled && !context.reduceMotion
         )
     }

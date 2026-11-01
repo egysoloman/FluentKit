@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TreeView, SettingsExpander and Expander chevrons use the resolved render-context motion
+  policy instead of a separate system snapshot. System defaults remain available, and explicit
+  overrides now apply consistently to both the control and its chevron.
+
 - Preserve SettingsExpander and Expander chevron motion through layout, content and hover
   refreshes. Initial display no longer animates an unchanged direction; detachment, disabling
   and Reduce Motion settle rotation without replaying it on reattachment or re-enabling.

@@ -1288,7 +1288,7 @@ final class FluentOutlineCellHost: NSTableCellView {
         chevronLayer.isHidden = !layoutState.isExpandable
         if updateChevronState {
             chevronLayer.update(frame: chevronFrame, color: theme.textPrimary, state: .normal, direction: direction,
-                                backingScale: window?.backingScaleFactor, animated: animated)
+                                backingScale: window?.backingScaleFactor, reduceMotion: reduceMotion, animated: animated)
         } else {
             chevronLayer.updateLayout(frame: chevronFrame, color: theme.textPrimary, backingScale: window?.backingScaleFactor)
         }

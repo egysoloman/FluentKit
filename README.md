@@ -1509,7 +1509,8 @@ with Windows.
   supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
 - SettingsExpander and Expander preserve chevron transitions through layout, content and hover
   refreshes. Initial display is static; detachment, disabling and Reduce Motion settle rotation
-  without replaying it on reattachment or re-enabling. Chevron motion uses FluentKit's shared
+  without replaying it on reattachment or re-enabling. The chevron follows the resolved render
+  context's motion policy, including explicit overrides. Chevron motion uses FluentKit's shared
   primitive; it does not reproduce every frame of WinUI's AnimatedIcon asset.
 - TreeView reconciles native nodes by stable ID and updates visible content in place when the
   topology is unchanged. Structural updates still reload the outline; reconciliation still walks
