@@ -700,12 +700,13 @@ private final class FluentComboBoxCell: NSComboBoxCell {
     }
 
     override func drawingRect(forBounds rect: NSRect) -> NSRect {
-        fluentTextControlRect(
+        let rightToLeft = controlView?.userInterfaceLayoutDirection == .rightToLeft
+        return fluentTextControlRect(
             super.drawingRect(forBounds: rect),
             in: rect,
             font: font,
-            leadingInset: 11,
-            trailingInset: 38
+            leadingInset: rightToLeft ? FluentComboBoxMetrics.glyphColumnWidth : FluentComboBoxMetrics.editableLeadingPadding,
+            trailingInset: rightToLeft ? FluentComboBoxMetrics.editableLeadingPadding : FluentComboBoxMetrics.glyphColumnWidth
         )
     }
 
@@ -752,12 +753,13 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
     }
 
     override func drawingRect(forBounds rect: NSRect) -> NSRect {
-        fluentTextControlRect(
+        let rightToLeft = controlView?.userInterfaceLayoutDirection == .rightToLeft
+        return fluentTextControlRect(
             super.drawingRect(forBounds: rect),
             in: rect,
             font: font,
-            leadingInset: 11,
-            trailingInset: 38
+            leadingInset: rightToLeft ? FluentComboBoxMetrics.glyphColumnWidth : FluentComboBoxMetrics.editableLeadingPadding,
+            trailingInset: rightToLeft ? FluentComboBoxMetrics.editableLeadingPadding : FluentComboBoxMetrics.glyphColumnWidth
         )
     }
 
@@ -796,6 +798,29 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
 
 private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLineTextControl {
     func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
+
+    override var userInterfaceLayoutDirection: NSUserInterfaceLayoutDirection {
+        didSet {
+            guard oldValue != userInterfaceLayoutDirection else { return }
+            needsLayout = true
+            needsDisplay = true
+            guard let editor = currentEditor() as? NSTextView,
+                  fluentFieldEditorOwner(editor) === self,
+                  let clip = editor.superview as? NSClipView,
+                  clip.documentView === editor, clip.isDescendant(of: self),
+                  let parent = clip.superview else { return }
+            // AppKit keeps an active editor's old horizontal viewport when the cell's
+            // padding changes. Translate the viewport, preserving its native padding,
+            // document scroll offset, selection, undo history and marked text.
+            let insetChange = FluentComboBoxMetrics.glyphColumnWidth - FluentComboBoxMetrics.editableLeadingPadding
+            let delta = userInterfaceLayoutDirection == .rightToLeft ? insetChange : -insetChange
+            let origin = convert(NSPoint.zero, to: parent)
+            let shifted = convert(NSPoint(x: delta, y: 0), to: parent)
+            clip.setFrameOrigin(NSPoint(x: clip.frame.minX + shifted.x - origin.x, y: clip.frame.minY))
+            editor.needsDisplay = true
+            editor.inputContext?.invalidateCharacterCoordinates()
+        }
+    }
 
     override func layout() {
         super.layout()
@@ -1076,6 +1101,7 @@ private enum FluentComboBoxMetrics {
     static let focusHighlightBorderWidth: CGFloat = 2
     static let focusHighlightCornerRadius: CGFloat = 7
     static let contentLeadingPadding: CGFloat = 12
+    static let editableLeadingPadding: CGFloat = 11
     static let glyphColumnWidth: CGFloat = 38
     static let glyphWidth: CGFloat = 12
     static let glyphTrailingPadding: CGFloat = 14

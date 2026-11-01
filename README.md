@@ -835,6 +835,9 @@ below the field (or above when space requires it). Arbitrary text updates the op
 and exact option titles synchronize the stable selection. Both modes provide keyboard navigation,
 type-ahead, Escape/outside-click dismissal, RTL placement, and the source-derived partial-content
 entrance rather than the native AppKit combo-box popup.
+Editable text reserves the dropdown column on the trailing side in either layout direction.
+Changing direction during editing preserves the native editor, selection, horizontal scroll
+position and marked text while updating the input-method character coordinates.
 
 Open ComboBoxes reconcile options by their unique `Hashable` values. Appending, reordering or
 removing options preserves the panel, responder, surviving rows and visible scroll position.

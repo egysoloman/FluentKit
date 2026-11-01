@@ -64,8 +64,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    titles, direction and motion policy while retaining native identity and focus. Collection
    mutations reconcile stable option identities, preserve surviving rows/scroll state and cancel
    captured input; removed selections are normalized without erasing editable text.
-   Fix editable ComboBox faceplate text/glyph separation in RTL (including the active editor),
-   then continue full keyboard contracts and hierarchical flyout
+   Editable ComboBox text and its active editor reserve the mirrored glyph column in RTL,
+   preserving native selection, marked text and horizontal scrolling. Continue full keyboard
+   contracts and hierarchical flyout
    behavior; retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required

@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Editable ComboBox reserves the glyph column on the correct side in RTL, both before and
+  during editing. Direction changes reposition the existing native editor viewport without
+  resetting selection, horizontal scrolling or marked text, and refresh input-method coordinates.
+
 - ComboBox keeps nonempty popups open when options are appended, reordered or removed, reusing
   rows by stable value and preserving responder, keyboard focus and visible scroll position.
   Removing the focused option moves focus to a neighbor without selecting it. Removed selections
