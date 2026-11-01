@@ -55,6 +55,7 @@ public final class FluentCameraCapture {
         let device = deviceID.flatMap { AVCaptureDevice(uniqueID: $0) } ?? AVCaptureDevice.default(for: .video)
         guard let device else { throw CaptureError.noCamera }
         let input = try AVCaptureDeviceInput(device: device)
+        let session = self.session
         session.beginConfiguration()
         session.inputs.forEach { session.removeInput($0) }
         guard session.canAddInput(input) else {
@@ -64,7 +65,6 @@ public final class FluentCameraCapture {
         session.addInput(input)
         session.commitConfiguration()
         activeDevice = Device(id: device.uniqueID, name: device.localizedName)
-        let session = self.session
         DispatchQueue.global(qos: .userInitiated).async { session.startRunning() }
     }
 

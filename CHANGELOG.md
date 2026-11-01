@@ -8,6 +8,10 @@ No unreleased changes yet.
 
 ## [0.2.0] - 2026-11-01
 
+- Removed ambiguous local/member name lookup in CommandBar and capture setup for Swift 6.3.
+  macOS 27 touch configuration resolves public Objective-C setters at runtime so source builds
+  with older AppKit SDKs retain the newer runtime capability without referencing missing symbols.
+
 - RefreshContainer now measures scrolling content without a fixed frame-derived size mask.
   Initial horizontal layout no longer conflicts with stack spacing; content-owned state updates
   grow and shrink the scroll extent without compressing rows or requiring a window resize.

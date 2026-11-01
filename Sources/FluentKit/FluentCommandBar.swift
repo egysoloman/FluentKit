@@ -162,11 +162,11 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     public override var intrinsicContentSize: NSSize {
         let scale = fluentControlSize.metricScale
         let height = isOpen ? Self.openHeight : closedHeight
-        let primaryWidth = primaryControls.reduce(CGFloat(0)) { $0 + primaryWidth(of: $1) }
+        let primaryControlsWidth = primaryControls.reduce(CGFloat(0)) { $0 + primaryWidth(of: $1) }
         let contentWidth = max(0, contentView?.intrinsicContentSize.width ?? 0)
         let moreWidth = resolvedOverflowButtonVisible ? Self.moreButtonWidth * scale : 0
         return NSSize(
-            width: Self.contentLeadingPadding * scale + contentWidth + primaryWidth + moreWidth,
+            width: Self.contentLeadingPadding * scale + contentWidth + primaryControlsWidth + moreWidth,
             height: height * scale
         )
     }

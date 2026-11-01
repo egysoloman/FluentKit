@@ -244,9 +244,9 @@ final class PivotGestureTests: XCTestCase {
         XCTAssertTrue(pivot.gestureRecognizers.contains { $0 === recognizer })
         XCTAssertEqual(recognizer.allowedTouchTypes, [.direct])
         XCTAssertEqual(recognizer.buttonMask, 0, "Mouse drags must not pan")
-        XCTAssertEqual(recognizer.minimumNumberOfTouches, 1)
-        XCTAssertEqual(recognizer.maximumNumberOfTouches, 1)
-        XCTAssertTrue(recognizer.isCancellableByScrollGesture)
+        XCTAssertEqual(recognizer.value(forKey: "minimumNumberOfTouches") as? Int, 1)
+        XCTAssertEqual(recognizer.value(forKey: "maximumNumberOfTouches") as? Int, 1)
+        XCTAssertEqual(recognizer.value(forKey: "cancellableByScrollGesture") as? Bool, true)
         XCTAssertTrue(recognizer.delegate === pivot.panDriver)
     }
 }

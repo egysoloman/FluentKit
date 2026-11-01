@@ -315,10 +315,16 @@ final class FluentPanGestureDriver: NSObject, NSGestureRecognizerDelegate {
         recognizer.allowedTouchTypes = [.direct]
         // Only fingers on a touch screen pan; mouse drags keep their ordinary meaning.
         recognizer.buttonMask = 0
-        recognizer.minimumNumberOfTouches = 1
-        recognizer.maximumNumberOfTouches = 1
-        // A pan inside a scroll view yields once that scroll view's own gesture begins.
-        recognizer.isCancellableByScrollGesture = true
+        // These public properties were added in the macOS 27 SDK. Resolve their Objective-C
+        // setters so builds with an older SDK can still use them when running on macOS 27.
+        let touchProperties: [(key: String, setter: String, value: NSNumber)] = [
+            ("minimumNumberOfTouches", "setMinimumNumberOfTouches:", 1),
+            ("maximumNumberOfTouches", "setMaximumNumberOfTouches:", 1),
+            // A pan yields once its enclosing scroll view's own gesture begins.
+            ("cancellableByScrollGesture", "setCancellableByScrollGesture:", true)
+        ]
+        guard touchProperties.allSatisfy({ recognizer.responds(to: NSSelectorFromString($0.setter)) }) else { return }
+        for property in touchProperties { recognizer.setValue(property.value, forKey: property.key) }
         recognizer.delegate = self
         view.addGestureRecognizer(recognizer)
         touchRecognizer = recognizer
