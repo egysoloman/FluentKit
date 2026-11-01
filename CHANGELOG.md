@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+## [0.3.1] - 2026-11-02
+
+- ComboBox, MenuFlyout, CommandBar overflow and AutoSuggestBox popup entrances use the
+  resolved Reduce Motion policy. An independent system snapshot inside the shared animation
+  coordinator no longer suppresses an explicit motion override.
+
 - Open ComboBox popups refresh titles, measured width, layout direction and Reduce Motion
   without replacing their panel, rows or keyboard/scroll position. Enabling Reduce Motion
   settles the entrance and row press effects; disabling it does not replay the entrance.
@@ -727,7 +733,8 @@ Initial public framework baseline.
 - Prevented NavigationView section text from clipping or jumping through the compact rail during
   pane collapse.
 
-[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/egysoloman/FluentKit/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/egysoloman/FluentKit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/egysoloman/FluentKit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/egysoloman/FluentKit/releases/tag/v0.1.0
