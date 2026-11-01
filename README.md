@@ -1507,6 +1507,12 @@ with Windows.
   array and comparing structure still costs O(n); this API does not promise constant-time arbitrary data updates.
 - `FluentObservable` and `FluentState` deduplicate concrete Equatable values. Custom values can
   supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
+- Navigation group chevrons use WinUI's down-collapsed/up-expanded directions in side and top
+  layouts. RTL mirrors their placement. Rotation survives layout, content, theme and hover
+  updates; mode changes, hiding/detachment, disabling and Reduce Motion settle it. Backing-scale
+  changes update geometry without restarting motion. Top items reserve the chevron's width and
+  text gap before applying the existing width cap and overflow policy. This preserves native navigation
+  behavior; full WinUI hierarchical flyouts and AnimatedIcon frame parity remain follow-up work.
 - SettingsExpander and Expander preserve chevron transitions through layout, content and hover
   refreshes. Initial display is static; detachment, disabling and Reduce Motion settle rotation
   without replaying it on reattachment or re-enabling. The chevron follows the resolved render

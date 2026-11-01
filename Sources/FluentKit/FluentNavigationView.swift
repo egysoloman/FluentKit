@@ -1402,7 +1402,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     private func topButtonWidth(_ button: FluentNavigationItemButton<ID>) -> CGFloat {
         let badgeReservation = button.infoBadgeWidth > 0 ? button.infoBadgeWidth + 8 : 0
-        return min(max(button.titleWidth + 60 + badgeReservation, 64), 188)
+        return min(max(button.titleWidth + 60 + badgeReservation + button.topChevronReservation, 64), 188)
     }
 
     private func installObservers() {
@@ -2073,6 +2073,9 @@ private final class FluentNavigationInfoBadgePresenter: NSView {
 /// layout. Mirroring individual glyphs while leaving the content rectangle unchanged lets text
 /// paint through the icon column.
 struct FluentNavigationItemHorizontalGeometry: Equatable {
+    private static let topChevronSlotWidth: CGFloat = 18
+    private static let topChevronTextGap: CGFloat = 8
+    static let topChevronReservation = topChevronSlotWidth + topChevronTextGap
     let iconFrame: NSRect
     let textFrame: NSRect
     let infoBadgeFrame: NSRect?
@@ -2119,9 +2122,9 @@ struct FluentNavigationItemHorizontalGeometry: Equatable {
                     : nil
                 let trailingContentEdge = logicalInfoBadge.map { $0.minX - 8 } ?? bounds.maxX - 10
                 logicalChevron = hasChildren
-                    ? NSRect(x: trailingContentEdge - 18, y: bounds.midY - 6, width: 12, height: 12)
+                    ? NSRect(x: trailingContentEdge - topChevronSlotWidth, y: bounds.midY - 6, width: 12, height: 12)
                     : nil
-                contentEnd = logicalChevron.map { $0.minX - 8 } ?? trailingContentEdge
+                contentEnd = logicalChevron.map { $0.minX - topChevronTextGap } ?? trailingContentEdge
             } else {
                 let baseContentEnd = bounds.maxX - (hasChildren ? 34 : 10)
                 logicalInfoBadge = hasInfoBadge
@@ -2188,6 +2191,8 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     private var itemExpanded = false
     private var fluentTheme: FluentTheme = .current
     private var layoutDirection: FluentLayoutDirection = .leftToRight
+    private var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+    private var hasChevronConfiguration = false
     private var pointerState = FluentPointerInteractionState()
     private var infoBadgeConfigurationGeneration: UInt64?
     private var onActivate: ((ID) -> Void)?
@@ -2206,6 +2211,10 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
     }
 
     var infoBadgeWidth: CGFloat { infoBadgeSize.width }
+
+    var topChevronReservation: CGFloat {
+        hasChildren ? FluentNavigationItemHorizontalGeometry.topChevronReservation : 0
+    }
 
     override var acceptsFirstResponder: Bool { isEnabled }
 
@@ -2255,6 +2264,11 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         onCancel: @escaping () -> Void,
         onHoverChange: @escaping (FluentNavigationItemButton<ID>, Bool) -> Void
     ) {
+        let resolvedDirection: FluentLayoutDirection = layoutDirection.appKitValue == .rightToLeft ? .rightToLeft : .leftToRight
+        let geometryChanged = !hasChevronConfiguration || itemID != item.id
+            || self.layoutDirection != resolvedDirection || self.top != top
+            || self.expanded != expanded || self.hasChildren != hasChildren
+        let motionPolicyChanged = reduceMotion != context.reduceMotion
         itemID = item.id
         itemTitle = item.title
         systemImageName = item.systemImageName
@@ -2267,7 +2281,8 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         self.hasChildren = hasChildren
         self.itemExpanded = itemExpanded
         fluentTheme = theme
-        self.layoutDirection = layoutDirection
+        self.layoutDirection = resolvedDirection
+        reduceMotion = context.reduceMotion
         userInterfaceLayoutDirection = layoutDirection.appKitValue
         self.onActivate = onActivate
         self.onMoveFocus = onMoveFocus
@@ -2284,7 +2299,9 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
             infoBadgeConfigurationGeneration = configurationGeneration
         }
         chevronLayer.isHidden = !hasChildren || (!expanded && !top)
-        updateChevron(animated: expansionChanged)
+        updateChevron(animated: expansionChanged && !geometryChanged,
+                      settle: geometryChanged || motionPolicyChanged)
+        hasChevronConfiguration = true
         needsLayout = true
         needsDisplay = true
     }
@@ -2296,6 +2313,31 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         infoBadgePresenter.isHidden = geometry.infoBadgeFrame == nil
         infoBadgePresenter.layoutSubtreeIfNeeded()
         updateChevron(animated: false)
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil {
+            if pointerState.reset() { needsDisplay = true }
+            chevronLayer.finishAnimations()
+        }
+        updateChevron(animated: false)
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        updateChevron(animated: false)
+    }
+
+    override func viewDidHide() {
+        super.viewDidHide()
+        if pointerState.reset() { needsDisplay = true }
+        chevronLayer.finishAnimations()
+    }
+
+    override func viewDidUnhide() {
+        super.viewDidUnhide()
+        updateChevron(animated: false, settle: true)
     }
 
     override func mouseEntered(with event: NSEvent) {
@@ -2427,9 +2469,10 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         }
     }
 
-    private func updateChevron(animated: Bool) {
+    private func updateChevron(animated: Bool, settle: Bool = false) {
         guard hasChildren, expanded || top, bounds.width > 0, bounds.height > 0 else {
             chevronLayer.isHidden = true
+            chevronLayer.finishAnimations()
             return
         }
         chevronLayer.isHidden = false
@@ -2440,16 +2483,22 @@ private final class FluentNavigationItemButton<ID: Hashable>: NSButton {
         let geometry = horizontalGeometry
         guard let chevronFrame = geometry.chevronFrame else {
             chevronLayer.isHidden = true
+            chevronLayer.finishAnimations()
             return
         }
+        let preservesMotion = !settle && window != nil && !isHiddenOrHasHiddenAncestor
+            && isEnabled && !reduceMotion
         chevronLayer.update(
             frame: chevronFrame,
             color: color,
             state: state,
             visual: .upDownSmall,
-            direction: itemExpanded ? .down : (layoutDirection == .rightToLeft ? .left : .right),
+            // WinUI navigation uses UpDownSmall; RTL mirrors placement, not this vertical axis.
+            direction: itemExpanded ? .up : .down,
             backingScale: window?.backingScaleFactor,
-            animated: animated && !NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+            preservingUnchangedAnimations: preservesMotion,
+            reduceMotion: reduceMotion,
+            animated: animated && preservesMotion
         )
     }
 

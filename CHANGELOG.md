@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Navigation group chevrons now point down when collapsed and up when expanded, following
+  WinUI's UpDownSmall visual in side and top layouts. Layout, content, theme and hover updates
+  preserve ongoing rotation. Hidden/detached rows, mode changes, disabling and Reduce Motion
+  settle it without replay; backing-scale changes preserve the timeline. The resolved render
+  context controls motion, and equivalent system/explicit layout directions no longer cancel it.
+  Top-navigation width measurement now reserves the disclosure slot and gap, so short group
+  titles fit beside their arrows; the existing maximum item width and overflow policy remain.
+
 - TreeView, SettingsExpander and Expander chevrons use the resolved render-context motion
   policy instead of a separate system snapshot. System defaults remain available, and explicit
   overrides now apply consistently to both the control and its chevron.
