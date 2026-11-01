@@ -15,6 +15,11 @@ func require(_ condition: @autoclosure () -> Bool, _ message: String) {
 }
 
 func drainMainQueue() {
+    // A fixed run-loop interval is not a completion signal for queued binding/render work.
+    // Keep the short AppKit settling interval, but first observe a main-queue barrier.
+    var reachedBarrier = false
+    DispatchQueue.main.async { reachedBarrier = true }
+    require(waitUntil(timeout: 1) { reachedBarrier }, "main queue reaches the validation barrier")
     RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
 }
 
@@ -8535,7 +8540,9 @@ let groupedAccessibility = FluentVStack(spacing: 4) {
 }.accessibilityGroup(label: "Settings group", identifier: "settings-group")
 let groupedView = groupedAccessibility._mount(in: FluentRenderContext())
 require(groupedView.isAccessibilityElement(), "accessibility group is an element")
-require(groupedView.accessibilityChildren()?.count == 1, "accessibility group exposes composed child hierarchy")
+// Native AppKit primitives can expose cell accessibility proxies rather than NSView objects.
+require(groupedView.accessibilityChildren()?.count == 2,
+    "accessibility group exposes meaningful children without an ignored stack wrapper")
 
 var toolbarInvocations = 0
 let toolbarRoot = FluentText("Toolbar host").toolbar {

@@ -35,6 +35,7 @@ public final class FluentToggle: NSControl {
     public var isOn: Bool {
         didSet {
             guard oldValue != isOn else { return }
+            NSAccessibility.post(element: self, notification: .valueChanged)
             refreshAppearance(
                 animated: true,
                 motion: FluentMotion.controlFaster,
@@ -253,7 +254,7 @@ public final class FluentToggle: NSControl {
         cancelInteraction(animated: true)
     }
 
-    public override func accessibilityValue() -> Any? { isOn ? "On" : "Off" }
+    public override func accessibilityValue() -> Any? { NSNumber(value: isOn ? 1 : 0) }
 
     public override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
@@ -316,7 +317,11 @@ public final class FluentToggle: NSControl {
         wantsLayer = true
         focusRingType = .none
         userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
-        setAccessibilityRole(.checkBox)
+        // Match NSSwitch: a button with switch semantics, a numeric state, and
+        // one exposed element regardless of the declarative binding wrapper.
+        setAccessibilityRole(.button)
+        setAccessibilitySubrole(.switch)
+        setAccessibilityElement(true)
         setAccessibilityTitle(titleText)
         setAccessibilityEnabled(isEnabled)
 

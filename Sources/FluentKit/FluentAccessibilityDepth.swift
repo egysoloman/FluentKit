@@ -294,19 +294,19 @@ private final class FluentSemanticAccessibilityHost: NSView {
         setAccessibilityLabel(label ?? (behavior == .combine ? combinedLabel(in: contentView) : nil))
         setAccessibilityHelp(hint)
         setAccessibilityIdentifier(identifier)
-        switch behavior {
-        case .ignore, .combine:
-            setAccessibilityChildren([])
-        case .contain:
-            setAccessibilityChildren([contentView])
-        }
+    }
+
+    override func accessibilityChildren() -> [Any]? {
+        behavior == .contain ? NSAccessibility.unignoredChildren(from: [contentView]) : []
     }
 
     private func combinedLabel(in view: NSView) -> String? {
         var labels: [String] = []
         func visit(_ candidate: NSView) {
-            if candidate.isAccessibilityElement(),
-               let label = candidate.accessibilityLabel(),
+            if (candidate as? FluentAccessibilitySubtreeVisibilityProviding)?.fluentAccessibilityHidesContent == true { return }
+            // A native control's cell may own its AX element while the view itself is
+            // ignored. Explicit view labels still participate in semantic combination.
+            if let label = candidate.accessibilityLabel(),
                !label.isEmpty {
                 labels.append(label)
             } else {

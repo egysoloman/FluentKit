@@ -193,7 +193,8 @@ public struct FluentDisabledView<Content: FluentView>: FluentUpdatablePrimitiveV
     }
 }
 
-private class FluentLayoutContainer: NSView, FluentFillWidthProviding {
+private class FluentLayoutContainer: NSView, FluentFillWidthProviding, FluentAccessibilityTargetProviding {
+    var fluentAccessibilityTarget: NSView? { subviews.first }
     private var leading: NSLayoutConstraint?
     private var trailing: NSLayoutConstraint?
     private var top: NSLayoutConstraint?

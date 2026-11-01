@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Toggle now exposes native switch accessibility with numeric state and change notifications.
+  Known transparent layout/binding wrappers forward accessibility metadata to their control.
+  Accessibility hiding suppresses the entire subtree without changing visual layout or control
+  identity; revealing it, semantic groups and `contain` omit ignored implementation wrappers.
+  Combined labels honor hidden subtrees and native controls whose cells own the AX element.
+
 - ComboBox faceplates now keep their Fluent natural height in stacks, frames and expanders.
   The hidden AppKit bridge/editor no longer impose their native 23pt sizing or editor insets.
   Regular controls retain 32pt; larger typography grows the faceplate to fit a complete line

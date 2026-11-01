@@ -24,8 +24,9 @@ public struct FluentControlSizeView<Content: FluentView>: FluentUpdatablePrimiti
     }
 }
 
-private final class FluentControlSizeHost: NSView {
+private final class FluentControlSizeHost: NSView, FluentAccessibilityTargetProviding {
     var contentView: NSView { subviews[0] }
+    var fluentAccessibilityTarget: NSView? { contentView }
 
     init(content: NSView, size: FluentControlSize) {
         super.init(frame: .zero)

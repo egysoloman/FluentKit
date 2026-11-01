@@ -272,8 +272,9 @@ extension FluentBoundTextField: NSTextFieldDelegate {
     }
 }
 
-public final class FluentBoundToggle: NSView {
+public final class FluentBoundToggle: NSView, FluentAccessibilityTargetProviding {
     public let toggle: FluentToggle
+    var fluentAccessibilityTarget: NSView? { toggle }
     var binding: FluentBinding<Bool>
     private var observer: UUID?
     private var isApplyingBinding = false
