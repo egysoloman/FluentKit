@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- TeachingTip now closes immediately when its retained target leaves the window,
+  moves to another window, or its owner closes. The binding resets and Closed/Dismiss
+  fire once; as in WinUI, unload bypasses cancellable Closing. Stale opening/closing
+  callbacks cannot restore the old panel. Root-window geometry notifications wait
+  for target layout before repositioning the existing panel. The default WinUI
+  out-of-root placement policy is retained.
+
 - ComboBox popups constrain long content to the target work area and remeasure
   their faceplate minimum width while open. Short work areas reduce the viewport
   by whole rows and retain all options in the scroll document. Resizing preserves

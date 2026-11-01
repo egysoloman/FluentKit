@@ -1,0 +1,198 @@
+{
+  "states": 32,
+  "failedStates": 16,
+  "failures": [
+    {
+      "state": "light-ltr-detach/changed",
+      "check": "binding"
+    },
+    {
+      "state": "light-ltr-detach/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "light-ltr-detach/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "light-ltr-detach/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "light-ltr-reparent/changed",
+      "check": "binding"
+    },
+    {
+      "state": "light-ltr-reparent/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "light-ltr-reparent/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "light-ltr-reparent/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "light-ltr-close/changed",
+      "check": "binding"
+    },
+    {
+      "state": "light-ltr-close/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "light-ltr-close/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "light-ltr-resize/changed",
+      "check": "panel follows"
+    },
+    {
+      "state": "light-rtl-detach/changed",
+      "check": "binding"
+    },
+    {
+      "state": "light-rtl-detach/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "light-rtl-detach/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "light-rtl-detach/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "light-rtl-reparent/changed",
+      "check": "binding"
+    },
+    {
+      "state": "light-rtl-reparent/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "light-rtl-reparent/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "light-rtl-reparent/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "light-rtl-close/changed",
+      "check": "binding"
+    },
+    {
+      "state": "light-rtl-close/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "light-rtl-close/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "light-rtl-resize/changed",
+      "check": "panel follows"
+    },
+    {
+      "state": "dark-ltr-detach/changed",
+      "check": "binding"
+    },
+    {
+      "state": "dark-ltr-detach/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "dark-ltr-detach/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "dark-ltr-detach/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "dark-ltr-reparent/changed",
+      "check": "binding"
+    },
+    {
+      "state": "dark-ltr-reparent/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "dark-ltr-reparent/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "dark-ltr-reparent/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "dark-ltr-close/changed",
+      "check": "binding"
+    },
+    {
+      "state": "dark-ltr-close/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "dark-ltr-close/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "dark-ltr-resize/changed",
+      "check": "panel follows"
+    },
+    {
+      "state": "dark-rtl-detach/changed",
+      "check": "binding"
+    },
+    {
+      "state": "dark-rtl-detach/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "dark-rtl-detach/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "dark-rtl-detach/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "dark-rtl-reparent/changed",
+      "check": "binding"
+    },
+    {
+      "state": "dark-rtl-reparent/changed",
+      "check": "visibility"
+    },
+    {
+      "state": "dark-rtl-reparent/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "dark-rtl-reparent/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "dark-rtl-close/changed",
+      "check": "binding"
+    },
+    {
+      "state": "dark-rtl-close/changed",
+      "check": "parent ownership"
+    },
+    {
+      "state": "dark-rtl-close/changed",
+      "check": "unload closes once"
+    },
+    {
+      "state": "dark-rtl-resize/changed",
+      "check": "panel follows"
+    }
+  ]
+}

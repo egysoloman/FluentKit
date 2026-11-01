@@ -301,6 +301,11 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
     private var tipHost: FluentViewHost<TipContent>?
     private var localMonitor: Any?
     private var globalMonitor: Any?
+    private var screenObserver: FluentPopupScreenObserver?
+    private var windowCloseObserver: NSObjectProtocol?
+    private weak var closingWindow: NSWindow?
+    private var isUnloading = false
+    private var positionUpdatePending = false
     private let animationCoordinator: FluentAnimationCoordinator
     private var transitionState: TransitionState?
     private var transitionGeneration: UInt64 = 0
@@ -336,6 +341,8 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        if let panel, panel.parent !== window { closeOnUnload() }
+        if window !== closingWindow { closingWindow = nil }
         DispatchQueue.main.async { [weak self] in self?.synchronizePresentation() }
     }
 
@@ -377,7 +384,13 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
     }
 
     private func synchronizePresentation() {
-        guard window != nil else { return }
+        guard !isUnloading, let window else { return }
+        if closingWindow === window {
+            // A callback may request another opening while NSWindow.close() is still running.
+            // Keep that request dormant until the same window is explicitly shown again.
+            guard window.isVisible else { return }
+            closingWindow = nil
+        }
         if binding.get() {
             if panel == nil {
                 present()
@@ -427,6 +440,7 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         }
 
         parentWindow.addChildWindow(panel, ordered: .above)
+        installWindowObservers(parentWindow, panel: panel)
         if configuration.isLightDismissEnabled {
             installOutsideClickMonitors(panel: panel)
             panel.makeKeyAndOrderFront(nil)
@@ -457,6 +471,9 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
         let reason = pendingCloseReason
         let args = FluentTeachingTipClosingEventArgs(reason: reason)
         configuration.onClosing(args)
+        // A Closing handler can remove the target. Unload has already closed that popup
+        // unconditionally; neither cancellation nor the old animation may resurrect it.
+        guard self.panel === panel else { return }
         if args.cancel {
             pendingCloseReason = .programmatic
             if !binding.get() { binding.set(true) }
@@ -466,14 +483,15 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
 
         removeOutsideClickMonitors()
         let finish = { [weak self, weak panel] in
-            guard let self, let panel else { return }
-            panel.parent?.removeChildWindow(panel)
-            panel.orderOut(nil)
+            guard let self, let panel, self.panel === panel else { return }
+            self.removeWindowObservers()
             self.panel = nil
             self.chrome = nil
             self.tipHost = nil
             self.needsDeferredPosition = false
             self.pendingCloseReason = .programmatic
+            panel.parent?.removeChildWindow(panel)
+            panel.orderOut(nil)
             self.configuration.onClosed(reason)
             self.configuration.onDismiss()
             self.synchronizePresentation()
@@ -486,6 +504,64 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
             animated: animated,
             completion: finish
         )
+    }
+
+    private func installWindowObservers(_ owner: NSWindow, panel: NSPanel) {
+        removeWindowObservers()
+        screenObserver = FluentPopupScreenObserver(window: owner) { [weak self, weak owner, weak panel] in
+            guard let self, let owner, let panel, self.window === owner, self.panel === panel,
+                  !self.positionUpdatePending else { return }
+            self.positionUpdatePending = true
+            // WinUI queues XamlRootChanged until the target's layout has finished. AppKit's
+            // resize notification can likewise precede the final autoresizing/layout pass.
+            DispatchQueue.main.async { [weak self, weak owner, weak panel] in
+                guard let self else { return }
+                guard let owner, let panel, self.window === owner, self.panel === panel else { return }
+                self.positionUpdatePending = false
+                owner.contentView?.layoutSubtreeIfNeeded()
+                _ = self.positionPanel()
+            }
+        }
+        windowCloseObserver = NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification,
+            object: owner, queue: .main) { [weak self, weak owner] _ in
+                guard let self, let owner, self.panel?.parent === owner else { return }
+                self.closingWindow = owner
+                self.closeOnUnload()
+            }
+    }
+
+    private func removeWindowObservers() {
+        positionUpdatePending = false
+        screenObserver = nil
+        if let windowCloseObserver { NotificationCenter.default.removeObserver(windowCloseObserver) }
+        windowCloseObserver = nil
+    }
+
+    /// TeachingTip::ClosePopupOnUnloadEvent closes immediately, bypassing the cancellable
+    /// Closing path. Clear ownership before model/callback work so a retained or reparented
+    /// target cannot leave an orphan panel or complete an obsolete animation later.
+    private func closeOnUnload() {
+        guard !isUnloading, let panel else { return }
+        isUnloading = true
+        defer { isUnloading = false }
+        let reason = pendingCloseReason
+        let onClosed = configuration.onClosed, onDismiss = configuration.onDismiss
+        let layers = [chrome?.layer].compactMap { $0 }
+        transitionGeneration &+= 1
+        transitionState = nil
+        needsDeferredPosition = false
+        pendingCloseReason = .programmatic
+        removeWindowObservers()
+        removeOutsideClickMonitors()
+        self.panel = nil
+        chrome = nil
+        tipHost = nil
+        animationCoordinator.cancelAll(on: layers)
+        panel.parent?.removeChildWindow(panel)
+        panel.orderOut(nil)
+        if binding.get() { binding.set(false) }
+        onClosed(reason)
+        onDismiss()
     }
 
     private func closeWithoutPresentation() {
@@ -512,6 +588,8 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
 
         for candidate in candidates where heroAllows(candidate) {
             let geometry = makeGeometry(for: candidate, anchor: anchor, chrome: chrome)
+            // WinUI's default m_returnTopForOutOfWindowPlacement deliberately skips fallback
+            // when root constraints are disabled; screen-fit logic there is test-hook-only.
             if !configuration.shouldConstrainToRootBounds || geometry.fits(in: allowed, chrome: chrome) {
                 selected = (candidate, geometry)
                 break
@@ -817,6 +895,7 @@ private final class FluentTeachingTipHost<TipContent: FluentView>: NSView {
     deinit {
         if let observerID { binding.removeObserver(observerID) }
         removeOutsideClickMonitors()
+        removeWindowObservers()
         if let panel {
             animationCoordinator.cancelAll(on: [chrome?.layer].compactMap { $0 })
             panel.parent?.removeChildWindow(panel)

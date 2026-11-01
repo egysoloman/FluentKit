@@ -1,0 +1,898 @@
+[
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-close",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-close",
+    "visible" : false
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-ltr-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 100,
+    "variant" : "light-ltr-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-close",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-close",
+    "visible" : false
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "light-rtl-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 100,
+    "variant" : "light-rtl-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-close",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-close",
+    "visible" : false
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-ltr-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 100,
+    "variant" : "dark-ltr-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "detach",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-detach",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "reparent",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-reparent",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-close",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "close",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-close",
+    "visible" : false
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "opened",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 0,
+    "variant" : "dark-rtl-resize",
+    "visible" : true
+  },
+  {
+    "binding" : true,
+    "closed" : 0,
+    "closing" : 0,
+    "hasParent" : true,
+    "kind" : "resize",
+    "opened" : 1,
+    "panelFrame" : [
+      254,
+      341,
+      352,
+      140
+    ],
+    "panelMovementX" : 0,
+    "phase" : "changed",
+    "sameContent" : true,
+    "sameResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      61,
+      1512,
+      888
+    ],
+    "targetMovementX" : 100,
+    "variant" : "dark-rtl-resize",
+    "visible" : true
+  }
+]
