@@ -1278,23 +1278,19 @@ final class FluentKitTests: XCTestCase {
                 pressure: type == .leftMouseUp ? 0 : 1
             ))
         }
-        func drain() {
-            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.05))
-        }
-
         let native = try XCTUnwrap(descendant(of: NSComboBox.self, in: host))
         native.mouseDown(with: try event(.leftMouseDown, in: native, number: 811))
         native.mouseUp(with: try event(.leftMouseUp, in: native, number: 812))
-        drain()
+        waitForUI(window.childWindows?.first?.isVisible == true)
         XCTAssertEqual(window.childWindows?.count, 1)
         native.mouseDown(with: try event(.leftMouseDown, in: native, number: 813))
         native.mouseUp(with: try event(.leftMouseUp, in: native, number: 814))
-        drain()
-        XCTAssertEqual(window.childWindows?.count, 0)
+        waitForUI(window.childWindows?.isEmpty != false)
+        XCTAssertEqual(window.childWindows?.count ?? 0, 0)
 
         host.mouseDown(with: try event(.leftMouseDown, in: host, number: 815))
         host.mouseUp(with: try event(.leftMouseUp, in: host, number: 816))
-        drain()
+        waitForUI(window.childWindows?.first?.isVisible == true)
         XCTAssertEqual(window.childWindows?.count, 1)
     }
 

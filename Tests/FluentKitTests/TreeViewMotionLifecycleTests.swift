@@ -22,6 +22,8 @@ final class TreeViewMotionLifecycleTests: XCTestCase {
                               styleMask: [.titled], backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
         window.contentView = view
+        window.orderFront(nil)
+        XCTAssertTrue(window.isVisible, "Disclosure motion is exercised in a displayed outline")
         view.layoutSubtreeIfNeeded()
         let cell = try XCTUnwrap(view.outlineView.view(atColumn: 0, row: 0, makeIfNecessary: true) as? FluentOutlineCellHost)
         cell.layoutSubtreeIfNeeded()
@@ -33,7 +35,8 @@ final class TreeViewMotionLifecycleTests: XCTestCase {
         defer { window.close() }
         let content = try XCTUnwrap(cell.contentView)
         view.toggleExpansion("root")
-        XCTAssertNotNil(cell.chevronLayer.animation(forKey: rotationKey))
+        XCTAssertNotNil(cell.chevronLayer.animation(forKey: rotationKey),
+                        "visible=\(window.isVisible), systemReduceMotion=\(NSWorkspace.shared.accessibilityDisplayShouldReduceMotion)")
         cell.layoutSubtreeIfNeeded()
         view.layoutSubtreeIfNeeded()
         XCTAssertNotNil(cell.chevronLayer.animation(forKey: rotationKey), "Layout must not finish an in-flight rotation")
