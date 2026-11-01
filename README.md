@@ -857,7 +857,13 @@ immediately. Visual preview and accessibility selection remain distinct.
 For applications that need the earlier immediate-selection behavior, use
 `.selectionChangedTrigger(.always)`. An empty noneditable list selection then selects its first
 option on opening. This setting is independent of `.textInput`'s IME publication policy.
-Complete text search, prefix completion and custom text-submission events remain open contracts.
+Noneditable controls support incremental title search, both closed and open. A matching prefix
+selects immediately under either selection trigger and reveals the matching row. Spaces extend an
+active query; after one second without a character, a new query starts after the current selection
+and wraps. Matching ignores case, diacritics, character width and kana type using macOS Unicode
+folding. Use `.isTextSearchEnabled(false)` to disable this behavior. Model resets and focus changes
+discard stale queries; title/theme refreshes retain them. Editable prefix completion and custom
+text-submission events remain open contracts.
 
 Open ComboBoxes reconcile options by their unique `Hashable` values. Appending, reordering or
 removing options preserves the panel, responder, surviving rows and visible scroll position.

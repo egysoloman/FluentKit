@@ -648,6 +648,7 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     private let title: (Option) -> String
     private let style: any FluentTextFieldStyle
     private var selectionTrigger: FluentComboBoxSelectionChangedTrigger = .committed
+    private var textSearchEnabled = true
 
     public init(
         options: [Option],
@@ -675,6 +676,7 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
             text: text,
             mode: mode,
             selectionTrigger: selectionTrigger,
+            textSearchEnabled: textSearchEnabled,
             title: title,
             theme: context.theme,
             style: style,
@@ -690,6 +692,7 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
             text: text,
             mode: mode,
             selectionTrigger: selectionTrigger,
+            textSearchEnabled: textSearchEnabled,
             title: title,
             theme: context.theme,
             style: style,
@@ -701,12 +704,20 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     public func textFieldStyle(_ style: any FluentTextFieldStyle) -> FluentComboBox<Option> {
         FluentComboBox(options: options, selection: selection, mode: mode, text: text, style: style, title: title)
             .selectionChangedTrigger(selectionTrigger)
+            .isTextSearchEnabled(textSearchEnabled)
     }
 
     /// Defaults to WinUI's committed selection behavior. Use `.always` for immediate previews.
     public func selectionChangedTrigger(_ trigger: FluentComboBoxSelectionChangedTrigger) -> Self {
         var copy = self
         copy.selectionTrigger = trigger
+        return copy
+    }
+
+    /// Enables incremental title search in a noneditable ComboBox. Defaults to true.
+    public func isTextSearchEnabled(_ enabled: Bool) -> Self {
+        var copy = self
+        copy.textSearchEnabled = enabled
         return copy
     }
 }
@@ -1197,6 +1208,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private var text: FluentBinding<String>?
     private var mode: FluentComboBoxMode
     private var selectionTrigger: FluentComboBoxSelectionChangedTrigger
+    private var textSearchEnabled: Bool
+    private var textSearch = FluentComboBoxTextSearch()
     private final class SelectionSession {
         var baselineSelection: Option?
         var baselineText: String
@@ -1260,6 +1273,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         text: FluentBinding<String>?,
         mode: FluentComboBoxMode,
         selectionTrigger: FluentComboBoxSelectionChangedTrigger,
+        textSearchEnabled: Bool,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
         style: any FluentTextFieldStyle,
@@ -1270,6 +1284,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         self.text = text
         self.mode = mode
         self.selectionTrigger = selectionTrigger
+        self.textSearchEnabled = textSearchEnabled
         self.title = title
         self.reduceMotion = reduceMotion
         super.init(frame: .zero)
@@ -1322,7 +1337,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         comboBox.onFocusChange = { [weak self] focused in
             guard let self else { return }
             self.updateFocusPill(focused: focused, animated: false)
-            if !focused { self.cancelPointerInteraction(dismissPopup: false) }
+            if !focused {
+                if self.comboPopup == nil { self.textSearch.reset() }
+                self.cancelPointerInteraction(dismissPopup: false)
+            }
             else { self.applyButtonChrome(animated: true) }
         }
         comboBox.onPressChange = { [weak self] pressed in
@@ -1493,6 +1511,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     override func viewWillMove(toWindow newWindow: NSWindow?) {
         if newWindow !== window {
+            textSearch.reset()
             cancelPointerInteraction(dismissPopup: false)
             removeWindowObservers()
         }
@@ -1538,6 +1557,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         isPointerOver = false
         isPointerOverGlyph = false
         if dismissPopup {
+            textSearch.reset()
             comboPopup?.dismiss(animated: false)
             comboPopup = nil
         }
@@ -1597,6 +1617,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         text: FluentBinding<String>?,
         mode: FluentComboBoxMode,
         selectionTrigger: FluentComboBoxSelectionChangedTrigger,
+        textSearchEnabled: Bool,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
         style: any FluentTextFieldStyle,
@@ -1607,6 +1628,12 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         let modeChanged = self.mode != mode
         let knownBindingChanged = self.selection.observationIdentity != selection.observationIdentity
             || self.text?.observationIdentity != text?.observationIdentity
+        // A closure binding may have no observation identity. Its last rendered stable value
+        // still distinguishes a parent model reset from a theme/title-only update.
+        let displayedSelection = self.options.indices.contains(comboBox.indexOfSelectedItem)
+            ? self.options[comboBox.indexOfSelectedItem] : nil
+        if mode == .selection, !isPublishingSelection, selection.get() != displayedSelection { textSearch.reset() }
+        if modeChanged || knownBindingChanged || !textSearchEnabled || options.isEmpty { textSearch.reset() }
         let reusesSelectionObservation = self.selection.observationIdentity != nil
             && self.selection.observationIdentity == selection.observationIdentity
         let reusesTextObservation: Bool
@@ -1636,6 +1663,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         self.text = text
         self.mode = mode
         self.selectionTrigger = selectionTrigger
+        self.textSearchEnabled = textSearchEnabled
         self.title = title
         self.reduceMotion = reduceMotion
         if self.theme != theme { self.theme = theme }
@@ -1810,6 +1838,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         guard isControlEnabled, window?.isVisible == true, !isHiddenOrHasHiddenAncestor,
               (editableField.currentEditor() as? NSTextView)?.hasMarkedText() != true else { return false }
         if let comboPopup, comboPopup.isPresented { return comboPopup.handleKeyDown(event) }
+        if handleTextSearchKey(event) { return true }
         let modifiers = event.modifierFlags.intersection([.shift, .control, .option, .command])
         if (event.keyCode == 118 && modifiers.isEmpty)
             || ([125, 126].contains(event.keyCode) && modifiers == .option) {
@@ -1831,6 +1860,39 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         case 36 where mode == .selection, 49 where mode == .selection:
             requestOpen()
         default: return false
+        }
+        return true
+    }
+
+    private func handleTextSearchKey(_ event: NSEvent) -> Bool {
+        guard mode == .selection, textSearchEnabled, isControlEnabled, window?.isVisible == true,
+              !isHiddenOrHasHiddenAncestor,
+              event.modifierFlags.intersection([.command, .control]).isEmpty,
+              let characters = event.characters, !characters.isEmpty,
+              characters.unicodeScalars.allSatisfy({
+                  $0.properties.generalCategory != .control && !(0xF700...0xF8FF).contains($0.value)
+              }) else { return false }
+        // Space starts/commits a popup outside a search, but is an ordinary character within
+        // the active prefix. Shift and character-producing Option combinations remain text.
+        if characters == " ", !textSearch.isSearching() { return false }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        let index = textSearch.append(characters, titles: options.map(title),
+            selectedIndex: selection.get().flatMap { options.firstIndex(of: $0) })
+        guard let index else { return true }
+        let matched = options[index]
+        let popup = comboPopup
+        let session = selectionSession
+        session?.hasPreview = false
+        session?.isNavigationPreview = false
+        session?.preview = nil
+        selectOption(at: index, dismiss: false)
+        // Selection callbacks may reorder, normalize, rebind or reopen. Reveal the current
+        // stable value only in the popup that received this event; never reuse the old index.
+        if comboPopup === popup, selectionSession === session {
+            if selection.get() != matched { textSearch.reset() }
+            if let selected = selection.get(), let current = options.firstIndex(of: selected) {
+                popup?.focusSearchResult(at: current)
+            }
         }
         return true
     }
@@ -1930,12 +1992,14 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
                 }
             },
             onReturnFocus: { [weak self] backwards in self?.restoreKeyboardFocus(traverseBackwards: backwards) },
+            onTextSearchKey: { [weak self] event in self?.handleTextSearchKey(event) ?? false },
             onClosing: { [weak self] reason in
                 guard let self, self.selectionSession === session else { return }
                 if reason == .dismissed, self.mode == .editable { self.commitEditableSelection() }
             },
             onDismiss: { [weak self] in
                 guard let self, self.selectionSession === session else { return }
+                self.textSearch.reset()
                 self.selectionSession = nil
                 self.comboPopup = nil
                 self.applySelection()
@@ -2073,6 +2137,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         let selectionChanged = selected != session.modelSelection
         let textChanged = value != session.modelText
         guard force || selectionChanged || textChanged else { return }
+        textSearch.reset()
         session.hasPreview = false
         session.isNavigationPreview = false
         session.preview = nil
@@ -2154,6 +2219,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         observerID = selection.observe { [weak self] _ in
             let apply = { [weak self] in
                 guard let self, subscription == self.selectionSubscriptionGeneration else { return }
+                if !self.isPublishingSelection { self.textSearch.reset() }
                 if !self.isPublishingSelection { self.deferExternalSelectionIfComposing() }
                 self.refreshSelectionSessionFromModel(force: !self.isPublishingSelection)
                 self.applySelection()

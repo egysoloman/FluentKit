@@ -72,8 +72,10 @@ is not required. The macOS composition and developer overrides remain intentiona
    navigation previews, selected bindings, accessibility state and mode-specific dismissal.
    Editable ComboBox uses the shared text coordinator for active external resets,
    composition policy, undo/redo and binding replacement; Release gates cover these paths.
-   Next complete text-search semantics: noneditable prefix search, editable completion and
-   custom text submission, retaining native composition ownership and external-reset precedence.
+   Noneditable prefix search now handles immediate selection, space-separated queries, timeout,
+   wrapping, Unicode folding and a developer opt-out without changing arrow-preview policy.
+   Next complete editable prefix completion and custom text submission, retaining native
+   composition ownership and external-reset precedence.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required

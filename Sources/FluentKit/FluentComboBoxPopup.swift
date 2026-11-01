@@ -82,6 +82,7 @@ final class FluentComboBoxPopup: NSObject {
     private let onCommit: (Int) -> Void
     private let onCancel: () -> Void
     private let onReturnFocus: (Bool?) -> Void
+    private let onTextSearchKey: (NSEvent) -> Bool
     private let onClosing: (FluentComboBoxPopupCloseReason) -> Void
     private let onDismiss: () -> Void
     /// `ComboBox::m_inputDeviceTypeUsedToOpen`: touch opens use the TouchInputMode item padding
@@ -103,6 +104,7 @@ final class FluentComboBoxPopup: NSObject {
         onCommit: @escaping (Int) -> Void,
         onCancel: @escaping () -> Void = {},
         onReturnFocus: @escaping (Bool?) -> Void = { _ in },
+        onTextSearchKey: @escaping (NSEvent) -> Bool = { _ in false },
         onClosing: @escaping (FluentComboBoxPopupCloseReason) -> Void = { _ in },
         onDismiss: @escaping () -> Void
     ) {
@@ -118,6 +120,7 @@ final class FluentComboBoxPopup: NSObject {
         self.onCommit = onCommit
         self.onCancel = onCancel
         self.onReturnFocus = onReturnFocus
+        self.onTextSearchKey = onTextSearchKey
         self.onClosing = onClosing
         self.onDismiss = onDismiss
         super.init()
@@ -196,7 +199,8 @@ final class FluentComboBoxPopup: NSObject {
                 guard let self else { return }
                 self.dismiss(animated: false, reason: .dismissed)
                 self.onReturnFocus(backwards)
-            }
+            },
+            onTextSearchKey: onTextSearchKey
         )
         root.frame = NSRect(origin: .zero, size: size)
 
@@ -314,6 +318,12 @@ final class FluentComboBoxPopup: NSObject {
         showsPreview = active
         previewID = id
         popupView?.updatePreview(index, active: active)
+    }
+
+    func focusSearchResult(at index: Int) {
+        guard isPresented, titles.indices.contains(index) else { return }
+        keyboardIndex = index
+        popupView?.moveKeyboardSelection(to: index, notifyMove: false)
     }
 
     /// Reconcile declarative options by their stable value, independently of their display text.
@@ -554,6 +564,7 @@ private final class FluentComboBoxPopupView: NSView {
     private let onDismiss: () -> Void
     private let onClose: () -> Void
     private let onTab: (Bool) -> Void
+    private let onTextSearchKey: (NSEvent) -> Bool
     private var selectedIndex: Int?
     private var keyboardIndex: Int?
     private var rows: [FluentComboBoxPopupRow] = []
@@ -588,7 +599,8 @@ private final class FluentComboBoxPopupView: NSView {
         onCommit: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void,
         onClose: @escaping () -> Void,
-        onTab: @escaping (Bool) -> Void
+        onTab: @escaping (Bool) -> Void,
+        onTextSearchKey: @escaping (NSEvent) -> Bool
     ) {
         self.optionIDs = optionIDs
         self.titles = titles
@@ -603,6 +615,7 @@ private final class FluentComboBoxPopupView: NSView {
         self.onDismiss = onDismiss
         self.onClose = onClose
         self.onTab = onTab
+        self.onTextSearchKey = onTextSearchKey
         super.init(frame: .zero)
         wantsLayer = true
         identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBoxPopup.ItemsPresenter")
@@ -772,6 +785,7 @@ private final class FluentComboBoxPopupView: NSView {
 
     func handleKeyDown(_ event: NSEvent) -> Bool {
         guard window?.isVisible == true else { return false }
+        if onTextSearchKey(event) { return true }
         let modifiers = event.modifierFlags.intersection([.shift, .control, .option, .command])
         if event.keyCode == 48, modifiers.isEmpty || modifiers == .shift {
             onTab(modifiers == .shift)
@@ -806,13 +820,13 @@ private final class FluentComboBoxPopupView: NSView {
         moveKeyboardSelection(to: min(max(current + offset, 0), titles.count - 1))
     }
 
-    private func moveKeyboardSelection(to index: Int) {
+    func moveKeyboardSelection(to index: Int, notifyMove: Bool = true) {
         guard titles.indices.contains(index) else { return }
         showsKeyboardFocus = true
         keyboardIndex = index
         updateRows()
         rowsHost.scrollToVisible(rows[index].frame)
-        onMove(index)
+        if notifyMove { onMove(index) }
         // The binding callback can synchronously remove/reorder the focused item or dismiss
         // the popup. Announce only the current retained focus, never a pre-callback index.
         if window?.isVisible == true, let current = keyboardIndex, rows.indices.contains(current) {

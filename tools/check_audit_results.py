@@ -52,6 +52,20 @@ for row in selection:
     assert row['editorPreserved'] is True and row['closed'] is True, row
     assert not row['editable'] or row['beforeText'] == 'Option 2', row
     assert row['close'] != 'row' or row['rowPressAccepted'] is True, row
+search = load('ComboBoxTextSearchAudit')
+assert len(search) == 64 and {(r['dark'], r['rtl'], r['always'], r['open'], r['scenario']) for r in search} == {
+    (dark, rtl, always, opened, scenario) for dark in (False, True) for rtl in (False, True)
+    for always in (False, True) for opened in (False, True) for scenario in ('prefix', 'words', 'escape', 'disabled')
+}, search
+for row in search:
+    expected = 0 if row['scenario'] == 'disabled' else 3 if row['scenario'] == 'words' else 4
+    assert row['selection'] == expected and row['popupOpen'] == row['open'], row
+    assert row['panelPreserved'] is True and row['responderPreserved'] is True, row
+    expected_title = ['Alpha', 'Bravo', 'Blue sky', 'Blue sea', 'Charlie'][expected]
+    assert row['focusedTitles'] == row['selectedTitles'] == ([expected_title] if row['open'] else []), row
+    cancelled = row['scenario'] == 'escape' and row['open']
+    assert row['afterSelection'] == (0 if cancelled else expected), row
+    assert row['afterPopupOpen'] == (row['open'] and not cancelled), row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

@@ -15,6 +15,8 @@ struct ComboBoxGallerySample: FluentView {
             FluentText("Live options", style: .bodyStrong)
             FluentText("Tab to a field. Use F4 or Option+Up/Down to open or close; Escape restores the opening value.",
                        style: .caption)
+            FluentText("In the first field, type Option 5 to search. Spaces extend the query; matching selects immediately.",
+                       style: .caption)
             FluentButtonView(immediateSelection ? "Selection: while browsing" : "Selection: when confirmed") {
                 immediateSelection.toggle()
             }

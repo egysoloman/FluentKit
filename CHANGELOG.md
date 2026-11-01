@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Noneditable ComboBoxes now support incremental title search while closed or open. Matching
+  immediately selects and reveals the stable option under either selection trigger; spaces extend
+  the active prefix instead of toggling the popup. Searches expire after one second, wrap from the
+  current selection and use macOS Unicode folding for case, diacritics, width and kana type.
+  `.isTextSearchEnabled(false)` opts out. Model resets, focus loss and cancelled lifecycles clear
+  old input; live titles, reordering and reentrant callbacks preserve the current popup owner.
+  Editable prefix completion and custom text-submission events remain follow-up work.
+
 - ComboBox now defaults to WinUI's `.committed` selection trigger. Open keyboard navigation
   previews without changing the selected binding; Enter or row activation commits. Normal
   noneditable dismissal discards preview, while editable dismissal/blur commits its current
