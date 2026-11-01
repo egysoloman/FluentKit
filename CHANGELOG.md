@@ -4,6 +4,16 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Hierarchical MenuFlyouts coordinate delayed opening and closing across descendants. Crossing
+  into a child cancels pending sibling replacement; leaving the chain or entering a disabled
+  sibling closes the old child after a grace period. Expanded branches retain independent paint
+  and accessibility-expanded state, with a transparent High Contrast fill and macOS adaptive
+  emphasis text color that remains readable against the popup fallback.
+  Keyboard input, retained-row updates, visible vertical scrollers and focus handoff cancel or
+  preserve the appropriate pointer work; retired branches cannot affect a replacement popup.
+  Initial presentation resolves system colors against the menu's explicit theme, fixing dark
+  High Contrast text when opened from a light host window (and the inverse).
+
 - Hierarchical MenuFlyouts separate keyboard selection from delayed pointer opening. Keyboard
   opening selects the first enabled child; Escape and the closing arrow return one level with
   parent selection restored, while a standalone root ignores the closing arrow. Tab retains

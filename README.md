@@ -1575,6 +1575,10 @@ composition. Neither path is implemented as a MenuFlyout, and all three presente
 immediately without an exit animation.
 
 Submenus open after a short pointer hover delay or immediately from keyboard/accessibility input.
+Moving between menu levels preserves the open branch across the gap; leaving the chain closes
+children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
+branches retain their own paint and accessibility-expanded state independently of keyboard selection,
+including live item updates and High Contrast. Hovering a visible vertical scroller keeps its branch open.
 Arrow keys move between levels, printable keys perform type-ahead matching, and the presenter mirrors
 its chevrons, checkmarks, accelerator columns, and anchor placement for right-to-left layouts.
 

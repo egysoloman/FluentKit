@@ -1222,6 +1222,13 @@ public struct FluentTheme: Equatable {
         return state == .disabled ? textDisabled : textSecondary
     }
 
+    /// An expanded branch stays distinct from pointer/keyboard selection. WinUI uses Highlight
+    /// text on a transparent background; macOS linkColor supplies adaptive emphasis suitable
+    /// for small text, where its selection-background color can have insufficient contrast.
+    public var menuSubmenuOpenedBackground: NSColor { isHighContrast ? .clear : subtleFillSecondary }
+    public var menuSubmenuOpenedForeground: NSColor { isHighContrast ? .linkColor : textPrimary }
+    public var menuSubmenuOpenedChevron: NSColor { isHighContrast ? .linkColor : textSecondary }
+
     public var cardFill: NSColor {
         if isHighContrast { return windowBackground }
         return isDark

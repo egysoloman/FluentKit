@@ -109,6 +109,21 @@ for row in hierarchy:
         assert row['rootSelection'] == ['Branch'], row
     if row['action'] == 'escape' and row['initiallyKey']:
         assert row['childKey'] is True, row
+pointer = load('MenuPointerAudit')
+pointer_actions = {'leaveRoot', 'leaveChild', 'padding', 'siblingRace', 'grandchild', 'disabled', 'ownerPaint', 'reorder'}
+assert len(pointer) == 64 and {(r['dark'], r['rtl'], r['highContrast'], r['action']) for r in pointer} == {
+    (dark, rtl, high, action) for dark in (False, True) for rtl in (False, True)
+    for high in (False, True) for action in pointer_actions
+}, pointer
+for row in pointer:
+    assert row['passed'] is True and row['rootVisible'] is True and row['appearancesMatch'] is True, row
+    retained = row['action'] not in ('leaveRoot', 'leaveChild', 'disabled')
+    assert row['childRetained'] == retained and row['ownerExpanded'] == retained, row
+    assert row['ownerSelected'] is False, row
+    if row['highContrast']:
+        assert row['expandedTextContrast'] >= 4.5, row
+    if row['action'] == 'ownerPaint':
+        assert (row['ownerBackgroundAlpha'] == 0) if row['highContrast'] else (row['ownerBackgroundAlpha'] > 0), row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

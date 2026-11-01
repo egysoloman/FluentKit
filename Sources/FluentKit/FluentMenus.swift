@@ -186,6 +186,8 @@ public final class FluentMenuFlyout {
     private var childFlyout: FluentMenuFlyout?
     private var childIndex: Int?
     private var pendingSubmenuWorkItem: DispatchWorkItem?
+    private var pendingChildCloseWorkItem: DispatchWorkItem?
+    private var childCloseRevision: UInt = 0
     private var localMonitor: Any?
     private var globalMonitor: Any?
     private var lifecycleObservers: [NSObjectProtocol] = []
@@ -285,7 +287,7 @@ public final class FluentMenuFlyout {
         layoutDirection = owner?.layoutDirection ?? anchor.userInterfaceLayoutDirection
         presenter.update(items: items, theme: self.theme, layoutDirection: layoutDirection,
                          minimumWidth: resolvedMinimumWidth(for: anchor))
-        panel.appearance = fluentAppKitAppearance(for: self.theme)
+        panel.appearance = fluentAppKitAppearance(for: self.theme) ?? parentWindow?.effectiveAppearance
         transitionHost?.update(theme: self.theme)
         positionPanel()
         if let childRow, let index = presenter.index(of: childRow), items[index].isEnabled, items[index].hasSubmenu {
@@ -297,6 +299,7 @@ public final class FluentMenuFlyout {
             panel.makeFirstResponder(presenter)
             if wasKey { panel.makeKey() }
         }
+        updateOpenBranchState()
     }
 
     /// Follow the anchor when MenuBar items move or their FlowDirection changes.
@@ -476,7 +479,8 @@ public final class FluentMenuFlyout {
         panel.level = .popUpMenu
         panel.collectionBehavior = [.transient, .fullScreenAuxiliary]
         panel.hidesOnDeactivate = true
-        panel.appearance = anchorWindow.effectiveAppearance
+        panel.acceptsMouseMovedEvents = true
+        panel.appearance = fluentAppKitAppearance(for: theme) ?? anchorWindow.effectiveAppearance
 
         // One shared popup surface owns the fill and edge; the theme-level material switch
         // replaces it with an opaque fallback without changing popup geometry.
@@ -498,10 +502,19 @@ public final class FluentMenuFlyout {
         presenter.onSelection = { [weak self] index, row, keyboard in
             guard let self else { return }
             if keyboard {
-                self.pendingSubmenuWorkItem?.cancel()
-                self.pendingSubmenuWorkItem = nil
+                self.cancelPointerDelaysForKeyboard()
                 if self.childIndex != index { self.closeChild() }
             } else { self.scheduleSubmenu(index: index, row: row) }
+        }
+        presenter.onKeyboardInteraction = { [weak self] in self?.cancelPointerDelaysForKeyboard() }
+        presenter.onPointerRowChange = { [weak self] index, hovering in
+            guard let self else { return }
+            self.cancelPendingSubmenu()
+            if hovering {
+                self.pointerEnteredBranch()
+                if self.childIndex == index { self.cancelChildClose() }
+                else { self.scheduleChildClose() }
+            } else { self.scheduleChildClose() }
         }
         presenter.onSubmenu = { [weak self] index, row, keyboard in self?.openSubmenu(index: index, row: row, keyboard: keyboard) }
         presenter.onCloseSubmenu = { [weak self] in self?.closeFromKeyboard() }
@@ -515,6 +528,19 @@ public final class FluentMenuFlyout {
         viewport.onScroll = { [weak self, weak viewport] in
             guard let self, self.viewport === viewport else { return }
             self.viewportDidScroll()
+        }
+        viewport.onPointerPresence = { [weak self] hovering in
+            if hovering {
+                self?.cancelChildClose()
+                self?.pointerEnteredBranch()
+            }
+            else { self?.pointerExitedBranch() }
+        }
+        viewport.onPointerOverScroller = { [weak self] in
+            self?.pointerEnteredBranch()
+            self?.cancelPendingSubmenu()
+            self?.cancelChildClose()
+            self?.presenter?.resetPointerState()
         }
         panel.setFrameOrigin(origin)
         transitionHost.layoutSubtreeIfNeeded()
@@ -557,7 +583,9 @@ public final class FluentMenuFlyout {
     }
 
     private func scheduleSubmenu(index: Int, row: FluentMenuItemRow) {
-        pendingSubmenuWorkItem?.cancel()
+        cancelPendingSubmenu()
+        guard presenter?.item(at: index)?.hasSubmenu == true else { return }
+        if childIndex == index, childFlyout?.isPresented == true { return }
         let work = DispatchWorkItem { [weak self, weak row] in
             guard let self, let row, let presenter = self.presenter,
                   let current = presenter.index(of: row), presenter.selectedIndex == current else { return }
@@ -567,9 +595,67 @@ public final class FluentMenuFlyout {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
     }
 
-    private func openSubmenu(index: Int, row: FluentMenuItemRow, keyboard: Bool) {
+    private func cancelPendingSubmenu() {
         pendingSubmenuWorkItem?.cancel()
         pendingSubmenuWorkItem = nil
+    }
+
+    private func updateOpenBranchState() {
+        presenter?.setOpenBranch(at: childFlyout?.isPresented == true ? childIndex : nil,
+                                 closing: pendingChildCloseWorkItem != nil)
+    }
+
+    private func cancelChildClose() {
+        childCloseRevision &+= 1
+        pendingChildCloseWorkItem?.cancel()
+        pendingChildCloseWorkItem = nil
+        updateOpenBranchState()
+    }
+
+    private func scheduleChildClose() {
+        guard pendingChildCloseWorkItem == nil, let child = childFlyout, let panel else { return }
+        childCloseRevision &+= 1
+        let revision = childCloseRevision
+        let work = DispatchWorkItem { [weak self, weak child, weak panel] in
+            guard let self, let child, let panel, self.childCloseRevision == revision,
+                  self.panel === panel, self.childFlyout === child else { return }
+            let wasKey = child.containsKeyWindow
+            self.closeChild(cancelPending: false)
+            if let presenter = self.presenter { panel.makeFirstResponder(presenter) }
+            if wasKey { panel.makeKey() }
+        }
+        pendingChildCloseWorkItem = work
+        updateOpenBranchState()
+        // Preserve the existing pointer-open delay as the gap-crossing grace period.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
+    }
+
+    private func pointerEnteredBranch() {
+        guard let owner, owner.childFlyout === self else { return }
+        owner.cancelPendingSubmenu()
+        owner.cancelChildClose()
+        // A missed sibling exit must not retain its highlight or replace this descendant.
+        owner.presenter?.resetPointerState()
+        owner.pointerEnteredBranch()
+    }
+
+    private func pointerExitedBranch() {
+        cancelPendingSubmenu()
+        presenter?.resetPointerState()
+        scheduleChildClose()
+        if let owner, owner.childFlyout === self { owner.pointerExitedBranch() }
+    }
+
+    private func cancelPointerDelaysForKeyboard() {
+        cancelPendingSubmenu()
+        cancelChildClose()
+        pointerEnteredBranch()
+    }
+
+    private func openSubmenu(index: Int, row: FluentMenuItemRow, keyboard: Bool) {
+        cancelPendingSubmenu()
+        cancelChildClose()
+        if keyboard { pointerEnteredBranch() }
         guard row.window === panel, row.visibleRect.intersects(row.bounds),
               let item = presenter?.item(at: index), item.isEnabled, item.hasSubmenu else {
             closeChild()
@@ -590,16 +676,16 @@ public final class FluentMenuFlyout {
         childIndex = index
         childFlyout = child
         child.presentSubmenu(relativeTo: row, keyboard: keyboard)
+        updateOpenBranchState()
     }
 
     private func closeChild(cancelPending: Bool = true) {
-        if cancelPending {
-            pendingSubmenuWorkItem?.cancel()
-            pendingSubmenuWorkItem = nil
-        }
+        if cancelPending { cancelPendingSubmenu() }
+        cancelChildClose()
         childFlyout?.dismissBranch(animated: false)
         childFlyout = nil
         childIndex = nil
+        updateOpenBranchState()
     }
 
     private func viewportDidScroll() {
@@ -631,13 +717,11 @@ public final class FluentMenuFlyout {
     private func dismissBranch(animated _: Bool) {
         anchorObserver?.invalidate()
         anchorObserver = nil
-        pendingSubmenuWorkItem?.cancel()
-        pendingSubmenuWorkItem = nil
-        childFlyout?.dismissBranch(animated: false)
-        childFlyout = nil
-        childIndex = nil
+        closeChild()
         presenter?.deactivate()
         viewport?.onScroll = nil
+        viewport?.onPointerPresence = nil
+        viewport?.onPointerOverScroller = nil
         viewport = nil
         if owner == nil {
             removeOutsideClickMonitors()
@@ -748,6 +832,8 @@ public final class FluentMenuFlyout {
     }
 
     deinit {
+        pendingSubmenuWorkItem?.cancel()
+        pendingChildCloseWorkItem?.cancel()
         anchorObserver?.invalidate()
         removeLifecycleObservers()
         removeOutsideClickMonitors()
@@ -776,11 +862,29 @@ private final class FluentMenuViewport: NSView {
     let scrollView = FluentViewportScrollView()
     private let presenter: FluentMenuPresenterView
     var onScroll: (() -> Void)?
+    var onPointerPresence: ((Bool) -> Void)?
+    var onPointerOverScroller: (() -> Void)?
+    private lazy var pointerTrackingAreaHost = FluentTrackingAreaHost(
+        view: self, options: [.mouseEnteredAndExited, .mouseMoved, .activeAlways, .inVisibleRect]
+    )
     var scrollOffset: CGFloat { scrollView.contentView.bounds.minY }
     private var boundsObserver: NSObjectProtocol?
     private var scrollNotificationPending = false
 
     override var isFlipped: Bool { true }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        pointerTrackingAreaHost.update()
+    }
+
+    override func mouseEntered(with event: NSEvent) { onPointerPresence?(true) }
+    override func mouseExited(with event: NSEvent) { onPointerPresence?(false) }
+    override func mouseMoved(with event: NSEvent) {
+        guard let scroller = scrollView.verticalScroller, !scroller.isHidden,
+              scroller.frame.contains(scrollView.convert(event.locationInWindow, from: nil)) else { return }
+        onPointerOverScroller?()
+    }
 
     init(presenter: FluentMenuPresenterView) {
         self.presenter = presenter
@@ -838,6 +942,8 @@ private final class FluentMenuPresenterView: NSView {
     var onDismiss: (() -> Void)?
     var onEscape: (() -> Void)?
     var onSelection: ((Int, FluentMenuItemRow, Bool) -> Void)?
+    var onPointerRowChange: ((Int, Bool) -> Void)?
+    var onKeyboardInteraction: (() -> Void)?
     var onSubmenu: ((Int, FluentMenuItemRow, Bool) -> Void)?
     var onCloseSubmenu: (() -> Void)?
     var onRootHorizontalNavigation: ((Int) -> Void)?
@@ -865,6 +971,7 @@ private final class FluentMenuPresenterView: NSView {
         row.setPointerOver(hovering)
     }
     private var windowObserver: NSObjectProtocol?
+    private weak var pointerRow: FluentMenuItemRow?
 
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { true }
@@ -884,7 +991,9 @@ private final class FluentMenuPresenterView: NSView {
             forName: NSWindow.didResignKeyNotification, object: nil, queue: .main
         ) { [weak self] notification in
             guard notification.object as? NSWindow === self?.window else { return }
-            self?.resetPointerState()
+            // Opening a child moves key status before the pointer leaves the owner row.
+            // Clear its hover paint, but retain ownership of that eventual exit event.
+            self?.resetPointerState(preservingPointerOwner: self?.window?.childWindows?.isEmpty == false)
         }
     }
 
@@ -935,8 +1044,10 @@ private final class FluentMenuPresenterView: NSView {
         for view in candidates.values {
             (view as? FluentMenuItemRow)?.onInvoke = nil
             (view as? FluentMenuItemRow)?.onHoverChange = nil
+            (view as? FluentMenuItemRow)?.setSubmenuState(open: false, closing: false)
             view.removeFromSuperview()
         }
+        if let pointerRow, index(of: pointerRow) == nil { self.pointerRow = nil }
         if let selectedRow, let index = index(of: selectedRow), items[index].isEnabled {
             selectedIndex = index
         } else {
@@ -952,6 +1063,12 @@ private final class FluentMenuPresenterView: NSView {
 
     func row(at index: Int) -> FluentMenuItemRow? { itemRows[index] }
     func index(of row: FluentMenuItemRow) -> Int? { itemRows.first { $0.value === row }?.key }
+
+    func setOpenBranch(at index: Int?, closing: Bool) {
+        for (rowIndex, row) in itemRows {
+            row.setSubmenuState(open: rowIndex == index, closing: closing && rowIndex == index)
+        }
+    }
 
     func updateLayout(layoutDirection: NSUserInterfaceLayoutDirection, minimumWidth: CGFloat) {
         guard self.layoutDirection != layoutDirection || self.minimumWidth != minimumWidth else { return }
@@ -981,10 +1098,13 @@ private final class FluentMenuPresenterView: NSView {
         onDismiss = nil
         onEscape = nil
         onSelection = nil
+        onPointerRowChange = nil
+        onKeyboardInteraction = nil
         onSubmenu = nil
         onCloseSubmenu = nil
         onRootHorizontalNavigation = nil
         for row in itemRows.values {
+            row.setSubmenuState(open: false, closing: false)
             row.onInvoke = nil
             row.onHoverChange = nil
         }
@@ -992,6 +1112,8 @@ private final class FluentMenuPresenterView: NSView {
 
     override func keyDown(with event: NSEvent) {
         guard acceptsCommands else { return }
+        pointerRow = nil
+        onKeyboardInteraction?()
         switch event.keyCode {
         case 53: onEscape?()
         case 125: moveSelection(by: 1)
@@ -1043,6 +1165,7 @@ private final class FluentMenuPresenterView: NSView {
             selectedIndex = offset >= 0 ? enabled.first : enabled.last
         }
         showsKeyboardSelection = true
+        pointerRow = nil
         hoverCoordinator.reset(items: itemRows.values)
         updateSelection()
         revealKeyboardSelection()
@@ -1055,7 +1178,10 @@ private final class FluentMenuPresenterView: NSView {
     private func select(_ index: Int, announce: Bool, keyboard: Bool) {
         guard items.indices.contains(index) else { return }
         guard items[index].isEnabled else { return }
-        if keyboard { hoverCoordinator.reset(items: itemRows.values) }
+        if keyboard {
+            pointerRow = nil
+            hoverCoordinator.reset(items: itemRows.values)
+        }
         selectedIndex = index
         showsKeyboardSelection = keyboard
         updateSelection()
@@ -1075,16 +1201,29 @@ private final class FluentMenuPresenterView: NSView {
     }
 
     private func setHoveredRow(_ row: FluentMenuItemRow, index: Int, hovering: Bool) {
+        let wasCurrent = pointerRow === row
         hoverCoordinator.update(row, hovering: hovering)
         if hovering {
+            pointerRow = row
+            onPointerRowChange?(index, true)
+            if !items[index].isEnabled {
+                selectedIndex = nil
+                showsKeyboardSelection = false
+                updateSelection()
+            }
             select(index, announce: true, keyboard: false)
-        } else if !showsKeyboardSelection, selectedIndex == index {
-            selectedIndex = nil
-            updateSelection()
+        } else if wasCurrent {
+            pointerRow = nil
+            onPointerRowChange?(index, false)
+            if !showsKeyboardSelection, selectedIndex == index {
+                selectedIndex = nil
+                updateSelection()
+            }
         }
     }
 
-    func resetPointerState() {
+    func resetPointerState(preservingPointerOwner: Bool = false) {
+        if !preservingPointerOwner { pointerRow = nil }
         hoverCoordinator.reset(items: itemRows.values)
         itemRows.values.forEach { $0.resetPointerState() }
         if !showsKeyboardSelection {
@@ -1191,6 +1330,16 @@ private final class FluentMenuPresenterView: NSView {
 
 private final class FluentMenuItemRow: NSControl {
     var isKeyboardSelected = false { didSet { needsDisplay = true } }
+    private var isSubmenuOpen = false
+    private var isSubmenuClosing = false
+
+    func setSubmenuState(open: Bool, closing: Bool) {
+        guard isSubmenuOpen != open || isSubmenuClosing != closing else { return }
+        isSubmenuOpen = open
+        isSubmenuClosing = closing
+        setAccessibilityExpanded(open)
+        needsDisplay = true
+    }
     var onHoverChange: ((FluentMenuItemRow, Bool) -> Void)?
     var onInvoke: ((Bool) -> Void)?
 
@@ -1332,14 +1481,15 @@ private final class FluentMenuItemRow: NSControl {
 
     override func draw(_ dirtyRect: NSRect) {
         let state = resolvedVisualState
-        let background = theme.menuItemBackground(for: state)
+        let opened = item.isEnabled && isSubmenuOpen && !isSubmenuClosing
+        let background = opened ? theme.menuSubmenuOpenedBackground : theme.menuItemBackground(for: state)
         if background.alphaComponent > 0 {
             let fill = background
             fill.setFill()
             NSBezierPath(roundedRect: bounds, xRadius: 4, yRadius: 4).fill()
         }
-        let foreground = theme.menuItemForeground(for: state)
-        let acceleratorForeground = theme.menuAcceleratorForeground(for: state)
+        let foreground = opened ? theme.menuSubmenuOpenedForeground : theme.menuItemForeground(for: state)
+        let acceleratorForeground = opened ? theme.menuSubmenuOpenedChevron : theme.menuAcceleratorForeground(for: state)
         iconView.contentTintColor = item.icon?.tint == .original ? nil : foreground
         iconView.image = item.icon?.image(pointSize: 13, color: foreground, layoutDirection: userInterfaceLayoutDirection)
         let font = theme.typography.font(for: .body)
@@ -1429,7 +1579,7 @@ private final class FluentMenuItemRow: NSControl {
                 chevron.line(to: NSPoint(x: x - 3, y: bounds.midY + 4))
             }
             chevron.lineWidth = 1.4
-            foreground.setStroke()
+            (opened ? theme.menuSubmenuOpenedChevron : foreground).setStroke()
             chevron.stroke()
         }
     }

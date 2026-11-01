@@ -4,6 +4,8 @@ Run `./tools/run-quality-checks.sh [output-directory]` from any working director
 fixed entry point. It runs the Release work-count/editing/appearance probes, mounts registered
 Gallery samples in light/dark/RTL environments, captures controlled visual states, and checks the
 JSON results and collection diagnostics. It does not replace `swift test` or real interaction QA.
+MenuPointerAudit covers 64 native tracking scenarios across themes, directions and contrast modes,
+including delayed close, descendant handoff, sibling replacement and expanded-row rendering.
 
 CI also captures `swift test` output and runs `tools/check_test_diagnostics.py <log>` to reject
 AppKit constraint conflicts even when XCTest passes. `-warnings-as-errors` only promotes compiler
