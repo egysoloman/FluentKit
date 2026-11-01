@@ -653,6 +653,7 @@ Initial public framework baseline.
 - Prevented NavigationView section text from clipping or jumping through the compact rail during
   pane collapse.
 
-[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/egysoloman/FluentKit/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/egysoloman/FluentKit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/egysoloman/FluentKit/releases/tag/v0.1.0
