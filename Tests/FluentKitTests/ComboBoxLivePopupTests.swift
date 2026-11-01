@@ -5,8 +5,12 @@ import XCTest
 final class ComboBoxLivePopupTests: XCTestCase {
     private final class ClockWindow: NSWindow {
         var pausesPopupClock = false
+        var initialPopupReduceMotion: Bool?
         override func addChildWindow(_ childWin: NSWindow, ordered place: NSWindow.OrderingMode) {
             super.addChildWindow(childWin, ordered: place)
+            if let initialPopupReduceMotion, let host = childWin.contentView as? FluentPopupTransitionHost {
+                host.animationCoordinator.reduceMotion = initialPopupReduceMotion
+            }
             guard pausesPopupClock, let layer = childWin.contentView?.layer else { return }
             // Pause before the popup installs its entrance, so a slow native presentation
             // cannot finish the animation before the cancellation assertion observes it.
@@ -113,6 +117,7 @@ final class ComboBoxLivePopupTests: XCTestCase {
     func testLiveReduceMotionSettlesOpeningAndDoesNotReplay() throws {
         let f = try mount(reduced: false, pausePopupClock: true)
         defer { f.window.close() }
+        try XCTUnwrap(f.window as? ClockWindow).initialPopupReduceMotion = true
         let (panel, host, _, _) = try open(f)
         XCTAssertFalse((host.revealMaskLayer.animationKeys() ?? []).isEmpty)
         f.hosting.update(f.definition(), context: .init(reduceMotion: true))

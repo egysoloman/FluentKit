@@ -110,6 +110,8 @@ func fluentPreparePopupEntrance(
     baselineFromTop: CGFloat? = nil,
     reduceMotion: Bool
 ) {
+    // The caller has already resolved system defaults and explicit environment overrides.
+    host.animationCoordinator.reduceMotion = reduceMotion
     guard motion.duration >= 0,
           host.bounds.height > 0,
           host.layer != nil,
@@ -199,6 +201,7 @@ func fluentPrepareMenuPopupEntrance(
     closedRatio: CGFloat,
     reduceMotion: Bool
 ) {
+    host.animationCoordinator.reduceMotion = reduceMotion
     guard motion.duration >= 0,
           host.bounds.height > 0,
           let animationRootLayer = host.animationRoot.layer,
