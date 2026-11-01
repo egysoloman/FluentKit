@@ -1507,6 +1507,11 @@ with Windows.
   array and comparing structure still costs O(n); this API does not promise constant-time arbitrary data updates.
 - `FluentObservable` and `FluentState` deduplicate concrete Equatable values. Custom values can
   supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
+- DropDownButton preserves chevron press motion through layout, content, theme and backing
+  updates, following the resolved Reduce Motion policy. Space and Return activate on release;
+  repeated key-down events do not invoke it. Hiding, detachment, disabling, window closure
+  and focus loss cancel pending activation. Open menus retain rows and selection while using
+  updated content and actions. Hover/press chevron colors follow the WinUI resource roles.
 - Navigation group chevrons use WinUI's down-collapsed/up-expanded directions in side and top
   layouts. RTL mirrors their placement. Rotation survives layout, content, theme and hover
   updates; mode changes, hiding/detachment, disabling and Reduce Motion settle it. Backing-scale

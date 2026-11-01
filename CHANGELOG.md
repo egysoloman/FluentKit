@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- DropDownButton preserves its chevron press animation through layout, content, theme and
+  backing changes, and honors the resolved Reduce Motion policy. Detaching, hiding, disabling,
+  closing the window or losing focus cancels captured input and pending menu requests.
+  Space and Return invoke on release, ignoring repeats. Open menus update their retained rows
+  and actions, and accessibility state reflects actual presentation. Chevron hover/press colors
+  use the WinUI theme roles, including High Contrast; exiting while disabled clears stale hover.
+
 - Navigation group chevrons now point down when collapsed and up when expanded, following
   WinUI's UpDownSmall visual in side and top layouts. Layout, content, theme and hover updates
   preserve ongoing rotation. Hidden/detached rows, mode changes, disabling and Reduce Motion

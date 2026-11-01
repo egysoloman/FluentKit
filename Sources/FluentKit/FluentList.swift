@@ -1101,6 +1101,7 @@ public class FluentDropDownButton: NSButton {
             font = theme.typography.font(for: .body)
             invalidateIntrinsicContentSize()
             refreshAppearance(animated: false)
+            updatePresentedMenu()
         }
     }
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
@@ -1114,6 +1115,7 @@ public class FluentDropDownButton: NSButton {
                 chevronLayer.removeAllAnimations()
             }
             refreshAppearance(animated: false)
+            updatePresentedMenu()
         }
     }
     private var menuItems: [FluentMenuItem]
@@ -1121,6 +1123,10 @@ public class FluentDropDownButton: NSButton {
     private var isPointerOver = false
     private var isPressed = false
     private var isTrackingPointerPress = false
+    private var pressedKeyCode: UInt16?
+    private var openRequestGeneration: UInt64 = 0
+    private var hasPendingOpen = false
+    private var windowObservers: [NSObjectProtocol] = []
     private let elevationBorderLayer = CAGradientLayer()
     private let elevationBorderMask = CAShapeLayer()
     private let chevronLayer = FluentAnimatedChevronLayer()
@@ -1182,6 +1188,24 @@ public class FluentDropDownButton: NSButton {
         synchronizeVisualGeometry()
     }
 
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window {
+            cancelInteraction()
+            removeWindowObservers()
+        }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        cancelInteraction()
+    }
+
     public override func viewDidMoveToSuperview() {
         super.viewDidMoveToSuperview()
         synchronizeVisualGeometry()
@@ -1190,6 +1214,46 @@ public class FluentDropDownButton: NSButton {
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         synchronizeVisualGeometry()
+        removeWindowObservers()
+        guard let window else { return }
+        for name in [NSWindow.willCloseNotification, NSWindow.didResignKeyNotification] {
+            windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] notification in
+                // Opening the menu legitimately transfers key status to its panel.
+                self?.cancelInteraction(dismissMenu: notification.name == NSWindow.willCloseNotification)
+            })
+        }
+    }
+
+    private func removeWindowObservers() {
+        windowObservers.forEach(NotificationCenter.default.removeObserver)
+        windowObservers.removeAll()
+    }
+
+    deinit { removeWindowObservers() }
+
+    private func cancelPendingOpen() {
+        openRequestGeneration &+= 1
+        hasPendingOpen = false
+    }
+
+    private func dismissMenu(animated: Bool) {
+        cancelPendingOpen()
+        let previous = menuFlyout
+        menuFlyout = nil
+        previous?.dismiss(animated: animated)
+        fluentSetDefaultAccessibilityValue("Closed")
+    }
+
+    private func cancelInteraction(dismissMenu: Bool = true, clearHover: Bool = true) {
+        cancelPendingOpen()
+        pressedKeyCode = nil
+        isTrackingPointerPress = false
+        isPressed = false
+        if clearHover { isPointerOver = false }
+        if dismissMenu { self.dismissMenu(animated: false) }
+        if let layer { animationCoordinator.cancelAll(on: [layer, elevationBorderLayer]) }
+        chevronLayer.finishAnimations()
+        refreshAppearance(animated: false)
     }
 
     public override func viewDidChangeBackingProperties() {
@@ -1206,13 +1270,9 @@ public class FluentDropDownButton: NSButton {
         didSet {
             guard oldValue != isEnabled else { return }
             if !isEnabled {
-                menuFlyout?.dismiss(animated: false)
-                menuFlyout = nil
-                isPressed = false
-                isTrackingPointerPress = false
-                fluentSetDefaultAccessibilityValue("Closed")
+                cancelInteraction(clearHover: false)
             }
-            refreshAppearance(animated: true)
+            refreshAppearance(animated: isEnabled)
         }
     }
 
@@ -1223,8 +1283,8 @@ public class FluentDropDownButton: NSButton {
     }
 
     public override func mouseExited(with event: NSEvent) {
-        guard isEnabled else { return }
         isPointerOver = false
+        guard isEnabled else { return }
         if !isPressed { refreshAppearance(animated: true) }
     }
 
@@ -1273,15 +1333,15 @@ public class FluentDropDownButton: NSButton {
     }
 
     public override func mouseDown(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard isEnabled, window != nil, !isHiddenOrHasHiddenAncestor else { return }
+        cancelPendingOpen()
+        pressedKeyCode = nil
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         if menuFlyout?.isPresented == true {
-            menuFlyout?.dismiss(animated: true)
-            menuFlyout = nil
+            dismissMenu(animated: true)
             isTrackingPointerPress = false
             isPressed = false
-            fluentSetDefaultAccessibilityValue("Closed")
             refreshAppearance(animated: true)
             return
         }
@@ -1310,39 +1370,92 @@ public class FluentDropDownButton: NSButton {
         refreshAppearance(animated: true)
         guard opensMenu else { return }
         // Release the chevron before ordering the child panel above the button.
-        DispatchQueue.main.async { [weak self] in self?.presentMenu() }
+        scheduleMenu()
     }
 
     public override func keyDown(with event: NSEvent) {
-        if event.keyCode == 36 || event.keyCode == 49 { showMenu() } else { super.keyDown(with: event) }
+        guard isEnabled, window != nil, !isHiddenOrHasHiddenAncestor else { return }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        if event.keyCode == 36 || event.keyCode == 49 {
+            guard !event.isARepeat, pressedKeyCode == nil, !isTrackingPointerPress else { return }
+            pressedKeyCode = event.keyCode
+            isPressed = true
+            refreshAppearance(animated: true)
+        } else {
+            pressedKeyCode = nil
+            if !isTrackingPointerPress { isPressed = false }
+            refreshAppearance(animated: true)
+            if event.keyCode == 53 { dismissMenu(animated: true) }
+            else { super.keyDown(with: event) }
+        }
+    }
+
+    public override func keyUp(with event: NSEvent) {
+        if event.keyCode == 36 || event.keyCode == 49 {
+            guard isEnabled, pressedKeyCode == event.keyCode else { return }
+            pressedKeyCode = nil
+            isPressed = false
+            refreshAppearance(animated: true)
+            showMenu()
+        } else {
+            super.keyUp(with: event)
+        }
+    }
+
+    public override func becomeFirstResponder() -> Bool {
+        let result = super.becomeFirstResponder()
+        if result { refreshAppearance(animated: true) }
+        return result
+    }
+
+    public override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { cancelInteraction(dismissMenu: false) }
+        return result
     }
 
     func applyDeclarativeConfiguration(from source: FluentDropDownButton) {
         title = source.title
         font = source.font
         menuItems = source.menuItems
-        if menuItems.isEmpty, menuFlyout != nil {
-            menuFlyout?.dismiss(animated: false)
-            menuFlyout = nil
-            fluentSetDefaultAccessibilityValue("Closed")
-        }
+        if menuItems.isEmpty { dismissMenu(animated: false) }
+        else { updatePresentedMenu() }
         setAccessibilityTitle(title)
         invalidateIntrinsicContentSize()
         refreshAppearance(animated: false)
     }
 
+    private func updatePresentedMenu() {
+        menuFlyout?.update(items: menuItems, theme: theme, reduceMotion: reduceMotion)
+    }
+
     @objc private func showMenu() {
-        if menuFlyout?.isPresented == true {
-            menuFlyout?.dismiss(animated: true)
-            menuFlyout = nil
-            fluentSetDefaultAccessibilityValue("Closed")
-            return
+        if menuFlyout?.isPresented == true || hasPendingOpen {
+            dismissMenu(animated: true)
+            refreshAppearance(animated: true)
+        } else {
+            scheduleMenu()
         }
-        DispatchQueue.main.async { [weak self] in self?.presentMenu() }
+    }
+
+    private var canPresentMenu: Bool {
+        isEnabled && !menuItems.isEmpty && window?.isVisible == true && !isHiddenOrHasHiddenAncestor
+    }
+
+    private func scheduleMenu() {
+        guard canPresentMenu else { return }
+        cancelPendingOpen()
+        hasPendingOpen = true
+        let generation = openRequestGeneration
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.hasPendingOpen, self.openRequestGeneration == generation else { return }
+            self.hasPendingOpen = false
+            self.presentMenu()
+        }
     }
 
     private func presentMenu() {
-        guard isEnabled, !menuItems.isEmpty, menuFlyout?.isPresented != true else { return }
+        guard canPresentMenu, menuFlyout?.isPresented != true else { return }
         let flyout = FluentMenuFlyout(items: menuItems, theme: theme, reduceMotion: reduceMotion)
         menuFlyout = flyout
         flyout.onDismiss = { [weak self, weak flyout] in
@@ -1353,9 +1466,11 @@ public class FluentDropDownButton: NSButton {
             self.refreshAppearance(animated: true)
         }
         isPressed = false
-        fluentSetDefaultAccessibilityValue("Open")
         refreshAppearance(animated: true)
         flyout.present(relativeTo: self, placement: .below)
+        // Presentation can fail when the anchor disappears. Publish the actual panel state.
+        if flyout.isPresented { fluentSetDefaultAccessibilityValue("Open") }
+        else { menuFlyout = nil; fluentSetDefaultAccessibilityValue("Closed") }
     }
 
     private var controlState: FluentControlState {
@@ -1385,7 +1500,7 @@ public class FluentDropDownButton: NSButton {
         visualStateCoordinator.reduceMotion = reduceMotion
         visualStateCoordinator.transition(
             to: .forControlState(controlState),
-            animated: animated,
+            animated: animated && window != nil && !isHiddenOrHasHiddenAncestor,
             motion: FluentMotion.controlFaster
         ) { [weak self] transition in
             self?.applyVisualState(transition)
@@ -1415,10 +1530,10 @@ public class FluentDropDownButton: NSButton {
         let appearance = resolvedAppearance()
         let state = controlState
         let color: NSColor = switch state {
-        case .pressed: theme.textSecondary.withAlphaComponent(0.72)
-        case .pointerOver: theme.textSecondary.withAlphaComponent(0.86)
+        case .pressed, .pointerOver:
+            theme.isHighContrast ? theme.resolvedHighContrastColor(.selectedContentBackgroundColor) : theme.textTertiary
         case .disabled: theme.textDisabled
-        default: theme.textSecondary
+        default: theme.isHighContrast ? theme.resolvedHighContrastColor(.controlTextColor) : theme.textSecondary
         }
         let isRTL = userInterfaceLayoutDirection == .rightToLeft
         let x = isRTL
@@ -1431,6 +1546,8 @@ public class FluentDropDownButton: NSButton {
             visual: .downSmall,
             direction: .down,
             backingScale: window?.backingScaleFactor,
+            preservingUnchangedAnimations: window != nil && !isHiddenOrHasHiddenAncestor && isEnabled && !reduceMotion,
+            reduceMotion: reduceMotion,
             animated: animated
         )
     }
