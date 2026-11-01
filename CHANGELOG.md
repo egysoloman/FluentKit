@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Editable ComboBox shares text-binding synchronization with other input controls. External
+  resets update active unmarked text without replacing its editor and survive blur; during IME
+  composition the latest reset waits for composition to finish. Text-input commit policy,
+  editing callbacks, native undo/redo and exact-title selection now work together. Rebinding
+  and mode changes retire stale work. The shared coordinator also preserves queued edits across
+  unchanged closure-binding rerenders and discards them when replacing an observable source,
+  even if both sources hold the same string. Gallery includes a delayed reset; Release input
+  gates now cover ComboBox in both themes, directions and composition publication policies.
+
 - ComboBox selection fields participate in keyboard focus despite hiding the native drawing.
   Closed Up/Down and Home/End change selection without opening; open navigation stops at the
   ends and supports Page Up/Down. F4 and Option+Up/Down toggle, Tab follows the parent focus

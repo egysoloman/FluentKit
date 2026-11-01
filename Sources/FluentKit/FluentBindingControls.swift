@@ -23,7 +23,7 @@ public struct FluentTextInputConfiguration {
 }
 
 public extension FluentBinding where Value == String {
-    /// Applies to TextBox, PasswordBox, SearchField and AutoSuggestBox bindings.
+    /// Applies to TextBox, PasswordBox, SearchField, AutoSuggestBox and editable ComboBox bindings.
     func textInput(_ configuration: FluentTextInputConfiguration) -> FluentBinding<String> {
         var copy = self
         copy.textInputConfiguration = configuration
@@ -63,17 +63,23 @@ final class FluentStringBindingCoordinator {
     }
 
     func update(binding newBinding: FluentBinding<String>) {
+        guard field != nil else { return }
         let reusesObservation = binding.observationIdentity != nil
             && binding.observationIdentity == newBinding.observationIdentity
+        let replacesKnownBinding = binding.observationIdentity != newBinding.observationIdentity
+        if replacesKnownBinding { cancelScheduledPublication() }
         if !reusesObservation {
-            cancelScheduledPublication()
             removeObserver()
         }
         binding = newBinding
         if !reusesObservation {
             installObserver()
         }
-        synchronizeExternalValue(FluentDependencyTracking.withoutTracking { newBinding.get() })
+        // Distinct observable sources can hold the same value; replacing one must still
+        // discard its unpublished edit. Closure-only rerenders have no identity to compare:
+        // preserve their queued edit unless reading the model establishes an external change.
+        synchronizeExternalValue(FluentDependencyTracking.withoutTracking { newBinding.get() },
+                                 force: replacesKnownBinding)
     }
 
     func publishCurrentValue() {
@@ -91,7 +97,7 @@ final class FluentStringBindingCoordinator {
             binding.textInputConfiguration.onEditingChange?(change)
         }
         // Coalesce model writes, but never lose the latest composition event in the same turn.
-        guard !publicationScheduled else { return }
+        guard self.field != nil, !publicationScheduled else { return }
         publicationScheduled = true
         let publication = publicationGeneration
         DispatchQueue.main.async { [weak self] in
@@ -106,16 +112,17 @@ final class FluentStringBindingCoordinator {
     private func publishFieldValue() {
         guard let field else { return }
         let editor = field.currentEditor() as? NSTextView
+        // Read before applying a deferred reset: an unobserved closure model may have changed
+        // again during composition, and an older reset must never be rendered or selected.
+        let modelValue = modelValue()
+        if let lastModelValue, modelValue != lastModelValue {
+            synchronizeExternalValue(modelValue)
+            return
+        }
         if let pendingExternalValue {
             guard editor?.hasMarkedText() != true else { return }
             self.pendingExternalValue = nil
             applyExternalValue(pendingExternalValue, to: field)
-            return
-        }
-        // A closure binding may have changed without an observation callback.
-        let modelValue = modelValue()
-        if let lastModelValue, modelValue != lastModelValue {
-            synchronizeExternalValue(modelValue)
             return
         }
         if binding.textInputConfiguration.commitPolicy == .committedText,
@@ -221,12 +228,20 @@ final class FluentStringBindingCoordinator {
         observerID = nil
     }
 
-    deinit {
+    /// Detach immediately when the owning control changes mode, including during a setter.
+    /// An in-flight publication can retain this coordinator until after its owner replaces it.
+    func invalidate() {
+        field = nil
+        onExternalValueApplied = nil
+        pendingExternalValue = nil
         editingObservers.forEach(NotificationCenter.default.removeObserver)
+        editingObservers.removeAll()
         removeEditorObservers()
         cancelScheduledPublication()
         removeObserver()
     }
+
+    deinit { invalidate() }
 }
 
 public final class FluentBoundTextField: NSView {

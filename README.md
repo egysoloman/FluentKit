@@ -838,6 +838,11 @@ entrance rather than the native AppKit combo-box popup.
 Editable text reserves the dropdown column on the trailing side in either layout direction.
 Changing direction during editing preserves the native editor, selection, horizontal scroll
 position and marked text while updating the input-method character coordinates.
+The optional text binding uses the shared text-input coordinator: external values replace active
+unmarked text immediately and survive blur. Resets during composition wait for it to finish, then
+the latest model value wins. `.textInput(.init(commitPolicy: .committedText))` defers native edits
+until composition ends; `.continuous` remains the default. Undo/redo and exact-title selection
+stay synchronized. Gallery includes a delayed text reset that can arrive while editing.
 Selection fields are keyboard stops. Closed Up/Down and Home/End change selection; F4 or
 Option+Up/Down toggles the list. Open lists support bounded navigation and Page Up/Down;
 Tab follows the enclosing focus cycle, and Escape restores a surviving opening value.
@@ -1539,6 +1544,9 @@ with Windows.
   `$query.textInput(.init(commitPolicy: .committedText, onEditingChange: { change in /* text, isComposing */ }))`.
   The compatibility default remains `.continuous`. Closure-only bindings are checked when updated or committed;
   use an observable binding for immediate external delivery.
+  This also applies to editable ComboBox text bindings. Replacing an observable source discards
+  its queued edit even when both sources hold the same string; unchanged closure-binding
+  rerenders preserve queued publication.
 - Collections apply native snapshots only for structural changes. Without a content version, only
   visible rows update conservatively. Opt in with `.contentVersion { id in model[id].revision }`
   on `FluentCollection`, `FluentListView` or `FluentGridView` to skip unchanged row content.

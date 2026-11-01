@@ -27,6 +27,16 @@ for diagnostic in ('UICollectionViewFlowLayout is not defined', 'item width must
 editing = load('EditingAudit')
 assert editing['editorPresent'] is True
 assert all(editing[key] == 'external reset' for key in ('focusedModel', 'focusedField', 'blurredModel', 'blurredField')), editing
+combos = editing['comboBoxes']
+assert len(combos) == 8 and {(r['dark'], r['rtl'], r['committed']) for r in combos} == {
+    (dark, rtl, committed) for dark in (False, True) for rtl in (False, True) for committed in (False, True)
+}, combos
+for row in combos:
+    assert all(row[key] == 'external reset' for key in ('focusedModel', 'focusedField', 'blurredModel', 'blurredField')), row
+    assert all(row[key] is True for key in (
+        'editorPreserved', 'sameValueReset', 'popupPreserved', 'matchedSelection', 'compositionPolicy',
+        'markedTextPreserved', 'pendingResetPreserved', 'latestResetApplied', 'resetSurvivesBlur'
+    )), row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

@@ -183,6 +183,36 @@ final class AuditRegressionTests: XCTestCase {
         XCTAssertEqual(second, "b")
     }
 
+    @MainActor func testSameValueObservableReplacementResetsNativeTextField() async throws {
+        let first = FluentState(wrappedValue: "initial")
+        let second = FluentState(wrappedValue: "initial")
+        let bound = FluentBoundTextField(first.projectedValue)
+        let window = window(bound, width: 360)
+        defer { window.close() }
+        window.orderFrontRegardless(); bound.field.selectText(nil)
+        let editor = try XCTUnwrap(bound.field.currentEditor() as? NSTextView)
+        editor.insertText("unsent", replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
+        bound.update(binding: second.projectedValue, theme: .current)
+        await drain()
+        XCTAssertEqual(editor.string, "initial")
+        window.makeFirstResponder(nil); await drain()
+        XCTAssertEqual(first.wrappedValue, "initial"); XCTAssertEqual(second.wrappedValue, "initial")
+    }
+
+    @MainActor func testClosureTextFieldRerenderPreservesQueuedNativeEdit() async throws {
+        var value = "initial"
+        let binding = FluentBinding(get: { value }, set: { value = $0 })
+        let bound = FluentBoundTextField(binding)
+        let window = window(bound, width: 360)
+        defer { window.close() }
+        window.orderFrontRegardless(); bound.field.selectText(nil)
+        let editor = try XCTUnwrap(bound.field.currentEditor() as? NSTextView)
+        editor.insertText("pending", replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
+        bound.update(binding: binding, theme: .current)
+        await drain()
+        XCTAssertEqual(editor.string, "pending"); XCTAssertEqual(value, "pending")
+    }
+
     @MainActor func testCollectionSkipsUnchangedSnapshotAndSupportsContentVersionsAndTheme() async throws {
         _ = NSApplication.shared
         let counters = AuditCounters()

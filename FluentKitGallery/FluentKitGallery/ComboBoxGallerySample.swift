@@ -17,7 +17,8 @@ struct ComboBoxGallerySample: FluentView {
             FluentComboBox(options: options, selection: $selection,
                 title: { "Option \($0)" }).frame(width: 280)
             FluentText("Editable value", style: .caption)
-            FluentComboBox(options: options, selection: $editableSelection, mode: .editable, text: $text,
+            FluentComboBox(options: options, selection: $editableSelection, mode: .editable,
+                text: $text.textInput(.init(commitPolicy: .committedText)),
                 title: { "Option \($0)" }).frame(width: 280)
             FluentHStack {
                 FluentButtonView("Append in 2 seconds") { schedule(.append) }
@@ -25,6 +26,9 @@ struct ComboBoxGallerySample: FluentView {
             }
             FluentHStack {
                 FluentButtonView("Remove selections in 2 seconds") { schedule(.removeSelections) }
+                FluentButtonView("Reset text in 2 seconds") { schedule(.resetText) }
+            }
+            FluentHStack {
                 FluentButtonView("Reset") {
                     request += 1
                     options = Array(0..<8)
@@ -40,12 +44,14 @@ struct ComboBoxGallerySample: FluentView {
         }
     }
 
-    private enum Change { case append, reverse, removeSelections }
+    private enum Change { case append, reverse, removeSelections, resetText }
 
     private func schedule(_ change: Change) {
         request += 1
         let current = request
-        status = "Open either list now. Its options will update in two seconds."
+        status = change == .resetText
+            ? "Edit the text now. An external reset will arrive in two seconds; composition finishes first."
+            : "Open either list now. Its options will update in two seconds."
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             guard request == current else { return }
             switch change {
@@ -54,6 +60,10 @@ struct ComboBoxGallerySample: FluentView {
             case .removeSelections:
                 let removed = Set([selection, editableSelection].compactMap { $0 })
                 options.removeAll { removed.contains($0) }
+            case .resetText:
+                text = options.first.map { "Option \($0)" } ?? "Reset value"
+                status = "Text reset sent. A pending composition keeps its native editor until it finishes."
+                return
             }
             status = "Updated: \(options.count) options. Nonempty lists stay open; editable text is preserved."
         }

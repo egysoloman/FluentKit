@@ -69,8 +69,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    contracts and hierarchical flyout behavior. ComboBox now preserves its native editor while
    open and routes bounded navigation, F4/Option toggling, Escape and parent focus traversal.
    Its existing immediate selection publication still differs from WinUI's default Committed
-   trigger. First fix editable ComboBox external text resets during active editing (currently
-   ignored and overwritten on blur), then add Committed/Always and complete text-search semantics.
+   trigger. Editable ComboBox now uses the shared text coordinator for active external resets,
+   composition policy, undo/redo and binding replacement; Release gates cover these paths.
+   Next add Committed/Always selection publication and complete text-search semantics.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required

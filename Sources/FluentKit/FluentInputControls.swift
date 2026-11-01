@@ -1181,9 +1181,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private var mode: FluentComboBoxMode
     private var title: (Option) -> String
     private var observerID: UUID?
-    private var textObserverID: UUID?
+    private var textBindingCoordinator: FluentStringBindingCoordinator?
     private var selectionSubscriptionGeneration: UInt = 0
-    private var textSubscriptionGeneration: UInt = 0
     private var editPublicationGeneration: UInt = 0
     private var editPublicationScheduled = false
     private var pendingEditableValue: String?
@@ -1356,7 +1355,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         ])
         reloadOptions()
         installObserver()
-        installTextObserver()
+        updateTextBindingCoordinator()
         applyControlSize()
         applySelection()
         updateFocusPill(focused: false, animated: false)
@@ -1581,7 +1580,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         if !reusesSelectionObservation { removeSelectionObserver() }
         if !reusesTextObservation {
             cancelScheduledEditablePublication()
-            removeTextObserver()
+        }
+        if modeChanged || text == nil {
+            textBindingCoordinator?.invalidate()
+            textBindingCoordinator = nil
         }
         let optionsChanged = self.options != options
         if optionsChanged || modeChanged {
@@ -1625,13 +1627,14 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         applyControlSize()
         // Reconcile the popup's identity map before publishing new selection indices.
         refreshOpenPopup()
+        updateTextBindingCoordinator()
+        guard generation == updateGeneration else { return }
         applySelection()
         guard generation == updateGeneration else { return }
         updateFocusPill(focused: isTextFocusActive, animated: false)
         // An outer update may have assigned these bindings but not installed their observers
         // before selection normalization re-enters. Restore actual missing subscriptions.
         if observerID == nil { installObserver() }
-        if textObserverID == nil { installTextObserver() }
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -1667,7 +1670,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         let value = (notification.object as? NSTextField)?.stringValue ?? editableField.stringValue
         editableField.stringValue = value
         comboBox.stringValue = value
-        scheduleEditablePublication(value)
+        if let textBindingCoordinator { textBindingCoordinator.scheduleCurrentValuePublication() }
+        else { scheduleEditablePublication(value) }
         needsDisplay = true
     }
 
@@ -1688,6 +1692,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     private func flushEditablePublication() {
+        if let textBindingCoordinator {
+            textBindingCoordinator.publishCurrentValue()
+            return
+        }
         let value = pendingEditableValue ?? editableField.stringValue
         cancelScheduledEditablePublication()
         publishEditableValue(value)
@@ -1705,6 +1713,11 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         if text?.get() != value { text?.set(value) }
         guard mode == .editable, text?.observationIdentity == textIdentity,
               text == nil || text?.get() == value else { applySelection(); return }
+        reconcileEditableSelection(value)
+    }
+
+    private func reconcileEditableSelection(_ value: String) {
+        guard mode == .editable else { return }
         let exactIndex = options.firstIndex { title($0) == value }
         if let exactIndex {
             if selection.get() != options[exactIndex] { selection.set(options[exactIndex]) }
@@ -1924,14 +1937,11 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             guard generation == updateGeneration else { return }
         }
         let selectedIndex: Int?
-        if mode == .editable, let text {
-            let isLocallyEditing = editableField.currentEditor() != nil
-                || window?.firstResponder === editableField
-            let value = isLocallyEditing ? editableField.stringValue : text.get()
+        if mode == .editable, text != nil {
+            // The binding coordinator owns model/editor synchronization, including pending
+            // external resets during composition and unpublished local edits during rerenders.
+            let value = editableField.stringValue
             comboBox.stringValue = value
-            if !isLocallyEditing, editableField.stringValue != value {
-                editableField.stringValue = value
-            }
             if let exactIndex = options.firstIndex(where: { title($0) == value }) {
                 comboBox.selectItem(at: exactIndex)
                 selectedIndex = exactIndex
@@ -1974,28 +1984,24 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         }
     }
 
-    private func installTextObserver() {
-        guard let text else { return }
-        textSubscriptionGeneration &+= 1
-        let subscription = textSubscriptionGeneration
-        textObserverID = text.observe { [weak self] value in
-            let apply = { [weak self] in
-                guard let self,
-                      subscription == self.textSubscriptionGeneration,
-                      self.text?.get() == value,
-                      self.mode == .editable,
-                      self.window?.firstResponder !== self.comboBox,
-                      self.window?.firstResponder !== self.editableField,
-                      self.comboBox.currentEditor() == nil,
-                      self.editableField.currentEditor() == nil,
-                      self.comboBox.stringValue != value else { return }
-                self.isApplyingSelection = true
-                self.comboBox.stringValue = value
-                self.editableField.stringValue = value
-                self.isApplyingSelection = false
-                self.needsDisplay = true
+    private func updateTextBindingCoordinator() {
+        guard mode == .editable, let text else { return }
+        // Preserve observation identity and IME policy while also reconciling the selected
+        // option after native edits. External resets never echo back through this setter.
+        var binding = FluentBinding(get: text.get,
+            set: { [weak self] value in self?.publishEditableValue(value) },
+            observe: text.observe, removeObserver: text.removeObserver,
+            observationIdentity: text.observationIdentity)
+        binding.textInputConfiguration = text.textInputConfiguration
+        if let textBindingCoordinator {
+            textBindingCoordinator.update(binding: binding)
+        } else {
+            let coordinator = FluentStringBindingCoordinator(field: editableField, binding: binding)
+            textBindingCoordinator = coordinator
+            coordinator.onExternalValueApplied = { [weak self, weak coordinator] value in
+                guard let self, let coordinator, self.textBindingCoordinator === coordinator else { return }
+                self.reconcileEditableSelection(value)
             }
-            if Thread.isMainThread { apply() } else { DispatchQueue.main.async(execute: apply) }
         }
     }
 
@@ -2003,12 +2009,6 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         selectionSubscriptionGeneration &+= 1
         if let observerID { selection.removeObserver(observerID) }
         observerID = nil
-    }
-
-    private func removeTextObserver() {
-        textSubscriptionGeneration &+= 1
-        if let textObserverID { text?.removeObserver(textObserverID) }
-        textObserverID = nil
     }
 
     private func applyControlSize() {
@@ -2251,7 +2251,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         removeWindowObservers()
         cancelScheduledEditablePublication()
         removeSelectionObserver()
-        removeTextObserver()
+        textBindingCoordinator?.invalidate()
         comboPopup?.dismiss(animated: false)
     }
 }
