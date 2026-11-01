@@ -26,9 +26,11 @@
 | 18 | **客户端普通文本坐标已核查；真实系统拼音候选仍开放。** | 实际设置页与原生输入框共 9 次显式坐标查询，640/600/1000pt 宽度下控件与字符矩形同步移动，设置页 95pt 位移一致、编辑器身份保留。会话未稳定建立系统拼音组合状态，不算候选验收，不据此改定位或关闭第 5 项。录屏无系统候选打开期间缩放过程；外部 IME 源码又有并行变动，结果限于记录构建。见 `system-pinyin/REPORT.md`；继续真实 marked text、跨进程候选、移动/缩放和提交/取消验收。 |
 | 19 | **本批已修复常驻滚动条下的尺寸与跳顶问题；硬件事件验收仍开放。** | 修复 AutoSuggestBox、ComboBox、ContentDialog、RefreshContainer、旧 FluentList 及 NavigationView：88 个原生状态的 42 项失败条件归零；实际 Gallery 的 192 个状态（含 Expander/设置折叠卡开合）32 项失败归零。实际 IME 自绘滚动条兼容性、固定最小宽度及视口重排独立修复，105 个状态的 87 项失败归零，完整来源快照 Release 构建通过。452 项测试、原生验证、Gallery 和门禁通过，见 `scroller-layout/REPORT.md`。未改变全局偏好或替换运行中的 IME；真实鼠标插拔仍需验收。横向 Refresh 初次挂载的既有约束告警仍待分离 fixture/框架原因，不据测试通过关闭。 |
 | 20 | **本批已实现：可选 Tooltip 连续过渡与标题栏接入。** | `.toolTip(..., motion: .continuous)` 同窗口复用 panel，移动、缩放并淡化内容，默认模式不变；标题栏按钮已接入。覆盖打断、退出、窗口生命周期、主题重挂载、降低动态效果、RTL/边缘、动作与还原标签。461 测试、原生验证、Gallery、Release 门禁通过；47 个原生时间样本验证中间帧，见 `tooltip-follow/REPORT.md`。作者未公开源码，属于独立实现。已补 9.31 秒局部桌面合成录屏（`tooltip-follow/recording/`），过渡和阴影可见；真实鼠标悬停、高刷帧时及多显示器验收仍开放。 |
-| 21 | **进行中：预置默认、开发者可覆盖的通用材质。** | 用户确认优先级“局部指定 → 主题配置 → 控件预置”，默认外观保持；窗口、容器/卡片、菜单和 Tooltip 共用可选入口，并处理深浅色、活动状态、降低透明度/高对比度及嵌套采样。已发现 `FluentMaterialSurface` 不更新后续材质/圆角配置、Tooltip 固定 Acrylic。继续核对容器与窗口的采样范围、tint/回退及原生 Glass 圆角，补动态修改与 Gallery 示例；不把 Mica/Acrylic/Liquid Glass 混称。 |
+| 21 | **本批通用材质与独立复验完成。** | 局部 → 主题角色 → 预置，Card opt-in、通用背景、窗口/浮层共享配置；动态圆角/材质、Glass 半径、高对比度、workspace 通知及 tint 覆盖前景已修。20 个修后合成状态前景差为 0，背景 tint 保留；三轮配对更新成本接近原基线。472 测试、原生验证、Gallery、Release 门禁通过，见 `material-options/REPORT.md`。真实壁纸采样与平台专项验收仍开放；实际 Gallery 新发现的问题见第 24/25 项。 |
 | 22 | **已排队：多显示器、缩放与跨屏壁纸材质。** | 用户要求后续优化不同分辨率/缩放倍率、窗口跨屏时的壁纸采样和材质过渡。分别验证 AppKit 原生材质的自动适配、Fluent 固定配方的边界、浮层的屏幕选择/安全区域、backingScaleFactor 变化、半像素描边和多显示器排列；不能把原生材质自动适配当作已验收。 |
 | 23 | **已修复：Tooltip 接入引起的标题栏三键尺寸回归。** | 用户录屏确认悬停背景高度不一致；32pt 行原生按钮实际为 27/37/36pt。自绘 caption button 清除 SF Symbol 对齐边距后，32/40/48pt 共 9 个原生状态全部准确填满槽位，并重录实际桌面合成视频。见 `caption-pixel-review/REPORT.md`；完整批次门禁继续执行。 |
+| 24 | **已发现，待独立定位：ComboBox 面板文字裁切。** | 实际 Gallery 新的 SystemBackdrops 示例中，标准 ComboBox 的文字底部裁切；源码声明宿主 intrinsic height 为 32pt，内部原生 bridge/editor 也有自身尺寸约束。先分离直接控件、frame 包装、stack 和 Expander 场景，再修根因，不用示例强制高度掩盖。 |
+| 25 | **已发现，待独立定位：Toggle 在实际 AX 树中缺失。** | SystemBackdrops 的三个开关可见，但 CUA 树没有相应条目；FluentToggle 设了 checkBox role/title，却需继续核对 isAccessibilityElement、包装层和 AX value 契约。不能以方法返回预期值替代真实查询与 VoiceOver 验收。 |
 
 ## 已处理项与明确边界
 

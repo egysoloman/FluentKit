@@ -1,0 +1,30 @@
+[
+  {
+    "averageMS" : 0.4929769100000001,
+    "count" : 200,
+    "material" : "mica",
+    "medianMS" : 0.21479100000000001,
+    "p95MS" : 0.32708399999999999
+  },
+  {
+    "averageMS" : 0.43108912500000002,
+    "count" : 200,
+    "material" : "nativeAcrylic",
+    "medianMS" : 0.21149999999999999,
+    "p95MS" : 0.30362499999999998
+  },
+  {
+    "averageMS" : 0.60470088499999985,
+    "count" : 200,
+    "material" : "nativeMica",
+    "medianMS" : 0.22408400000000001,
+    "p95MS" : 0.36987500000000001
+  },
+  {
+    "averageMS" : 0.48107981500000002,
+    "count" : 200,
+    "material" : "liquidGlass",
+    "medianMS" : 0.232875,
+    "p95MS" : 0.32229200000000002
+  }
+]

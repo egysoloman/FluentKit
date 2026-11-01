@@ -1,0 +1,39 @@
+Building for debugging...
+[1 / 1]
+[2 / 15] FluentKit
+[4 / 17] FluentKit
+[10 / 18] FluentKit
+[14 / 18] FluentGallery-product
+[15 / 19] FluentGallery-product
+[19 / 25] FluentGallery-product
+[20 / 25] FluentKitTests-product
+[25 / 29] FluentKitTests-product
+[28 / 29] FluentKitValidation-product
+Build complete! (5.64秒)
+Test Suite 'Selected tests' started at 2026-11-01 11:51:09.537.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 11:51:09.538.
+Test Suite 'MaterialConfigurationTests' started at 2026-11-01 11:51:09.538.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testCardMaterialIsOptInAndSwitchingPreservesItsContent]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testCardMaterialIsOptInAndSwitchingPreservesItsContent]' passed (0.059 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDefaultPresetsAndFieldwiseOverridePrecedence]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDefaultPresetsAndFieldwiseOverridePrecedence]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDynamicFallbackColorsResolveUnderTheSurfaceAppearanceAndFlattenAlpha]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDynamicFallbackColorsResolveUnderTheSurfaceAppearanceAndFlattenAlpha]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testGlassCornerRadiusTracksSurfaceWithoutReplacingTheBackend]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testGlassCornerRadiusTracksSurfaceWithoutReplacingTheBackend]' passed (0.005 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testNativeBindingSurvivesThemeChangesAndAccessibilityDefeatsLocalEnable]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testNativeBindingSurvivesThemeChangesAndAccessibilityDefeatsLocalEnable]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testPopupAndToolTipRespectRoleOverridesAfterTheyAreCreated]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testPopupAndToolTipRespectRoleOverridesAfterTheyAreCreated]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testSurfaceConfigurationUpdatesPreserveFieldEditorAndMarkedText]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testSurfaceConfigurationUpdatesPreserveFieldEditorAndMarkedText]' passed (0.079 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testThemeCopiesPreserveRoleOverridesAndScopedModifiersDoNotLeak]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testThemeCopiesPreserveRoleOverridesAndScopedModifiersDoNotLeak]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testWorkspaceAccessibilityNotificationReappliesMaterialConfiguration]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testWorkspaceAccessibilityNotificationReappliesMaterialConfiguration]' passed (0.001 seconds).
+Test Suite 'MaterialConfigurationTests' passed at 2026-11-01 11:51:09.688.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.149 (0.149) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 11:51:09.688.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.149 (0.150) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 11:51:09.688.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 0.149 (0.150) seconds

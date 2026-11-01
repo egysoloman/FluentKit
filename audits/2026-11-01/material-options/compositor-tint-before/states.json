@@ -1,0 +1,242 @@
+[
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.88500946760177612,
+      0.35628241300582886,
+      0.2761627733707428,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "light-nativeAcrylic-transient-true-standard-tinted",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "light-nativeAcrylic-transient-true-standard-clear",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.88500946760177612,
+      0.35628241300582886,
+      0.2761627733707428,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "light-nativeMica-window-true-standard-tinted",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "light-nativeMica-window-true-standard-clear",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "nativeGlass",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "light-liquidGlass-transient-true-standard-tinted",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "nativeGlass",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "light-liquidGlass-transient-true-standard-clear",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.88828176259994507,
+      0.35647979378700256,
+      0.27613845467567444,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "dark-nativeAcrylic-transient-true-standard-tinted",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "dark-nativeAcrylic-transient-true-standard-clear",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.88500946760177612,
+      0.35628241300582886,
+      0.2761627733707428,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "dark-nativeMica-window-true-standard-tinted",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "visualEffect",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "dark-nativeMica-window-true-standard-clear",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "nativeGlass",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "dark-liquidGlass-transient-true-standard-tinted",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  },
+  {
+    "backend" : "nativeGlass",
+    "blend" : 0,
+    "fieldRetained" : true,
+    "fieldText" : "Retained editor",
+    "foregroundPixel" : [
+      0.94379335641860962,
+      0.29306778311729431,
+      0.17751452326774597,
+      1
+    ],
+    "imageSize" : [
+      1080,
+      664
+    ],
+    "name" : "dark-liquidGlass-transient-true-standard-clear",
+    "radius" : 20,
+    "scale" : 2,
+    "windowActive" : true
+  }
+]

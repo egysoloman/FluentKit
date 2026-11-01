@@ -1,0 +1,45 @@
+Building for debugging...
+[1 / 1]
+[4 / 17] FluentGallery-product
+[8 / 21] FluentKitTests-product
+[13 / 26] FluentKitTests-product
+[17 / 26] FluentGallery-product
+[19 / 28] FluentGallery-product
+[21 / 30] FluentKitTests-product
+[23 / 30] FluentKitTests-product
+[25 / 30] FluentKitTests-product
+[25 / 28] FluentKitValidation-product
+[26 / 28] FluentKitValidation-product
+[28 / 30] FluentKitValidation-product
+Build complete! (38.29秒)
+Test Suite 'Selected tests' started at 2026-11-01 11:49:56.630.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 11:49:56.633.
+Test Suite 'MaterialConfigurationTests' started at 2026-11-01 11:49:56.633.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testCardMaterialIsOptInAndSwitchingPreservesItsContent]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MaterialConfigurationTests.swift:175: error: -[FluentKitTests.MaterialConfigurationTests testCardMaterialIsOptInAndSwitchingPreservesItsContent] : XCTAssertLessThan failed: ("0.27214106917381287") is not less than ("0.2") - a translucent white card fill must not become an opaque white card in dark mode
+Test Case '-[FluentKitTests.MaterialConfigurationTests testCardMaterialIsOptInAndSwitchingPreservesItsContent]' failed (0.555 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDefaultPresetsAndFieldwiseOverridePrecedence]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDefaultPresetsAndFieldwiseOverridePrecedence]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDynamicFallbackColorsResolveUnderTheSurfaceAppearanceAndFlattenAlpha]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MaterialConfigurationTests.swift:105: error: -[FluentKitTests.MaterialConfigurationTests testDynamicFallbackColorsResolveUnderTheSurfaceAppearanceAndFlattenAlpha] : XCTAssertEqualWithAccuracy failed: ("0.2211492657661438") is not equal to ("0.12549019607843137") +/- ("0.002")
+Test Case '-[FluentKitTests.MaterialConfigurationTests testDynamicFallbackColorsResolveUnderTheSurfaceAppearanceAndFlattenAlpha]' failed (0.001 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testGlassCornerRadiusTracksSurfaceWithoutReplacingTheBackend]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testGlassCornerRadiusTracksSurfaceWithoutReplacingTheBackend]' passed (0.005 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testNativeBindingSurvivesThemeChangesAndAccessibilityDefeatsLocalEnable]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testNativeBindingSurvivesThemeChangesAndAccessibilityDefeatsLocalEnable]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testPopupAndToolTipRespectRoleOverridesAfterTheyAreCreated]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testPopupAndToolTipRespectRoleOverridesAfterTheyAreCreated]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testSurfaceConfigurationUpdatesPreserveFieldEditorAndMarkedText]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testSurfaceConfigurationUpdatesPreserveFieldEditorAndMarkedText]' passed (0.115 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testThemeCopiesPreserveRoleOverridesAndScopedModifiersDoNotLeak]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testThemeCopiesPreserveRoleOverridesAndScopedModifiersDoNotLeak]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.MaterialConfigurationTests testWorkspaceAccessibilityNotificationReappliesMaterialConfiguration]' started.
+Test Case '-[FluentKitTests.MaterialConfigurationTests testWorkspaceAccessibilityNotificationReappliesMaterialConfiguration]' passed (0.001 seconds).
+Test Suite 'MaterialConfigurationTests' failed at 2026-11-01 11:49:57.314.
+	 Executed 9 tests, with 2 failures (0 unexpected) in 0.681 (0.681) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 11:49:57.314.
+	 Executed 9 tests, with 2 failures (0 unexpected) in 0.681 (0.682) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 11:49:57.314.
+	 Executed 9 tests, with 2 failures (0 unexpected) in 0.681 (0.684) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

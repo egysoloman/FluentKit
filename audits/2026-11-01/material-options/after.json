@@ -1,0 +1,23 @@
+{
+  "content_layer_attached" : true,
+  "foreground_pixel" : [
+    1,
+    0,
+    0,
+    1
+  ],
+  "glass_radius" : 12,
+  "high_contrast_backend" : "opaque",
+  "surface_updated" : {
+    "border" : 0,
+    "material" : "nativeAcrylic",
+    "radius" : 20
+  },
+  "tooltip_material" : "liquidGlass",
+  "untinted_foreground_pixel" : [
+    1,
+    0,
+    0,
+    1
+  ]
+}

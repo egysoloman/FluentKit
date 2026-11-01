@@ -1,0 +1,14 @@
+{
+  "before": {
+    "mica": 0.210625,
+    "nativeAcrylic": 0.22325,
+    "nativeMica": 0.235834,
+    "liquidGlass": 0.250625
+  },
+  "after": {
+    "mica": 0.216167,
+    "nativeAcrylic": 0.220708,
+    "nativeMica": 0.238917,
+    "liquidGlass": 0.245375
+  }
+}
