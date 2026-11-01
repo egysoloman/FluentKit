@@ -4,6 +4,9 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Open text editing menus follow direct control theme and material updates in plain
+  AppKit windows, preserving the existing field editor, selection, and popup.
+
 - ComboBox and menu popups follow target size changes and ancestor movement without
   requiring a screen notification. Retained targets leaving their window, becoming
   hidden, or scrolling completely out of the viewport dismiss the popup. Same-window

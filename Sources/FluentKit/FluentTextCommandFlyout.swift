@@ -565,7 +565,7 @@ final class FluentTextCommandFlyout {
         appearanceCoordinator = nil
     }
 
-    private func apply(theme: FluentTheme) {
+    func apply(theme: FluentTheme) {
         guard self.theme != theme else { return }
         self.theme = theme
         panel?.appearance = fluentAppKitAppearance(for: theme)

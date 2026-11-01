@@ -18,6 +18,9 @@ final class FluentTextEditingSession {
         didSet {
             guard oldValue != theme else { return }
             configureEditor()
+            // Plain AppKit windows may update controls directly without an appearance
+            // coordinator. Keep the already-open editor menu on the same theme too.
+            flyout?.apply(theme: theme)
         }
     }
     let isSecure: Bool
