@@ -385,10 +385,7 @@ private final class FluentDatePickerNative: NSDatePicker, FluentControlSizeConfi
         let contentView = FluentMaterialView(
             frame: NSRect(origin: .zero, size: contentSize)
         )
-        contentView.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        contentView.fluentTheme = theme
-        contentView.isMaterialEnabled = theme.materialEffectsEnabled
-        contentView.fallbackColor = theme.flyoutSurfaceFill
+        contentView.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         contentView.identifier = NSUserInterfaceItemIdentifier("FluentKit.CalendarDatePicker.Popover")
         contentView.addSubview(calendarMonthView)
         calendarMonthView.translatesAutoresizingMaskIntoConstraints = false
@@ -857,10 +854,7 @@ private final class FluentColorPickerFlyoutHost: NSControl, NSPopoverDelegate {
         let padding: CGFloat = 12
         let contentSize = NSSize(width: 344, height: 374)
         let content = FluentMaterialView(frame: CGRect(origin: .zero, size: contentSize))
-        content.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        content.fluentTheme = theme
-        content.isMaterialEnabled = theme.materialEffectsEnabled
-        content.fallbackColor = theme.flyoutSurfaceFill
+        content.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         content.identifier = NSUserInterfaceItemIdentifier("FluentKit.ColorPicker.Popover")
         content.addSubview(editor)
         editor.frame = content.bounds.insetBy(dx: padding, dy: padding)

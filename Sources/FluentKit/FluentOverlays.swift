@@ -64,9 +64,7 @@ private final class FluentPopoverContentController<Content: FluentView>: NSViewC
         surface = FluentPopoverSurfaceContainer(material: material, size: size)
         super.init(nibName: nil, bundle: nil)
 
-        material.fluentTheme = context.theme
-        material.isMaterialEnabled = context.theme.materialEffectsEnabled
-        material.fallbackColor = context.theme.flyoutSurfaceFill
+        material.configure(theme: context.theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         material.identifier = NSUserInterfaceItemIdentifier("FluentKit.Popover.Content")
         material.setAccessibilityRole(.group)
         material.fluentSetDefaultAccessibilityLabel("Popover")
@@ -97,10 +95,7 @@ private final class FluentPopoverContentController<Content: FluentView>: NSViewC
     func update(content: Content, size: NSSize, context: FluentRenderContext) {
         self.content = content
         host.update(content, context: context)
-        material.fluentTheme = context.theme
-        material.materialStyle = context.theme.material(for: .transient) ?? .liquidGlass
-        material.isMaterialEnabled = context.theme.materialEffectsEnabled
-        material.fallbackColor = context.theme.flyoutSurfaceFill
+        material.configure(theme: context.theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         surface.requestedSize = size
         surface.setFrameSize(size)
         preferredContentSize = size
@@ -857,9 +852,7 @@ private final class FluentSheetWindowController<Content: FluentView>: NSWindowCo
         window.isOpaque = false
         window.backgroundColor = .clear
         let material = FluentMaterialView(material: context.theme.material(for: .transient) ?? .liquidGlass)
-        material.fluentTheme = context.theme
-        material.isMaterialEnabled = context.theme.materialEffectsEnabled
-        material.fallbackColor = context.theme.windowBackground
+        material.configure(theme: context.theme, role: .transient, fallback: { $0.windowBackground })
         host = FluentViewHost(content, context: context)
         self.material = material
         widthConstraint = material.widthAnchor.constraint(equalToConstant: size.width)
@@ -900,10 +893,7 @@ private final class FluentSheetWindowController<Content: FluentView>: NSWindowCo
 
     private func apply(context: FluentRenderContext) {
         window?.appearance = fluentAppKitAppearance(for: context.theme)
-        material.fluentTheme = context.theme
-        material.materialStyle = context.theme.material(for: .transient) ?? .liquidGlass
-        material.isMaterialEnabled = context.theme.materialEffectsEnabled
-        material.fallbackColor = context.theme.windowBackground
+        material.configure(theme: context.theme, role: .transient, fallback: { $0.windowBackground })
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

@@ -53,13 +53,15 @@ public protocol FluentControlSizeConfigurable: AnyObject {
 }
 
 public enum FluentMaterial: Hashable, Sendable {
+    /// Resolve the role's preset through the theme. Explicit materials remain local overrides.
+    case automatic
     case mica
     case acrylic
     /// Explicit macOS visual-effect alternatives; appearance follows the operating system.
     case nativeMica
     case nativeAcrylic
-    /// System-owned glass for transient presenters. Unlike acrylic, FluentKit does not tint or
-    /// paint this material itself.
+    /// System-owned glass. Optional developer tint is passed to the native effect view;
+    /// FluentKit does not paint or approximate the glass effect itself.
     case liquidGlass
     case sidebar
 }
@@ -71,6 +73,9 @@ public enum FluentMaterialRole: Hashable, Sendable {
     case window
     case navigation
     case transient
+    /// Inherits transient overrides unless it has a more specific override.
+    case toolTip
+    case container
 }
 
 /// Controls the semantic density of layout metrics without changing the view tree.
@@ -267,6 +272,7 @@ public struct FluentTheme: Equatable {
     public let colorScheme: FluentThemeColorScheme
     public let typography: FluentTypography
     public let materialEffectsEnabled: Bool
+    public let materialConfigurations: [FluentMaterialRole: FluentMaterialConfiguration]
 
     public var designTokens: FluentDesignTokens { FluentDesignTokens(density: density) }
 
@@ -277,7 +283,8 @@ public struct FluentTheme: Equatable {
         contrast: FluentThemeContrast = .system,
         colorScheme: FluentThemeColorScheme = .system,
         typography: FluentTypography = FluentTypography(),
-        materialEffectsEnabled: Bool = true
+        materialEffectsEnabled: Bool = true,
+        materialConfigurations: [FluentMaterialRole: FluentMaterialConfiguration] = [:]
     ) {
         self.accent = accent
         self.material = material
@@ -286,6 +293,7 @@ public struct FluentTheme: Equatable {
         self.colorScheme = colorScheme
         self.typography = typography
         self.materialEffectsEnabled = materialEffectsEnabled
+        self.materialConfigurations = materialConfigurations
     }
 
     public static func == (lhs: FluentTheme, rhs: FluentTheme) -> Bool {
@@ -296,6 +304,7 @@ public struct FluentTheme: Equatable {
             && lhs.colorScheme == rhs.colorScheme
             && lhs.typography == rhs.typography
             && lhs.materialEffectsEnabled == rhs.materialEffectsEnabled
+            && lhs.materialConfigurations == rhs.materialConfigurations
     }
 
     /// The legacy current theme is the actual Light/Dark result for the current AppKit
@@ -317,7 +326,8 @@ public struct FluentTheme: Equatable {
         contrast: FluentThemeContrast = .system,
         colorScheme: FluentThemeColorScheme = .system,
         typography: FluentTypography = FluentTypography(),
-        materialEffectsEnabled: Bool = true
+        materialEffectsEnabled: Bool = true,
+        materialConfigurations: [FluentMaterialRole: FluentMaterialConfiguration] = [:]
     ) -> FluentTheme {
         FluentTheme(
             accent: accent,
@@ -326,53 +336,83 @@ public struct FluentTheme: Equatable {
             contrast: contrast,
             colorScheme: colorScheme,
             typography: typography,
-            materialEffectsEnabled: materialEffectsEnabled
+            materialEffectsEnabled: materialEffectsEnabled,
+            materialConfigurations: materialConfigurations
         )
     }
 
     public func with(density: FluentThemeDensity) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
     public func with(accent: NSColor) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
     public func with(material: FluentMaterial) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
     public func with(materialEffectsEnabled: Bool) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
     public func with(contrast: FluentThemeContrast) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
     public func with(colorScheme: FluentThemeColorScheme) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
     public func with(typography: FluentTypography) -> FluentTheme {
-        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled)
+        FluentTheme(accent: accent, material: material, density: density, contrast: contrast, colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled, materialConfigurations: materialConfigurations)
     }
 
-    /// Resolves the native material for a semantic transient or navigation surface. The
-    /// application can disable effects globally without changing control ownership or layout.
+    /// Overrides one semantic role without replacing other theme values. Passing nil restores
+    /// that role's defaults. Tooltip roles also inherit the transient configuration.
+    public func with(materialConfiguration: FluentMaterialConfiguration?, for role: FluentMaterialRole) -> FluentTheme {
+        var configurations = materialConfigurations
+        if let materialConfiguration {
+            configurations[role] = (configurations[role] ?? .init()).merging(materialConfiguration)
+        } else { configurations[role] = nil }
+        return FluentTheme(accent: accent, material: material, density: density, contrast: contrast,
+            colorScheme: colorScheme, typography: typography, materialEffectsEnabled: materialEffectsEnabled,
+            materialConfigurations: configurations)
+    }
+
+    public func resolvedMaterialConfiguration(for role: FluentMaterialRole,
+        preset: FluentMaterialConfiguration = .init(), override: FluentMaterialConfiguration? = nil
+    ) -> FluentMaterialConfiguration {
+        let base = FluentMaterialConfiguration(material: defaultMaterial(for: role),
+            blendingMode: role.defaultBlendingMode, isEnabled: true).merging(preset)
+        let inherited = role == .toolTip ? materialConfigurations[.transient] : nil
+        var result = base.merging(inherited).merging(materialConfigurations[role]).merging(override)
+        if result.material == .automatic { result.material = defaultMaterial(for: role) }
+        return result
+    }
+
+    /// Returns nil when effects are disabled; configuration values remain available through
+    /// `resolvedMaterialConfiguration` so toggling effects does not discard developer choices.
     public func material(for role: FluentMaterialRole) -> FluentMaterial? {
         guard materialEffectsEnabled else { return nil }
+        let configuration = resolvedMaterialConfiguration(for: role)
+        guard configuration.isEnabled != false else { return nil }
+        return configuration.material
+    }
+
+    private func defaultMaterial(for role: FluentMaterialRole) -> FluentMaterial {
         switch role {
         case .window, .navigation:
             switch material {
-            case .mica, .acrylic: return .mica
+            case .automatic, .mica, .acrylic: return .mica
             case .nativeMica, .nativeAcrylic: return .nativeMica
             case .liquidGlass: return .liquidGlass
             case .sidebar: return .sidebar
             }
-        case .transient:
+        case .transient, .toolTip, .container:
             switch material {
-            case .mica, .acrylic: return .acrylic
+            case .automatic, .mica, .acrylic: return .acrylic
             case .nativeMica, .nativeAcrylic, .sidebar: return .nativeAcrylic
             case .liquidGlass: return .liquidGlass
             }

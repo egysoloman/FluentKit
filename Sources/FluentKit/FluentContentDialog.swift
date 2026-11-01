@@ -885,14 +885,15 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView, Flu
         titleHeightConstraint.isActive = configuration.title.isEmpty
         titleToContentConstraint.constant = configuration.title.isEmpty ? 0 : 12
 
-        materialView.materialStyle = context.theme.material(for: .transient) ?? .liquidGlass
-        materialView.fluentTheme = context.theme
-        materialView.isMaterialEnabled = context.theme.materialEffectsEnabled
-        materialView.fallbackColor = context.theme.contentDialogContentFill
+        materialView.configure(theme: context.theme, role: .transient, fallback: { $0.contentDialogContentFill })
         materialView.layer?.cornerRadius = 0
         materialView.layer?.masksToBounds = false
 
-        contentTintView.layer?.backgroundColor = context.theme.contentDialogContentFill.cgColor
+        let override = context.theme.materialConfigurations[.transient]
+        let customizedSurface = override?.material != nil || override?.tintColor != nil || override?.fallbackColor != nil
+        let nativeSurface = materialView.resolvedBackend == .visualEffect || materialView.resolvedBackend == .nativeGlass
+        contentTintView.layer?.backgroundColor = (customizedSurface || nativeSurface
+            ? NSColor.clear : context.theme.contentDialogContentFill).cgColor
         commandSurfaceView.layer?.backgroundColor = context.theme.contentDialogCommandFill.cgColor
         commandSeparatorView.layer?.backgroundColor = context.theme.divider.cgColor
         surfaceContainer.layer?.cornerRadius = 8

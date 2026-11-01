@@ -859,11 +859,7 @@ struct GalleryScreen: FluentView {
                 FluentMenuItem("Glyph", icon: .glyph("★", font: .systemFont(ofSize: 16)), action: {})
                 FluentMenuItem("Path", icon: .path(CGPath(ellipseIn: CGRect(x: 0, y: 0, width: 20, height: 12), transform: nil)), action: {})
             })
-        case .SystemBackdrops:
-            return FluentAnyView(FluentHStack {
-                FluentMaterialSurface(material: .mica) { FluentText("Mica base recipe") }.frame(width: 200, height: 100)
-                FluentMaterialSurface(material: .nativeMica) { FluentText("macOS native effect") }.frame(width: 200, height: 100)
-            })
+        case .SystemBackdrops: return FluentAnyView(MaterialGallerySample(theme: theme))
         case .AutoSuggestBox: return FluentAnyView(AutoSuggestBoxGallerySample())
         case .ListView:
             return FluentAnyView(FluentListView(Array(0..<5000)) { FluentText("Item \($0)") }.contentVersion { $0 }.frame(width: 420, height: 320))

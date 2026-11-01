@@ -544,10 +544,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
 
         let content = FluentMaterialView(frame: CGRect(x: 0, y: 0, width: 242, height: 398))
         content.identifier = NSUserInterfaceItemIdentifier("FluentKit.TimePicker.Popover")
-        content.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        content.fluentTheme = theme
-        content.isMaterialEnabled = theme.materialEffectsEnabled
-        content.fallbackColor = theme.flyoutSurfaceFill
+        content.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         for view in [editorView, accept, dismiss] {
             view.translatesAutoresizingMaskIntoConstraints = false
             content.addSubview(view)
@@ -632,9 +629,7 @@ public final class FluentTimePicker: NSControl, FluentControlSizeConfigurable, N
         editorView.update(time: pendingTime, minuteIncrement: minuteIncrement,
             clockIdentifier: clockIdentifier, locale: locale, theme: theme)
         if let content = pickerPopover?.contentViewController?.view as? FluentMaterialView {
-            content.fluentTheme = theme
-            content.isMaterialEnabled = theme.materialEffectsEnabled
-            content.fallbackColor = theme.flyoutSurfaceFill
+            content.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
             for case let button as FluentWinUIDatePickerFlyoutButton in content.subviews { button.theme = theme }
             content.subviews.first { $0.identifier?.rawValue == "FluentKit.TimePicker.FooterDivider" }?.layer?.backgroundColor = theme.divider.cgColor
         }

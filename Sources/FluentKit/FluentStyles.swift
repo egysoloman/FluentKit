@@ -1626,16 +1626,21 @@ public extension FluentCardStyle where Self == FluentPlainCardStyle {
 public struct FluentCardView<Content: FluentView>: FluentUpdatablePrimitiveView {
     fileprivate let content: Content
     fileprivate let style: any FluentCardStyle
+    fileprivate let materialConfiguration: FluentMaterialConfiguration?
 
-    public init(style: any FluentCardStyle = FluentAutomaticCardStyle(), @FluentViewBuilder content: () -> Content) {
+    public init(style: any FluentCardStyle = FluentAutomaticCardStyle(),
+                material: FluentMaterial? = nil, configuration: FluentMaterialConfiguration? = nil,
+                @FluentViewBuilder content: () -> Content) {
         self.content = content()
         self.style = style
+        materialConfiguration = material == nil && configuration == nil ? nil
+            : FluentMaterialConfiguration(material: material).merging(configuration)
     }
 
     public var body: NeverFluentView { NeverFluentView() }
 
     public func _makeView(in context: FluentRenderContext) -> NSView {
-        let card = FluentCard(contentView: content._mount(in: context), style: style)
+        let card = FluentCard(contentView: content._mount(in: context), style: style, materialConfiguration: materialConfiguration)
         card.theme = context.theme
         return card
     }
@@ -1644,6 +1649,7 @@ public struct FluentCardView<Content: FluentView>: FluentUpdatablePrimitiveView 
         guard let card = view as? FluentCard else { return false }
         card.theme = context.theme
         card.style = style
+        card.materialConfiguration = materialConfiguration
         let updated = content._update(card.contentView, in: context)
         if updated { card.invalidateIntrinsicContentSize() }
         return updated
@@ -1652,7 +1658,8 @@ public struct FluentCardView<Content: FluentView>: FluentUpdatablePrimitiveView 
 
 public extension FluentView {
     /// Frames a view in a reusable, style-driven card container.
-    func cardStyle(_ style: any FluentCardStyle) -> FluentCardView<Self> {
-        FluentCardView(style: style) { self }
+    func cardStyle(_ style: any FluentCardStyle, material: FluentMaterial? = nil,
+                   configuration: FluentMaterialConfiguration? = nil) -> FluentCardView<Self> {
+        FluentCardView(style: style, material: material, configuration: configuration) { self }
     }
 }

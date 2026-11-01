@@ -14,9 +14,9 @@ public final class FluentMaterialView: NSVisualEffectView {
     /// `effectiveAppearance` would leave a dark Fluent pane rendered with a light glass recipe.
     public var fluentTheme: FluentTheme? {
         didSet {
-            guard oldValue != fluentTheme else { return }
-            applyThemeAppearance()
-            applyMaterial()
+            guard oldValue != fluentTheme, !isApplyingConfiguration else { return }
+            if configurationBinding != nil { resolveConfiguration() }
+            else { applyThemeAppearance(); applyMaterial() }
         }
     }
 
@@ -37,13 +37,58 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     public var fallbackColor: NSColor = .windowBackgroundColor {
-        didSet { applySurfaceColor() }
+        didSet { if !isApplyingConfiguration { applySurfaceColor() } }
     }
 
     public var tintColor: NSColor? {
         didSet {
-            applyResolvedTint()
+            if !isApplyingConfiguration { applyResolvedTint(); applyMaterial() }
         }
+    }
+
+    /// Sampling scope used by visual-effect backends. System Glass manages its own sampling.
+    public var preferredBlendingMode: NSVisualEffectView.BlendingMode = .behindWindow {
+        didSet { if oldValue != preferredBlendingMode { applyMaterial() } }
+    }
+
+    private struct ConfigurationBinding {
+        let role: FluentMaterialRole
+        let preset: FluentMaterialConfiguration
+        let override: FluentMaterialConfiguration?
+        let fallback: ((FluentTheme) -> NSColor)?
+    }
+    private var configurationBinding: ConfigurationBinding?
+    private var isApplyingConfiguration = false
+
+    /// Apply a control preset, theme role, and local override, in that order. Reapplying the
+    /// theme preserves this binding and content identity. Accessibility fallbacks take priority.
+    public func configure(theme: FluentTheme, role: FluentMaterialRole,
+        preset: FluentMaterialConfiguration = .init(),
+        configuration: FluentMaterialConfiguration? = nil,
+        fallback: ((FluentTheme) -> NSColor)? = nil
+    ) {
+        configurationBinding = ConfigurationBinding(role: role, preset: preset, override: configuration, fallback: fallback)
+        isApplyingConfiguration = true
+        fluentTheme = theme
+        isApplyingConfiguration = false
+        resolveConfiguration()
+    }
+
+    var hasConfigurationBinding: Bool { configurationBinding != nil }
+
+    private func resolveConfiguration() {
+        guard let binding = configurationBinding else { return }
+        let theme = fluentTheme ?? .current
+        let resolved = theme.resolvedMaterialConfiguration(for: binding.role, preset: binding.preset, override: binding.override)
+        isApplyingConfiguration = true
+        materialStyle = resolved.material ?? .mica
+        isMaterialEnabled = theme.materialEffectsEnabled && resolved.isEnabled != false
+        fallbackColor = resolved.fallbackColor ?? binding.fallback?(theme) ?? binding.role.fallback(in: theme)
+        tintColor = resolved.tintColor
+        preferredBlendingMode = resolved.blendingMode ?? binding.role.defaultBlendingMode
+        isApplyingConfiguration = false
+        applyThemeAppearance()
+        applyMaterial()
     }
 
     public private(set) var resolvedBackend: FluentMaterialBackend = .visualEffect
@@ -56,6 +101,8 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     private let fallbackLayer = CALayer()
+    // Inserted after the fallback and before content. A positive zPosition paints tint over
+    // descendants in WindowServer composition, even when CALayer.render looks unaffected.
     private let tintLayer = CALayer()
     private var isApplyingMaterial = false
     private var glassBackendView: NSView?
@@ -76,7 +123,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         fallbackLayer.zPosition = 0
         fallbackLayer.name = "FluentKit.Material.OpaqueFallback"
-        tintLayer.zPosition = 1
+        tintLayer.zPosition = 0
         tintLayer.name = "FluentKit.Material.MicaTint"
         layer?.addSublayer(fallbackLayer)
         layer?.addSublayer(tintLayer)
@@ -94,7 +141,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         fallbackLayer.zPosition = 0
         fallbackLayer.name = "FluentKit.Material.OpaqueFallback"
-        tintLayer.zPosition = 1
+        tintLayer.zPosition = 0
         tintLayer.name = "FluentKit.Material.MicaTint"
         layer?.addSublayer(fallbackLayer)
         layer?.addSublayer(tintLayer)
@@ -108,7 +155,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         wantsLayer = true
         fallbackLayer.zPosition = 0
         fallbackLayer.name = "FluentKit.Material.OpaqueFallback"
-        tintLayer.zPosition = 1
+        tintLayer.zPosition = 0
         tintLayer.name = "FluentKit.Material.MicaTint"
         layer?.addSublayer(fallbackLayer)
         layer?.addSublayer(tintLayer)
@@ -125,19 +172,23 @@ public final class FluentMaterialView: NSVisualEffectView {
         fallbackLayer.frame = bounds
         tintLayer.frame = bounds
         glassBackendView?.frame = bounds
+        synchronizeGlassCornerRadius()
         CATransaction.commit()
     }
 
     private func applyMaterial() {
-        guard !isApplyingMaterial else { return }
+        guard !isApplyingMaterial, !isApplyingConfiguration else { return }
         isApplyingMaterial = true
         defer { isApplyingMaterial = false }
+        let style = resolvedMaterialStyle
         let usesOpaqueFallback = !isMaterialEnabled
             || NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
+            || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
+            || (fluentTheme?.isHighContrast ?? false)
         let usesNativeGlass = !usesOpaqueFallback
-            && materialStyle == .liquidGlass
+            && style == .liquidGlass
             && Self.isNativeGlassAvailable
-        let usesFluentRecipe = !usesOpaqueFallback && (materialStyle == .mica || materialStyle == .acrylic)
+        let usesFluentRecipe = !usesOpaqueFallback && (style == .mica || style == .acrylic)
         resolvedBackend = usesOpaqueFallback
             ? .opaque
             : (usesFluentRecipe ? .fluentRecipe : (usesNativeGlass ? .nativeGlass : .visualEffect))
@@ -147,21 +198,25 @@ public final class FluentMaterialView: NSVisualEffectView {
         glassView?.isHidden = !usesNativeGlass
         glassView?.frame = bounds
         applyResolvedTint()
-        blendingMode = .behindWindow
-        material = switch materialStyle {
-        case .mica, .nativeMica: .underWindowBackground
-        case .acrylic, .nativeAcrylic: .hudWindow
-        case .liquidGlass: .popover
-        case .sidebar: .sidebar
+        let usesInertEffect = usesNativeGlass || usesOpaqueFallback || usesFluentRecipe
+        let nextBlendingMode: NSVisualEffectView.BlendingMode = usesInertEffect ? .withinWindow : preferredBlendingMode
+        let nextMaterial: NSVisualEffectView.Material
+        if usesInertEffect { nextMaterial = .contentBackground }
+        else {
+            nextMaterial = switch style {
+            case .automatic, .mica, .nativeMica: .underWindowBackground
+            case .acrylic, .nativeAcrylic: .hudWindow
+            case .liquidGlass: .popover
+            case .sidebar: .sidebar
+            }
         }
-        tintLayer.isHidden = usesOpaqueFallback || usesFluentRecipe || usesNativeGlass || materialStyle == .liquidGlass
-        if usesNativeGlass || usesOpaqueFallback || usesFluentRecipe {
-            // Keep the native view alive for content and accessibility, but make its effect
-            // contribution inert while the glass or opaque backend owns the surface.
-            blendingMode = .withinWindow
-            material = .contentBackground
-        }
-        state = .followsWindowActiveState
+        // Resolve once: briefly switching an opaque/Glass surface to a live AppKit material
+        // and straight back rebuilds the native effect on every ordinary content update.
+        if blendingMode != nextBlendingMode { blendingMode = nextBlendingMode }
+        if material != nextMaterial { material = nextMaterial }
+        tintLayer.isHidden = usesOpaqueFallback || (usesFluentRecipe && tintColor == nil) || usesNativeGlass || style == .liquidGlass
+        if state != .followsWindowActiveState { state = .followsWindowActiveState }
+
     }
 
     private func applySurfaceColor() {
@@ -170,12 +225,19 @@ public final class FluentMaterialView: NSVisualEffectView {
             let active = window?.isKeyWindow ?? true
             // Fixed base/fallback colors. Desktop wallpaper sampling is intentionally unavailable
             // here; callers can explicitly choose nativeMica/nativeAcrylic for AppKit effects.
-            let component: CGFloat = materialStyle == .mica
+            let component: CGFloat = resolvedMaterialStyle == .mica
                 ? (dark ? (active ? 32 : 40) : (active ? 243 : 249))
                 : (dark ? 44 : 252)
             fallbackLayer.backgroundColor = NSColor(calibratedWhite: component / 255, alpha: 1).cgColor
         } else {
-            fallbackLayer.backgroundColor = fallbackColor.cgColor
+            let highContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast || (fluentTheme?.isHighContrast ?? false)
+            let color: NSColor
+            if highContrast {
+                let theme = (fluentTheme ?? .current).with(contrast: .high)
+                let role = configurationBinding?.role ?? .transient
+                color = role.fallback(in: theme)
+            } else { color = fallbackColor }
+            fallbackLayer.backgroundColor = resolvedBackend == .opaque ? opaqueFallbackColor(color) : resolvedCGColor(color)
         }
     }
 
@@ -193,15 +255,21 @@ public final class FluentMaterialView: NSVisualEffectView {
         applySurfaceColor()
     }
 
+    private var resolvedMaterialStyle: FluentMaterial {
+        materialStyle == .automatic
+            ? ((fluentTheme ?? .current).resolvedMaterialConfiguration(for: .window).material ?? .mica)
+            : materialStyle
+    }
+
     private var resolvedTintColor: NSColor? {
         if let tintColor { return tintColor }
-        guard materialStyle == .mica || materialStyle == .nativeMica else { return nil }
+        guard resolvedMaterialStyle == .mica || resolvedMaterialStyle == .nativeMica else { return nil }
         return (fluentTheme ?? .current).micaTint
     }
 
     private func applyResolvedTint() {
         let color = resolvedTintColor
-        tintLayer.backgroundColor = color?.cgColor
+        tintLayer.backgroundColor = color.map(resolvedCGColor)
         glassBackendView?.setValue(color, forKey: "tintColor")
     }
 
@@ -214,12 +282,21 @@ public final class FluentMaterialView: NSVisualEffectView {
         view.setAccessibilityElement(false)
         addSubview(view, positioned: .below, relativeTo: subviews.first)
         glassBackendView = view
+        synchronizeGlassCornerRadius()
         applyResolvedTint()
         return view
     }
 
+    private func synchronizeGlassCornerRadius() {
+        guard let glassBackendView else { return }
+        let radius = layer?.cornerRadius ?? 0
+        if (glassBackendView.value(forKey: "cornerRadius") as? NSNumber)?.doubleValue != Double(radius) {
+            glassBackendView.setValue(radius, forKey: "cornerRadius")
+        }
+    }
+
     private func installDisplayOptionsObserver() {
-        displayOptionsObserver = NotificationCenter.default.addObserver(
+        displayOptionsObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification,
             object: NSWorkspace.shared,
             queue: .main
@@ -230,6 +307,27 @@ public final class FluentMaterialView: NSVisualEffectView {
         appearance = fluentTheme.flatMap { fluentAppKitAppearance(for: $0) }
     }
 
+    private func resolvedCGColor(_ color: NSColor) -> CGColor {
+        var result = color.cgColor
+        effectiveAppearance.performAsCurrentDrawingAppearance { result = color.cgColor }
+        return result
+    }
+
+    private func opaqueFallbackColor(_ color: NSColor) -> CGColor {
+        let resolved = resolvedCGColor(color)
+        guard resolved.alpha < 1 else { return resolved }
+        let base = resolvedCGColor((fluentTheme ?? .current).windowBackground)
+        guard resolved.alpha > 0 else { return base.copy(alpha: 1) ?? base }
+        let foreground = NSColor(cgColor: resolved)?.usingColorSpace(.sRGB) ?? .black
+        let background = NSColor(cgColor: base)?.usingColorSpace(.sRGB) ?? .black
+        let alpha = foreground.alphaComponent
+        // Preserve one color space through blending and construction. Reinterpreting device
+        // components as calibrated RGB changes the shade again, even for a clear override.
+        return NSColor(srgbRed: foreground.redComponent * alpha + background.redComponent * (1 - alpha),
+            green: foreground.greenComponent * alpha + background.greenComponent * (1 - alpha),
+            blue: foreground.blueComponent * alpha + background.blueComponent * (1 - alpha), alpha: 1).cgColor
+    }
+
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
         // NSVisualEffectView re-evaluates its native material automatically when appearance
@@ -237,12 +335,14 @@ public final class FluentMaterialView: NSVisualEffectView {
         // notification and can recurse until the stack guard is hit. Theme updates still call
         // `applyMaterial()` through the explicit properties above.
         fluentNotifyAppearanceCoordinator(from: self)
+        applySurfaceColor()
+        applyResolvedTint()
         needsDisplay = true
     }
 
     deinit {
         activeWindowObservers.forEach(NotificationCenter.default.removeObserver)
-        if let displayOptionsObserver { NotificationCenter.default.removeObserver(displayOptionsObserver) }
+        if let displayOptionsObserver { NSWorkspace.shared.notificationCenter.removeObserver(displayOptionsObserver) }
     }
 }
 
@@ -253,12 +353,16 @@ public struct FluentMaterialSurface<Content: FluentView>: FluentUpdatablePrimiti
     private let content: Content
     private let role: FluentMaterialRole
     private let materialOverride: FluentMaterial?
+    private let configuration: FluentMaterialConfiguration?
+    private let preset: FluentMaterialConfiguration
     private let cornerRadius: CGFloat
     private let showsBorder: Bool
 
     public init(
         role: FluentMaterialRole = .transient,
         material: FluentMaterial? = nil,
+        configuration: FluentMaterialConfiguration? = nil,
+        preset: FluentMaterialConfiguration = .init(),
         cornerRadius: CGFloat = 8,
         showsBorder: Bool = true,
         @FluentViewBuilder content: () -> Content
@@ -266,6 +370,8 @@ public struct FluentMaterialSurface<Content: FluentView>: FluentUpdatablePrimiti
         self.content = content()
         self.role = role
         materialOverride = material
+        self.configuration = configuration
+        self.preset = preset
         self.cornerRadius = max(cornerRadius, 0)
         self.showsBorder = showsBorder
     }
@@ -277,6 +383,8 @@ public struct FluentMaterialSurface<Content: FluentView>: FluentUpdatablePrimiti
             content: FluentViewHost(FluentAnyView(content), context: context),
             role: role,
             materialOverride: materialOverride,
+            configuration: configuration,
+            preset: preset,
             cornerRadius: cornerRadius,
             showsBorder: showsBorder,
             context: context
@@ -285,7 +393,8 @@ public struct FluentMaterialSurface<Content: FluentView>: FluentUpdatablePrimiti
 
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         guard let host = view as? FluentMaterialSurfaceHost else { return false }
-        host.update(content: FluentAnyView(content), context: context)
+        host.update(content: FluentAnyView(content), role: role, materialOverride: materialOverride,
+                    configuration: configuration, preset: preset, cornerRadius: cornerRadius, showsBorder: showsBorder, context: context)
         return true
     }
 }
@@ -293,15 +402,19 @@ public struct FluentMaterialSurface<Content: FluentView>: FluentUpdatablePrimiti
 private final class FluentMaterialSurfaceHost: NSView {
     private let material: FluentMaterialView
     private let contentHost: FluentViewHost<FluentAnyView>
-    private let role: FluentMaterialRole
-    private let materialOverride: FluentMaterial?
-    private let cornerRadius: CGFloat
-    private let showsBorder: Bool
+    private var role: FluentMaterialRole
+    private var materialOverride: FluentMaterial?
+    private var configuration: FluentMaterialConfiguration?
+    private var preset: FluentMaterialConfiguration
+    private var cornerRadius: CGFloat
+    private var showsBorder: Bool
 
     init(
         content: FluentViewHost<FluentAnyView>,
         role: FluentMaterialRole,
         materialOverride: FluentMaterial?,
+        configuration: FluentMaterialConfiguration?,
+        preset: FluentMaterialConfiguration,
         cornerRadius: CGFloat,
         showsBorder: Bool,
         context: FluentRenderContext
@@ -309,11 +422,13 @@ private final class FluentMaterialSurfaceHost: NSView {
         self.contentHost = content
         self.role = role
         self.materialOverride = materialOverride
+        self.configuration = configuration
+        self.preset = preset
         self.cornerRadius = cornerRadius
         self.showsBorder = showsBorder
-        material = FluentMaterialView(
-            material: materialOverride ?? context.theme.material(for: role) ?? .liquidGlass
-        )
+        let local = FluentMaterialConfiguration(material: materialOverride).merging(configuration)
+        material = FluentMaterialView(material: context.theme.resolvedMaterialConfiguration(
+            for: role, preset: preset, override: local).material ?? .mica)
         super.init(frame: .zero)
         identifier = NSUserInterfaceItemIdentifier(
             role == .window ? "FluentKit.WindowShell.MaterialSurface" : "FluentKit.MaterialSurface"
@@ -343,24 +458,39 @@ private final class FluentMaterialSurfaceHost: NSView {
 
     override var intrinsicContentSize: NSSize { contentHost.fittingSize }
 
-    func update(content: FluentAnyView, context: FluentRenderContext) {
+    func update(content: FluentAnyView, role: FluentMaterialRole, materialOverride: FluentMaterial?,
+                configuration: FluentMaterialConfiguration?, preset: FluentMaterialConfiguration, cornerRadius: CGFloat, showsBorder: Bool,
+                context: FluentRenderContext) {
+        self.role = role
+        self.materialOverride = materialOverride
+        self.configuration = configuration
+        self.preset = preset
+        self.cornerRadius = cornerRadius
+        self.showsBorder = showsBorder
         contentHost.update(content, context: context)
         apply(context: context)
         invalidateIntrinsicContentSize()
     }
 
     private func apply(context: FluentRenderContext) {
-        let materialStyle = materialOverride ?? context.theme.material(for: role) ?? .liquidGlass
-        material.materialStyle = materialStyle
-        material.fluentTheme = context.theme
-        material.isMaterialEnabled = context.theme.materialEffectsEnabled
-        material.fallbackColor = materialStyle == .mica
-            ? context.theme.windowBackground
-            : context.theme.flyoutSurfaceFill
-        material.tintColor = materialStyle == .mica ? context.theme.micaTint : nil
+        let local = FluentMaterialConfiguration(material: materialOverride).merging(configuration)
+        material.configure(theme: context.theme, role: role, preset: preset, configuration: local)
         material.layer?.cornerRadius = cornerRadius
+        material.needsLayout = true
         material.layer?.masksToBounds = true
         material.layer?.borderWidth = showsBorder ? (context.theme.isHighContrast ? 2 : 1) : 0
         material.layer?.borderColor = showsBorder ? context.theme.surfaceStrokeFlyout.cgColor : nil
+    }
+}
+
+public extension FluentView {
+    /// Adds a material behind transparent content without replacing the content host. Existing
+    /// opaque control fills remain explicit; cards can choose material through their own API.
+    func materialBackground(_ material: FluentMaterial? = nil,
+        configuration: FluentMaterialConfiguration? = nil, role: FluentMaterialRole = .container,
+        cornerRadius: CGFloat = 8, showsBorder: Bool = true
+    ) -> FluentMaterialSurface<Self> {
+        FluentMaterialSurface(role: role, material: material, configuration: configuration,
+            cornerRadius: cornerRadius, showsBorder: showsBorder) { self }
     }
 }

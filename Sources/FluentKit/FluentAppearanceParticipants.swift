@@ -6,8 +6,10 @@ import AppKit
 extension FluentMaterialView: FluentAppearanceParticipant {
     func applyFluentAppearance(_ theme: FluentTheme) {
         fluentTheme = theme
-        isMaterialEnabled = theme.materialEffectsEnabled
-        fallbackColor = materialStyle == .mica ? theme.windowBackground : theme.flyoutSurfaceFill
+        if !hasConfigurationBinding {
+            isMaterialEnabled = theme.materialEffectsEnabled
+            fallbackColor = materialStyle == .mica ? theme.windowBackground : theme.flyoutSurfaceFill
+        }
     }
 }
 

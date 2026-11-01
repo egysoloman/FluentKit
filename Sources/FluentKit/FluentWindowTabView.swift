@@ -57,7 +57,7 @@ public struct FluentWindowTabConfiguration {
         size: NSSize = NSSize(width: 900, height: 620),
         minimumSize: NSSize = NSSize(width: 560, height: 360),
         styleMask: NSWindow.StyleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
-        material: FluentMaterial? = .mica,
+        material: FluentMaterial? = .automatic,
         tabWidthMode: FluentTabViewWidthMode = .equal,
         closeButtonOverlayMode: FluentTabViewCloseButtonOverlayMode = .onPointerOver,
         windowControlsStyle: FluentWindowControlsStyle = .macOS,
@@ -425,9 +425,8 @@ public final class FluentWindowTabCoordinator: NSObject, NSWindowDelegate {
 
         if let material = configuration.material {
             let materialView = FluentMaterialView(material: material)
-            materialView.fluentTheme = context.theme
-            materialView.isMaterialEnabled = context.theme.materialEffectsEnabled
-            materialView.fallbackColor = context.theme.windowBackground
+            materialView.configure(theme: context.theme, role: .window,
+                configuration: material == .automatic ? nil : .init(material: material))
             materialView.frame = NSRect(origin: .zero, size: size)
             materialView.autoresizingMask = [.width, .height]
             materialView.addSubview(host)

@@ -36,6 +36,7 @@ swiftc -parse-as-library -O -swift-version 5 -warnings-as-errors -I "$QUALITY_PR
     FluentKitGallery/FluentKitGallery/MenuBarGallerySample.swift \
     FluentKitGallery/FluentKitGallery/AutoSuggestBoxGallerySample.swift \
     FluentKitGallery/FluentKitGallery/SplitButtonGallerySample.swift \
+    FluentKitGallery/FluentKitGallery/MaterialGallerySample.swift \
     FluentKitGallery/FluentKitGallery/CalendarViewGallerySample.swift \
     FluentKitGallery/FluentKitGallery/FlipViewGallerySample.swift \
     "$QUALITY_FIXTURES/GallerySampleAudit.swift" "$QUALITY_PRODUCTS/FluentKit.o" -o "$QUALITY_BIN/GallerySampleAudit"

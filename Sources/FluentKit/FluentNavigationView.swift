@@ -1177,11 +1177,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
                 paneView.addSubview(material, positioned: .below, relativeTo: paneView.subviews.first)
             }
             material.frame = paneView.bounds
-            material.materialStyle = .mica
-            material.fluentTheme = context.theme
-            material.isMaterialEnabled = context.theme.materialEffectsEnabled
-            material.fallbackColor = context.theme.windowBackground
-            material.tintColor = context.theme.micaTint
+            material.configure(theme: context.theme, role: .navigation)
             paneView.layer?.backgroundColor = nil
         case .solid:
             paneMaterial?.removeFromSuperview()

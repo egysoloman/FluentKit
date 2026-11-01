@@ -1050,11 +1050,13 @@ private final class FluentTeachingTipChrome: NSView {
         footerCloseButton.theme = theme
         footerCloseButton.reduceMotion = context.reduceMotion
 
-        material.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        material.fluentTheme = theme
-        material.isMaterialEnabled = configuration.isLightDismissEnabled && theme.materialEffectsEnabled
-        material.fallbackColor = resolvedSurfaceFill
-        material.tintColor = theme.micaTint.withAlphaComponent(theme.isDark ? 0.88 : 0.78)
+        let lightDismiss = configuration.isLightDismissEnabled
+        let selectedMaterial = theme.material(for: .transient)
+        let presetTint = selectedMaterial == .mica || selectedMaterial == .acrylic ? nil
+            : theme.micaTint.withAlphaComponent(theme.isDark ? 0.88 : 0.78)
+        material.configure(theme: theme, role: .transient,
+            preset: .init(tintColor: presetTint, isEnabled: lightDismiss),
+            fallback: { lightDismiss ? $0.flyoutSurfaceFill : $0.teachingTipBackground })
         material.layer?.cornerRadius = theme.designTokens.cardCornerRadius
         material.layer?.borderWidth = theme.controlStrokeWidth
         material.layer?.borderColor = theme.surfaceStrokeFlyout.cgColor

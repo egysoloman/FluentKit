@@ -35,13 +35,10 @@ final class FluentPopupTransitionHost: NSView {
         addSubview(animationRoot)
 
         surface.wantsLayer = true
-        surface.fluentTheme = theme
+        surface.configure(theme: theme, role: .transient)
         surface.layer?.name = "\(name).PopupBorder"
         surface.layer?.cornerRadius = cornerRadius
         surface.layer?.masksToBounds = true
-        surface.isMaterialEnabled = theme.materialEffectsEnabled
-        surface.fallbackColor = theme.flyoutSurfaceFill
-        surface.tintColor = nil
         surface.layer?.borderWidth = theme.isHighContrast ? 2 : 1
         surface.layer?.borderColor = theme.surfaceStrokeFlyout.cgColor
         animationRoot.addSubview(surface)
@@ -70,10 +67,7 @@ final class FluentPopupTransitionHost: NSView {
     }
 
     func update(theme: FluentTheme) {
-        surface.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        surface.fluentTheme = theme
-        surface.isMaterialEnabled = theme.materialEffectsEnabled
-        surface.fallbackColor = theme.flyoutSurfaceFill
+        surface.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         surface.layer?.borderWidth = theme.isHighContrast ? 2 : 1
         surface.layer?.borderColor = theme.surfaceStrokeFlyout.cgColor
     }

@@ -514,7 +514,7 @@ public struct FluentWindowShell<ID: Hashable>: FluentView {
             return FluentAnyView(
                 FluentMaterialSurface(
                     role: .window,
-                    material: .mica,
+                    preset: .init(material: .mica),
                     cornerRadius: 0,
                     showsBorder: false
                 ) {
@@ -798,7 +798,7 @@ private final class FluentWindowSharedChromeHost: NSView {
     }
 
     private func installDisplayOptionsObserver() {
-        displayOptionsObserver = NotificationCenter.default.addObserver(
+        displayOptionsObserver = NSWorkspace.shared.notificationCenter.addObserver(
             forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification,
             object: NSWorkspace.shared,
             queue: .main
@@ -807,7 +807,7 @@ private final class FluentWindowSharedChromeHost: NSView {
 
     deinit {
         windowObservers.forEach { NotificationCenter.default.removeObserver($0) }
-        if let displayOptionsObserver { NotificationCenter.default.removeObserver(displayOptionsObserver) }
+        if let displayOptionsObserver { NSWorkspace.shared.notificationCenter.removeObserver(displayOptionsObserver) }
     }
 }
 

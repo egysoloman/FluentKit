@@ -10195,8 +10195,8 @@ require(
         && shellMaterial?.materialStyle == .mica
         && shellMaterial?.resolvedBackend == (NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency ? .opaque : .fluentRecipe)
         && shellMaterial?.state == .followsWindowActiveState
-        && shellMaterial?.tintColor?.isEqual(FluentTheme.current.micaTint) == true
-        && firstLayer(named: "FluentKit.Material.MicaTint", in: shellMaterial ?? NSView()) != nil
+        && shellMaterial?.tintColor == nil
+        && firstLayer(named: "FluentKit.Material.MicaTint", in: shellMaterial ?? NSView())?.isHidden == true
         && firstLayer(named: "FluentKit.WindowShell.SharedChromeTint", in: settingsShellHost) != nil,
     "WindowShell owns one stable Mica base while ContentSurface solely owns its fill and top-leading clip"
 )
@@ -10488,7 +10488,8 @@ for colorScheme in [FluentThemeColorScheme.light, .dark] {
     )
     require(
         materialViews(in: schemeHost).count == 1
-            && schemeMaterial?.tintColor?.isEqual(schemeTheme.micaTint) == true
+            && schemeMaterial?.tintColor == nil
+            && firstLayer(named: "FluentKit.Material.MicaTint", in: schemeMaterial ?? NSView())?.isHidden == true
             && colorMatches(schemeChromeTint?.backgroundColor, schemeTheme.windowChromeTint)
             && schemeTheme.windowChromeTint.alphaComponent > 0.22,
         "\(colorScheme) WindowShell keeps one Mica and one visible shared chrome tint"

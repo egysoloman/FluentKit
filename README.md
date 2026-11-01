@@ -473,6 +473,52 @@ card/overlay radius, content inset, and navigation-pane geometry. All metrics sc
 selected density. `with(accent:)`, `with(material:)`, `with(colorScheme:)`, `with(density:)`, and
 `with(contrast:)` derive a theme without discarding unrelated settings.
 
+Material presets remain the default. Developers can override individual fields through
+`FluentMaterialConfiguration`: **local configuration → theme role → control preset**.
+Roles are `.window`, `.navigation`, `.transient`, `.toolTip` and `.container`; ToolTips inherit
+transient overrides before applying their own role. Optional fields inherit, while a clear
+tint explicitly removes an inherited tint. `with(materialConfiguration:nil, for:)` removes
+that role's theme override. Theme-copy helpers preserve the other roles.
+
+```swift
+let materialTheme = editorTheme
+    .with(materialConfiguration: .init(material: .nativeAcrylic), for: .transient)
+    .with(materialConfiguration: .init(material: .nativeMica), for: .window)
+
+FluentCardView(configuration: .init(material: .liquidGlass,
+    tintColor: NSColor.systemTeal.withAlphaComponent(0.12))) {
+    FluentText("Locally customized card")
+}
+
+FluentText("A custom surface")
+    .padding(16)
+    .materialBackground(.nativeAcrylic, cornerRadius: 12)
+
+FluentButtonView("Help") {}
+    .toolTip("Themed help")
+    .materialConfiguration(.init(material: .nativeAcrylic), for: .toolTip)
+```
+
+Cards retain their ordinary style fill unless a local configuration or a `.container` theme
+configuration opts them in. `.cardStyle(_:material:configuration:)` offers the same choice.
+A generic material background sits behind its content; it does not erase an opaque fill owned
+by a nested control. Container visual effects default to `withinWindow`; windows, navigation
+and transient surfaces use `behindWindow`. `blendingMode` can override AppKit visual effects;
+system Glass owns its own sampling behavior.
+
+`.mica` and `.acrylic` remain deterministic opaque Fluent color recipes without wallpaper
+sampling. `.nativeMica`, `.nativeAcrylic` and `.sidebar` opt into AppKit effects; `.liquidGlass`
+uses native Glass when available, with an AppKit popover-effect fallback on older systems.
+Scene windows now default to `.automatic`, allowing theme window overrides; explicit `.mica`
+remains an explicit local choice, and `nil` still removes the material surface.
+
+The global material-effects switch, Reduce Transparency and Increase Contrast take precedence
+over developer enablement. Translucent fallback colors are flattened over the theme's window
+background; High Contrast uses semantic opaque colors. Runtime configuration changes preserve
+content and editing identity. Native users can call `FluentMaterialView.configure(theme:role:
+configuration:)`; subsequent `fluentTheme` changes retain that binding. The Gallery's
+**SystemBackdrops** sample demonstrates scope, local overrides, tint and live editing.
+
 Use `FluentThemeStore` when a running application needs to switch themes. The store participates
 in dependency tracking, so replacing its theme reconciles the existing native subtree instead of
 rebuilding the host:

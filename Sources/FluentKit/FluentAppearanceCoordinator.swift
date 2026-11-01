@@ -251,8 +251,10 @@ public final class FluentAppearanceCoordinator {
         CATransaction.setDisableActions(true)
         window?.appearance = fluentAppKitAppearance(for: preference, theme: theme)
         rootMaterialView?.fluentTheme = theme
-        rootMaterialView?.isMaterialEnabled = theme.materialEffectsEnabled
-        rootMaterialView?.fallbackColor = theme.windowBackground
+        if rootMaterialView?.hasConfigurationBinding == false {
+            rootMaterialView?.isMaterialEnabled = theme.materialEffectsEnabled
+            rootMaterialView?.fallbackColor = theme.windowBackground
+        }
 
         if didChange || synchronizeParticipants {
             participants.forEach { $0.applyFluentAppearance(theme) }

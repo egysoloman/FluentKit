@@ -216,10 +216,7 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
         fluentSetDefaultAccessibilityLabel("Navigation split view")
         sidebarMaterial.setAccessibilityRole(.group)
         sidebarMaterial.fluentSetDefaultAccessibilityLabel("Navigation sidebar")
-        sidebarMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
-        sidebarMaterial.fluentTheme = context.theme
-        sidebarMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
-        sidebarMaterial.fallbackColor = context.theme.layerFill
+        sidebarMaterial.configure(theme: context.theme, role: .navigation, fallback: { $0.layerFill })
         detailHost.setAccessibilityRole(.group)
         detailHost.fluentSetDefaultAccessibilityLabel("Navigation detail")
 
@@ -299,10 +296,7 @@ private final class FluentNavigationSplitHost<Item, ID: Hashable>: NSView, NSSpl
         self.placeholder = placeholder
         self.context = context
         lastVisibleSidebarWidth = clampedSidebarWidth(lastVisibleSidebarWidth)
-        sidebarMaterial.materialStyle = context.theme.material(for: .navigation) ?? .liquidGlass
-        sidebarMaterial.fluentTheme = context.theme
-        sidebarMaterial.isMaterialEnabled = context.theme.materialEffectsEnabled
-        sidebarMaterial.fallbackColor = context.theme.layerFill
+        sidebarMaterial.configure(theme: context.theme, role: .navigation, fallback: { $0.layerFill })
 
         sanitizeSelectionIfNeeded()
         sidebarHost.update(makeSidebar(), context: context)

@@ -62,7 +62,7 @@ public struct FluentWindowDescription {
         size: NSSize = NSSize(width: 900, height: 620),
         minimumSize: NSSize = NSSize(width: 640, height: 420),
         styleMask: NSWindow.StyleMask = [.titled, .closable, .miniaturizable, .resizable],
-        material: FluentMaterial? = .mica,
+        material: FluentMaterial? = .automatic,
         placement: FluentWindowPlacement = .automatic,
         restoration: FluentWindowRestoration = .automatic,
         role: FluentWindowRole = .standard,
@@ -167,7 +167,7 @@ public struct FluentWindowScene<Content: FluentView>: FluentScene {
         size: NSSize = NSSize(width: 900, height: 620),
         minimumSize: NSSize = NSSize(width: 640, height: 420),
         styleMask: NSWindow.StyleMask = [.titled, .closable, .miniaturizable, .resizable],
-        material: FluentMaterial? = .mica,
+        material: FluentMaterial? = .automatic,
         placement: FluentWindowPlacement = .automatic,
         restoration: FluentWindowRestoration = .automatic,
         role: FluentWindowRole = .standard,
@@ -214,7 +214,7 @@ public struct FluentSettingsScene<Content: FluentView>: FluentScene {
         title: String = "Settings",
         size: NSSize = NSSize(width: 620, height: 480),
         minimumSize: NSSize = NSSize(width: 480, height: 360),
-        material: FluentMaterial? = .mica,
+        material: FluentMaterial? = .automatic,
         initiallyVisible: Bool = false,
         theme: FluentTheme = FluentTheme(),
         spacing: CGFloat = 12,
@@ -653,9 +653,8 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
         let host = FluentViewHost(description.content, context: context)
         if let material = description.material {
             let materialView = FluentMaterialView(material: material)
-            materialView.fluentTheme = context.theme
-            materialView.isMaterialEnabled = context.theme.materialEffectsEnabled
-            materialView.fallbackColor = context.theme.windowBackground
+            materialView.configure(theme: context.theme, role: .window,
+                configuration: material == .automatic ? nil : .init(material: material))
             materialView.translatesAutoresizingMaskIntoConstraints = false
             materialView.addSubview(host)
             host.translatesAutoresizingMaskIntoConstraints = false

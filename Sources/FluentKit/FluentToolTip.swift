@@ -855,10 +855,7 @@ final class FluentToolTipSurface: NSView {
         if self.context.theme != context.theme || context.reduceMotion { finishContentTransition() }
         self.context = context
         let theme = context.theme
-        material.materialStyle = .acrylic
-        material.fluentTheme = theme
-        material.isMaterialEnabled = theme.materialEffectsEnabled
-        material.fallbackColor = theme.toolTipSurfaceFill
+        material.configure(theme: theme, role: .toolTip)
         material.wantsLayer = true
         material.layer?.cornerRadius = 4
         material.layer?.borderWidth = 1

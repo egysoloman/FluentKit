@@ -4,6 +4,21 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Windows-style caption buttons now keep the full caption slot when wrapped by ToolTip.
+  Native symbol alignment insets had changed 32pt buttons to 27/37/36pt, leaving hover gaps
+  or overflow. The geometry is stable for Minimize/Maximize/Restore/Close.
+
+- Material presets now support per-role theme and per-surface overrides through
+  `FluentMaterialConfiguration`, including optional native effects, tint, sampling scope and
+  opaque fallback. Cards opt in explicitly; generic content can use `.materialBackground`.
+  Scene windows default to `.automatic` so theme overrides apply. Runtime surface changes
+  update material, radius and border without replacing content. ToolTips share the transient
+  configuration pipeline; native Glass tracks the outer radius. Accessibility display
+  notifications now use the workspace notification center, and high-contrast/reduced-
+  transparency fallbacks remain opaque. Tint stays behind foreground content in compositor
+  output, and unchanged recipes/Glass no longer switch native effect materials during refresh.
+  Fixed Mica/Acrylic recipes remain the default.
+
 - ToolTips can opt into `motion: .continuous` to move and resize one visible surface between
   pointer targets in the same window, cross-fading their content. Windows-style caption buttons
   use this mode with localized labels and theme updates. Interrupted transitions retain their

@@ -947,10 +947,7 @@ final class FluentWinUIDatePickerFlyout: NSView {
         layer?.borderWidth = theme.isHighContrast ? 2 : 1
         layer?.borderColor = theme.surfaceStrokeFlyout.cgColor
 
-        material.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        material.fluentTheme = theme
-        material.isMaterialEnabled = theme.materialEffectsEnabled
-        material.fallbackColor = theme.flyoutSurfaceFill
+        material.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         addSubview(material)
 
         highlight.wantsLayer = true

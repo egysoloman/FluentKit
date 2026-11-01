@@ -401,9 +401,7 @@ final class FluentTextCommandFlyout {
         popup.hidesOnDeactivate = true
         popup.appearance = fluentAppKitAppearance(for: theme) ?? parentWindow.effectiveAppearance
         let surface = FluentMaterialView(material: theme.material(for: .transient) ?? .liquidGlass)
-        surface.fluentTheme = theme
-        surface.isMaterialEnabled = theme.materialEffectsEnabled
-        surface.fallbackColor = theme.flyoutSurfaceFill
+        surface.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         surface.frame = NSRect(origin: .zero, size: contentSize)
         surface.autoresizingMask = [.width, .height]
         surface.layer?.cornerRadius = theme.designTokens.cardCornerRadius
@@ -560,10 +558,7 @@ final class FluentTextCommandFlyout {
         guard self.theme != theme else { return }
         self.theme = theme
         panel?.appearance = fluentAppKitAppearance(for: theme)
-        materialView?.materialStyle = theme.material(for: .transient) ?? .liquidGlass
-        materialView?.fluentTheme = theme
-        materialView?.isMaterialEnabled = theme.materialEffectsEnabled
-        materialView?.fallbackColor = theme.flyoutSurfaceFill
+        materialView?.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
         materialView?.layer?.cornerRadius = theme.designTokens.cardCornerRadius
         animationRoot?.layer?.cornerRadius = theme.designTokens.cardCornerRadius
         view?.update(theme: theme)

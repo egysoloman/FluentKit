@@ -36,11 +36,18 @@ public final class FluentCard: NSView {
     public var theme: FluentTheme = .current { didSet { applyStyle() } }
     public var style: any FluentCardStyle { didSet { applyStyle() } }
     public let contentView: NSView
+    /// Nil keeps the card's preset fill unless the theme explicitly configures container materials.
+    public var materialConfiguration: FluentMaterialConfiguration? {
+        didSet { if oldValue != materialConfiguration { applyStyle() } }
+    }
+    private var materialView: FluentMaterialView?
     private var contentConstraints: [NSLayoutConstraint] = []
 
-    public init(contentView: NSView, style: any FluentCardStyle = FluentAutomaticCardStyle()) {
+    public init(contentView: NSView, style: any FluentCardStyle = FluentAutomaticCardStyle(),
+                materialConfiguration: FluentMaterialConfiguration? = nil) {
         self.contentView = contentView
         self.style = style
+        self.materialConfiguration = materialConfiguration
         super.init(frame: .zero)
         wantsLayer = true
         setContentHuggingPriority(.defaultHigh, for: .vertical)
@@ -69,8 +76,10 @@ public final class FluentCard: NSView {
             xRadius: max(appearance.cornerRadius - strokeInset, 0),
             yRadius: max(appearance.cornerRadius - strokeInset, 0)
         )
-        appearance.fillColor.setFill()
-        path.fill()
+        if materialView == nil {
+            appearance.fillColor.setFill()
+            path.fill()
+        }
         if appearance.strokeWidth > 0 {
             appearance.strokeColor.setStroke()
             path.lineWidth = appearance.strokeWidth
@@ -78,7 +87,38 @@ public final class FluentCard: NSView {
         }
     }
 
+    public override func layout() {
+        super.layout()
+        let appearance = style.appearance(for: theme)
+        materialView?.frame = bounds.insetBy(dx: appearance.strokeWidth, dy: appearance.strokeWidth)
+    }
+
+    private func updateMaterial() {
+        guard materialConfiguration != nil || theme.materialConfigurations[.container] != nil else {
+            materialView?.removeFromSuperview()
+            materialView = nil
+            return
+        }
+        let material: FluentMaterialView
+        if let materialView { material = materialView }
+        else {
+            material = FluentMaterialView()
+            material.identifier = NSUserInterfaceItemIdentifier("FluentKit.Card.Material")
+            addSubview(material, positioned: .below, relativeTo: contentView)
+            materialView = material
+        }
+        let style = self.style
+        let appearance = style.appearance(for: theme)
+        material.configure(theme: theme, role: .container, configuration: materialConfiguration,
+            fallback: { style.appearance(for: $0).fillColor })
+        material.layer?.cornerRadius = max(0, appearance.cornerRadius - appearance.strokeWidth)
+        material.layer?.masksToBounds = true
+        material.needsLayout = true
+        needsLayout = true
+    }
+
     private func applyStyle() {
+        updateMaterial()
         contentConstraints.forEach { $0.isActive = false }
         let insets = style.appearance(for: theme).contentInsets
         contentConstraints = [

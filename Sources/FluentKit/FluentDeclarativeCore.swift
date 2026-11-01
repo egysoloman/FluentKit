@@ -414,6 +414,7 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
     fileprivate let layoutDirection: FluentLayoutDirection?
     fileprivate let locale: Locale?
     fileprivate let localizationBundle: Bundle?
+    fileprivate let materialConfiguration: (role: FluentMaterialRole, configuration: FluentMaterialConfiguration)?
 
     fileprivate init(
         content: Content,
@@ -424,7 +425,8 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
         reduceMotion: Bool?,
         layoutDirection: FluentLayoutDirection? = nil,
         locale: Locale? = nil,
-        localizationBundle: Bundle? = nil
+        localizationBundle: Bundle? = nil,
+        materialConfiguration: (role: FluentMaterialRole, configuration: FluentMaterialConfiguration)? = nil
     ) {
         self.content = content
         self.theme = theme
@@ -435,6 +437,7 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
         self.layoutDirection = layoutDirection
         self.locale = locale
         self.localizationBundle = localizationBundle
+        self.materialConfiguration = materialConfiguration
     }
 
     public var body: NeverFluentView { NeverFluentView() }
@@ -442,6 +445,9 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
     public func _makeView(in context: FluentRenderContext) -> NSView {
         var nested = context
         if let theme { nested.theme = theme }
+        if let materialConfiguration {
+            nested.theme = nested.theme.with(materialConfiguration: materialConfiguration.configuration, for: materialConfiguration.role)
+        }
         if let spacing { nested.spacing = spacing }
         if let animationDuration { nested.animationDuration = animationDuration }
         if let animationTimingFunction { nested.animationTimingFunction = animationTimingFunction }
@@ -458,6 +464,9 @@ public struct FluentEnvironmentView<Content: FluentView>: FluentUpdatablePrimiti
     public func _updateView(_ view: NSView, in context: FluentRenderContext) -> Bool {
         var nested = context
         if let theme { nested.theme = theme }
+        if let materialConfiguration {
+            nested.theme = nested.theme.with(materialConfiguration: materialConfiguration.configuration, for: materialConfiguration.role)
+        }
         if let spacing { nested.spacing = spacing }
         if let animationDuration { nested.animationDuration = animationDuration }
         if let animationTimingFunction { nested.animationTimingFunction = animationTimingFunction }
@@ -529,6 +538,12 @@ public struct FluentThemeStoreView<Content: FluentView>: FluentUpdatablePrimitiv
 }
 
 public extension FluentView {
+    /// Override a material role only in this subtree, preserving other theme values.
+    func materialConfiguration(_ configuration: FluentMaterialConfiguration, for role: FluentMaterialRole = .transient) -> FluentEnvironmentView<Self> {
+        FluentEnvironmentView(content: self, theme: nil, spacing: nil, animationDuration: nil,
+            animationTimingFunction: nil, reduceMotion: nil, materialConfiguration: (role, configuration))
+    }
+
     func fluentTheme(_ theme: FluentTheme) -> FluentEnvironmentView<Self> {
         FluentEnvironmentView(content: self, theme: theme, spacing: nil, animationDuration: nil, animationTimingFunction: nil, reduceMotion: nil)
     }
