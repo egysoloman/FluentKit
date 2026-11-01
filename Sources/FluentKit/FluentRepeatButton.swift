@@ -75,10 +75,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
             guard oldValue != reduceMotion else { return }
             visualStateCoordinator.reduceMotion = reduceMotion
             animationCoordinator.reduceMotion = reduceMotion
-            if reduceMotion {
-                layer?.removeAllAnimations()
-                elevationBorderLayer.removeAllAnimations()
-            }
+            if reduceMotion { settleVisualAnimations() }
             refreshAppearance(animated: false)
         }
     }
@@ -101,6 +98,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
         didSet {
             guard oldValue != systemImageName else { return }
             configureChevronLayer()
+            updateChevron(animated: false)
             invalidateIntrinsicContentSize()
             needsDisplay = true
         }
@@ -111,6 +109,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
             if let systemImagePointSize {
                 precondition(systemImagePointSize > 0, "FluentRepeatButton.systemImagePointSize must be positive")
             }
+            updateChevron(animated: false)
             invalidateIntrinsicContentSize()
             needsDisplay = true
         }
@@ -147,6 +146,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
     private var isPointerOver = false
     private var isPointerPressed = false
     private var isKeyboardPressed = false
+    private var windowObservers: [NSObjectProtocol] = []
 
     public override var acceptsFirstResponder: Bool { isEnabled && allowsKeyboardFocus }
 
@@ -277,14 +277,14 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
     }
 
     public override func mouseEntered(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard canReceiveInput else { return }
         isPointerOver = true
         if isPointerPressed { startRepeatTimerIfNeeded() }
         refreshAppearance(animated: true)
     }
 
     public override func mouseMoved(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard canReceiveInput else { return }
         updatePointerLocation(event)
     }
 
@@ -295,7 +295,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
     }
 
     public override func mouseDown(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard canReceiveInput else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         if allowsKeyboardFocus { window?.makeFirstResponder(self) }
         isPointerOver = bounds.contains(convert(event.locationInWindow, from: nil))
@@ -320,7 +320,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
     }
 
     public override func keyDown(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard canReceiveInput else { return }
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         switch event.keyCode {
         case 49:
@@ -361,9 +361,10 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
 
     public override var isEnabled: Bool {
         didSet {
-            if !isEnabled { cancelInteraction(refresh: false) }
+            guard oldValue != isEnabled else { return }
             setAccessibilityEnabled(isEnabled)
-            refreshAppearance(animated: true)
+            if !isEnabled { resetInteraction() }
+            else { refreshAppearance(animated: true) }
         }
     }
 
@@ -375,17 +376,36 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
 
     public override func resignFirstResponder() -> Bool {
         let result = super.resignFirstResponder()
-        if result {
-            cancelInteraction(refresh: false)
-            refreshAppearance(animated: false)
-        }
+        if result { resetInteraction() }
         return result
+    }
+
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { resetInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { resetInteraction() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        resetInteraction()
     }
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        removeWindowObservers()
+        if let window {
+            for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification,
+                         NSWindow.willMiniaturizeNotification] {
+                windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window,
+                    queue: .main) { [weak self] _ in self?.resetInteraction() })
+            }
+        }
         synchronizeVisualGeometry()
-        if window == nil { cancelInteraction(refresh: false) }
         refreshAppearance(animated: false)
     }
 
@@ -467,10 +487,12 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
         onClick?()
     }
 
+    private var canReceiveInput: Bool {
+        isEnabled && window?.isVisible == true && !isHiddenOrHasHiddenAncestor
+    }
+
     private var shouldContinueRepeating: Bool {
-        window != nil
-            && isEnabled
-            && ((isPointerPressed && isPointerOver) || isKeyboardPressed)
+        canReceiveInput && ((isPointerPressed && isPointerOver) || isKeyboardPressed)
     }
 
     private func startRepeatTimerIfNeeded() {
@@ -486,7 +508,9 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
             self.repeatTimer = nil
             guard self.shouldContinueRepeating else { return }
             self.invoke()
-            guard self.shouldContinueRepeating else { return }
+            // The callback can cancel/restart input or reparent the control. Its new timer,
+            // if any, owns that interaction; this tick must not replace it.
+            guard self.repeatGeneration == generation, self.shouldContinueRepeating else { return }
             self.scheduleRepeat(after: self.interval)
         }
         timer.tolerance = min(max(duration * 0.05, 0), 0.005)
@@ -506,6 +530,23 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
         isKeyboardPressed = false
         stopRepeatTimer()
         if changed, refresh { refreshAppearance(animated: true) }
+    }
+
+    private func resetInteraction() {
+        cancelInteraction(refresh: false)
+        isPointerOver = false
+        refreshAppearance(animated: false)
+        settleVisualAnimations()
+    }
+
+    private func settleVisualAnimations() {
+        animationCoordinator.cancelAll(on: [layer, elevationBorderLayer, focusLayer].compactMap { $0 })
+        chevronLayer.finishAnimations()
+    }
+
+    private func removeWindowObservers() {
+        windowObservers.forEach(NotificationCenter.default.removeObserver)
+        windowObservers.removeAll()
     }
 
     private func refreshAppearance(animated: Bool) {
@@ -552,6 +593,7 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
 
     private func configureChevronLayer() {
         guard chevronDirection != nil else {
+            chevronLayer.finishAnimations()
             chevronLayer.removeFromSuperlayer()
             return
         }
@@ -567,13 +609,17 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
         let pointSize = max(8, systemImagePointSize ?? 10 * fluentControlSize.metricScale)
         let size = min(pointSize, max(0, bounds.height - 4))
         guard size > 0 else { return }
+        let active = canReceiveInput && !reduceMotion
         chevronLayer.update(
             frame: NSRect(x: bounds.midX - size / 2, y: bounds.midY - size / 2, width: size, height: size),
             color: appearance.foregroundColor,
             state: visualState.primaryControlState,
             direction: direction,
+            inverted: !isFlipped,
             backingScale: window?.backingScaleFactor,
-            animated: animated && !reduceMotion
+            preservingUnchangedAnimations: active,
+            reduceMotion: reduceMotion,
+            animated: animated && active
         )
     }
 
@@ -610,7 +656,10 @@ public final class FluentRepeatButton: NSControl, FluentControlSizeConfigurable 
         CATransaction.commit()
     }
 
-    deinit { stopRepeatTimer() }
+    deinit {
+        stopRepeatTimer()
+        removeWindowObservers()
+    }
 }
 
 public struct FluentRepeatButtonView: FluentUpdatablePrimitiveView {

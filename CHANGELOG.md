@@ -4,6 +4,16 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Directional glyphs retain their position when pressed, following the FontIcon-style roles
+  used by RepeatButton, NumberBox and PipsPager. AppKit coordinates no longer reverse
+  RepeatButton's up/down arrows; mirrored paths preserve left/right orientation. Foreground
+  transitions survive layout/drawing and honor the resolved Reduce Motion policy. PipsPager
+  forwards policy changes to retained children immediately. RepeatButton cancels long presses
+  on hiding, reparenting, focus loss and window resignation/closure; callbacks that restart
+  a press keep the new interaction's delay.
+  NumberBox places increase before decrease (mirrored in RTL), restores the 4pt gap and 76pt
+  trailing allocation, and arranges compact indicator arrows outward along the actual Y axis.
+
 - SplitButton and ToggleSplitButton preserve chevron motion through layout, content, theme,
   resizing and backing changes. Pressed arrows move downward in AppKit's local coordinates
   without a horizontal pixel jump. Opening the menu keeps the whole-button chrome while

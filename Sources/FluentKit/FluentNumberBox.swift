@@ -56,6 +56,13 @@ private final class FluentNumberTextField: FluentTextField {
 }
 
 private final class FluentNumberBoxPopupIndicator: NSButton {
+    var reduceMotion = false {
+        didSet {
+            guard oldValue != reduceMotion else { return }
+            if reduceMotion { upChevron.finishAnimations(); downChevron.finishAnimations() }
+            updateImage()
+        }
+    }
     var theme: FluentTheme = .current {
         didSet {
             updateImage()
@@ -108,6 +115,11 @@ private final class FluentNumberBoxPopupIndicator: NSButton {
         updateImage(animated: false)
     }
 
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        updateImage(animated: false)
+    }
+
     override func updateTrackingAreas() {
         if let pointerTrackingArea { removeTrackingArea(pointerTrackingArea) }
         super.updateTrackingAreas()
@@ -141,7 +153,7 @@ private final class FluentNumberBoxPopupIndicator: NSButton {
 
     private func updateImage(state explicitState: FluentControlState? = nil, animated: Bool = false) {
         image = nil
-        let state = explicitState ?? (!isEnabled ? .disabled : (pointerOver ? .pointerOver : .normal))
+        let state = !isEnabled ? .disabled : (explicitState ?? (isHighlighted ? .pressed : (pointerOver ? .pointerOver : .normal)))
         let color: NSColor = switch state {
         case .pressed: theme.textTertiary
         case .disabled: theme.textDisabled
@@ -149,31 +161,40 @@ private final class FluentNumberBoxPopupIndicator: NSButton {
         }
         let glyphWidth: CGFloat = 10
         let glyphHeight: CGFloat = 8
+        let upperY = bounds.midY + (isFlipped ? -glyphHeight + 1 : -1)
+        let lowerY = bounds.midY + (isFlipped ? -1 : -glyphHeight + 1)
+        let active = window != nil && !isHiddenOrHasHiddenAncestor && isEnabled && !reduceMotion
         upChevron.update(
             frame: NSRect(
                 x: bounds.midX - glyphWidth / 2,
-                y: bounds.midY - 1,
+                y: upperY,
                 width: glyphWidth,
                 height: glyphHeight
             ),
             color: color,
             state: state,
             direction: .up,
+            inverted: !isFlipped,
             backingScale: window?.backingScaleFactor,
-            animated: animated
+            preservingUnchangedAnimations: active,
+            reduceMotion: reduceMotion,
+            animated: animated && active
         )
         downChevron.update(
             frame: NSRect(
                 x: bounds.midX - glyphWidth / 2,
-                y: bounds.midY - glyphHeight + 1,
+                y: lowerY,
                 width: glyphWidth,
                 height: glyphHeight
             ),
             color: color,
             state: state,
             direction: .down,
+            inverted: !isFlipped,
             backingScale: window?.backingScaleFactor,
-            animated: animated
+            preservingUnchangedAnimations: active,
+            reduceMotion: reduceMotion,
+            animated: animated && active
         )
     }
 }
@@ -385,6 +406,7 @@ public final class FluentNumberBoxControl: NSControl, NSTextFieldDelegate, Fluen
         didSet {
             incrementButton.reduceMotion = reduceMotion
             decrementButton.reduceMotion = reduceMotion
+            popupIndicator.reduceMotion = reduceMotion
             updateCompactPopup()
         }
     }
@@ -550,7 +572,8 @@ public final class FluentNumberBoxControl: NSControl, NSTextFieldDelegate, Fluen
         }
         let showsButtons = spinButtonPlacement == .inline
         let showsPopupIndicator = spinButtonPlacement == .compact
-        let spinWidth = showsButtons ? min(72 * scale, controlRect.width) : 0
+        // Two 32pt controls plus three 4pt margins, matching the source Auto columns.
+        let spinWidth = showsButtons ? min(76 * scale, controlRect.width) : 0
         let indicatorWidth = showsPopupIndicator ? min(32 * scale, controlRect.width) : 0
         let trailingWidth = max(spinWidth, indicatorWidth)
         let isRTL = userInterfaceLayoutDirection == .rightToLeft
@@ -574,7 +597,7 @@ public final class FluentNumberBoxControl: NSControl, NSTextFieldDelegate, Fluen
         }
         let spinMinX = isRTL ? controlRect.minX : controlRect.maxX - spinWidth
         let margin = 4 * scale
-        let buttonWidth = max((spinWidth - margin * 2) / 2, 0)
+        let buttonWidth = max((spinWidth - margin * 3) / 2, 0)
         let buttonHeight = max(controlRect.height - margin * 2, 0)
         let leadingFrame = NSRect(
             x: spinMinX + margin,
@@ -583,13 +606,13 @@ public final class FluentNumberBoxControl: NSControl, NSTextFieldDelegate, Fluen
             height: buttonHeight
         )
         let trailingFrame = NSRect(
-            x: leadingFrame.maxX,
+            x: leadingFrame.maxX + margin,
             y: leadingFrame.minY,
             width: buttonWidth,
             height: buttonHeight
         )
-        decrementButton.frame = isRTL ? trailingFrame : leadingFrame
-        incrementButton.frame = isRTL ? leadingFrame : trailingFrame
+        incrementButton.frame = isRTL ? trailingFrame : leadingFrame
+        decrementButton.frame = isRTL ? leadingFrame : trailingFrame
         compactPopup?.reposition(relativeTo: self, controlRect: controlRect)
     }
 
@@ -756,6 +779,7 @@ public final class FluentNumberBoxControl: NSControl, NSTextFieldDelegate, Fluen
         incrementButton.theme = theme
         decrementButton.theme = theme
         popupIndicator.theme = theme
+        popupIndicator.reduceMotion = reduceMotion
         incrementButton.reduceMotion = reduceMotion
         decrementButton.reduceMotion = reduceMotion
         updateCompactPopup()

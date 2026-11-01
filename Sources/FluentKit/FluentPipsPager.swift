@@ -41,6 +41,14 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         didSet {
             guard oldValue != reduceMotion else { return }
             if reduceMotion { removeVisualAnimations() }
+            realizedPipButtons.values.forEach {
+                $0.reduceMotion = reduceMotion
+                $0.refreshAppearance(animated: false)
+            }
+            for button in [previousButton, nextButton] {
+                button.reduceMotion = reduceMotion
+                button.refreshAppearance(animated: false)
+            }
         }
     }
 
@@ -875,7 +883,10 @@ final class FluentPipsPagerNavigationButton: NSButton, FluentControlSizeConfigur
             color: foreground,
             state: state,
             direction: direction,
+            inverted: !isFlipped,
             backingScale: window?.backingScaleFactor,
+            preservingUnchangedAnimations: window != nil && !isHiddenOrHasHiddenAncestor && isEnabled && !reduceMotion,
+            reduceMotion: reduceMotion,
             animated: animated && !reduceMotion
         )
         setAccessibilityEnabled(isEnabled)

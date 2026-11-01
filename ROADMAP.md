@@ -57,8 +57,10 @@ is not required. The macOS composition and developer overrides remain intentiona
    ComboBox cancels captured/deferred pointer activation across native lifecycle changes.
    SplitButton separates secondary pointer motion from whole-button keyboard/flyout chrome,
    uses the host's visual downward direction and cancels stale activation on focus loss.
-   Audit remaining shared chevron callers, live ComboBox popup refresh and hierarchical
-   flyout behavior independently.
+   RepeatButton cancels long presses across lifecycle changes. Directional glyphs use static
+   press geometry and preserve foreground transitions; PipsPager forwards motion policy to
+   retained children immediately. Audit PipsPager's pressed-scale ownership and pointer state,
+   live ComboBox popup refresh and hierarchical flyout behavior independently.
 
 ## Platform acceptance still required
 

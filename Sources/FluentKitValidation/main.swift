@@ -4331,13 +4331,13 @@ numberBoxWindow.contentView = numberBoxView
 numberBoxWindow.makeKeyAndOrderFront(nil)
 numberBoxView.layoutSubtreeIfNeeded()
 require(
-    abs(mountedNumberBox.textField.frame.width - (mountedNumberBox.bounds.width - 72)) < 0.001
+    abs(mountedNumberBox.textField.frame.width - (mountedNumberBox.bounds.width - 76)) < 0.001
         && mountedNumberBox.incrementButton.frame.size == CGSize(width: 32, height: 24)
         && mountedNumberBox.decrementButton.frame.size == CGSize(width: 32, height: 24)
-        && mountedNumberBox.decrementButton.frame.maxX == mountedNumberBox.incrementButton.frame.minX
+        && mountedNumberBox.incrementButton.frame.maxX + 4 == mountedNumberBox.decrementButton.frame.minX
         && mountedNumberBox.decrementButton.systemImageName == "chevron.down"
         && mountedNumberBox.incrementButton.systemImageName == "chevron.up",
-    "NumberBox Inline uses the source 72pt column with visual decrement-left/increment-right buttons "
+    "NumberBox Inline uses the source 76pt column with increment-left/decrement-right and a 4pt gap "
         + "(host: \(numberBoxView.frame), control: \(mountedNumberBox.frame), text: \(mountedNumberBox.textField.frame), "
         + "up: \(mountedNumberBox.incrementButton.frame), down: \(mountedNumberBox.decrementButton.frame))"
 )
@@ -4363,8 +4363,8 @@ require(
 mountedNumberBox.fluentLayoutDirection = .rightToLeft
 mountedNumberBox.layoutSubtreeIfNeeded()
 require(
-    mountedNumberBox.decrementButton.frame.minX > mountedNumberBox.incrementButton.frame.minX
-        && mountedNumberBox.textField.frame.minX == 72,
+    mountedNumberBox.incrementButton.frame.minX > mountedNumberBox.decrementButton.frame.minX
+        && mountedNumberBox.textField.frame.minX == 76,
     "NumberBox mirrors the inline spin column and text content in RTL"
 )
 numberBoxWindow.orderOut(nil)

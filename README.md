@@ -695,7 +695,8 @@ FluentNumberBox(
 
 `FluentNumberBox` is a dedicated NumberBox composition rather than an `NSStepper` skin. Its
 `spinButtonPlacement` supports `.hidden`, `.compact`, and `.inline`: Inline reserves the source
-72-point trailing column for adjacent RepeatButtons, while Compact presents the source-sized
+76-point trailing column for 32pt increase/decrease buttons separated by 4pt (mirrored in RTL),
+while Compact presents the source-sized
 vertical spin-button popup only while the native text editor has focus. Empty input maps to `NaN`;
 validation, range clamping, wrapping, keyboard stepping, wheel stepping, and accessibility remain
 native AppKit behaviors routed through the Fluent control.
@@ -705,6 +706,13 @@ first repeat occurs after `delay`, and later repeats use `interval`. Its default
 contract at 500ms and 33ms. Pointer exit, release, focus loss, disabling, Escape, and view removal
 cancel the timer; re-entering while pressed starts a fresh delay. Return and accessibility press
 remain single invocations.
+
+Hiding the control or an ancestor, moving it to another parent, or deactivating/closing its
+window also cancels the captured press. Showing it again does not resume repeating. A callback
+that starts a new press retains that press's initial delay. Directional chevrons keep their
+position and change foreground color while pressed; they do not use a dropdown arrow's
+displacement. Up/down glyphs follow the host's actual coordinate axis, and layout/drawing
+preserve foreground transitions under the resolved Reduce Motion policy.
 
 `FluentToggleButton` is distinct from ToggleSwitch: it keeps Button geometry while its bound state
 selects Unchecked, Checked, or optional Indeterminate resources. Pointer release, Space/Return,
@@ -744,6 +752,9 @@ and 24pt navigation buttons. Finite collections virtualize around the visible ra
 pip is centered with source-style scrolling, while edge hiding, pointer-only visibility, Wrap,
 RTL mirroring, focus-without-selection arrow navigation, and Selection accessibility remain part
 of the same bound control lifecycle.
+
+Changing PipsPager's Reduce Motion policy updates its existing pip and navigation buttons
+immediately, without waiting for layout or changing selection.
 
 CalendarView is an embedded Fluent calendar; CalendarDatePicker shares its grid inside an AppKit
 popover. It supports single/multiple/no selection, blackout dates, inclusive date ranges, and

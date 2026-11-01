@@ -124,10 +124,11 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         case .right: -.pi / 2
         case .left: .pi / 2
         }
-        let rotation = CATransform3DMakeRotation(angle, 0, 0, 1)
-        guard pressed else { return rotation }
-        // The inverted path is hosted in an upward local Y axis (SplitButton). Mirror its
-        // pressed displacement too, so the DownSmall glyph still travels visually downward.
+        // Mirroring the local Y axis also reverses rotation, preserving left/right directions.
+        let rotation = CATransform3DMakeRotation(invertedPath ? -angle : angle, 0, 0, 1)
+        // FontIcon-style directional arrows keep their position when pressed. Animated
+        // disclosure/down-arrow families own the separate pressed displacement.
+        guard pressed, visual != .directional else { return rotation }
         return CATransform3DTranslate(rotation, 0, invertedPath ? -1.875 : 1.875, 0)
     }
 
@@ -143,9 +144,7 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         let upperOffset: CGFloat = visual == .downSmall ? 1.5 : 1.75
         let lowerOffset: CGFloat = visual == .downSmall ? 2.2 : 2.0
         let path = CGMutablePath()
-        // The canonical path follows the control's actual visual axis. SplitButton's composite
-        // layer is hosted on a differently-oriented root, so it requests the inverted variant
-        // while every other control keeps the shared down-facing path.
+        // Invert for an upward local Y axis; callers resolve this from their actual host view.
         let endpointY = inverted ? centerY + upperOffset : centerY - upperOffset
         let pointY = inverted ? centerY - lowerOffset : centerY + lowerOffset
         path.move(to: CGPoint(
