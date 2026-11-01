@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- PipsPager scales only the navigation icon during a press, leaving its hit area, background
+  and focus ring unchanged. Pip and navigation hover ownership is exclusive; hiding,
+  disabling, reparenting, focus loss and window deactivation cancel stale presses. Space and
+  Return activate on release and ignore repeats. Pip-size and icon-scale transitions survive
+  drawing, layout and backing refreshes, and settle immediately under Reduce Motion.
+
 - Directional glyphs retain their position when pressed, following the FontIcon-style roles
   used by RepeatButton, NumberBox and PipsPager. AppKit coordinates no longer reverse
   RepeatButton's up/down arrows; mirrored paths preserve left/right orientation. Foreground

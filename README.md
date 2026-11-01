@@ -754,7 +754,11 @@ RTL mirroring, focus-without-selection arrow navigation, and Selection accessibi
 of the same bound control lifecycle.
 
 Changing PipsPager's Reduce Motion policy updates its existing pip and navigation buttons
-immediately, without waiting for layout or changing selection.
+immediately, without waiting for layout or changing selection. Navigation presses scale only
+the icon to 0.875; hit areas, backgrounds and focus rings keep their size. Hover belongs to one
+button at a time and clears on hiding or window deactivation. Space and Return activate on
+release, with repeated key-down events ignored. State transitions use FluentKit's motion tokens;
+they do not reproduce every keyframe in the Windows template.
 
 CalendarView is an embedded Fluent calendar; CalendarDatePicker shares its grid inside an AppKit
 popover. It supports single/multiple/no selection, blackout dates, inclusive date ranges, and

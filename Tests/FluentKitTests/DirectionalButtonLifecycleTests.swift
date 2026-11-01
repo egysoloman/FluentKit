@@ -36,7 +36,11 @@ final class DirectionalButtonLifecycleTests: XCTestCase {
     }
 
     private func glyph(_ view: NSView) throws -> FluentChevronPrimitiveLayer {
-        try XCTUnwrap(view.layer?.sublayers?.compactMap { $0 as? FluentChevronPrimitiveLayer }.first)
+        func find(_ layer: CALayer) -> FluentChevronPrimitiveLayer? {
+            if let glyph = layer as? FluentChevronPrimitiveLayer { return glyph }
+            return layer.sublayers?.compactMap(find).first
+        }
+        return try XCTUnwrap(view.layer.flatMap(find))
     }
 
     private func assertDirection(_ glyph: FluentChevronPrimitiveLayer, _ direction: FluentChevronDirection,

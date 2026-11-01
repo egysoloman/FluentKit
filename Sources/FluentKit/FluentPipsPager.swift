@@ -19,7 +19,7 @@ public enum FluentPipsPagerOrientation: Hashable, Sendable {
 /// Native AppKit implementation of WinUI's PipsPager paging, viewport, navigation-button,
 /// keyboard, right-to-left, and Selection automation contracts.
 public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
-    fileprivate enum Metrics {
+    enum Metrics {
         static let normalGlyph: CGFloat = 4
         static let selectedGlyph: CGFloat = 6
         static let horizontalPipSize = NSSize(width: 12, height: 24)
@@ -166,6 +166,10 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
     private var pointerOverControl = false
     private var keyboardFocusWithin = false
     private var suppressesSelectionNotification = false
+    private var windowObservers: [NSObjectProtocol] = []
+    private lazy var hoverCoordinator = FluentHoverCoordinator<FluentPipsPagerButton> { button, hovering in
+        button.setPointerHover(hovering)
+    }
 
     private var metricScale: CGFloat { fluentControlSize.metricScale }
     private var isRTL: Bool { userInterfaceLayoutDirection == .rightToLeft }
@@ -310,7 +314,37 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         let local = convert(event.locationInWindow, from: nil)
         guard !bounds.insetBy(dx: 1, dy: 1).contains(local) else { return }
         pointerOverControl = false
+        hoverCoordinator.reset()
         updateNavigationButtons()
+    }
+
+    private func cancelInteraction() {
+        pointerOverControl = false
+        keyboardFocusWithin = false
+        hoverCoordinator.reset()
+        realizedPipButtons.values.forEach { $0.cancelInteraction() }
+        previousButton.cancelInteraction()
+        nextButton.cancelInteraction()
+        updateNavigationButtons()
+    }
+
+    public override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { cancelInteraction() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        windowObservers.forEach(NotificationCenter.default.removeObserver)
+        windowObservers.removeAll()
+        if let window {
+            for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification, NSWindow.willMiniaturizeNotification] {
+                windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window,
+                    queue: .main) { [weak self] _ in self?.cancelInteraction() })
+            }
+        }
     }
 
     public override func accessibilityRole() -> NSAccessibility.Role? { .menu }
@@ -375,6 +409,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         previousButton.onInvoke = { [weak self] in _ = self?.selectPreviousPage() }
         nextButton.onInvoke = { [weak self] in _ = self?.selectNextPage() }
         [previousButton, nextButton].forEach { button in
+            button.hoverCoordinator = hoverCoordinator
             button.onFocusChanged = { [weak self] in self?.scheduleFocusUpdate() }
             button.onNavigationKey = { [weak self] keyCode in
                 self?.handleNavigationKey(keyCode, from: self?.storedSelectedPageIndex ?? 0) ?? false
@@ -435,10 +470,14 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         let range = realizedRange()
         let obsoleteIndices = realizedPipButtons.keys.filter { !range.contains($0) }
         for index in obsoleteIndices {
-            realizedPipButtons.removeValue(forKey: index)?.removeFromSuperview()
+            if let button = realizedPipButtons.removeValue(forKey: index) {
+                hoverCoordinator.remove(button)
+                button.removeFromSuperview()
+            }
         }
         for index in range where realizedPipButtons[index] == nil {
             let button = FluentPipsPagerPipButton(index: index)
+            button.hoverCoordinator = hoverCoordinator
             button.onInvoke = { [weak self] index in self?.selectedPageIndex = index }
             button.onFocusChanged = { [weak self] in self?.scheduleFocusUpdate() }
             button.onNavigationKey = { [weak self] keyCode, index in
@@ -580,6 +619,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
     private func ensureRealizedForFocus(_ index: Int) {
         guard realizedPipButtons[index] == nil else { return }
         let button = FluentPipsPagerPipButton(index: index)
+        button.hoverCoordinator = hoverCoordinator
         button.onInvoke = { [weak self] index in self?.selectedPageIndex = index }
         button.onFocusChanged = { [weak self] in self?.scheduleFocusUpdate() }
         button.onNavigationKey = { [weak self] keyCode, index in
@@ -601,7 +641,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
 
     private func scheduleFocusUpdate() {
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
+            guard let self, self.window?.isKeyWindow == true, !self.isHiddenOrHasHiddenAncestor else { return }
             var responder = self.window?.firstResponder as? NSView
             if !self.keyboardFocusWithin,
                let pip = responder as? FluentPipsPagerPipButton,
@@ -640,261 +680,8 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         nextButton.removeVisualAnimations()
         viewport.layer?.removeAllAnimations()
     }
-}
 
-final class FluentPipsPagerPipButton: NSButton, FluentControlSizeConfigurable {
-    var index: Int
-    var isSelectedPip = false { didSet { refreshAppearance(animated: true) } }
-    var orientation: FluentPipsPagerOrientation = .horizontal
-    var theme: FluentTheme = .current { didSet { refreshAppearance(animated: false) } }
-    var reduceMotion = false
-    var fluentControlSize: FluentControlSize = .regular { didSet { refreshAppearance(animated: false) } }
-    var onInvoke: ((Int) -> Void)?
-    var onFocusChanged: (() -> Void)?
-    var onNavigationKey: ((UInt16, Int) -> Bool)?
-
-    private let chromeLayer = CALayer()
-    private let glyphLayer = CAShapeLayer()
-    private let focusLayer = CAShapeLayer()
-    private var trackingArea: NSTrackingArea?
-    private var pointerOver = false
-    private var pressed = false
-
-    override var acceptsFirstResponder: Bool { isEnabled }
-
-    init(index: Int) {
-        self.index = index
-        super.init(frame: .zero)
-        setButtonType(.momentaryChange)
-        isBordered = false
-        title = ""
-        target = self
-        action = #selector(invoke)
-        focusRingType = .none
-        wantsLayer = true
-        layer?.addSublayer(chromeLayer)
-        layer?.addSublayer(glyphLayer)
-        layer?.addSublayer(focusLayer)
-        glyphLayer.fillColor = NSColor.clear.cgColor
-        focusLayer.fillColor = NSColor.clear.cgColor
-        setAccessibilityElement(true)
-        setAccessibilityRole(.radioButton)
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    override func layout() {
-        super.layout()
-        refreshAppearance(animated: false)
-    }
-
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if let trackingArea { removeTrackingArea(trackingArea) }
-        let area = NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow], owner: self)
-        addTrackingArea(area)
-        trackingArea = area
-    }
-
-    override func mouseEntered(with event: NSEvent) {
-        pointerOver = true
-        refreshAppearance(animated: true)
-    }
-
-    override func mouseExited(with event: NSEvent) {
-        pointerOver = false
-        pressed = false
-        refreshAppearance(animated: true)
-    }
-
-    override func mouseDown(with event: NSEvent) {
-        pressed = true
-        refreshAppearance(animated: true)
-        super.mouseDown(with: event)
-        pressed = false
-        refreshAppearance(animated: true)
-    }
-
-    override func keyDown(with event: NSEvent) {
-        if onNavigationKey?(event.keyCode, index) == true { return }
-        super.keyDown(with: event)
-    }
-
-    override func becomeFirstResponder() -> Bool {
-        let result = super.becomeFirstResponder()
-        if result { refreshAppearance(animated: true); onFocusChanged?() }
-        return result
-    }
-
-    override func resignFirstResponder() -> Bool {
-        let result = super.resignFirstResponder()
-        if result { refreshAppearance(animated: true); onFocusChanged?() }
-        return result
-    }
-
-    override func accessibilityValue() -> Any? { isSelectedPip ? 1 : 0 }
-    override func accessibilityPerformPress() -> Bool {
-        guard isEnabled else { return false }
-        onInvoke?(index)
-        return true
-    }
-
-    @objc private func invoke() { onInvoke?(index) }
-
-    func refreshAppearance(animated: Bool) {
-        guard layer != nil else { return }
-        let state: FluentControlState = !isEnabled ? .disabled : pressed ? .pressed : pointerOver ? .pointerOver : isSelectedPip ? .selected : .normal
-        let scale = fluentControlSize.metricScale
-        let glyphSize = (pressed ? Metrics.normalGlyph : (isSelectedPip || pointerOver) ? Metrics.selectedGlyph : Metrics.normalGlyph) * scale
-        let glyphFrame = CGRect(x: bounds.midX - glyphSize / 2, y: bounds.midY - glyphSize / 2, width: glyphSize, height: glyphSize)
-        let chromeColor = theme.pipsPagerIndicatorBackground(selected: isSelectedPip, state: state)
-        let glyphColor = theme.pipsPagerIndicatorForeground(selected: isSelectedPip, state: state)
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(animated && !reduceMotion ? FluentAnimation.stateChange : 0)
-        chromeLayer.frame = bounds
-        chromeLayer.cornerRadius = theme.designTokens.controlCornerRadius * scale
-        chromeLayer.backgroundColor = chromeColor.cgColor
-        chromeLayer.borderWidth = theme.isHighContrast ? theme.controlStrokeWidth : 0
-        chromeLayer.borderColor = chromeColor.cgColor
-        glyphLayer.path = CGPath(ellipseIn: glyphFrame, transform: nil)
-        glyphLayer.fillColor = glyphColor.cgColor
-        focusLayer.frame = bounds.insetBy(dx: 1, dy: 1)
-        focusLayer.path = CGPath(roundedRect: focusLayer.bounds, cornerWidth: theme.designTokens.controlCornerRadius * scale, cornerHeight: theme.designTokens.controlCornerRadius * scale, transform: nil)
-        focusLayer.strokeColor = theme.focusStrokeOuter.cgColor
-        focusLayer.lineWidth = theme.focusStrokeWidth
-        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
-        CATransaction.commit()
-        setAccessibilityEnabled(isEnabled)
-    }
-
-    func removeVisualAnimations() {
-        [layer, chromeLayer, glyphLayer, focusLayer].forEach { $0?.removeAllAnimations() }
-    }
-
-    private enum Metrics {
-        static let normalGlyph: CGFloat = 4
-        static let selectedGlyph: CGFloat = 6
-    }
-}
-
-final class FluentPipsPagerNavigationButton: NSButton, FluentControlSizeConfigurable {
-    var theme: FluentTheme = .current { didSet { refreshAppearance(animated: false) } }
-    var reduceMotion = false
-    var fluentControlSize: FluentControlSize = .regular { didSet { refreshAppearance(animated: false) } }
-    var direction: FluentChevronDirection = .left { didSet { refreshAppearance(animated: false) } }
-    var onInvoke: (() -> Void)?
-    var onFocusChanged: (() -> Void)?
-    var onNavigationKey: ((UInt16) -> Bool)?
-
-    private let chromeLayer = CALayer()
-    private let chevronLayer = FluentChevronPrimitiveLayer()
-    private var trackingArea: NSTrackingArea?
-    private var pointerOver = false
-    private var pressed = false
-
-    override var acceptsFirstResponder: Bool { isEnabled }
-
-    init() {
-        super.init(frame: .zero)
-        setButtonType(.momentaryChange)
-        isBordered = false
-        title = ""
-        target = self
-        action = #selector(invoke)
-        focusRingType = .default
-        wantsLayer = true
-        layer?.addSublayer(chromeLayer)
-        layer?.addSublayer(chevronLayer)
-        setAccessibilityElement(true)
-        setAccessibilityRole(.button)
-    }
-
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-
-    override func layout() {
-        super.layout()
-        refreshAppearance(animated: false)
-    }
-
-    override func updateTrackingAreas() {
-        super.updateTrackingAreas()
-        if let trackingArea { removeTrackingArea(trackingArea) }
-        let area = NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow], owner: self)
-        addTrackingArea(area)
-        trackingArea = area
-    }
-
-    override func mouseEntered(with event: NSEvent) { pointerOver = true; refreshAppearance(animated: true) }
-    override func mouseExited(with event: NSEvent) { pointerOver = false; pressed = false; refreshAppearance(animated: true) }
-
-    override func mouseDown(with event: NSEvent) {
-        pressed = true
-        refreshAppearance(animated: true)
-        super.mouseDown(with: event)
-        pressed = false
-        refreshAppearance(animated: true)
-    }
-
-    override func keyDown(with event: NSEvent) {
-        if onNavigationKey?(event.keyCode) == true { return }
-        super.keyDown(with: event)
-    }
-
-    override func becomeFirstResponder() -> Bool {
-        let result = super.becomeFirstResponder()
-        if result { onFocusChanged?() }
-        return result
-    }
-
-    override func resignFirstResponder() -> Bool {
-        let result = super.resignFirstResponder()
-        if result { onFocusChanged?() }
-        return result
-    }
-
-    override func accessibilityPerformPress() -> Bool {
-        guard isEnabled else { return false }
-        onInvoke?()
-        return true
-    }
-
-    @objc private func invoke() { onInvoke?() }
-
-    func refreshAppearance(animated: Bool) {
-        guard layer != nil else { return }
-        let state: FluentControlState = !isEnabled ? .disabled : pressed ? .pressed : pointerOver ? .pointerOver : .normal
-        let scale = fluentControlSize.metricScale
-        let background = theme.pipsPagerNavigationBackground(for: state)
-        let foreground = theme.pipsPagerNavigationForeground(for: state)
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(animated && !reduceMotion ? FluentAnimation.stateChange : 0)
-        chromeLayer.frame = bounds
-        chromeLayer.cornerRadius = theme.designTokens.controlCornerRadius * scale
-        chromeLayer.backgroundColor = background.cgColor
-        chromeLayer.borderWidth = theme.isHighContrast ? theme.controlStrokeWidth : 0
-        chromeLayer.borderColor = theme.isHighContrast ? theme.controlStrokeStrong.cgColor : NSColor.clear.cgColor
-        let transform = pressed
-            ? CATransform3DMakeScale(FluentPipsPager.Metrics.navigationPressedScale, FluentPipsPager.Metrics.navigationPressedScale, 1)
-            : CATransform3DIdentity
-        layer?.transform = transform
-        CATransaction.commit()
-        chevronLayer.update(
-            frame: CGRect(x: bounds.midX - 5, y: bounds.midY - 5, width: 10, height: 10),
-            color: foreground,
-            state: state,
-            direction: direction,
-            inverted: !isFlipped,
-            backingScale: window?.backingScaleFactor,
-            preservingUnchangedAnimations: window != nil && !isHiddenOrHasHiddenAncestor && isEnabled && !reduceMotion,
-            reduceMotion: reduceMotion,
-            animated: animated && !reduceMotion
-        )
-        setAccessibilityEnabled(isEnabled)
-    }
-
-    func removeVisualAnimations() {
-        [layer, chromeLayer, chevronLayer].forEach { $0?.removeAllAnimations() }
-    }
+    deinit { windowObservers.forEach(NotificationCenter.default.removeObserver) }
 }
 
 public struct FluentPipsPagerView: FluentUpdatablePrimitiveView {
