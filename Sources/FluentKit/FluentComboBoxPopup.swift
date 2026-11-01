@@ -52,6 +52,8 @@ enum FluentComboBoxPopupPlacement: Hashable, Sendable {
     case editable
 }
 
+enum FluentComboBoxPopupCloseReason { case accepted, cancelled, dismissed, unavailable }
+
 final class FluentComboBoxPopup: NSObject {
     private var optionIDs: [AnyHashable]
     private var titles: [String]
@@ -61,6 +63,8 @@ final class FluentComboBoxPopup: NSObject {
     private let placement: FluentComboBoxPopupPlacement
     private var selectedIndex: Int?
     private var keyboardIndex: Int?
+    private var previewID: AnyHashable?
+    private var showsPreview = false
     private var panel: FluentComboBoxPopupPanel?
     private weak var popupView: FluentComboBoxPopupView?
     private weak var transitionHost: FluentPopupTransitionHost?
@@ -78,6 +82,7 @@ final class FluentComboBoxPopup: NSObject {
     private let onCommit: (Int) -> Void
     private let onCancel: () -> Void
     private let onReturnFocus: (Bool?) -> Void
+    private let onClosing: (FluentComboBoxPopupCloseReason) -> Void
     private let onDismiss: () -> Void
     /// `ComboBox::m_inputDeviceTypeUsedToOpen`: touch opens use the TouchInputMode item padding
     /// and minimum popup width.
@@ -98,6 +103,7 @@ final class FluentComboBoxPopup: NSObject {
         onCommit: @escaping (Int) -> Void,
         onCancel: @escaping () -> Void = {},
         onReturnFocus: @escaping (Bool?) -> Void = { _ in },
+        onClosing: @escaping (FluentComboBoxPopupCloseReason) -> Void = { _ in },
         onDismiss: @escaping () -> Void
     ) {
         self.optionIDs = optionIDs ?? titles.indices.map(AnyHashable.init)
@@ -112,6 +118,7 @@ final class FluentComboBoxPopup: NSObject {
         self.onCommit = onCommit
         self.onCancel = onCancel
         self.onReturnFocus = onReturnFocus
+        self.onClosing = onClosing
         self.onDismiss = onDismiss
         super.init()
     }
@@ -176,18 +183,18 @@ final class FluentComboBoxPopup: NSObject {
                 // this popup reentrantly while the row's mouse-up callback is still running.
                 guard let self, self.isPresented, self.titles.indices.contains(index) else { return }
                 self.onCommit(index)
-                self.dismiss(animated: true)
+                self.dismiss(animated: true, reason: .accepted)
                 self.onReturnFocus(nil)
             },
             onDismiss: { [weak self] in self?.cancelFromKeyboard() },
             onClose: { [weak self] in
                 guard let self else { return }
-                self.dismiss(animated: false)
+                self.dismiss(animated: false, reason: .dismissed)
                 self.onReturnFocus(nil)
             },
             onTab: { [weak self] backwards in
                 guard let self else { return }
-                self.dismiss(animated: false)
+                self.dismiss(animated: false, reason: .dismissed)
                 self.onReturnFocus(backwards)
             }
         )
@@ -290,15 +297,23 @@ final class FluentComboBoxPopup: NSObject {
         }
     }
 
-    func updateSelectedIndex(_ index: Int?) {
+    func updateSelectedIndex(_ index: Int?, moveKeyboardFocus: Bool = false) {
         let next = titles.indices.contains(index ?? -1) ? index : nil
-        guard selectedIndex != next else { return }
+        guard selectedIndex != next || moveKeyboardFocus else { return }
         selectedIndex = next
-        if keyboardIndex == nil { keyboardIndex = selectedIndex }
+        if keyboardIndex == nil || moveKeyboardFocus { keyboardIndex = selectedIndex }
         popupView?.update(
             selectedIndex: selectedIndex,
             keyboardIndex: keyboardIndex
         )
+    }
+
+    func updatePreview(_ index: Int?, active: Bool) {
+        let id = index.flatMap { optionIDs.indices.contains($0) ? optionIDs[$0] : nil }
+        guard showsPreview != active || previewID != id else { return }
+        showsPreview = active
+        previewID = id
+        popupView?.updatePreview(index, active: active)
     }
 
     /// Reconcile declarative options by their stable value, independently of their display text.
@@ -330,6 +345,7 @@ final class FluentComboBoxPopup: NSObject {
                                         selectedIndex: selectedIndex, keyboardIndex: keyboardIndex)
         }
         popupView?.updatePresentation(titles: titles, layoutDirection: layoutDirection, reduceMotion: reduceMotion)
+        popupView?.updatePreview(previewID.flatMap { optionIDs.firstIndex(of: $0) }, active: showsPreview)
         if titlesChanged || optionsChanged { measureContentWidth() }
         if optionsChanged || titlesChanged || directionChanged { reposition() }
     }
@@ -346,11 +362,11 @@ final class FluentComboBoxPopup: NSObject {
     func cancelFromKeyboard() {
         guard isPresented else { return }
         onCancel()
-        dismiss(animated: false)
+        dismiss(animated: false, reason: .cancelled)
         onReturnFocus(nil)
     }
 
-    func dismiss(animated _: Bool) {
+    func dismiss(animated _: Bool, reason: FluentComboBoxPopupCloseReason = .unavailable) {
         screenObserver = nil
         anchorObserver?.invalidate()
         anchorObserver = nil
@@ -368,6 +384,7 @@ final class FluentComboBoxPopup: NSObject {
         popupPanel.orderOut(nil)
         // ComboBox popup unload is intentionally immediate. Selection commits, Escape, trigger
         // toggles and outside clicks all remove the complete popup without a close storyboard.
+        onClosing(reason)
         onDismiss()
     }
 
@@ -455,12 +472,12 @@ final class FluentComboBoxPopup: NSObject {
             if let self,
                event.window !== self.panel,
                !self.eventTargetsAnchor(event) {
-                self.dismiss(animated: true)
+                self.dismiss(animated: true, reason: .dismissed)
             }
             return event
         }
         globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            self?.dismiss(animated: true)
+            self?.dismiss(animated: true, reason: .dismissed)
         }
     }
 
@@ -546,6 +563,8 @@ private final class FluentComboBoxPopupView: NSView {
     private var pendingScrollOffset: CGFloat = 0
     private var pendingRevealIndex: Int?
     private var showsKeyboardFocus = false
+    private var previewIndex: Int?
+    private var showsPreview = false
     private let hoverCoordinator = FluentHoverCoordinator<FluentComboBoxPopupRow> { row, hovering in
         row.setPointerOver(hovering)
     }
@@ -674,6 +693,13 @@ private final class FluentComboBoxPopupView: NSView {
         updateRows()
     }
 
+    func updatePreview(_ index: Int?, active: Bool) {
+        guard previewIndex != index || showsPreview != active else { return }
+        previewIndex = index
+        showsPreview = active
+        updateRows()
+    }
+
     func update(theme: FluentTheme) {
         guard self.theme != theme else { return }
         self.theme = theme
@@ -796,10 +822,10 @@ private final class FluentComboBoxPopupView: NSView {
 
     private func updateRows() {
         for (index, row) in rows.enumerated() {
-            row.isSelected = index == selectedIndex
+            row.isSelected = index == (showsPreview ? previewIndex : selectedIndex)
             row.isKeyboardSelected = index == keyboardIndex
             row.isKeyboardFocused = showsKeyboardFocus && index == keyboardIndex
-            row.setAccessibilitySelected(row.isSelected)
+            row.setAccessibilitySelected(index == selectedIndex)
         }
         refreshPointerState()
         needsDisplay = true

@@ -7,6 +7,7 @@ struct ComboBoxGallerySample: FluentView {
     @FluentState private var editableSelection: Int? = 2
     @FluentState private var text = "Option 2"
     @FluentState private var request = 0
+    @FluentState private var immediateSelection = false
     @FluentState private var status = "Queue a change, then open either list before the two-second delay ends."
 
     var body: some FluentView {
@@ -14,12 +15,17 @@ struct ComboBoxGallerySample: FluentView {
             FluentText("Live options", style: .bodyStrong)
             FluentText("Tab to a field. Use F4 or Option+Up/Down to open or close; Escape restores the opening value.",
                        style: .caption)
+            FluentButtonView(immediateSelection ? "Selection: while browsing" : "Selection: when confirmed") {
+                immediateSelection.toggle()
+            }
             FluentComboBox(options: options, selection: $selection,
-                title: { "Option \($0)" }).frame(width: 280)
+                title: { "Option \($0)" })
+                .selectionChangedTrigger(immediateSelection ? .always : .committed).frame(width: 280)
             FluentText("Editable value", style: .caption)
             FluentComboBox(options: options, selection: $editableSelection, mode: .editable,
                 text: $text.textInput(.init(commitPolicy: .committedText)),
-                title: { "Option \($0)" }).frame(width: 280)
+                title: { "Option \($0)" })
+                .selectionChangedTrigger(immediateSelection ? .always : .committed).frame(width: 280)
             FluentHStack {
                 FluentButtonView("Append in 2 seconds") { schedule(.append) }
                 FluentButtonView("Reverse in 2 seconds") { schedule(.reverse) }

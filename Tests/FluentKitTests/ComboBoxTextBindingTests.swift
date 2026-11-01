@@ -14,7 +14,7 @@ final class ComboBoxTextBindingTests: XCTestCase {
             _ = NSApplication.shared
             self.binding = binding
             host = FluentViewHost(FluentComboBox(options: Array(0..<5), selection: selection.projectedValue,
-                mode: .editable, text: binding, title: { "Option \($0)" }), context: .init(reduceMotion: true))
+                mode: .editable, text: binding, title: { "Option \($0)" }).selectionChangedTrigger(.always), context: .init(reduceMotion: true))
             window = NSWindow(contentRect: NSRect(x: 180, y: 200, width: 600, height: 350),
                 styleMask: [.titled], backing: .buffered, defer: false)
             window.isReleasedWhenClosed = false
@@ -34,7 +34,7 @@ final class ComboBoxTextBindingTests: XCTestCase {
         func update(_ binding: FluentBinding<String>?, mode: FluentComboBoxMode = .editable) {
             self.binding = binding
             host.update(FluentComboBox(options: Array(0..<5), selection: selection.projectedValue,
-                mode: mode, text: binding, title: { "Option \($0)" }),
+                mode: mode, text: binding, title: { "Option \($0)" }).selectionChangedTrigger(.always),
                 context: .init(theme: .custom(colorScheme: .dark), reduceMotion: true))
             host.layoutSubtreeIfNeeded()
         }

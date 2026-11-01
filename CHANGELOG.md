@@ -4,6 +4,16 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox now defaults to WinUI's `.committed` selection trigger. Open keyboard navigation
+  previews without changing the selected binding; Enter or row activation commits. Normal
+  noneditable dismissal discards preview, while editable dismissal/blur commits its current
+  value. Escape uses the latest external-model baseline, and accessible selection stays separate
+  from visual preview. Use `.selectionChangedTrigger(.always)` to opt into immediate selection;
+  an empty noneditable selection then selects the first option when opened. Preview identity
+  survives reordering/renaming, binding replacement cancels stale baselines, and reentrant
+  commits cannot dismiss a newly opened popup. IME text publication policy remains independent.
+  External selection changes wait for marked text to finish, including controls without a text binding.
+
 - Editable ComboBox shares text-binding synchronization with other input controls. External
   resets update active unmarked text without replacing its editor and survive blur; during IME
   composition the latest reset waits for composition to finish. Text-input commit policy,

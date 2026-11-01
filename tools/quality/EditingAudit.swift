@@ -69,6 +69,17 @@ import FluentKit
         result["latestResetApplied"] = compositionEditor.string == "Option 0" && selection.wrappedValue == 0
         window.makeFirstResponder(nil); await drain()
         result["resetSurvivesBlur"] = text.wrappedValue == "Option 0" && field.stringValue == "Option 0"
+        field.selectText(nil)
+        guard let selectionEditor = field.currentEditor() as? NSTextView else {
+            throw NSError(domain: "EditingAudit.ComboBox", code: 4)
+        }
+        selectionEditor.setMarkedText("pin", selectedRange: NSRange(location: 3, length: 0),
+            replacementRange: NSRange(location: 0, length: selectionEditor.string.utf16.count))
+        selectionEditor.didChangeText(); await drain()
+        selection.wrappedValue = 2
+        result["selectionPreservesMarkedText"] = selectionEditor.hasMarkedText() && selectionEditor.string == "pin"
+        selectionEditor.unmarkText(); selectionEditor.didChangeText(); await drain()
+        result["externalSelectionApplied"] = selection.wrappedValue == 2 && selectionEditor.string == "Option 2"
         return result
     }
     @MainActor static func main() async throws {

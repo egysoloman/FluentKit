@@ -832,7 +832,7 @@ visible 32pt host, trailing glyph column, focus visuals, popup, and item templat
 centers the current item over the closed faceplate and reveals the popup around that row. Editable
 mode uses a native `NSTextField` for editing and IME behavior; only its glyph column opens the popup
 below the field (or above when space requires it). Arbitrary text updates the optional text binding,
-and exact option titles synchronize the stable selection. Both modes provide keyboard navigation,
+and exact option titles identify matching stable selections. Both modes provide keyboard navigation,
 Escape/outside-click dismissal, RTL placement, and the source-derived partial-content
 entrance rather than the native AppKit combo-box popup.
 Editable text reserves the dropdown column on the trailing side in either layout direction.
@@ -841,15 +841,23 @@ position and marked text while updating the input-method character coordinates.
 The optional text binding uses the shared text-input coordinator: external values replace active
 unmarked text immediately and survive blur. Resets during composition wait for it to finish, then
 the latest model value wins. `.textInput(.init(commitPolicy: .committedText))` defers native edits
-until composition ends; `.continuous` remains the default. Undo/redo and exact-title selection
-stay synchronized. Gallery includes a delayed text reset that can arrive while editing.
+until composition ends; `.continuous` remains the default. Undo/redo updates the text binding;
+selection follows the selection trigger described below. Gallery includes a delayed text reset.
 Selection fields are keyboard stops. Closed Up/Down and Home/End change selection; F4 or
 Option+Up/Down toggles the list. Open lists support bounded navigation and Page Up/Down;
 Tab follows the enclosing focus cycle, and Escape restores a surviving opening value.
 Editable lists keep the native field editor active, so typing, spaces and input-method commands
-continue to work. Composition retains native command ownership. Selection currently publishes
-on navigation; WinUI's configurable Committed/Always policy and complete text-search behavior
-remain open contracts.
+continue to work. Composition retains native command ownership.
+Selection now defaults to `.committed`, following WinUI. Open-list navigation previews an option;
+Enter, Space in a noneditable list, or pressing a row commits it. Closing a noneditable list with
+Tab, F4, the trigger or an outside click discards that preview. Editable controls commit the current
+value on Return, Tab, normal dismissal or blur. Escape restores the latest cancellation baseline;
+external model updates replace that baseline. Closed noneditable arrow navigation still selects
+immediately. Visual preview and accessibility selection remain distinct.
+For applications that need the earlier immediate-selection behavior, use
+`.selectionChangedTrigger(.always)`. An empty noneditable list selection then selects its first
+option on opening. This setting is independent of `.textInput`'s IME publication policy.
+Complete text search, prefix completion and custom text-submission events remain open contracts.
 
 Open ComboBoxes reconcile options by their unique `Hashable` values. Appending, reordering or
 removing options preserves the panel, responder, surviving rows and visible scroll position.

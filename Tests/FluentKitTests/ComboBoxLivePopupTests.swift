@@ -88,7 +88,7 @@ final class ComboBoxLivePopupTests: XCTestCase {
             XCTAssertEqual(rows[39].accessibilityTitle(), "Updated option 39 with a substantially longer title")
             XCTAssertGreaterThan(panel.frame.width, oldWidth)
             XCTAssertTrue(scroll.documentVisibleRect.contains(rows[39].frame))
-            XCTAssertEqual(f.selection.wrappedValue, 39)
+            XCTAssertEqual(f.selection.wrappedValue, 20, "The default trigger keeps navigation as a preview until Enter.")
             key(36, panel: panel)
             XCTAssertEqual(f.selection.wrappedValue, 39)
             XCTAssertFalse(panel.isVisible)

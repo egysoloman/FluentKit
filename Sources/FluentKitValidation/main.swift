@@ -4124,10 +4124,17 @@ editableTextField.delegate?.controlTextDidChange?(Notification(name: NSControl.t
 drainMainQueue()
 require(
     waitUntil(timeout: 0.20) {
-        editableComboText.wrappedValue == "Custom" && editableComboSelection.wrappedValue == nil
+        editableComboText.wrappedValue == "Custom" && editableComboSelection.wrappedValue == .second
     },
-    "editable ComboBox writes arbitrary text without selecting an option "
+    "editable ComboBox publishes text while its default trigger defers selection "
         + "(text: \(editableComboText.wrappedValue), selection: \(String(describing: editableComboSelection.wrappedValue)))"
+)
+editableTextField.delegate?.controlTextDidEndEditing?(
+    Notification(name: NSControl.textDidEndEditingNotification, object: editableTextField)
+)
+require(
+    editableComboText.wrappedValue == "Custom" && editableComboSelection.wrappedValue == nil,
+    "editable ComboBox commits unmatched text and clears its selected option when editing ends"
 )
 editableTextField.mouseDown(
     with: toggleMouseEvent(

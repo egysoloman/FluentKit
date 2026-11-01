@@ -20,7 +20,7 @@ final class ComboBoxKeyboardContractTests: XCTestCase {
             options = Array(0..<count)
             selection = FluentState(wrappedValue: selected)
             host = FluentViewHost(FluentComboBox(options: options, selection: selection.projectedValue,
-                mode: mode, text: mode == .editable ? text.projectedValue : nil, title: { "Option \($0)" }),
+                mode: mode, text: mode == .editable ? text.projectedValue : nil, title: { "Option \($0)" }).selectionChangedTrigger(.always),
                 context: .init(reduceMotion: true))
             window = NSWindow(contentRect: NSRect(x: 180, y: 180, width: 600, height: 350),
                 styleMask: [.titled], backing: .buffered, defer: false)
@@ -51,7 +51,7 @@ final class ComboBoxKeyboardContractTests: XCTestCase {
         func update(_ options: [Int]) {
             self.options = options
             host.update(FluentComboBox(options: options, selection: selection.projectedValue,
-                mode: mode, text: mode == .editable ? text.projectedValue : nil, title: { "Option \($0)" }),
+                mode: mode, text: mode == .editable ? text.projectedValue : nil, title: { "Option \($0)" }).selectionChangedTrigger(.always),
                 context: .init(reduceMotion: true))
             host.layoutSubtreeIfNeeded()
         }

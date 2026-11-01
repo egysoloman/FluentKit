@@ -35,8 +35,23 @@ for row in combos:
     assert all(row[key] == 'external reset' for key in ('focusedModel', 'focusedField', 'blurredModel', 'blurredField')), row
     assert all(row[key] is True for key in (
         'editorPreserved', 'sameValueReset', 'popupPreserved', 'matchedSelection', 'compositionPolicy',
-        'markedTextPreserved', 'pendingResetPreserved', 'latestResetApplied', 'resetSurvivesBlur'
+        'markedTextPreserved', 'pendingResetPreserved', 'latestResetApplied', 'resetSurvivesBlur',
+        'selectionPreservesMarkedText', 'externalSelectionApplied'
     )), row
+selection = load('ComboBoxSelectionAudit')
+assert len(selection) == 96 and {(r['dark'], r['rtl'], r['always'], r['editable'], r['close']) for r in selection} == {
+    (dark, rtl, always, editable, close) for dark in (False, True) for rtl in (False, True)
+    for always in (False, True) for editable in (False, True)
+    for close in ('return', 'tab', 'toggle', 'escape', 'outside', 'row')
+}, selection
+for row in selection:
+    expected_before = 2 if row['always'] else 1
+    expected_after = 1 if row['close'] == 'escape' else (2 if row['always'] or row['editable'] or row['close'] in ('return', 'row') else 1)
+    assert row['beforeSelection'] == expected_before and row['afterSelection'] == expected_after, row
+    assert row['selectedTitles'] == [f'Option {expected_before}'] and row['focusedTitles'] == ['Option 2'], row
+    assert row['editorPreserved'] is True and row['closed'] is True, row
+    assert not row['editable'] or row['beforeText'] == 'Option 2', row
+    assert row['close'] != 'row' or row['rowPressAccepted'] is True, row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40
