@@ -27,6 +27,8 @@
 
 ## 验证
 
+上一批 `f0ef72e` 的 [CI #16](https://github.com/egysoloman/FluentKit/actions/runs/41289877868) 已完成成功：512 项测试、1 项平台能力跳过、0 失败，所有作业步骤通过。日志保存在 `previous-batch-ci.log`。这份 CI 日志验证上一批选屏修复，本批 ComboBox 的远端验证将在推送后运行。
+
 - 相关 **19 项测试通过**；完整 **516 项、0 失败**，78.337 秒（`targeted-tests.log`、`full-tests.log`）。
 - Release 构建通过，103.34 秒；Gallery 的 Xcode 构建通过（`release-build.log`、`gallery-build.log`）。
 - 原生验证 PASS，Release 更新次数、挂载身份、外部重置、字号/材质门禁全部通过（`native-validation.log`、`quality.log`、`quality/`）。诊断检查没有 AppKit 约束冲突。

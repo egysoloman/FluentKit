@@ -44,7 +44,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- `v0.2.0` 已正式发布，main/tag CI 均通过（491 项测试，1 项平台能力跳过、0 失败），见 `release-0.2.0/REPORT.md`。发布后开关和设置卡补修已推至 main，CI #15 也通过（502 项、1 跳过、0 失败），原始日志见 `popup-screen-placement/previous-batch-ci.log`。浮层选屏 `f0ef72e` 的 CI #16 仍在运行；其后本批 ComboBox 约束的本地完整 516 项测试、原生验证、Gallery 和 Release 门禁通过。最近一次实际 IME 来源快照构建及应用补丁见 `scroller-layout/REPORT.md`；未安装或替换运行中的输入法。以上检查不关闭尚未验收的专项，运行中的旧 IME 不会自动加载静态链接的新框架。
+- `v0.2.0` 已正式发布，main/tag CI 均通过（491 项测试，1 项平台能力跳过、0 失败），见 `release-0.2.0/REPORT.md`。发布后开关和设置卡补修已推至 main，CI #15 也通过（502 项、1 跳过、0 失败），原始日志见 `popup-screen-placement/previous-batch-ci.log`。浮层选屏 `f0ef72e` 的 CI #16 已通过（512 项、1 跳过、0 失败），原始日志见 `combobox-workarea/previous-batch-ci.log`；其后 ComboBox 约束 `2bdbc31` 的本地完整 516 项测试、原生验证、Gallery 和 Release 门禁通过。最近一次实际 IME 来源快照构建及应用补丁见 `scroller-layout/REPORT.md`；未安装或替换运行中的输入法。以上检查不关闭尚未验收的专项，运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 
