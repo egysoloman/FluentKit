@@ -126,7 +126,9 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         }
         let rotation = CATransform3DMakeRotation(angle, 0, 0, 1)
         guard pressed else { return rotation }
-        return CATransform3DTranslate(rotation, 0, 1.875, 0)
+        // The inverted path is hosted in an upward local Y axis (SplitButton). Mirror its
+        // pressed displacement too, so the DownSmall glyph still travels visually downward.
+        return CATransform3DTranslate(rotation, 0, invertedPath ? -1.875 : 1.875, 0)
     }
 
     private func chevronPath(

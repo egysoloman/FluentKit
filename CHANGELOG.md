@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- SplitButton and ToggleSplitButton preserve chevron motion through layout, content, theme,
+  resizing and backing changes. Pressed arrows move downward in AppKit's local coordinates
+  without a horizontal pixel jump. Opening the menu keeps the whole-button chrome while
+  releasing the arrow; primary and root keyboard activation do not press the secondary glyph.
+  Disabling, hiding, reparenting and focus loss cancel captured input and settle motion.
+  The resolved Reduce Motion policy applies to the shared chevron.
+
 - ComboBox preserves chevron motion through layout, drawing, content and theme updates in
   selection and editable modes. Backing changes refresh its pixel geometry, and explicit
   Reduce Motion policy applies to the chevron. Captured pointer presses and deferred popup

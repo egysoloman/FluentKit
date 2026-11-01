@@ -56,6 +56,12 @@ receives current labels, enabled states and closures without replacing its panel
 its window cancels presses and closes the menu. Toggle bindings also reflect values accepted by
 validating setters and ignore deliveries from replaced subscriptions.
 
+The secondary arrow moves downward while that region is pressed, and returns when released,
+including while the menu is open. Layout, theme, size and backing changes preserve its current
+motion; Reduce Motion settles it immediately. Primary or root keyboard activation changes
+the appropriate button chrome without pressing the secondary arrow. Focus loss cancels a
+captured press, so a later release cannot invoke an action.
+
 The [interactive samples](FluentKitGallery/FluentKitGallery/SplitButtonGallerySample.swift) cover
 both variants, shared checked state, disabled state and delayed menu refresh. Touch-state checks
 use synthetic events; physical touch and VoiceOver acceptance remain open.

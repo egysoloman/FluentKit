@@ -25,7 +25,8 @@ Materials default to wallpaper-derived Mica for window backgrounds and layered A
 transient surfaces. Automatic navigation panes inherit the background while inline and use
 Acrylic when open over content. Role and surface overrides remain available, including native
 AppKit materials and Liquid Glass. Accessibility policies select opaque fallbacks.
-WinUIEssentials is a reference, not an identical-rendering requirement; see the
+WinUI Mica/Acrylic and WinUIEssentials inform these presets; matching their exact rendering
+is not required. The macOS composition and developer overrides remain intentional; see the
 [acknowledgement and license](README.md#acknowledgements).
 
 ## Next work
@@ -50,10 +51,12 @@ WinUIEssentials is a reference, not an identical-rendering requirement; see the
    transfer after an owned gesture reaches an edge, and navigation-button visual acceptance.
 6. **Text, windows and visual states.** Complete the open contracts in the table above without
    replacing native editing, responder, accessibility or window lifecycle ownership.
-   SettingsExpander, Expander, NavigationView group, ComboBox and DropDownButton chevrons preserve
+   SettingsExpander, Expander, NavigationView group, ComboBox, DropDownButton and SplitButton chevrons preserve
    motion across repeated layout and content updates. Navigation uses the default up/down
    directions; DropDownButton cancels stale activation and updates live menu actions.
    ComboBox cancels captured/deferred pointer activation across native lifecycle changes.
+   SplitButton separates secondary pointer motion from whole-button keyboard/flyout chrome,
+   uses the host's visual downward direction and cancels stale activation on focus loss.
    Audit remaining shared chevron callers, live ComboBox popup refresh and hierarchical
    flyout behavior independently.
 

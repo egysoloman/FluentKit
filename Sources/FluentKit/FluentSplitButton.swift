@@ -38,11 +38,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         didSet {
             guard oldValue != reduceMotion else { return }
             animationCoordinator.reduceMotion = reduceMotion
-            if reduceMotion {
-                [layer, primaryLayer, secondaryLayer, dividerLayer, elevationBorderLayer, secondaryBorderLayer, focusOuterLayer, focusInnerLayer, chevronLayer]
-                    .compactMap { $0 }
-                    .forEach { $0.removeAllAnimations() }
-            }
+            if reduceMotion { settleVisualAnimations() }
             updateAppearance(animated: false)
             updatePresentedFlyout()
         }
@@ -116,21 +112,28 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     public override var isEnabled: Bool {
         didSet {
             guard oldValue != isEnabled else { return }
-            if !isEnabled {
-                dismissFlyout(animated: false)
-                hoveredRegion = .none
-                pressedRegion = .none
-                isKeyboardPressed = false
-                isTrackingPress = false
-            }
-            updateAppearance(animated: true)
+            if !isEnabled { cancelInteraction() }
+            else { updateAppearance(animated: true) }
         }
     }
 
     public override func layout() {
         super.layout()
         synchronizeGeometry()
+        updateChevron(animated: false)
         menuFlyout?.reposition()
+    }
+
+    public override func setFrameSize(_ newSize: NSSize) {
+        super.setFrameSize(newSize)
+        synchronizeGeometry()
+        updateChevron(animated: false)
+    }
+
+    public override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        synchronizeGeometry()
+        updateChevron(animated: false)
     }
 
     public override var frame: NSRect {
@@ -140,6 +143,11 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     public override func setFrameOrigin(_ newOrigin: NSPoint) {
         super.setFrameOrigin(newOrigin)
         menuFlyout?.reposition()
+    }
+
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
     }
 
     public override func viewWillMove(toWindow newWindow: NSWindow?) {
@@ -152,6 +160,8 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        synchronizeGeometry()
+        updateChevron(animated: false)
         removeWindowObservers()
         guard let window else { return }
         for name in [NSWindow.willCloseNotification, NSWindow.didResignKeyNotification] {
@@ -175,6 +185,13 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         hoveredRegion = .none
         if dismissMenu { dismissFlyout(animated: false) }
         else { updateAppearance(animated: false) }
+        settleVisualAnimations()
+    }
+
+    private func settleVisualAnimations() {
+        animationCoordinator.cancelAll(on: [layer, primaryLayer, secondaryLayer, dividerLayer,
+            elevationBorderLayer, secondaryBorderLayer, focusOuterLayer, focusInnerLayer].compactMap { $0 })
+        chevronLayer.finishAnimations()
     }
 
     private func removeWindowObservers() {
@@ -227,7 +244,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     }
 
     public override func mouseDown(with event: NSEvent) {
-        guard isEnabled else { return }
+        guard isEnabled, window != nil, !isHiddenOrHasHiddenAncestor else { return }
         lastPointerDevice = FluentInputDeviceTracker.deviceType(for: event) ?? .mouse
         FluentInputDeviceTracker.shared.record(lastPointerDevice, in: window)
         FluentFocusVisibility.markPointerInteraction(in: window)
@@ -309,9 +326,8 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     }
 
     public override func resignFirstResponder() -> Bool {
-        isKeyboardPressed = false
         let result = super.resignFirstResponder()
-        if result { updateAppearance(animated: true) }
+        if result { cancelInteraction(dismissMenu: false) }
         return result
     }
 
@@ -461,6 +477,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         secondaryBorderLayer.name = "FluentKit.SplitButton.SecondaryElevationBorder"
         configureFluentElevationBorderLayer(elevationBorderLayer, mask: elevationBorderMask)
         elevationBorderLayer.name = "FluentKit.SplitButton.ElevationBorder"
+        chevronLayer.name = "FluentKit.SplitButton.Chevron"
         focusOuterLayer.name = "FluentKit.SplitButton.FocusOuter"
         focusInnerLayer.name = "FluentKit.SplitButton.FocusInner"
         for focus in [focusOuterLayer, focusInnerLayer] {
@@ -520,26 +537,10 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
             focus.path = CGPath(roundedRect: rect, cornerWidth: max(0, radius - inset + 1), cornerHeight: max(0, radius - inset + 1), transform: nil)
             focus.lineWidth = width
         }
-        let chevronSize: CGFloat = 12 * fluentControlSize.metricScale
-        let chevronFrame = CGRect(
-            x: floor(secondaryFrame.midX - chevronSize / 2),
-            y: floor(secondaryFrame.midY - chevronSize / 2),
-            width: chevronSize,
-            height: chevronSize
-        )
         CATransaction.commit()
         titleLabel.stringValue = title
         titleLabel.textColor = primaryForeground
         updateElevationBorder(animated: false)
-        chevronLayer.update(
-            frame: chevronFrame,
-            color: secondaryForeground,
-            state: activePressedRegion == .secondary || isFlyoutPresented ? .pressed : (lastPointerDevice != .touch && hoveredRegion == .secondary ? .pointerOver : .normal),
-            visual: .downSmall,
-            inverted: true,
-            backingScale: backingScale,
-            animated: false
-        )
     }
 
     private func updateAppearance(animated: Bool) {
@@ -570,20 +571,36 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
         CATransaction.commit()
         titleLabel.stringValue = title
         titleLabel.textColor = primaryForeground
-        let chevronState: FluentControlState = activePressedRegion == .secondary || isFlyoutPresented
-            ? .pressed
-            : (lastPointerDevice != .touch && hoveredRegion == .secondary ? .pointerOver : (!isEnabled ? .disabled : .normal))
-        let chevronSize: CGFloat = 12 * fluentControlSize.metricScale
+        updateChevron(animated: animated)
+        needsDisplay = true
+    }
+
+    private var chevronControlState: FluentControlState {
+        guard isEnabled else { return .disabled }
+        // AnimatedIcon is driven by the secondary child Button's pointer state. The parent
+        // FlyoutOpen/TouchPressed states change faceplate colors without holding that glyph down.
+        if isTrackingPress, pressedRegion == .secondary, hoveredRegion == .secondary { return .pressed }
+        return lastPointerDevice != .touch && hoveredRegion == .secondary ? .pointerOver : .normal
+    }
+
+    private func updateChevron(animated: Bool) {
+        let backingScale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
+        let pixelGeometry = FluentPixelGeometry(backingScale: backingScale)
+        let size: CGFloat = 12 * fluentControlSize.metricScale
+        let frame = CGRect(x: pixelGeometry.align(secondaryFrame.midX - size / 2),
+                           y: pixelGeometry.align(secondaryFrame.midY - size / 2), width: size, height: size)
+        let isActive = window != nil && !isHiddenOrHasHiddenAncestor && isEnabled && !reduceMotion
         chevronLayer.update(
-            frame: CGRect(x: secondaryFrame.midX - chevronSize / 2, y: secondaryFrame.midY - chevronSize / 2, width: chevronSize, height: chevronSize),
+            frame: frame,
             color: secondaryForeground,
-            state: chevronState,
+            state: chevronControlState,
             visual: .downSmall,
             inverted: true,
-            backingScale: window?.backingScaleFactor,
-            animated: animated
+            backingScale: backingScale,
+            preservingUnchangedAnimations: isActive,
+            reduceMotion: reduceMotion,
+            animated: animated && isActive
         )
-        needsDisplay = true
     }
 
     private func resolvedElevationColors(for region: HitRegion) -> [NSColor] {
@@ -628,7 +645,7 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
 
     private func presentFlyout() {
         guard isEnabled, !items.isEmpty else { return }
-        guard !isFlyoutPresented, window != nil, !isHiddenOrHasHiddenAncestor else { return }
+        guard !isFlyoutPresented, window?.isVisible == true, !isHiddenOrHasHiddenAncestor else { return }
         let flyout = FluentMenuFlyout(items: items, theme: theme, reduceMotion: reduceMotion)
         menuFlyout = flyout
         isFlyoutPresented = true
@@ -655,9 +672,10 @@ open class FluentSplitButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private func dismissFlyout(animated: Bool) {
-        menuFlyout?.dismiss(animated: animated)
+        let previous = menuFlyout
         menuFlyout = nil
         isFlyoutPresented = false
+        previous?.dismiss(animated: animated)
         updateAccessibilityValue()
         updateAppearance(animated: animated)
     }
