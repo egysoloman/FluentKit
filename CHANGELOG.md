@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Keep Mica wallpaper sampling aligned when display origins, ancestor positions or scroll
+  offsets change, reusing the shared decoded image. Geometry observers follow reparenting
+  and are removed on detachment or material changes. Acrylic grain updates its device-pixel
+  scale on backing-store changes without waiting for another layout pass.
+
 ## [0.3.0] - 2026-11-01
 
 - Remove generated audit reports, captures and logs from the versioned tree. Maintained

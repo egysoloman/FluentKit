@@ -132,6 +132,9 @@ public final class FluentMaterialView: NSVisualEffectView {
     private var glassBackendView: NSView?
     private var displayOptionsObserver: NSObjectProtocol?
     private var activeWindowObservers: [NSObjectProtocol] = []
+    private var wallpaperGeometryObservers: [NSObjectProtocol] = []
+    private var wallpaperAncestorIDs: [ObjectIdentifier] = []
+    private var wallpaperGeometryUpdatePending = false
 
     public override var intrinsicContentSize: NSSize {
         NSSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
@@ -203,6 +206,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         let hadWallpaper = hasWallpaperBackdrop
         updateWallpaperBackdrop(enabled: resolvedBackend == .fluentRecipe && resolvedMaterialStyle == .mica)
         updateWallpaperLayerFrames()
+        updateNoiseContentsScale()
         if hadWallpaper != hasWallpaperBackdrop { applyMaterial() }
         glassBackendView?.frame = bounds
         synchronizeGlassCornerRadius()
@@ -237,6 +241,7 @@ public final class FluentMaterialView: NSVisualEffectView {
             : (usesFluentRecipe ? .fluentRecipe : (usesNativeGlass ? .nativeGlass : .visualEffect))
         applySurfaceColor()
         updateWallpaperBackdrop(enabled: usesFluentRecipe && style == .mica)
+        updateNoiseContentsScale()
         fallbackLayer.opacity = usesOpaqueFallback || (usesFluentRecipe && style == .mica) ? 1 : 0
         let glassView = usesNativeGlass ? resolveGlassBackendView() : glassBackendView
         glassView?.isHidden = !usesNativeGlass
@@ -310,6 +315,18 @@ public final class FluentMaterialView: NSVisualEffectView {
         applyMaterial()
     }
 
+    public override func viewDidMoveToSuperview() {
+        super.viewDidMoveToSuperview()
+        applyMaterial()
+    }
+
+    public override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        // Our drawing layer is not an NSView's backing layer. AppKit does not own its
+        // grain resolution, and a backing change need not cause another layout pass.
+        applyMaterial()
+    }
+
     private var isBackdropActive: Bool {
         guard window != nil else { return true }
         var owner = window
@@ -338,11 +355,13 @@ public final class FluentMaterialView: NSVisualEffectView {
         let source = FluentWallpaperBackdrop.shared
         guard enabled, isBackdropActive, let window else {
             source.unsubscribe(self)
+            removeWallpaperGeometryObservers()
             wallpaperLayers.values.forEach { $0.removeFromSuperlayer() }
             wallpaperLayers.removeAll()
             hasWallpaperBackdrop = false
             return
         }
+        observeWallpaperGeometry()
         source.subscribe(self)
         let screenRect = window.convertToScreen(convert(bounds, to: nil))
         let screens = NSScreen.screens.filter { $0.frame.intersects(screenRect) }
@@ -371,11 +390,50 @@ public final class FluentMaterialView: NSVisualEffectView {
         for (screen, backdrop) in wallpaperLayers {
             backdrop.frame = convert(window.convertFromScreen(screen.frame), from: nil)
         }
-        let scale = window.backingScaleFactor
+    }
+
+    private func updateNoiseContentsScale() {
+        let scale = window?.backingScaleFactor ?? 1
         if noiseLayer.contentsScale != scale {
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
             noiseLayer.contentsScale = scale
             noiseLayer.setNeedsDisplay()
+            CATransaction.commit()
         }
+    }
+
+    private func observeWallpaperGeometry() {
+        var ancestors: [NSView] = []
+        var current: NSView? = self
+        while let view = current { ancestors.append(view); current = view.superview }
+        let ids = ancestors.map(ObjectIdentifier.init)
+        guard wallpaperAncestorIDs != ids else { return }
+        removeWallpaperGeometryObservers()
+        wallpaperAncestorIDs = ids
+        for ancestor in ancestors {
+            for name in [NSView.frameDidChangeNotification, NSView.boundsDidChangeNotification] {
+                wallpaperGeometryObservers.append(NotificationCenter.default.addObserver(
+                    forName: name, object: ancestor, queue: .main
+                ) { [weak self] _ in
+                    guard let self, !self.wallpaperGeometryUpdatePending else { return }
+                    self.wallpaperGeometryUpdatePending = true
+                    // Coalesce the ancestor chain's layout/scroll changes; only sampling
+                    // rectangles change. The shared source does not decode or blur again.
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self else { return }
+                        self.wallpaperGeometryUpdatePending = false
+                        self.wallpaperBackdropDidChange()
+                    }
+                })
+            }
+        }
+    }
+
+    private func removeWallpaperGeometryObservers() {
+        wallpaperGeometryObservers.forEach(NotificationCenter.default.removeObserver)
+        wallpaperGeometryObservers.removeAll()
+        wallpaperAncestorIDs.removeAll()
     }
 
     private var resolvedMaterialStyle: FluentMaterial {
@@ -481,6 +539,7 @@ public final class FluentMaterialView: NSVisualEffectView {
 
     deinit {
         FluentWallpaperBackdrop.shared.unsubscribe(self)
+        removeWallpaperGeometryObservers()
         activeWindowObservers.forEach(NotificationCenter.default.removeObserver)
         if let displayOptionsObserver { NSWorkspace.shared.notificationCenter.removeObserver(displayOptionsObserver) }
     }

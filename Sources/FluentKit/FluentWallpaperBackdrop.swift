@@ -64,7 +64,12 @@ final class FluentWallpaperBackdrop {
             ) { [weak self] _ in self?.refresh() })
             screenObserver = NotificationCenter.default.addObserver(
                 forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
-            ) { [weak self] _ in self?.refresh() }
+            ) { [weak self] _ in
+                self?.refresh()
+                // An origin-only rearrangement deliberately keeps the cached pixels. Its
+                // clients must still resolve current NSScreens and reposition their layers.
+                self?.notifyClients()
+            }
         }
         refresh()
     }
