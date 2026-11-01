@@ -4,6 +4,8 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+## [0.3.0] - 2026-11-01
+
 - Remove generated audit reports, captures and logs from the versioned tree. Maintained
   quality tools and reviewed snapshot baselines remain available; historical evidence is
   retained locally. Public documentation now links to the maintained checks and roadmap.
