@@ -64,8 +64,10 @@ use synthetic events; physical touch and VoiceOver acceptance remain open.
 
 Suggestion lists scroll and keep the keyboard-selected item visible. Supply stable, unique
 `FluentAutoSuggestBoxSuggestion.id` values when results can refresh or reorder; omitting an ID
-creates a new identity. While navigating suggestions, Escape and Tab restore the original query
-in both the field and binding.
+creates a new identity. Escape restores the user's original query in both the field and binding,
+even if a refresh removed the selected suggestion. Tab/Shift-Tab restore it while the suggestion
+list is open; an already closed list leaves normal Tab behavior unchanged. Clear and query
+buttons retain their native actions and accessibility exposure, and are skipped by Tab.
 Down/Up navigate an open list, and a single candidate remains selected. External model resets
 invalidate old suggestions. Header, text insets, adornments and suggestion rows follow RTL.
 

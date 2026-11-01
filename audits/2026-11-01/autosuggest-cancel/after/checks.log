@@ -1,0 +1,10 @@
+{
+  "before": {
+    "states": 40,
+    "errorCount": 118
+  },
+  "after": {
+    "states": 40,
+    "errorCount": 0
+  }
+}

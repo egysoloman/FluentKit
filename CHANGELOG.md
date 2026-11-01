@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AutoSuggestBox restores the user's query when cancelling a preview whose selected item was
+  removed or replaced by a result refresh. Escape also restores after the list closes; Tab only
+  restores while it is open, following WinUI's keyboard handler. **Behavior change:** clear/query
+  helper buttons are no longer Tab stops and pointer activation keeps editing focus in the field;
+  their native actions remain available. See `audits/2026-11-01/autosuggest-cancel/REPORT.md`.
+
 - FluentKit-owned windows and both Galleries now automatically recalculate AppKit's key-view
   loop, allowing Tab to reach controls added by navigation, sheets or detached tabs.
   Explicit focus scopes and ContentDialog preserve keyboard cycles across that recalculation,

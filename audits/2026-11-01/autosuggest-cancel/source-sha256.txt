@@ -1,0 +1,6 @@
+0b9f4945d22ff7e1fb2387592f947459b6996d05bb2043ade2206959f792810f  Sources/FluentKit/FluentAutoSuggestBox.swift
+0c14645855f0791cff6a6a9605eac3d518995c5e6890ef645e2d9d14ea424a30  Tests/FluentKitTests/AutoSuggestInteractionTests.swift
+33c6ea1d3f9fe80020bc7800a2e1749b9c629ab085ddae6e23d66bde8cb227a4  audits/2026-11-01/autosuggest-cancel/CancelAudit.swift
+b847be1651e40feccf5985f85af0d3b1b658366d22e1c3a1cdc34243e087337c  audits/2026-11-01/autosuggest-cancel/TraceApp.swift
+bd7bd0a6b58980f145b0b39c8305e80635fcb7f55514635f6d892f1565391e83  microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/AutoSuggestBox_Partial.cpp
+84c5e4e056df5c2cc07757cf73215c495f4e58c9ab6f7b2862087bd3d208bfed  microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/AutoSuggestBox/AutoSuggestBox_themeresources.xaml

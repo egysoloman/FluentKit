@@ -45,6 +45,90 @@ final class AutoSuggestInteractionTests: XCTestCase {
         XCTAssertTrue(window.childWindows?.isEmpty ?? true)
     }
 
+    @MainActor func testCancellationRestoresQueryAfterSelectedSuggestionReplacement() throws {
+        for removesSelectedItem in [false, true] {
+            for command in [#selector(NSResponder.insertTab(_:)), #selector(NSResponder.insertBacktab(_:)), #selector(NSResponder.cancelOperation(_:))] {
+                let state = FluentState(wrappedValue: "")
+                var values = [FluentAutoSuggestBoxSuggestion(id: 1, title: "Apple"), .init(id: 2, title: "Apricot")]
+                var events: [FluentAutoSuggestBoxTextChangedEvent] = []
+                func content() -> FluentAutoSuggestBox {
+                    FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in values }, onTextChangedEvent: { events.append($0) })
+                }
+                let view = content()._makeView(in: .init(reduceMotion: true))
+                let window = mount(view); defer { window.close() }
+                let editor = try type("Ap", in: view)
+                editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+                XCTAssertEqual(state.wrappedValue, "Apple")
+                values = removesSelectedItem ? [.init(id: 2, title: "Apricot")] : [.init(id: 3, title: "Apple"), .init(id: 4, title: "Apricot")]
+                XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true)))
+                let popup = try XCTUnwrap(window.childWindows?.first)
+                XCTAssertTrue(popup.isVisible)
+                XCTAssertFalse(all(popup.contentView!).contains { $0.isAccessibilitySelected() })
+                editor.doCommand(by: command)
+                XCTAssertEqual(state.wrappedValue, "Ap", "\(command), remove=\(removesSelectedItem)")
+                XCTAssertEqual(try field(view).stringValue, "Ap")
+                XCTAssertFalse(popup.isVisible)
+                RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+                XCTAssertEqual(events.last?.reason, .programmaticChange)
+                XCTAssertEqual(events.last?.text, "Ap")
+            }
+        }
+    }
+
+    @MainActor func testClosedSuggestionsOnlyEscapeRestoresOriginalQuery() throws {
+        for escape in [false, true] {
+            let state = FluentState(wrappedValue: "")
+            var values = [FluentAutoSuggestBoxSuggestion(id: 1, title: "Apple")]
+            func content() -> FluentAutoSuggestBox { FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in values }) }
+            let view = content()._makeView(in: .init(reduceMotion: true))
+            let window = mount(view); defer { window.close() }
+            let editor = try type("Ap", in: view)
+            editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+            values = []
+            XCTAssertTrue(content()._updateView(view, in: .init(reduceMotion: true)))
+            XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+            editor.doCommand(by: escape ? #selector(NSResponder.cancelOperation(_:)) : #selector(NSResponder.insertTab(_:)))
+            XCTAssertEqual(state.wrappedValue, escape ? "Ap" : "Apple")
+            XCTAssertEqual(try field(view).stringValue, escape ? "Ap" : "Apple")
+        }
+    }
+
+    @MainActor func testHelperButtonsSkipTabButRetainActionsAndEditingFocus() throws {
+        let state = FluentState(wrappedValue: "")
+        var submitted: String?
+        let root = FluentViewHost(FluentVStack {
+            FluentAutoSuggestBox(state.projectedValue, querySystemImageName: "magnifyingglass", onSubmit: { text, _ in submitted = text })
+            FluentButtonView("After")
+        })
+        let window = mount(root); defer { window.close() }
+        // A composite FluentViewHost has no intrinsic height; give the whole stack a
+        // visible frame instead of the single-control helper's intrinsic-size frame.
+        root.frame = NSRect(x: 20, y: 5, width: 400, height: 150)
+        root.layoutSubtreeIfNeeded()
+        window.autorecalculatesKeyViewLoop = true
+        let editor = try type("Ap", in: root)
+        let after = try XCTUnwrap(all(root).compactMap { $0 as? FluentButton }.first { $0.title == "After" })
+        let clear = try XCTUnwrap(all(root).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.ClearButton" } as? NSButton)
+        let query = try XCTUnwrap(all(root).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.QueryButton" } as? NSButton)
+        for button in [clear, query] {
+            XCTAssertFalse(button.canBecomeKeyView)
+        }
+        XCTAssertTrue(after.canBecomeKeyView, "The traversal destination must be visible")
+        let currentField = try field(root)
+        window.recalculateKeyViewLoop()
+        editor.doCommand(by: #selector(NSResponder.insertTab(_:)))
+        XCTAssertTrue(window.firstResponder === after, "actual=\(String(describing: window.firstResponder)); next=\(String(describing: currentField.nextValidKeyView)); after=\(after)")
+        window.selectPreviousKeyView(nil)
+        XCTAssertTrue(try field(root).currentEditor() === window.firstResponder)
+        query.performClick(nil)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+        XCTAssertEqual(submitted, "Ap")
+        clear.performClick(nil)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+        XCTAssertEqual(state.wrappedValue, "")
+        XCTAssertTrue(try field(root).currentEditor() === editor)
+    }
+
     @MainActor func testSuggestionViewportScrollsToKeyboardSelection() throws {
         let state = FluentState(wrappedValue: "")
         let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values }, maxSuggestionListHeight: 84)._makeView(in: .init(reduceMotion: true))
@@ -98,6 +182,10 @@ final class AutoSuggestInteractionTests: XCTestCase {
         editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
         XCTAssertNil(chosen)
         XCTAssertEqual(state.wrappedValue, "")
+        state.wrappedValue = "Pear"
+        editor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        XCTAssertEqual(state.wrappedValue, "Pear", "Cancellation must preserve a subsequent external reset")
+        XCTAssertEqual(try field(view).stringValue, "Pear")
     }
 
     @MainActor func testLiveProviderUpdatePreservesSelectedIDAndResizesFromAnchor() throws {

@@ -621,7 +621,9 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
 
     private func cancelSuggestionNavigation() {
         suppressPresentation = true
-        if selectedIndex >= 0 { applySelectionChange(to: -1) }
+        // WinUI restores the user's query even when a result refresh removed the selected
+        // item. Selection identity must not decide whether preview text can be cancelled.
+        applySelectionChange(to: -1)
         popup?.dismiss(animated: true)
     }
 
@@ -670,6 +672,9 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
         button.identifier = NSUserInterfaceItemIdentifier(identifier)
         button.isBordered = false
         button.focusRingType = .none
+        // WinUI's DeleteButton/QueryButton are not Tab stops. Keep their native actions
+        // available, while pointer activation leaves editing focus in the text field.
+        button.refusesFirstResponder = true
         button.target = self
         button.action = action
         button.setAccessibilityLabel(label)

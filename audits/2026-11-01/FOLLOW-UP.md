@@ -22,7 +22,8 @@
 | 14 | **选择控件键盘提交、取消路径、绑定/组合手势本批已修。** | 同一套最终 11 项测试在旧基线的 41 处失败归零；92 个原生状态中 50 项字段偏差归零。换绑取消的中间策略经 WinUI 源码复核撤回，同实例换绑保留手势、释放写当前模型；最终窗口事件日志证明 Space 在 keyUp 提交，Enter 忽略，数字键盘 +/- 正常。429 项测试及门禁通过，见 `choice-input/REPORT.md`。焦点视觉及同步模型归一化的核查见第 15 项。 |
 | 15 | **选择控件默认 HighVisibility 焦点边框本批已修。** | 4 项新测试的 63 处失败归零；96 个原生状态及 128 个像素采样通过（原 104 个像素位置有偏差），433 项测试通过。修复 CheckBox 单层 accent、RadioButton 描边偏移/圆角、HC 角色颜色及圆角更新重新开启裁剪。WinUI 普通焦点不使用 Reveal 的 FocusPress 动画；模型同步归一化已复现，上游也有重入屏蔽，未擅自改为重放。见 `choice-focus/REPORT.md`；祖先边缘挪入、Reveal 和 Windows 实测仍开放。 |
 | 16 | **动态页面键盘链及自动重建时的显式循环本批已修。** | 自有窗口启用 AppKit 自动重建；scope/对话框按当前 stack 顺序保持 Tab 循环，保留编辑命令、验证和组合文字，并记录已消费事件的键盘设备。原生 5 项旧失败归零，最终 11 项条件通过；实际 Gallery 已用 Tab/Space 操作 CheckBox/RadioButton，隔离窗口验证循环与对话框。438 项测试、原生验证、Gallery 构建和门禁通过，见 `gallery-keyboard/REPORT.md`。原生程序化焦点、真实 IME/VoiceOver 仍开放。 |
-| 17 | **接续处理：AutoSuggestBox 候选刷新、取消与辅助按钮键盘行为。** | 无 scope 的独立探针已复现：重建候选 ID 后 Tab 留下预览词，稳定 ID 恢复原查询。实际稳定 ID 界面曾出现一次 AX 值不一致，后续带内部日志的复验成功，尚不关闭该分支。Clear 实际可通过 Tab 到达，上游 Delete/Query 按钮为非 TabStop；需对照事件/AX 契约修正并做真实窗口复验。见 `gallery-keyboard/REPORT.md`。 |
+| 17 | **候选身份变化后的取消与辅助按钮键盘顺序本批已修。** | 对照 WinUI，移除选中项后仍可恢复原查询；Clear/Query 跳过 Tab，保留原生动作。40 个原生状态的 118 项字段差异归零；实际父级刷新窗口验证 Ap→Apple→Tab 恢复 Ap、到达后续按钮，AX Clear/Query 不夺编辑焦点。441 项测试及门禁通过，见 `autosuggest-cancel/REPORT.md`。上一批一次稳定 ID 的 AX 值不一致未再次复现，仍保留；程序化 Text/失焦重入的完整契约继续查。 |
+| 18 | **接续检查：macOS 自带拼音的设置页客户端锚点与候选交互。** | 用户已确认录屏蓝色候选条属于系统拼音。需在实际设置客户端核对编辑器返回的屏幕矩形、窗口缩放/移动、组合输入及候选关闭；与 Fluent IME 自绘 CandidatePanel 的独立几何发现分开验证，不安装、替换或停止运行中的输入法。保留第 5 项所有未验范围。 |
 
 ## 已处理项与明确边界
 
@@ -32,7 +33,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前框架批次已通过 438 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（后续 TreeView、选择控件、键盘导航批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前框架批次已通过 441 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（后续 TreeView、选择控件、键盘导航和搜索建议批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 

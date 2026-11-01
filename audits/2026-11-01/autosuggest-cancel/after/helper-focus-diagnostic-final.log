@@ -1,0 +1,25 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[7 / 10] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+Build complete! (1.77秒)
+Test Suite 'Selected tests' started at 2026-11-01 09:07:52.504.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 09:07:52.505.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-11-01 09:07:52.505.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:119: error: -[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus] : XCTAssertTrue failed - actual=Optional(<NSTextView: 0x759d470500>
+    Frame = {{0.00, 0.00}, {180.00, 17.00}}, Bounds = {{0.00, 0.00}, {180.00, 17.00}}
+    Horizontally resizable: YES, Vertically resizable: NO
+    MinSize = {180.00, 17.00}, MaxSize = {40000.00, 17.00}
+); next=Optional(<FluentKit.FluentButton: 0x103d21500>); after=<FluentKit.FluentButton: 0x103d21500>
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' failed (0.824 seconds).
+Test Suite 'AutoSuggestInteractionTests' failed at 2026-11-01 09:07:53.330.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.824 (0.824) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 09:07:53.330.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.824 (0.825) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 09:07:53.330.
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.824 (0.825) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

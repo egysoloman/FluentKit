@@ -1,0 +1,782 @@
+[
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "Apple",
+    "submittedID" : "1",
+    "text" : "Apple"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "Apple",
+    "submittedID" : "nil",
+    "text" : "Apple"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "Apple",
+    "submittedID" : "nil",
+    "text" : "Apple"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Apple"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Apple"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "Apple",
+    "submittedID" : "nil",
+    "text" : "Apple"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Pear"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Pear"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Pear"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : false,
+    "submitted" : "Pear",
+    "submittedID" : "nil",
+    "text" : "Pear"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "stable",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "Apple",
+    "submittedID" : "1",
+    "text" : "Apple"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "replacement",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "Apple",
+    "submittedID" : "nil",
+    "text" : "Apple"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "removal",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "Apple",
+    "submittedID" : "nil",
+    "text" : "Apple"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Apple"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Apple"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Ap"
+  },
+  {
+    "change" : "empty",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple"
+    ],
+    "field" : "Apple",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : false,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "Apple",
+    "submittedID" : "nil",
+    "text" : "Apple"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "tab",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Pear"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "backtab",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : true,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Pear"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "escape",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "",
+    "submittedID" : "",
+    "text" : "Pear"
+  },
+  {
+    "change" : "external",
+    "clearTabStop" : false,
+    "command" : "enter",
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "focusAfter" : false,
+    "popupAfter" : false,
+    "popupBefore" : true,
+    "preview" : "Apple",
+    "queryTabStop" : false,
+    "rtl" : true,
+    "submitted" : "Pear",
+    "submittedID" : "nil",
+    "text" : "Pear"
+  }
+]

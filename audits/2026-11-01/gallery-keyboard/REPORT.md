@@ -32,6 +32,8 @@ Apple 的 [recalculateKeyViewLoop 文档](https://developer.apple.com/documentat
 
 ## 搜索建议的独立未结项
 
+后续：候选身份变化后的取消与辅助按钮 TabStop 已在 `../autosuggest-cancel/REPORT.md` 修复并实测；下文保留本批发现时的证据。稳定 ID 的一次不一致仍未重现，继续开放。
+
 `CandidateRefreshAudit.swift` 不含焦点 scope，直接使用 AppKit 编辑命令：Ap → Down 预览 Apple → 父级刷新 → Tab。每次重建候选 ID 时保留 Apple；使用稳定 ID 时恢复 Ap，见 `after/candidate-refresh.json`。源码在刷新时失去选中 ID，但留下预览文字；取消路径只在仍有选中项时恢复原查询。这条问题不依赖本次的 Tab 拦截器，需继续对照 WinUI 的候选替换语义。
 
 实际 CycleApp 的稳定 ID 复验曾有一次 AX 仍显示 Apple，随后加入只读状态记录的复验恢复 Ap。两次结果均保留；不能据后一次成功宣布所有实际路径可靠。首次失败没有内部状态记录，尚需区分候选关闭/刷新时序与 AX 值刷新。本批仅证明文本命令代理被保留，没有把整个 AutoSuggestBox 标成验收结束。
