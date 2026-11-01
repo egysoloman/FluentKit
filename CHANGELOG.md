@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AutoSuggestBox, ComboBox, ContentDialog, RefreshContainer and NavigationView reflow
+  when AppKit changes the scroller style without resizing the window. Documents and rows
+  now fit the actual clip width/height, including legacy scroller gutters; FluentList
+  preserves its scroll position during the change. Native preferences remain supported.
+  Evidence: `audits/2026-11-01/scroller-layout/REPORT.md`.
+
 - AutoSuggestBox discards provider results when the query changes during the provider callback,
   preventing stale suggestions from flashing over a newer model value. Enter submission now
   synchronizes a closure binding before resolving the chosen suggestion, so an external reset

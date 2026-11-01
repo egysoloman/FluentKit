@@ -380,7 +380,7 @@ private final class FluentComboBoxPopupView: NSView {
     private var selectedIndex: Int?
     private var keyboardIndex: Int?
     private var rows: [FluentComboBoxPopupRow] = []
-    private let scrollView = NSScrollView()
+    private let scrollView = FluentViewportScrollView()
     private let rowsHost = FluentComboBoxPopupRowsView()
     private var pendingScrollIndex: Int?
     private var showsKeyboardFocus = false
@@ -434,6 +434,7 @@ private final class FluentComboBoxPopupView: NSView {
         scrollView.contentView.drawsBackground = false
         rowsHost.identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBoxPopup.Rows")
         scrollView.documentView = rowsHost
+        scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
         addSubview(scrollView)
         for (index, title) in titles.enumerated() {
             let row = FluentComboBoxPopupRow(

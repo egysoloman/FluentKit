@@ -124,6 +124,7 @@ final class FluentRefreshContainerView: NSView {
         scrollView.autohidesScrollers = true
         documentView.addSubview(contentHost)
         scrollView.documentView = documentView
+        scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
         addSubview(scrollView)
         indicator.identifier = NSUserInterfaceItemIdentifier("FluentKit.RefreshContainer.Visualizer")
         addSubview(indicator)
@@ -369,7 +370,7 @@ final class FluentRefreshFlippedView: NSView {
     override var isFlipped: Bool { true }
 }
 
-final class FluentRefreshScrollView: NSScrollView {}
+final class FluentRefreshScrollView: FluentViewportScrollView {}
 
 /// The default RefreshVisualizer content: the Refresh symbol in a 30pt box.
 final class FluentRefreshIndicatorView: NSView {

@@ -1083,7 +1083,7 @@ private final class FluentAutoSuggestBoxSuggestionDocument: NSView {
 
 private final class FluentAutoSuggestBoxSuggestionsView: NSView {
     private let onSelect: (Int) -> Void
-    private let scrollView = NSScrollView()
+    private let scrollView = FluentViewportScrollView()
     private let document = FluentAutoSuggestBoxSuggestionDocument()
     private var rows: [FluentAutoSuggestBoxSuggestionRow] = []
     private var selectedIndex = -1
@@ -1105,6 +1105,7 @@ private final class FluentAutoSuggestBoxSuggestionsView: NSView {
         scrollView.verticalScrollElasticity = .none
         scrollView.horizontalScrollElasticity = .none
         scrollView.documentView = document
+        scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
         addSubview(scrollView)
         update(suggestions: suggestions, selectedIndex: selectedIndex, theme: theme)
     }

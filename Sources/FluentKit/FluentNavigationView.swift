@@ -387,7 +387,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
     private let minimalToggleButton = FluentNavigationPaneToggleButton()
     private let paneToggleButton = FluentNavigationPaneToggleButton()
     private let topOverflowButton = FluentNavigationOverflowButton<ID>()
-    private let mainScrollView = NSScrollView()
+    private let mainScrollView = FluentViewportScrollView()
     private let mainItemsView = FluentNavigationItemsView()
     private let sectionLabelHost = FluentNavigationSectionLabelHost()
     private let sectionLabel = NSTextField(labelWithString: "")
@@ -534,6 +534,7 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         mainScrollView.wantsLayer = true
         mainScrollView.identifier = NSUserInterfaceItemIdentifier("FluentKit.NavigationView.PrimaryScroll")
         mainScrollView.documentView = mainItemsView
+        mainScrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
         mainScrollView.contentView.postsBoundsChangedNotifications = true
         mainItemsView.postsBoundsChangedNotifications = true
         mainItemsView.postsFrameChangedNotifications = true
@@ -1254,16 +1255,17 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
         mainScrollView.tile()
         mainScrollView.layoutSubtreeIfNeeded()
 
-        // Keep the compact 40pt icon column stable at the 48pt pane center. Expanded mode only
-        // adds room to the trailing content; it must not move the icon or selection rail.
-        let buttonWidth = max(paneWidth - 8, 40)
+        // Legacy scrollers reserve space inside the pane. Main and footer rows share
+        // the available column, including compact icons; overlay retains the 40pt row.
+        let viewportWidth = max(mainScrollView.contentSize.width, 0)
+        let buttonWidth = max(viewportWidth - 8, 1)
         let documentHeight = max(
             CGFloat(visibleMainPairs.count) * (rowHeight + 2) + 4,
             mainScrollView.contentSize.height,
             deferredRemovalDocumentHeight ?? 0
         )
         let previousScrollOrigin = mainScrollView.contentView.bounds.origin
-        mainItemsView.frame = NSRect(x: 0, y: 0, width: paneWidth, height: documentHeight)
+        mainItemsView.frame = NSRect(x: 0, y: 0, width: viewportWidth, height: documentHeight)
         // NSScrollView may bottom-anchor a flipped document when its height changes. A hierarchy
         // toggle must keep the user's viewport anchored instead of revealing a clipped row at the
         // top or jumping several categories, as WinUI's ItemsRepeater scroll anchoring does.

@@ -296,9 +296,11 @@ private final class FluentListNativeView<Row: FluentView>: NSScrollView, NSColle
             selectionIndicatorAnimator.attach(to: collectionLayer)
         }
         collectionView.register(FluentCollectionItem.self, forItemWithIdentifier: fluentListItemIdentifier)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        // Let NSClipView resize its document synchronously while retiling. A width
+        // constraint arrives after AppKit has already prepared the resized flow layout.
+        collectionView.translatesAutoresizingMaskIntoConstraints = true
+        collectionView.autoresizingMask = [.width]
         documentView = collectionView
-        collectionView.widthAnchor.constraint(equalTo: contentView.widthAnchor).isActive = true
 
         contentView.postsBoundsChangedNotifications = true
         collectionView.postsBoundsChangedNotifications = true
@@ -425,7 +427,7 @@ private final class FluentListNativeView<Row: FluentView>: NSScrollView, NSColle
     ) -> NSSize {
         let insets = (collectionViewLayout as? NSCollectionViewFlowLayout)?.sectionInset ?? NSEdgeInsetsZero
         let contentInsets = collectionView.enclosingScrollView?.contentInsets ?? NSEdgeInsetsZero
-        let availableWidth = collectionView.bounds.width
+        let availableWidth = (collectionView.enclosingScrollView?.contentView.bounds.width ?? collectionView.bounds.width)
             - insets.left - insets.right
             - contentInsets.left - contentInsets.right
         return NSSize(width: max(floor(availableWidth - 1), 1), height: max(rowHeight, 1))

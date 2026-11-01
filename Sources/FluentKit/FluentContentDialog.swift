@@ -452,7 +452,7 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView, Flu
     private let commandSurfaceView = NSView()
     private let commandSeparatorView = NSView()
     private let titleLabel = NSTextField(labelWithString: "")
-    private let scrollView = NSScrollView()
+    private let scrollView = FluentViewportScrollView()
     private let documentView = FluentContentDialogDocumentView()
     private let contentHost: FluentViewHost<Content>
     private let buttonStack = NSStackView()
@@ -792,6 +792,7 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView, Flu
         contentHost.translatesAutoresizingMaskIntoConstraints = true
         contentHost.autoresizingMask = [.width]
         scrollView.documentView = documentView
+        scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
 
         buttonStack.orientation = .horizontal
         buttonStack.alignment = .centerY
@@ -952,14 +953,16 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView, Flu
         let buttonWidth = buttons.isEmpty
             ? CGFloat(0)
             : CGFloat(buttons.count) * widestButton + CGFloat(max(buttons.count - 1, 0) * 4)
-        let naturalContentWidth = max(contentHost.fittingSize.width, 0)
+        let scrollerWidth = max(scrollView.bounds.width - scrollView.contentView.bounds.width, 0)
+        let naturalContentWidth = max(contentHost.fittingSize.width + scrollerWidth, 0)
         let titleWidth = configuration.title.isEmpty ? 0 : max(titleLabel.intrinsicContentSize.width, 0)
         let desiredWidth = min(max(max(naturalContentWidth, max(titleWidth, buttonWidth)) + 48, 320), availableWidth)
         if abs(surfaceWidthConstraint.constant - desiredWidth) > 0.5 {
             surfaceWidthConstraint.constant = desiredWidth
         }
 
-        let contentWidth = max(desiredWidth - 48, 1)
+        let surfaceContentWidth = max(desiredWidth - 48, 1)
+        let contentWidth = max(surfaceContentWidth - scrollerWidth, 1)
         contentHost.frame = NSRect(x: 0, y: 0, width: contentWidth, height: max(contentHost.frame.height, 1))
         contentHost.layoutSubtreeIfNeeded()
         let fittingHeight = max(contentHost.fittingSize.height, 1)
@@ -972,7 +975,7 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView, Flu
             1
         )
         scrollHeightConstraint.constant = min(fittingHeight, maximumScrollHeight)
-        titleLabel.preferredMaxLayoutWidth = contentWidth
+        titleLabel.preferredMaxLayoutWidth = surfaceContentWidth
     }
 
     private func focusableViews(in root: NSView) -> [NSView] {
