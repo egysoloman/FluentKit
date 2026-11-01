@@ -59,7 +59,10 @@ final class ToolTipMotionTests: XCTestCase {
         second.mouseExited(with: try event(second, point: NSPoint(x: 160, y: 16)))
         third.mouseEntered(with: try event(third))
         XCTAssertEqual(panel.frame, intermediate, "retargeting cannot jump to the prior destination")
-        wait(0.28)
+        // A loaded runner can service the final geometry tick after the nominal duration.
+        // Wait for its content transition to finish before sampling the settled frame.
+        let surface = try XCTUnwrap(panel.contentView as? FluentToolTipSurface)
+        waitForUI(!surface.hasContentTransition && panel.alphaValue == 1 && third.toolTipView.alphaValue == 1)
         XCTAssertEqual(window.childWindows?.count, 1)
         XCTAssertTrue(window.childWindows?.first === panel)
         XCTAssertEqual((panel.contentView as? FluentToolTipSurface)?.content, third.toolTipView)
