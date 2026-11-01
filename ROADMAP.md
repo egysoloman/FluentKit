@@ -66,8 +66,12 @@ is not required. The macOS composition and developer overrides remain intentiona
    captured input; removed selections are normalized without erasing editable text.
    Editable ComboBox text and its active editor reserve the mirrored glyph column in RTL,
    preserving native selection, marked text and horizontal scrolling. Continue full keyboard
-   contracts and hierarchical flyout
-   behavior; retain PipsPager High Contrast resource and full application-flow acceptance.
+   contracts and hierarchical flyout behavior. ComboBox now preserves its native editor while
+   open and routes bounded navigation, F4/Option toggling, Escape and parent focus traversal.
+   Its existing immediate selection publication still differs from WinUI's default Committed
+   trigger. First fix editable ComboBox external text resets during active editing (currently
+   ignored and overwritten on blur), then add Committed/Always and complete text-search semantics.
+   Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required
 

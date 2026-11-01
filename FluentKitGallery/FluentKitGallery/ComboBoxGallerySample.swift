@@ -12,6 +12,8 @@ struct ComboBoxGallerySample: FluentView {
     var body: some FluentView {
         FluentVStack(spacing: 12, alignment: .leading) {
             FluentText("Live options", style: .bodyStrong)
+            FluentText("Tab to a field. Use F4 or Option+Up/Down to open or close; Escape restores the opening value.",
+                       style: .caption)
             FluentComboBox(options: options, selection: $selection,
                 title: { "Option \($0)" }).frame(width: 280)
             FluentText("Editable value", style: .caption)

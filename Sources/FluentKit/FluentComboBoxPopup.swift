@@ -76,6 +76,8 @@ final class FluentComboBoxPopup: NSObject {
     private var preferredVisibleItemCount = 0
     private let onMove: (Int) -> Void
     private let onCommit: (Int) -> Void
+    private let onCancel: () -> Void
+    private let onReturnFocus: (Bool?) -> Void
     private let onDismiss: () -> Void
     /// `ComboBox::m_inputDeviceTypeUsedToOpen`: touch opens use the TouchInputMode item padding
     /// and minimum popup width.
@@ -94,6 +96,8 @@ final class FluentComboBoxPopup: NSObject {
         reduceMotion: Bool,
         onMove: @escaping (Int) -> Void,
         onCommit: @escaping (Int) -> Void,
+        onCancel: @escaping () -> Void = {},
+        onReturnFocus: @escaping (Bool?) -> Void = { _ in },
         onDismiss: @escaping () -> Void
     ) {
         self.optionIDs = optionIDs ?? titles.indices.map(AnyHashable.init)
@@ -106,6 +110,8 @@ final class FluentComboBoxPopup: NSObject {
         self.reduceMotion = reduceMotion
         self.onMove = onMove
         self.onCommit = onCommit
+        self.onCancel = onCancel
+        self.onReturnFocus = onReturnFocus
         self.onDismiss = onDismiss
         super.init()
     }
@@ -171,8 +177,19 @@ final class FluentComboBoxPopup: NSObject {
                 guard let self, self.isPresented, self.titles.indices.contains(index) else { return }
                 self.onCommit(index)
                 self.dismiss(animated: true)
+                self.onReturnFocus(nil)
             },
-            onDismiss: { [weak self] in self?.dismiss(animated: true) }
+            onDismiss: { [weak self] in self?.cancelFromKeyboard() },
+            onClose: { [weak self] in
+                guard let self else { return }
+                self.dismiss(animated: false)
+                self.onReturnFocus(nil)
+            },
+            onTab: { [weak self] backwards in
+                guard let self else { return }
+                self.dismiss(animated: false)
+                self.onReturnFocus(backwards)
+            }
         )
         root.frame = NSRect(origin: .zero, size: size)
 
@@ -190,6 +207,8 @@ final class FluentComboBoxPopup: NSObject {
         popup.level = .popUpMenu
         popup.collectionBehavior = [.transient, .fullScreenAuxiliary]
         popup.hidesOnDeactivate = true
+        popup.acceptsKeyboardFocus = placement == .selectionCentered
+        popup.acceptsMouseMovedEvents = true
         popup.appearance = fluentAppKitAppearance(for: theme) ?? anchorWindow.effectiveAppearance
         let transitionHost = FluentPopupTransitionHost(
             content: root,
@@ -226,7 +245,9 @@ final class FluentComboBoxPopup: NSObject {
         // `hidesOnDeactivate` flag is set while NSApp is inactive. Keep the panel attached and
         // visible first; only transfer key-window status when the application can actually own it.
         popup.orderFront(nil)
-        if NSApp.isActive { popup.makeKey() }
+        // Editable ComboBox keeps the native field editor as the keyboard/input-method
+        // owner while the non-key child panel displays and tracks the option rows.
+        if popup.canBecomeKey, NSApp.isActive { popup.makeKey() }
         popup.makeFirstResponder(root)
         installOutsideClickMonitors()
         screenObserver = FluentPopupScreenObserver(window: anchorWindow) { [weak self] in self?.reposition() }
@@ -311,6 +332,22 @@ final class FluentComboBoxPopup: NSObject {
         popupView?.updatePresentation(titles: titles, layoutDirection: layoutDirection, reduceMotion: reduceMotion)
         if titlesChanged || optionsChanged { measureContentWidth() }
         if optionsChanged || titlesChanged || directionChanged { reposition() }
+    }
+
+    func handleKeyDown(_ event: NSEvent) -> Bool {
+        popupView?.handleKeyDown(event) ?? false
+    }
+
+    func moveKeyboardSelection(by offset: Int) {
+        guard isPresented else { return }
+        popupView?.moveKeyboardSelection(by: offset)
+    }
+
+    func cancelFromKeyboard() {
+        guard isPresented else { return }
+        onCancel()
+        dismiss(animated: false)
+        onReturnFocus(nil)
     }
 
     func dismiss(animated _: Bool) {
@@ -485,7 +522,8 @@ final class FluentComboBoxPopup: NSObject {
 }
 
 private final class FluentComboBoxPopupPanel: NSPanel {
-    override var canBecomeKey: Bool { true }
+    var acceptsKeyboardFocus = true
+    override var canBecomeKey: Bool { acceptsKeyboardFocus }
 }
 
 private final class FluentComboBoxPopupView: NSView {
@@ -497,6 +535,8 @@ private final class FluentComboBoxPopupView: NSView {
     private let onMove: (Int) -> Void
     private let onCommit: (Int) -> Void
     private let onDismiss: () -> Void
+    private let onClose: () -> Void
+    private let onTab: (Bool) -> Void
     private var selectedIndex: Int?
     private var keyboardIndex: Int?
     private var rows: [FluentComboBoxPopupRow] = []
@@ -527,7 +567,9 @@ private final class FluentComboBoxPopupView: NSView {
         initialVisibleRange: Range<Int>,
         onMove: @escaping (Int) -> Void,
         onCommit: @escaping (Int) -> Void,
-        onDismiss: @escaping () -> Void
+        onDismiss: @escaping () -> Void,
+        onClose: @escaping () -> Void,
+        onTab: @escaping (Bool) -> Void
     ) {
         self.optionIDs = optionIDs
         self.titles = titles
@@ -540,6 +582,8 @@ private final class FluentComboBoxPopupView: NSView {
         self.onMove = onMove
         self.onCommit = onCommit
         self.onDismiss = onDismiss
+        self.onClose = onClose
+        self.onTab = onTab
         super.init(frame: .zero)
         wantsLayer = true
         identifier = NSUserInterfaceItemIdentifier("FluentKit.ComboBoxPopup.ItemsPresenter")
@@ -697,7 +741,22 @@ private final class FluentComboBoxPopupView: NSView {
     }
 
     override func keyDown(with event: NSEvent) {
-        guard window?.isVisible == true else { return }
+        if !handleKeyDown(event) { super.keyDown(with: event) }
+    }
+
+    func handleKeyDown(_ event: NSEvent) -> Bool {
+        guard window?.isVisible == true else { return false }
+        let modifiers = event.modifierFlags.intersection([.shift, .control, .option, .command])
+        if event.keyCode == 48, modifiers.isEmpty || modifiers == .shift {
+            onTab(modifiers == .shift)
+            return true
+        }
+        if (event.keyCode == 118 && modifiers.isEmpty)
+            || ([125, 126].contains(event.keyCode) && modifiers == .option) {
+            if !event.isARepeat { onClose() }
+            return true
+        }
+        guard modifiers.isEmpty else { return false }
         switch event.keyCode {
         case 53: onDismiss()
         case 125: moveKeyboardSelection(by: 1)
@@ -706,14 +765,19 @@ private final class FluentComboBoxPopupView: NSView {
             if let keyboardIndex { onCommit(keyboardIndex) }
         case 115: moveKeyboardSelection(to: 0)
         case 119: moveKeyboardSelection(to: max(titles.count - 1, 0))
-        default: super.keyDown(with: event)
+        case 116, 121:
+            let page = max(1, Int(scrollView.contentView.bounds.height / rowHeight) - 1)
+            moveKeyboardSelection(by: event.keyCode == 121 ? page : -page)
+        case 123, 124: break // Do not bubble horizontal arrows out of a vertical popup.
+        default: return false
         }
+        return true
     }
 
-    private func moveKeyboardSelection(by offset: Int) {
+    func moveKeyboardSelection(by offset: Int) {
         guard !titles.isEmpty else { return }
-        let current = keyboardIndex ?? selectedIndex ?? (offset > 0 ? -1 : titles.count)
-        moveKeyboardSelection(to: (current + offset + titles.count) % titles.count)
+        let current = keyboardIndex ?? selectedIndex ?? -1
+        moveKeyboardSelection(to: min(max(current + offset, 0), titles.count - 1))
     }
 
     private func moveKeyboardSelection(to index: Int) {

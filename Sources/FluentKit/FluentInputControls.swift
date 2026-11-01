@@ -797,7 +797,40 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
 }
 
 private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLineTextControl {
-    func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
+    func didConfigureFluentFieldEditor() {
+        textEditingSession.didBeginEditing()
+        installEditorKeyMonitor()
+    }
+
+    private var editorKeyMonitor: Any?
+
+    private func installEditorKeyMonitor() {
+        guard editorKeyMonitor == nil, currentEditor() != nil else { return }
+        editorKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handleEditorKeyEquivalent(event) == true ? nil : event
+        }
+    }
+
+    private func removeEditorKeyMonitor() {
+        if let editorKeyMonitor { NSEvent.removeMonitor(editorKeyMonitor) }
+        editorKeyMonitor = nil
+    }
+
+    private func handleEditorKeyEquivalent(_ event: NSEvent) -> Bool {
+        let modifiers = event.modifierFlags.intersection([.shift, .control, .option, .command])
+        let isToggle = event.keyCode == 118 || ([125, 126].contains(event.keyCode) && modifiers == .option)
+        guard isToggle, event.window === window, isEnabled, !isHiddenOrHasHiddenAncestor,
+              let editor = currentEditor() as? NSTextView, window?.firstResponder === editor,
+              fluentFieldEditorOwner(editor) === self, !editor.hasMarkedText() else { return false }
+        return onKeyDown?(event) ?? false
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { removeEditorKeyMonitor() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    deinit { removeEditorKeyMonitor() }
 
     override var userInterfaceLayoutDirection: NSUserInterfaceLayoutDirection {
         didSet {
@@ -847,6 +880,7 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
     var onPressChange: ((Bool) -> Void)?
     var onPointerChange: ((Bool) -> Void)?
     var onGlyphPointerChange: ((Bool) -> Void)?
+    var onKeyDown: ((NSEvent) -> Bool)?
     private var pointerTrackingArea: NSTrackingArea?
     private var isTrackingGlyphPress = false
 
@@ -903,17 +937,18 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
 
     override func textDidBeginEditing(_ notification: Notification) {
         super.textDidBeginEditing(notification)
-        textEditingSession.didBeginEditing()
+        didConfigureFluentFieldEditor()
     }
 
     override func selectText(_ sender: Any?) {
         super.selectText(sender)
-        textEditingSession.didBeginEditing()
+        didConfigureFluentFieldEditor()
     }
 
     override func textDidEndEditing(_ notification: Notification) {
         super.textDidEndEditing(notification)
         textEditingSession.didEndEditing()
+        removeEditorKeyMonitor()
     }
 
     override func rightMouseDown(with event: NSEvent) {
@@ -951,11 +986,16 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
     }
 
     override func keyDown(with event: NSEvent) {
-        if event.modifierFlags.contains(.option), event.keyCode == 125 || event.keyCode == 126 {
-            onRequestFlyout?()
-            return
-        }
+        if onKeyDown?(event) == true { return }
         super.keyDown(with: event)
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        // Toggle shortcuts have no unique text-editing selector (Option+Down shares
+        // paragraph movement with Ctrl+E). Match only the actual shortcut and active
+        // non-composing editor; all other commands retain native input-method dispatch.
+        if handleEditorKeyEquivalent(event) { return true }
+        return super.performKeyEquivalent(with: event)
     }
 
     private func isInGlyphColumn(_ event: NSEvent) -> Bool {
@@ -969,6 +1009,17 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
 }
 
 private final class FluentComboBoxNative: NSComboBox {
+    override var acceptsFirstResponder: Bool {
+        usesCustomPopup && !isEditable ? isEnabled && !isHiddenOrHasHiddenAncestor : super.acceptsFirstResponder
+    }
+
+    override var canBecomeKeyView: Bool {
+        if usesCustomPopup && !isEditable {
+            // Alpha zero hides AppKit's drawing, not the Fluent faceplate's keyboard stop.
+            return window != nil && isEnabled && !refusesFirstResponder && !isHiddenOrHasHiddenAncestor
+        }
+        return super.canBecomeKeyView
+    }
     // This is a data/accessibility bridge, not the faceplate's layout authority.
     // NSComboBox otherwise contributes a 750-priority native height (23pt here).
     override var intrinsicContentSize: NSSize {
@@ -976,6 +1027,7 @@ private final class FluentComboBoxNative: NSComboBox {
     }
 
     var onRequestFlyout: (() -> Void)?
+    var onKeyDown: ((NSEvent) -> Bool)?
     var onRequestFlyoutAfterRelease: (() -> Void)?
     var onEnabledChange: (() -> Void)?
     var onFocusChange: ((Bool) -> Void)?
@@ -1025,6 +1077,11 @@ private final class FluentComboBoxNative: NSComboBox {
     override func mouseExited(with event: NSEvent) { onPointerChange?(false) }
 
     override func becomeFirstResponder() -> Bool {
+        if usesCustomPopup && !isEditable {
+            guard acceptsFirstResponder else { return false }
+            onFocusChange?(true)
+            return true
+        }
         let result = super.becomeFirstResponder()
         if result { onFocusChange?(true) }
         return result
@@ -1077,10 +1134,8 @@ private final class FluentComboBoxNative: NSComboBox {
     override func keyDown(with event: NSEvent) {
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         onFocusChange?(true)
-        switch event.keyCode {
-        case 36, 49, 125, 126: onRequestFlyout?()
-        default: super.keyDown(with: event)
-        }
+        if onKeyDown?(event) == true { return }
+        super.keyDown(with: event)
     }
 
     override func performClick(_ sender: Any?) {
@@ -1242,6 +1297,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             self?.applyButtonChrome(animated: true)
         }
         comboBox.onRequestFlyout = { [weak self] in self?.requestOpen() }
+        comboBox.onKeyDown = { [weak self] event in self?.handleControlKeyDown(event) ?? false }
         comboBox.onRequestFlyoutAfterRelease = { [weak self] in self?.scheduleOpen() }
         comboBox.onEnabledChange = { [weak self] in self?.handleEnabledChange() }
         comboBox.target = self
@@ -1287,6 +1343,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             self?.applyButtonChrome(animated: true)
         }
         editableField.onRequestFlyout = { [weak self] in self?.requestOpen() }
+        editableField.onKeyDown = { [weak self] event in self?.handleControlKeyDown(event) ?? false }
         editableField.onRequestFlyoutAfterRelease = { [weak self] in self?.scheduleOpen() }
         editableField.onEnabledChange = { [weak self] in self?.handleEnabledChange() }
         addSubview(editableField)
@@ -1672,7 +1729,85 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         cancelPointerInteraction(dismissPopup: false)
         flushEditablePublication()
         isEditingText = false
+        comboPopup?.dismiss(animated: false)
         applyButtonChrome(animated: true)
+    }
+
+    private func handleControlKeyDown(_ event: NSEvent) -> Bool {
+        guard isControlEnabled, window?.isVisible == true, !isHiddenOrHasHiddenAncestor,
+              (editableField.currentEditor() as? NSTextView)?.hasMarkedText() != true else { return false }
+        if let comboPopup, comboPopup.isPresented { return comboPopup.handleKeyDown(event) }
+        let modifiers = event.modifierFlags.intersection([.shift, .control, .option, .command])
+        if (event.keyCode == 118 && modifiers.isEmpty)
+            || ([125, 126].contains(event.keyCode) && modifiers == .option) {
+            if !event.isARepeat { requestOpen() }
+            return true
+        }
+        guard modifiers.isEmpty else { return false }
+        FluentFocusVisibility.markKeyboardInteraction(in: window)
+        switch event.keyCode {
+        case 125, 126:
+            if mode == .editable { requestOpen() }
+            else {
+                let current = selection.get().flatMap { options.firstIndex(of: $0) } ?? -1
+                let next = current + (event.keyCode == 125 ? 1 : -1)
+                if options.indices.contains(next) { selectOption(at: next, dismiss: false) }
+            }
+        case 115 where mode == .selection, 119 where mode == .selection:
+            if !options.isEmpty { selectOption(at: event.keyCode == 115 ? 0 : options.count - 1, dismiss: false) }
+        case 36 where mode == .selection, 49 where mode == .selection:
+            requestOpen()
+        default: return false
+        }
+        return true
+    }
+
+    func control(_ control: NSControl, textView: NSTextView, doCommandBy command: Selector) -> Bool {
+        guard control === editableField, mode == .editable, isControlEnabled,
+              !isHiddenOrHasHiddenAncestor, editableField.currentEditor() === textView,
+              !textView.hasMarkedText() else { return false }
+        switch command {
+        case #selector(NSResponder.moveDown(_:)), #selector(NSResponder.moveUp(_:)):
+            FluentFocusVisibility.markKeyboardInteraction(in: window)
+            if let comboPopup, comboPopup.isPresented {
+                comboPopup.moveKeyboardSelection(by: command == #selector(NSResponder.moveDown(_:)) ? 1 : -1)
+            } else { requestOpen() }
+            return true
+        case #selector(NSResponder.insertNewline(_:)):
+            flushEditablePublication()
+            comboPopup?.dismiss(animated: false)
+            return true
+        case #selector(NSResponder.cancelOperation(_:)):
+            guard let comboPopup, comboPopup.isPresented else { return false }
+            comboPopup.cancelFromKeyboard()
+            return true
+        case #selector(NSResponder.insertTab(_:)), #selector(NSResponder.insertBacktab(_:)):
+            flushEditablePublication()
+            comboPopup?.dismiss(animated: false)
+            return false // AppKit keeps responsibility for forward/backward key-view traversal.
+        default: return false
+        }
+    }
+
+    private func restoreKeyboardFocus(traverseBackwards: Bool? = nil) {
+        guard comboPopup?.isPresented != true, isControlEnabled, !isHiddenOrHasHiddenAncestor,
+              let window, window.isVisible else { return }
+        if NSApp.isActive { window.makeKey() }
+        let control: NSView = mode == .editable ? editableField : comboBox
+        if let backwards = traverseBackwards {
+            var ancestor: NSView? = control
+            while let view = ancestor {
+                if let scope = view as? any FluentKeyboardFocusCycle {
+                    scope.moveKeyboardFocus(from: control, backwards: backwards)
+                    return
+                }
+                ancestor = view.superview
+            }
+            if backwards { window.selectKeyView(preceding: control) }
+            else { window.selectKeyView(following: control) }
+        } else if !isTextFocusActive {
+            window.makeFirstResponder(control)
+        }
     }
 
     @objc private func requestOpen() {
@@ -1681,14 +1816,28 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         if comboPopup?.isPresented == true {
             comboPopup?.dismiss(animated: false)
             comboPopup = nil
+            restoreKeyboardFocus()
             applyButtonChrome(animated: true)
             return
+        }
+        if mode == .editable {
+            guard (editableField.currentEditor() as? NSTextView)?.hasMarkedText() != true else { return }
+            if editableField.currentEditor() == nil { window?.makeFirstResponder(editableField) }
+            flushEditablePublication()
+            guard mode == .editable, isControlEnabled, !options.isEmpty,
+                  window?.isVisible == true, !isHiddenOrHasHiddenAncestor,
+                  comboPopup?.isPresented != true else { return }
         }
         updateFocusPill(
             focused: FluentFocusVisibility.isKeyboardFocusVisible(for: mode == .editable ? editableField : comboBox),
             animated: false
         )
         let selectedIndex = selection.get().flatMap { options.firstIndex(of: $0) }
+        let openingSelection = selection.get()
+        let openingText = editableField.stringValue
+        let openingMode = mode
+        let selectionIdentity = selection.observationIdentity
+        let textIdentity = text?.observationIdentity
         let popup = FluentComboBoxPopup(
             optionIDs: options.map(AnyHashable.init),
             titles: options.map(title),
@@ -1699,6 +1848,19 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             reduceMotion: reduceMotion,
             onMove: { [weak self] index in self?.selectOption(at: index, dismiss: false) },
             onCommit: { [weak self] index in self?.selectOption(at: index, dismiss: false) },
+            onCancel: { [weak self] in
+                guard let self, self.mode == openingMode,
+                      self.selection.observationIdentity == selectionIdentity,
+                      self.text?.observationIdentity == textIdentity else { return }
+                if let openingSelection, let index = self.options.firstIndex(of: openingSelection) {
+                    self.selectOption(at: index, dismiss: false)
+                } else if openingSelection == nil, self.mode == .editable {
+                    self.cancelScheduledEditablePublication()
+                    self.editableField.stringValue = openingText
+                    self.publishEditableValue(openingText)
+                }
+            },
+            onReturnFocus: { [weak self] backwards in self?.restoreKeyboardFocus(traverseBackwards: backwards) },
             onDismiss: { [weak self] in
                 self?.comboPopup = nil
                 self?.applyButtonChrome(animated: true)

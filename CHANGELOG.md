@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox selection fields participate in keyboard focus despite hiding the native drawing.
+  Closed Up/Down and Home/End change selection without opening; open navigation stops at the
+  ends and supports Page Up/Down. F4 and Option+Up/Down toggle, Tab follows the parent focus
+  cycle, and Escape restores a surviving opening value by identity. Editable popups keep the
+  native editor active for typing, undo and composition; only unconsumed editing commands and
+  focused, non-composing toggle shortcuts reach ComboBox navigation. The existing immediate selection
+  publication policy remains; WinUI's configurable Committed/Always policy is still pending.
+
 - Editable ComboBox reserves the glyph column on the correct side in RTL, both before and
   during editing. Direction changes reposition the existing native editor viewport without
   resetting selection, horizontal scrolling or marked text, and refresh input-method coordinates.

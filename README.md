@@ -833,11 +833,18 @@ centers the current item over the closed faceplate and reveals the popup around 
 mode uses a native `NSTextField` for editing and IME behavior; only its glyph column opens the popup
 below the field (or above when space requires it). Arbitrary text updates the optional text binding,
 and exact option titles synchronize the stable selection. Both modes provide keyboard navigation,
-type-ahead, Escape/outside-click dismissal, RTL placement, and the source-derived partial-content
+Escape/outside-click dismissal, RTL placement, and the source-derived partial-content
 entrance rather than the native AppKit combo-box popup.
 Editable text reserves the dropdown column on the trailing side in either layout direction.
 Changing direction during editing preserves the native editor, selection, horizontal scroll
 position and marked text while updating the input-method character coordinates.
+Selection fields are keyboard stops. Closed Up/Down and Home/End change selection; F4 or
+Option+Up/Down toggles the list. Open lists support bounded navigation and Page Up/Down;
+Tab follows the enclosing focus cycle, and Escape restores a surviving opening value.
+Editable lists keep the native field editor active, so typing, spaces and input-method commands
+continue to work. Composition retains native command ownership. Selection currently publishes
+on navigation; WinUI's configurable Committed/Always policy and complete text-search behavior
+remain open contracts.
 
 Open ComboBoxes reconcile options by their unique `Hashable` values. Appending, reordering or
 removing options preserves the panel, responder, surviving rows and visible scroll position.
