@@ -1,0 +1,48 @@
+Building for debugging...
+[1 / 1]
+[2 / 16] FluentKit
+[4 / 18] FluentKit
+[12 / 22] FluentKit
+[14 / 22] FluentGallery-product
+[19 / 23] FluentGallery-product
+[23 / 28] FluentGallery-product
+[26 / 33] FluentKitTests-product
+[30 / 33] FluentKitTests-product
+[32 / 35] FluentKitValidation-product
+Build complete! (15.38秒)
+Test Suite 'Selected tests' started at 2026-11-01 13:51:00.834.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 13:51:00.835.
+Test Suite 'RefreshContainerTests' started at 2026-11-01 13:51:00.835.
+Test Case '-[FluentKitTests.RefreshContainerTests testFirstJumpPastExecutionAndPeekingFromIdle]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testFirstJumpPastExecutionAndPeekingFromIdle]' passed (0.075 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testIndicatorRotatesOneTurnAtTheExecutionRatioWithParallax]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testIndicatorRotatesOneTurnAtTheExecutionRatioWithParallax]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testProgrammaticRefreshAndOtherDirections]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testProgrammaticRefreshAndOtherDirections]' passed (0.027 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testReleasingInPendingRefreshesHoldsContentAndCompletes]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testReleasingInPendingRefreshesHoldsContentAndCompletes]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testStatesFollowTheSourceStateMachine]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testStatesFollowTheSourceStateMachine]' passed (0.001 seconds).
+Test Suite 'RefreshContainerTests' passed at 2026-11-01 13:51:00.941.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.105 (0.106) seconds
+Test Suite 'ScrollerLayoutRegressionTests' started at 2026-11-01 13:51:00.941.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testAutoSuggestRowsFollowLiveScrollerStyleWithoutRevealingSelection]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testAutoSuggestRowsFollowLiveScrollerStyleWithoutRevealingSelection]' passed (2.684 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testComboBoxRowsFollowLiveScrollerStyleWithoutRevealingSelection]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testComboBoxRowsFollowLiveScrollerStyleWithoutRevealingSelection]' passed (2.090 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testContentDialogReservesScrollerWidthAndPreservesScrollPosition]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testContentDialogReservesScrollerWidthAndPreservesScrollPosition]' passed (2.097 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle]' passed (2.068 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testLegacyListPreservesScrollPositionWhenScrollerStyleChanges]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testLegacyListPreservesScrollPositionWhenScrollerStyleChanges]' passed (2.021 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testNavigationRowsFitLiveScrollerViewportInExpandedAndCompactModes]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testNavigationRowsFitLiveScrollerViewportInExpandedAndCompactModes]' passed (4.187 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testVerticalRefreshContentFollowsLiveScrollerStyle]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testVerticalRefreshContentFollowsLiveScrollerStyle]' passed (2.164 seconds).
+Test Suite 'ScrollerLayoutRegressionTests' passed at 2026-11-01 13:51:18.254.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 17.312 (17.313) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 13:51:18.254.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 17.417 (17.419) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 13:51:18.254.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 17.417 (17.420) seconds

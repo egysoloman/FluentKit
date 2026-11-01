@@ -1,0 +1,380 @@
+(lldb) target create "/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T//fluentkit-refresh-initial-probe/InitialLayoutAudit"
+Current executable set to '/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-refresh-initial-probe/InitialLayoutAudit' (arm64).
+(lldb) breakpoint set -n LAYOUT_CONSTRAINTS_NOT_SATISFIABLE
+Breakpoint 1: where = AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE, address = 0x000000018a5f76b8
+(lldb) run
+2026-11-01 14:02:57.833867+0800 InitialLayoutAudit[23573:5320615] [Connection] Unable to get remoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 14:02:57.834091+0800 InitialLayoutAudit[23573:5320615] [Application] Error registering app with AppIntents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 14:02:57.939559+0800 InitialLayoutAudit[23573:5320560] [WindowTab] Cannot index window tabs due to missing main bundle identifier
+PHASE: first layout
+2026-11-01 14:02:58.940394+0800 InitialLayoutAudit[23573:5320615] [Connection] Unable to get remoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 14:02:58.940423+0800 InitialLayoutAudit[23573:5320615] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+[
+  {
+    "frame" : "{{0, 0}, {420, 300}}",
+    "id" : "",
+    "type" : "FluentViewHost<FluentFrameView<FluentRefreshContainer<FluentHStackView>>>"
+  },
+  {
+    "frame" : "{{0, 0}, {420, 300}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{0, 0}, {420, 300}}",
+    "id" : "FluentKit.RefreshContainer",
+    "type" : "FluentRefreshContainerView"
+  },
+  {
+    "frame" : "{{0, 0}, {420, 300}}",
+    "id" : "",
+    "type" : "FluentRefreshScrollView"
+  },
+  {
+    "frame" : "{{0, 0}, {420, 300}}",
+    "id" : "",
+    "type" : "NSClipView"
+  },
+  {
+    "frame" : "{{0, 0}, {1828, 300}}",
+    "id" : "",
+    "type" : "FluentRefreshFlippedView"
+  },
+  {
+    "frame" : "{{0, 0}, {1828, 300}}",
+    "id" : "",
+    "type" : "FluentViewHost<FluentAnyView>"
+  },
+  {
+    "frame" : "{{0, 0}, {1828, 300}}",
+    "id" : "",
+    "type" : "FluentHorizontalStackView"
+  },
+  {
+    "frame" : "{{0, 141.5}, {1828, 17}}",
+    "id" : "",
+    "type" : "FluentForEachHost"
+  },
+  {
+    "frame" : "{{0, 0}, {1828, 17}}",
+    "id" : "",
+    "type" : "NSStackView"
+  },
+  {
+    "frame" : "{{0, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{92, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{184, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{276, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{368, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{460, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{552, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{644, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{736, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{828, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{920, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1012, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1104, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1196, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1288, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1380, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1472, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1564, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1656, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{1748, 0}, {80, 17}}",
+    "id" : "FluentKit.LayoutContainer",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{-2, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {84, 17}}",
+    "id" : "",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{7.5, 283}, {405, 17}}",
+    "id" : "",
+    "type" : "NSScroller"
+  },
+  {
+    "frame" : "{{-15, 135}, {30, 30}}",
+    "id" : "FluentKit.RefreshContainer.Visualizer",
+    "type" : "FluentRefreshIndicatorView"
+  }
+]Process 23573 launched: '/var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-refresh-initial-probe/InitialLayoutAudit' (arm64)
+Process 23573 exited with status = 0 (0x00000000)
+(lldb) breakpoint list
+Current breakpoints:
+1: name = 'LAYOUT_CONSTRAINTS_NOT_SATISFIABLE', locations = 1, resolved = 1, hit count = 0
+  1.1: where = AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE, address = 0x00000001a0ab36b8, resolved, hit count = 0 
+
+(lldb) quit

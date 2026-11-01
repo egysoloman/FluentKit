@@ -1,0 +1,53 @@
+Building for debugging...
+[1 / 1]
+[2 / 16] FluentKit
+[4 / 18] FluentKit
+[12 / 23] FluentKit
+[14 / 22] FluentGallery-product
+[19 / 23] FluentGallery-product
+[24 / 29] FluentGallery-product
+[27 / 33] FluentKitTests-product
+[31 / 36] FluentKitTests-product
+[33 / 36] FluentKitValidation-product
+Build complete! (14.86秒)
+Test Suite 'Selected tests' started at 2026-11-01 13:55:28.156.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 13:55:28.157.
+Test Suite 'RefreshContainerTests' started at 2026-11-01 13:55:28.157.
+Test Case '-[FluentKitTests.RefreshContainerTests testFirstJumpPastExecutionAndPeekingFromIdle]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testFirstJumpPastExecutionAndPeekingFromIdle]' passed (0.062 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testIndicatorRotatesOneTurnAtTheExecutionRatioWithParallax]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testIndicatorRotatesOneTurnAtTheExecutionRatioWithParallax]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testProgrammaticRefreshAndOtherDirections]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testProgrammaticRefreshAndOtherDirections]' passed (0.031 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testReleasingInPendingRefreshesHoldsContentAndCompletes]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testReleasingInPendingRefreshesHoldsContentAndCompletes]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.RefreshContainerTests testStatesFollowTheSourceStateMachine]' started.
+Test Case '-[FluentKitTests.RefreshContainerTests testStatesFollowTheSourceStateMachine]' passed (0.001 seconds).
+Test Suite 'RefreshContainerTests' passed at 2026-11-01 13:55:28.253.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.096 (0.096) seconds
+Test Suite 'RefreshLayoutTests' started at 2026-11-01 13:55:28.253.
+Test Case '-[FluentKitTests.RefreshLayoutTests testContentChangesUpdateScrollExtentWithoutResizingOrReplacingHost]' started.
+Test Case '-[FluentKitTests.RefreshLayoutTests testContentChangesUpdateScrollExtentWithoutResizingOrReplacingHost]' passed (2.633 seconds).
+Test Suite 'RefreshLayoutTests' passed at 2026-11-01 13:55:30.886.
+	 Executed 1 test, with 0 failures (0 unexpected) in 2.633 (2.633) seconds
+Test Suite 'ScrollerLayoutRegressionTests' started at 2026-11-01 13:55:30.886.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testAutoSuggestRowsFollowLiveScrollerStyleWithoutRevealingSelection]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testAutoSuggestRowsFollowLiveScrollerStyleWithoutRevealingSelection]' passed (2.707 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testComboBoxRowsFollowLiveScrollerStyleWithoutRevealingSelection]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testComboBoxRowsFollowLiveScrollerStyleWithoutRevealingSelection]' passed (2.134 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testContentDialogReservesScrollerWidthAndPreservesScrollPosition]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testContentDialogReservesScrollerWidthAndPreservesScrollPosition]' passed (2.144 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle]' passed (2.147 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testLegacyListPreservesScrollPositionWhenScrollerStyleChanges]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testLegacyListPreservesScrollPositionWhenScrollerStyleChanges]' passed (2.064 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testNavigationRowsFitLiveScrollerViewportInExpandedAndCompactModes]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testNavigationRowsFitLiveScrollerViewportInExpandedAndCompactModes]' passed (4.239 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testVerticalRefreshContentFollowsLiveScrollerStyle]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testVerticalRefreshContentFollowsLiveScrollerStyle]' passed (2.239 seconds).
+Test Suite 'ScrollerLayoutRegressionTests' passed at 2026-11-01 13:55:48.561.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 17.673 (17.674) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 13:55:48.561.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.402 (20.404) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 13:55:48.561.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 20.402 (20.405) seconds

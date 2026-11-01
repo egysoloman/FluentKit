@@ -92,7 +92,7 @@ your `Package.swift`:
 dependencies: [
     .package(
         url: "https://github.com/egysoloman/FluentKit.git",
-        from: "0.1.0"
+        from: "0.2.0"
     )
 ]
 ```

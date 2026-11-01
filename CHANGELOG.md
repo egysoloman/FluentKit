@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+No unreleased changes yet.
+
+## [0.2.0] - 2026-11-01
+
+- RefreshContainer now measures scrolling content without a fixed frame-derived size mask.
+  Initial horizontal layout no longer conflicts with stack spacing; content-owned state updates
+  grow and shrink the scroll extent without compressing rows or requiring a window resize.
+  Cross-axis sizing follows the live viewport and scroller style while preserving refresh state.
+
 - Expander templates now use their natural Auto Layout height instead of fixed autoresizing
   masks, avoiding constraint conflicts during mounting and when stack content grows. Header
   appearance changes defer layout until the host allocates the updated slot.
@@ -559,5 +568,6 @@ Initial public framework baseline.
 - Prevented NavigationView section text from clipping or jumping through the compact rail during
   pane collapse.
 
-[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/egysoloman/FluentKit/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/egysoloman/FluentKit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/egysoloman/FluentKit/releases/tag/v0.1.0

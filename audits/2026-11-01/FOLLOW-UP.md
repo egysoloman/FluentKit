@@ -24,14 +24,14 @@
 | 16 | **动态页面键盘链及自动重建时的显式循环本批已修。** | 自有窗口启用 AppKit 自动重建；scope/对话框按当前 stack 顺序保持 Tab 循环，保留编辑命令、验证和组合文字，并记录已消费事件的键盘设备。原生 5 项旧失败归零，最终 11 项条件通过；实际 Gallery 已用 Tab/Space 操作 CheckBox/RadioButton，隔离窗口验证循环与对话框。438 项测试、原生验证、Gallery 构建和门禁通过，见 `gallery-keyboard/REPORT.md`。原生程序化焦点、真实 IME/VoiceOver 仍开放。 |
 | 17 | **候选取消、辅助按钮顺序及外部更新回调一致性已分批修复。** | 身份变化后的取消与按钮顺序见 `autosuggest-cancel/REPORT.md`（40 个原生状态、118 项字段差异归零）。本批又修复提供器返回旧结果重新弹出、闭包绑定提交时携带过期候选：28 个原生状态的 12 项差异归零，实际窗口验证 ap→Apple→外部 Pear→Enter 提交 Pear/nil 并保留焦点；445 项测试及门禁通过，见 `autosuggest-focus/REPORT.md`。保留外部模型重置优先规则，未为照搬 WinUI 内部字段而恢复旧值覆盖。一次稳定 ID 的 AX 值不一致未再次复现；无需输入重新聚焦的列表开启、完整程序化 Text 契约和 CheckCurrent 式 API 仍开放。 |
 | 18 | **客户端普通文本坐标已核查；真实系统拼音候选仍开放。** | 实际设置页与原生输入框共 9 次显式坐标查询，640/600/1000pt 宽度下控件与字符矩形同步移动，设置页 95pt 位移一致、编辑器身份保留。会话未稳定建立系统拼音组合状态，不算候选验收，不据此改定位或关闭第 5 项。录屏无系统候选打开期间缩放过程；外部 IME 源码又有并行变动，结果限于记录构建。见 `system-pinyin/REPORT.md`；继续真实 marked text、跨进程候选、移动/缩放和提交/取消验收。 |
-| 19 | **本批已修复常驻滚动条下的尺寸与跳顶问题；硬件事件验收仍开放。** | 修复 AutoSuggestBox、ComboBox、ContentDialog、RefreshContainer、旧 FluentList 及 NavigationView：88 个原生状态的 42 项失败条件归零；实际 Gallery 的 192 个状态（含 Expander/设置折叠卡开合）32 项失败归零。实际 IME 自绘滚动条兼容性、固定最小宽度及视口重排独立修复，105 个状态的 87 项失败归零，完整来源快照 Release 构建通过。452 项测试、原生验证、Gallery 和门禁通过，见 `scroller-layout/REPORT.md`。未改变全局偏好或替换运行中的 IME；真实鼠标插拔仍需验收。横向 Refresh 初次挂载的既有约束告警仍待分离 fixture/框架原因，不据测试通过关闭。 |
+| 19 | **本批已修复常驻滚动条下的尺寸与跳顶问题；硬件事件验收仍开放。** | 修复 AutoSuggestBox、ComboBox、ContentDialog、RefreshContainer、旧 FluentList 及 NavigationView：88 个原生状态的 42 项失败条件归零；实际 Gallery 的 192 个状态（含 Expander/设置折叠卡开合）32 项失败归零。实际 IME 自绘滚动条兼容性、固定最小宽度及视口重排独立修复，105 个状态的 87 项失败归零，完整来源快照 Release 构建通过。452 项测试、原生验证、Gallery 和门禁通过，见 `scroller-layout/REPORT.md`。未改变全局偏好或替换运行中的 IME；真实鼠标插拔仍需验收。横向 Refresh 初始化告警已独立定位到内容宿主的零宽度 mask；自然尺寸布局及内容自主更新的滚动范围已修。新增回归在旧代码 344 处失败，修后相关 14 项及完整 489 项通过，全量测试日志无约束冲突，见 `refresh-initial-layout/REPORT.md`。 |
 | 20 | **本批已实现：可选 Tooltip 连续过渡与标题栏接入。** | `.toolTip(..., motion: .continuous)` 同窗口复用 panel，移动、缩放并淡化内容，默认模式不变；标题栏按钮已接入。覆盖打断、退出、窗口生命周期、主题重挂载、降低动态效果、RTL/边缘、动作与还原标签。461 测试、原生验证、Gallery、Release 门禁通过；47 个原生时间样本验证中间帧，见 `tooltip-follow/REPORT.md`。作者未公开源码，属于独立实现。已补 9.31 秒局部桌面合成录屏（`tooltip-follow/recording/`），过渡和阴影可见；真实鼠标悬停、高刷帧时及多显示器验收仍开放。 |
 | 21 | **本批通用材质与独立复验完成。** | 局部 → 主题角色 → 预置，Card opt-in、通用背景、窗口/浮层共享配置；动态圆角/材质、Glass 半径、高对比度、workspace 通知及 tint 覆盖前景已修。20 个修后合成状态前景差为 0，背景 tint 保留；三轮配对更新成本接近原基线。472 测试、原生验证、Gallery、Release 门禁通过，见 `material-options/REPORT.md`。真实壁纸采样与平台专项验收仍开放；实际 Gallery 新发现的问题见第 24/25 项。 |
 | 22 | **已排队：多显示器、缩放与跨屏壁纸材质。** | 用户要求后续优化不同分辨率/缩放倍率、窗口跨屏时的壁纸采样和材质过渡。分别验证 AppKit 原生材质的自动适配、Fluent 固定配方的边界、浮层的屏幕选择/安全区域、backingScaleFactor 变化、半像素描边和多显示器排列；不能把原生材质自动适配当作已验收。 |
 | 23 | **已修复：Tooltip 接入引起的标题栏三键尺寸回归。** | 用户录屏确认悬停背景高度不一致；32pt 行原生按钮实际为 27/37/36pt。自绘 caption button 清除 SF Symbol 对齐边距后，32/40/48pt 共 9 个原生状态全部准确填满槽位，并重录实际桌面合成视频。见 `caption-pixel-review/REPORT.md`；已在材质批次通过完整门禁。 |
 | 24 | **本批修复并验证：ComboBox 面板裁切。** | 原生 bridge/editor 的 750 优先级尺寸把 32pt 宿主压到 23pt；已移除内部 intrinsic metrics 和 editor 对齐边距，较大字体按完整行高增长。9 个原生状态恢复 32pt，实际 Gallery 的 Preset/Liquid Glass 已确认完整显示；476 项测试、原生验证、Gallery 和 Release 门禁通过。见 `combobox-face-layout/REPORT.md`。 |
 | 25 | **本批 Toggle 与包装层语义修复并验证。** | 原生 switch 角色、数值状态和通知；标签转发、隐藏/恢复、动态语义分组及 combine/contain 已修。独立窗口和实际 Gallery 操作通过；484 项测试、Gallery、Release 门禁通过，原生完整验证补齐队列同步后连续两次通过。此前多处验证失败及旧基线失败保留在 `toggle-accessibility/REPORT.md`，不以一次重跑掩盖；完整 VoiceOver 仍开放。 |
-| 26 | **本批修复并验证：Expander 初始化、动态模板高度和标题裁切。** | 旧 frame 的固定高度 mask 与 stack 最小间距冲突；标题/正文改用自然 Auto Layout 高度，宿主按标题自然高度布局并保留 48pt 最小值。13 项相关回归无约束冲突；完整 487 项、原生、Gallery 和 Release 门禁通过。最终 AppKit 已解析断点 0 命中，24 个 Gallery 状态及实际应用开合复验通过，见 `expander-initial-layout/REPORT.md`。中间版本的动态增长失败已保留；第 19 项 Refresh 告警与第 28 项文字换行保持独立跟踪。 |
+| 26 | **本批修复并验证：Expander 初始化、动态模板高度和标题裁切。** | 旧 frame 的固定高度 mask 与 stack 最小间距冲突；标题/正文改用自然 Auto Layout 高度，宿主按标题自然高度布局并保留 48pt 最小值。13 项相关回归无约束冲突；完整 487 项、原生、Gallery 和 Release 门禁通过。最终 AppKit 已解析断点 0 命中，24 个 Gallery 状态及实际应用开合复验通过，见 `expander-initial-layout/REPORT.md`。中间版本的动态增长失败已保留；第 19 项 Refresh 已另行修复；第 28 项文字换行保持独立跟踪。 |
 | 27 | **源码差异已确认，待独立复现：Toggle 键盘提交时机。** | WinUI `ToggleSwitch_Partial.cpp:750–804` 在 KeyDown 消费按键、KeyUp 提交；当前 `FluentToggle.keyDown` 在 Space/Return 按下时切换。`HandlesKey`（同文件 1002）实际仅接受 Space/GamepadA；共享 KeyUp 帮助器虽有方向键分支，不能据此增加不生效的上游行为。继续复现释放、重复、取消与拖动组合，并修正相应原生验证假设；辅助操作本身仍按 WinUI 立即切换。 |
 | 28 | **截图观察，待独立复现：窄窗口设置卡长描述截断。** | `expander-initial-layout/gallery-final/images/dark-narrow.png` 的外层 Interactive sample 描述未显示末尾 acceptance matrix；检查 `FluentSettingsCardHost` 的两行文字宽度和自然高度，而非只检查外层容器。需要旧基线对比、宽→窄→宽与实际窗口验证，再决定修复。 |
 
@@ -43,7 +43,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前框架批次已通过 484 项测试、Gallery 构建和 Release 质量门禁；原生验证补齐队列同步后两次通过，原先失败记录见 `toggle-accessibility/REPORT.md`；最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`（本批未安装或替换输入法）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前发布候选已通过 489 项测试且全量日志无约束冲突，原生验证、Gallery 构建和 Release 门禁通过，见 `release-0.2.0/REPORT.md`；此前原生验证的失败及队列同步修复见 `toggle-accessibility/REPORT.md`；最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`（本批未安装或替换输入法）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 
@@ -57,4 +57,4 @@
 
 按“实际宿主复现→源码定位/WinUI 对照→保存修复前证据→最小完整修复→行为与动态渲染验证→相关门禁→单独本地提交”执行。背景和折叠布局分别归因，不盲目合为一个问题。已通过的检查仅在新修改或未解疑点需要时重跑；不以新增测试数量判断质量。
 
-应用：`/Users/stars/Downloads/Fluent IME`（无 git）；框架：本仓库。应用修改保存改前哈希与可逆 patch，不覆盖别人的工作，不自动安装/替换正在运行的输入法。每个修复单元单独提交、不推送，保留旧审计原始数据。
+应用：`/Users/stars/Downloads/Fluent IME`（无 git）；框架：本仓库。应用修改保存改前哈希与可逆 patch，不覆盖别人的工作，不自动安装/替换正在运行的输入法。每个修复单元单独提交，保留旧审计原始数据。用户于本轮追加授权推送 GitHub 并发布 Release；0.2.0 按 RELEASING.md 在本地门禁和 main CI 通过后发布。
