@@ -144,6 +144,7 @@ final class FluentKitTests: XCTestCase {
         defer { window.orderOut(nil) }
         root.layoutSubtreeIfNeeded()
         let toolTipHost = try XCTUnwrap(host.subviews.first as? FluentToolTipHost)
+        defer { toolTipHost.dismiss(animated: false) }
 
         func event(_ type: NSEvent.EventType, number: Int) throws -> NSEvent {
             try XCTUnwrap(NSEvent.mouseEvent(
@@ -166,7 +167,7 @@ final class FluentKitTests: XCTestCase {
         XCTAssertTrue(window.childWindows?.isEmpty != false, "leaving before the delay cancels opening")
 
         toolTipHost.mouseEntered(with: try event(.mouseMoved, number: 3))
-        RunLoop.main.run(until: Date().addingTimeInterval(0.85))
+        waitForUI(window.childWindows?.first?.isVisible == true)
         let panel = try XCTUnwrap(window.childWindows?.first as? FluentToolTipPanel)
         XCTAssertEqual(panel.contentView?.identifier?.rawValue, "FluentKit.ToolTip.Surface")
         XCTAssertTrue(panel.ignoresMouseEvents)

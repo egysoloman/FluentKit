@@ -32,6 +32,11 @@ final class ToolTipMotionTests: XCTestCase {
 
     private func wait(_ seconds: TimeInterval) { RunLoop.main.run(until: Date().addingTimeInterval(seconds)) }
 
+    private func waitForOpenTip(in window: NSWindow, file: StaticString = #filePath, line: UInt = #line) {
+        waitForUI(window.childWindows?.contains { $0 is FluentToolTipPanel && $0.isVisible && $0.alphaValue == 1 } == true,
+                  file: file, line: line)
+    }
+
     func testContinuousToolTipReusesSurfaceAndRetargetsFromIntermediateFrame() throws {
         let window = window()
         let first = host("First", x: 30, window: window)
@@ -39,7 +44,7 @@ final class ToolTipMotionTests: XCTestCase {
         let third = host("Third", x: 350, window: window)
         defer { third.dismiss(animated: false); second.dismiss(animated: false); first.dismiss(animated: false); window.orderOut(nil) }
         first.mouseEntered(with: try event(first))
-        wait(1.1)
+        waitForOpenTip(in: window)
         let panel = try XCTUnwrap(window.childWindows?.first as? FluentToolTipPanel)
         let start = panel.frame
         first.mouseExited(with: try event(first, point: NSPoint(x: 160, y: 16)))
@@ -87,7 +92,7 @@ final class ToolTipMotionTests: XCTestCase {
         let second = host("Second", x: 190, window: window)
         defer { second.dismiss(animated: false); first.dismiss(animated: false); window.orderOut(nil) }
         first.mouseEntered(with: try event(first))
-        wait(1.1)
+        waitForOpenTip(in: window)
         let panel = try XCTUnwrap(window.childWindows?.first)
         first.dismiss(animated: true)
         wait(0.05)
@@ -107,7 +112,7 @@ final class ToolTipMotionTests: XCTestCase {
         let second = host("A wider target", x: 190, window: window, reduced: true)
         defer { second.dismiss(animated: false); first.dismiss(animated: false); window.orderOut(nil) }
         first.mouseEntered(with: try event(first))
-        wait(0.85)
+        waitForOpenTip(in: window)
         let panel = try XCTUnwrap(window.childWindows?.first)
         second.mouseEntered(with: try event(second))
         XCTAssertTrue(window.childWindows?.first === panel)
@@ -128,12 +133,12 @@ final class ToolTipMotionTests: XCTestCase {
         let standard = host("Standard", x: 350, window: secondWindow, reduced: true, motion: .standard)
         defer { first.dismiss(animated: false); second.dismiss(animated: false); standard.dismiss(animated: false); firstWindow.orderOut(nil); secondWindow.orderOut(nil) }
         first.mouseEntered(with: try event(first))
-        wait(0.85)
+        waitForOpenTip(in: firstWindow)
         let panel = try XCTUnwrap(firstWindow.childWindows?.first)
         second.mouseEntered(with: try event(second))
         XCTAssertTrue(firstWindow.childWindows?.isEmpty != false)
         XCTAssertTrue(secondWindow.childWindows?.isEmpty != false)
-        wait(0.85)
+        waitForOpenTip(in: secondWindow)
         XCTAssertFalse(secondWindow.childWindows?.first === panel)
         XCTAssertNotNil(secondWindow.childWindows?.first)
         standard.mouseEntered(with: try event(standard))
@@ -164,7 +169,7 @@ final class ToolTipMotionTests: XCTestCase {
         let second = try XCTUnwrap(hosts.dropFirst().first)
         XCTAssertEqual(second.contentView.identifier?.rawValue, "FluentKit.WindowControls.Maximize")
         second.mouseEntered(with: try event(second))
-        wait(1.1)
+        waitForOpenTip(in: window)
         XCTAssertEqual(window.childWindows?.filter { $0 is FluentToolTipPanel }.count, 1)
         let panel = try XCTUnwrap(window.childWindows?.first as? FluentToolTipPanel)
         coordinator.setPreference(.light)
@@ -185,7 +190,7 @@ final class ToolTipMotionTests: XCTestCase {
         let second = host(String(repeating: "Wrapped help text ", count: 12), x: 80, window: window, reduced: true)
         defer { first.dismiss(animated: false); second.dismiss(animated: false); window.orderOut(nil) }
         first.mouseEntered(with: try event(first))
-        wait(0.85)
+        waitForOpenTip(in: window)
         let panel = try XCTUnwrap(window.childWindows?.first as? FluentToolTipPanel)
         second.update(toolTipView: second.toolTipView, placement: .left, isEnabled: true,
             accessibilityText: "Wrapped help text", context: FluentRenderContext(reduceMotion: true, layoutDirection: .rightToLeft), motion: .continuous)
@@ -207,7 +212,7 @@ final class ToolTipMotionTests: XCTestCase {
         let second = host("Second wider tooltip", x: 250, window: window)
         defer { first.dismiss(animated: false); second.dismiss(animated: false); window.orderOut(nil) }
         first.mouseEntered(with: try event(first))
-        wait(0.85)
+        waitForOpenTip(in: window)
         second.mouseEntered(with: try event(second))
         wait(0.04)
         second.update(toolTipView: second.toolTipView, placement: .bottom, isEnabled: true,
