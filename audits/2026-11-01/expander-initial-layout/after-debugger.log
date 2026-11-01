@@ -1,0 +1,104 @@
+(lldb) target create "/tmp/fluentkit-expander-initial-audit/After"
+Current executable set to '/tmp/fluentkit-expander-initial-audit/After' (arm64).
+(lldb) breakpoint set -n LAYOUT_CONSTRAINTS_NOT_SATISFIABLE
+Breakpoint 1: where = AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE, address = 0x000000018a5f76b8
+(lldb) run
+PHASE: mounting before allocation
+2026-11-01 13:29:04.299307+0800 After[13753:5247160] [Connection] Unable to get remoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 13:29:04.299647+0800 After[13753:5247160] [Application] Error registering app with AppIntents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+PHASE: allocating window
+2026-11-01 13:29:04.441487+0800 After[13753:5247106] [WindowTab] Cannot index window tabs due to missing main bundle identifier
+PHASE: laid out
+[
+  {
+    "frame" : "{{0, 159}, {380, 141}}",
+    "id" : "FluentKit.Expander",
+    "intrinsic" : "{252, 141}",
+    "type" : "FluentExpanderHost"
+  },
+  {
+    "frame" : "{{0, 0}, {380, 48}}",
+    "id" : "FluentKit.Expander.Header",
+    "intrinsic" : "{124.5, 48}",
+    "type" : "FluentExpanderHeader"
+  },
+  {
+    "frame" : "{{16, 15}, {304, 17}}",
+    "id" : "",
+    "intrinsic" : "{48.5, 17}",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {304, 17}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{0, 48}, {380, 93}}",
+    "id" : "FluentKit.Expander.ContentClip",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSView"
+  },
+  {
+    "frame" : "{{0, 0}, {380, 93}}",
+    "id" : "FluentKit.Expander.Content",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentExpanderContentSurface"
+  },
+  {
+    "frame" : "{{16, 16}, {348, 61}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentVerticalStackView"
+  },
+  {
+    "frame" : "{{0, 29}, {220, 32}}",
+    "id" : "FluentKit.LayoutContainer",
+    "intrinsic" : "{220, 32}",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{0, 0}, {220, 32}}",
+    "id" : "FluentKit.ComboBox.Host",
+    "intrinsic" : "{240, 32}",
+    "type" : "FluentComboBoxHost<String>"
+  },
+  {
+    "frame" : "{{0, 0}, {220, 32}}",
+    "id" : "FluentKit.ComboBox.NativeBridge",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentComboBoxNative"
+  },
+  {
+    "frame" : "{{0, 0}, {220, 32}}",
+    "id" : "FluentKit.ComboBox.EditableText",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentComboBoxEditableTextField"
+  },
+  {
+    "frame" : "{{11, 7}, {171, 17}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{-2, 0}, {118.5, 17}}",
+    "id" : "",
+    "intrinsic" : "{114.5, 17}",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {118.5, 17}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSTextFieldSimpleLabel"
+  }
+]Process 13753 launched: '/tmp/fluentkit-expander-initial-audit/After' (arm64)
+Process 13753 exited with status = 0 (0x00000000)
+(lldb) breakpoint list
+Current breakpoints:
+1: name = 'LAYOUT_CONSTRAINTS_NOT_SATISFIABLE', locations = 1, resolved = 1, hit count = 0
+  1.1: where = AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE, address = 0x00000001a0ab36b8, resolved, hit count = 0 
+
+(lldb) quit

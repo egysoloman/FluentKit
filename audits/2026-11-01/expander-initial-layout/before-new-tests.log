@@ -1,0 +1,41 @@
+Building for debugging...
+[Planning 1 / 182]
+[Planning deferred tasks]
+[1 / 12] FluentKitTests-product
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+[17 / 19] FluentKitTests-product
+Build complete! (2.36秒)
+Test Suite 'Selected tests' started at 2026-11-01 13:27:45.037.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 13:27:45.040.
+Test Suite 'ExpanderInitializationTests' started at 2026-11-01 13:27:45.040.
+Test Case '-[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:63: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("72.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:64: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("140.0") is not equal to ("164.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:65: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("72.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:70: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("72.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:63: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("104.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:64: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("140.0") is not equal to ("196.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:65: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("104.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:70: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("104.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:63: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("72.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:64: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("140.0") is not equal to ("164.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:70: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("72.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:63: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("104.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:64: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("140.0") is not equal to ("196.0") +/- ("0.01")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ExpanderInitializationTests.swift:70: error: -[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate] : XCTAssertEqualWithAccuracy failed: ("48.0") is not equal to ("104.0") +/- ("0.01")
+Test Case '-[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate]' failed (0.672 seconds).
+Test Case '-[FluentKitTests.ExpanderInitializationTests testUnallocatedExpandedBodyNeverLaysOutWithAnImpossibleStackHeight]' started.
+/Users/stars/Documents/WinUI-macOS/Sources/FluentKit/FluentDisclosure.swift:342: warning: -[FluentKitTests.ExpanderInitializationTests testUnallocatedExpandedBodyNeverLaysOutWithAnImpossibleStackHeight] : Conflicting constraints detected: <private>.
+
+Will attempt to recover by breaking <private>.
+Test Case '-[FluentKitTests.ExpanderInitializationTests testUnallocatedExpandedBodyNeverLaysOutWithAnImpossibleStackHeight]' passed (0.066 seconds).
+Test Suite 'ExpanderInitializationTests' failed at 2026-11-01 13:27:45.778.
+	 Executed 2 tests, with 14 failures (0 unexpected) in 0.738 (0.738) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 13:27:45.778.
+	 Executed 2 tests, with 14 failures (0 unexpected) in 0.738 (0.738) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 13:27:45.778.
+	 Executed 2 tests, with 14 failures (0 unexpected) in 0.738 (0.741) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

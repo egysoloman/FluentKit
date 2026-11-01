@@ -1,0 +1,54 @@
+Building for debugging...
+[1 / 1]
+[2 / 16] FluentKit
+[4 / 18] FluentKit
+[12 / 23] FluentKit
+[14 / 22] FluentGallery-product
+[19 / 23] FluentGallery-product
+[22 / 26] FluentKitTests-product
+[24 / 30] FluentKitValidation-product
+[26 / 31] FluentKitTests-product
+[30 / 33] FluentKitTests-product
+[30 / 33] FluentKitValidation-product
+Build complete! (19.16秒)
+Test Suite 'Selected tests' started at 2026-11-01 13:40:47.648.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 13:40:47.649.
+Test Suite 'ComboBoxFaceplateLayoutTests' started at 2026-11-01 13:40:47.649.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testControlSizesAndExplicitHeightRemainSupported]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testControlSizesAndExplicitHeightRemainSupported]' passed (0.147 seconds).
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testDensityAndLargerTypographyKeepFullTextLineAfterLiveUpdate]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testDensityAndLargerTypographyKeepFullTextLineAfterLiveUpdate]' passed (0.130 seconds).
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testResizingEditableFaceplatePreservesItsActiveMarkedText]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testResizingEditableFaceplatePreservesItsActiveMarkedText]' passed (0.017 seconds).
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers]' passed (0.085 seconds).
+Test Suite 'ComboBoxFaceplateLayoutTests' passed at 2026-11-01 13:40:48.029.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.379 (0.380) seconds
+Test Suite 'ExpanderInitializationTests' started at 2026-11-01 13:40:48.029.
+Test Case '-[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate]' started.
+Test Case '-[FluentKitTests.ExpanderInitializationTests testCustomHeaderUsesItsNaturalHeightAndMovesBodyOnLiveUpdate]' passed (0.022 seconds).
+Test Case '-[FluentKitTests.ExpanderInitializationTests testGrowingHeaderStackIsArrangedAfterItsNewHeightIsAllocated]' started.
+Test Case '-[FluentKitTests.ExpanderInitializationTests testGrowingHeaderStackIsArrangedAfterItsNewHeightIsAllocated]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.ExpanderInitializationTests testNestedHeaderHeightUpdateMovesSettingsViewportAndFollowingRow]' started.
+Test Case '-[FluentKitTests.ExpanderInitializationTests testNestedHeaderHeightUpdateMovesSettingsViewportAndFollowingRow]' passed (0.114 seconds).
+Test Suite 'ExpanderInitializationTests' passed at 2026-11-01 13:40:48.174.
+	 Executed 3 tests, with 0 failures (0 unexpected) in 0.145 (0.145) seconds
+Test Suite 'ExpanderLayoutTests' started at 2026-11-01 13:40:48.174.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentReplacementUpdatesHeightWithoutReopening]' passed (0.081 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testExpandedContentRespondsToWidthDependentHeight]' passed (0.111 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testFillWidthExpanderUsesAvailableRowWidthForLongContent]' passed (0.160 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testInnerChangeAndInterruptedOuterAnimationSettleToCurrentContent]' passed (0.936 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testLongContentRespectsExplicitExpanderWidth]' passed (0.071 seconds).
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' started.
+Test Case '-[FluentKitTests.ExpanderLayoutTests testNestedExpansionMovesOuterSurfaceAndFollowingSibling]' passed (0.434 seconds).
+Test Suite 'ExpanderLayoutTests' passed at 2026-11-01 13:40:49.967.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.793 (1.793) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 13:40:49.967.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 2.317 (2.318) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 13:40:49.967.
+	 Executed 13 tests, with 0 failures (0 unexpected) in 2.317 (2.319) seconds

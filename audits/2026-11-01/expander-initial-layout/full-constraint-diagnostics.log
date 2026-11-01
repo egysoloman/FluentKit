@@ -1,0 +1,2 @@
+AppKit constraint conflicts in test output:
+904: /Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ScrollerLayoutRegressionTests.swift:26: warning: -[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle] : Conflicting constraints detected: <private>.

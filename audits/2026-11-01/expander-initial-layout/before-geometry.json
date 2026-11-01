@@ -1,0 +1,86 @@
+[
+  {
+    "frame": "{{0, 159}, {380, 141}}",
+    "id": "FluentKit.Expander",
+    "intrinsic": "{252, 141}",
+    "type": "FluentExpanderHost"
+  },
+  {
+    "frame": "{{0, 0}, {380, 48}}",
+    "id": "FluentKit.Expander.Header",
+    "intrinsic": "{124.5, 48}",
+    "type": "FluentExpanderHeader"
+  },
+  {
+    "frame": "{{16, 15}, {304, 17}}",
+    "id": "",
+    "intrinsic": "{48.5, 17}",
+    "type": "NSTextField"
+  },
+  {
+    "frame": "{{0, 0}, {304, 17}}",
+    "id": "",
+    "intrinsic": "{-1, -1}",
+    "type": "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame": "{{0, 48}, {380, 93}}",
+    "id": "FluentKit.Expander.ContentClip",
+    "intrinsic": "{-1, -1}",
+    "type": "NSView"
+  },
+  {
+    "frame": "{{0, 0}, {380, 93}}",
+    "id": "FluentKit.Expander.Content",
+    "intrinsic": "{-1, -1}",
+    "type": "FluentExpanderContentSurface"
+  },
+  {
+    "frame": "{{16, 16}, {348, 61}}",
+    "id": "",
+    "intrinsic": "{-1, -1}",
+    "type": "FluentVerticalStackView"
+  },
+  {
+    "frame": "{{0, 29}, {220, 32}}",
+    "id": "FluentKit.LayoutContainer",
+    "intrinsic": "{220, 32}",
+    "type": "FluentLayoutContainer"
+  },
+  {
+    "frame": "{{0, 0}, {220, 32}}",
+    "id": "FluentKit.ComboBox.Host",
+    "intrinsic": "{240, 32}",
+    "type": "FluentComboBoxHost<String>"
+  },
+  {
+    "frame": "{{0, 0}, {220, 32}}",
+    "id": "FluentKit.ComboBox.NativeBridge",
+    "intrinsic": "{-1, -1}",
+    "type": "FluentComboBoxNative"
+  },
+  {
+    "frame": "{{0, 0}, {220, 32}}",
+    "id": "FluentKit.ComboBox.EditableText",
+    "intrinsic": "{-1, -1}",
+    "type": "FluentComboBoxEditableTextField"
+  },
+  {
+    "frame": "{{11, 7}, {171, 17}}",
+    "id": "",
+    "intrinsic": "{-1, -1}",
+    "type": "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame": "{{-2, 0}, {118.5, 17}}",
+    "id": "",
+    "intrinsic": "{114.5, 17}",
+    "type": "NSTextField"
+  },
+  {
+    "frame": "{{0, 0}, {118.5, 17}}",
+    "id": "",
+    "intrinsic": "{-1, -1}",
+    "type": "NSTextFieldSimpleLabel"
+  }
+]

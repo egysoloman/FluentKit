@@ -1,0 +1,161 @@
+(lldb) target create "/tmp/fluentkit-expander-initial-audit/Before"
+Current executable set to '/tmp/fluentkit-expander-initial-audit/Before' (arm64).
+(lldb) breakpoint set -n NSViewAlertForUnsatisfiableConstraints
+Breakpoint 1: no locations (pending).
+WARNING:  Unable to resolve breakpoint to any actual locations.
+(lldb) run
+PHASE: mounting before allocation
+2026-11-01 13:25:45.830225+0800 Before[13173:5240516] [Connection] Unable to get remoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 13:25:45.830423+0800 Before[13173:5240516] [Application] Error registering app with AppIntents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 13:25:45.874959+0800 Before[13173:5240477] [AppKit] Conflicting constraints detected: (
+    "<NSLayoutConstraint:0x750ecd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x750ecd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>",
+    "<NSLayoutConstraint:0x750ecd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x1019e9110]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>"
+).
+
+Will attempt to recover by breaking <NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>.
+2026-11-01 13:25:45.875062+0800 Before[13173:5240477] [Layout] Unable to simultaneously satisfy constraints:
+(
+    "<NSLayoutConstraint:0x750ecd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x750ecd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>",
+    "<NSLayoutConstraint:0x750ecd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x1019e9110]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>"
+)
+
+Will attempt to recover by breaking constraint 
+<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>
+
+Set the NSUserDefault NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints to YES to have -[NSWindow visualizeConstraints:] automatically called when this happens.  And/or, set a symbolic breakpoint on LAYOUT_CONSTRAINTS_NOT_SATISFIABLE to catch this in the debugger.
+2026-11-01 13:25:45.876261+0800 Before[13173:5240477] [AppKit] Conflicting constraints detected: (
+    "<NSLayoutConstraint:0x750ecd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x750ecd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>",
+    "<NSLayoutConstraint:0x750ecd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x1019e9110]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>"
+).
+
+Will attempt to recover by breaking <NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>.
+2026-11-01 13:25:45.876324+0800 Before[13173:5240477] [Layout] Unable to simultaneously satisfy constraints:
+(
+    "<NSLayoutConstraint:0x750ecd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x750ecd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>",
+    "<NSLayoutConstraint:0x750ecd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x1019e9110]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>"
+)
+
+Will attempt to recover by breaking constraint 
+<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>
+
+Set the NSUserDefault NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints to YES to have -[NSWindow visualizeConstraints:] automatically called when this happens.  And/or, set a symbolic breakpoint on LAYOUT_CONSTRAINTS_NOT_SATISFIABLE to catch this in the debugger.
+2026-11-01 13:25:45.876782+0800 Before[13173:5240477] [AppKit] Conflicting constraints detected: (
+    "<NSLayoutConstraint:0x750ecd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x750ecd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>",
+    "<NSLayoutConstraint:0x750ecd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x1019e9110]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>"
+).
+
+Will attempt to recover by breaking <NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>.
+2026-11-01 13:25:45.876836+0800 Before[13173:5240477] [Layout] Unable to simultaneously satisfy constraints:
+(
+    "<NSLayoutConstraint:0x750ecd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x750ecd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>",
+    "<NSLayoutConstraint:0x750ecd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x1019e9110]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x750ece8280 )>"
+)
+
+Will attempt to recover by breaking constraint 
+<NSLayoutConstraint:0x750ecd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x750ece8500]-(>=12)-[NSTextField:0x1019e9110]   (active)>
+
+Set the NSUserDefault NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints to YES to have -[NSWindow visualizeConstraints:] automatically called when this happens.  And/or, set a symbolic breakpoint on LAYOUT_CONSTRAINTS_NOT_SATISFIABLE to catch this in the debugger.
+PHASE: allocating window
+2026-11-01 13:25:45.943523+0800 Before[13173:5240477] [WindowTab] Cannot index window tabs due to missing main bundle identifier
+PHASE: laid out
+[
+  {
+    "frame" : "{{0, 159}, {380, 141}}",
+    "id" : "FluentKit.Expander",
+    "intrinsic" : "{252, 141}",
+    "type" : "FluentExpanderHost"
+  },
+  {
+    "frame" : "{{0, 0}, {380, 48}}",
+    "id" : "FluentKit.Expander.Header",
+    "intrinsic" : "{124.5, 48}",
+    "type" : "FluentExpanderHeader"
+  },
+  {
+    "frame" : "{{16, 15}, {304, 17}}",
+    "id" : "",
+    "intrinsic" : "{48.5, 17}",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {304, 17}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{0, 48}, {380, 93}}",
+    "id" : "FluentKit.Expander.ContentClip",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSView"
+  },
+  {
+    "frame" : "{{0, 0}, {380, 93}}",
+    "id" : "FluentKit.Expander.Content",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentExpanderContentSurface"
+  },
+  {
+    "frame" : "{{16, 16}, {348, 61}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentVerticalStackView"
+  },
+  {
+    "frame" : "{{0, 29}, {220, 32}}",
+    "id" : "FluentKit.LayoutContainer",
+    "intrinsic" : "{220, 32}",
+    "type" : "FluentLayoutContainer"
+  },
+  {
+    "frame" : "{{0, 0}, {220, 32}}",
+    "id" : "FluentKit.ComboBox.Host",
+    "intrinsic" : "{240, 32}",
+    "type" : "FluentComboBoxHost<String>"
+  },
+  {
+    "frame" : "{{0, 0}, {220, 32}}",
+    "id" : "FluentKit.ComboBox.NativeBridge",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentComboBoxNative"
+  },
+  {
+    "frame" : "{{0, 0}, {220, 32}}",
+    "id" : "FluentKit.ComboBox.EditableText",
+    "intrinsic" : "{-1, -1}",
+    "type" : "FluentComboBoxEditableTextField"
+  },
+  {
+    "frame" : "{{11, 7}, {171, 17}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSTextFieldSimpleLabel"
+  },
+  {
+    "frame" : "{{-2, 0}, {118.5, 17}}",
+    "id" : "",
+    "intrinsic" : "{114.5, 17}",
+    "type" : "NSTextField"
+  },
+  {
+    "frame" : "{{0, 0}, {118.5, 17}}",
+    "id" : "",
+    "intrinsic" : "{-1, -1}",
+    "type" : "NSTextFieldSimpleLabel"
+  }
+]Process 13173 launched: '/tmp/fluentkit-expander-initial-audit/Before' (arm64)
+Process 13173 exited with status = 0 (0x00000000)
+(lldb) bt 35
+error: Command requires a process which is currently stopped.

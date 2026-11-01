@@ -1,0 +1,79 @@
+(lldb) target create "/tmp/fluentkit-expander-initial-audit/Before"
+Current executable set to '/tmp/fluentkit-expander-initial-audit/Before' (arm64).
+(lldb) breakpoint set -n LAYOUT_CONSTRAINTS_NOT_SATISFIABLE
+Breakpoint 1: where = AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE, address = 0x000000018a5f76b8
+(lldb) run
+PHASE: mounting before allocation
+2026-11-01 13:26:05.395102+0800 Before[13207:5241088] [Connection] Unable to get remoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 13:26:05.395279+0800 Before[13207:5241088] [Application] Error registering app with AppIntents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-11-01 13:26:05.435715+0800 Before[13207:5241069] [AppKit] Conflicting constraints detected: (
+    "<NSLayoutConstraint:0x77d6cd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x77d6ce8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x77d6ce8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x77d6cd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x77d6ce8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x77d6cd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x77d6ce8500]-(>=12)-[NSTextField:0x101905ef0]   (active)>",
+    "<NSLayoutConstraint:0x77d6cd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x101905ef0]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x77d6ce8280 )>"
+).
+
+Will attempt to recover by breaking <NSLayoutConstraint:0x77d6cd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x77d6ce8500]-(>=12)-[NSTextField:0x101905ef0]   (active)>.
+2026-11-01 13:26:05.435805+0800 Before[13207:5241069] [Layout] Unable to simultaneously satisfy constraints:
+(
+    "<NSLayoutConstraint:0x77d6cd6ee0 'NSStackView.Edge.Top' V:|-(>=0)-[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x77d6ce8500]   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x77d6ce8280 )>",
+    "<NSAutoresizingMaskLayoutConstraint:0x77d6cd6e40 h=--& v=--& _TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x77d6ce8280.height == 0   (active)>",
+    "<NSLayoutConstraint:0x77d6cd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x77d6ce8500]-(>=12)-[NSTextField:0x101905ef0]   (active)>",
+    "<NSLayoutConstraint:0x77d6cd7340 'NSStackView.Edge.Bottom' V:[NSTextField:0x101905ef0]-(>=0)-|   (active, names: '|':_TtC9FluentKitP33_759D72DEAC27B105098E149E31C8974C23FluentVerticalStackView:0x77d6ce8280 )>"
+)
+
+Will attempt to recover by breaking constraint 
+<NSLayoutConstraint:0x77d6cd7110 'NSStackView.Stack.Min' V:[_TtC9FluentKitP33_AA575E69D208EECD33F125C8F8963E7721FluentLayoutContainer:0x77d6ce8500]-(>=12)-[NSTextField:0x101905ef0]   (active)>
+
+Set the NSUserDefault NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints to YES to have -[NSWindow visualizeConstraints:] automatically called when this happens.  And/or, set a symbolic breakpoint on LAYOUT_CONSTRAINTS_NOT_SATISFIABLE to catch this in the debugger.
+Process 13207 launched: '/tmp/fluentkit-expander-initial-audit/Before' (arm64)
+Process 13207 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+       frame #0: 0x00000001a0ab36b8 AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE
+AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE:
+->  0x1a0ab36b8 <+0>:  pacibsp 
+    0x1a0ab36bc <+4>:  stp    x20, x19, [sp, #-0x20]!
+    0x1a0ab36c0 <+8>:  stp    x29, x30, [sp, #0x10]
+    0x1a0ab36c4 <+12>: add    x29, sp, #0x10
+Target 0: (Before) stopped.
+(lldb) bt 40
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+   * frame #0: 0x00000001a0ab36b8 AppKit`LAYOUT_CONSTRAINTS_NOT_SATISFIABLE
+     frame #1: 0x00000001a1518360 AppKit`-[NSView(NSConstraintBasedLayoutInternal) engine:willBreakConstraint:dueToMutuallyExclusiveConstraints:] + 256
+     frame #2: 0x00000001ac975414 CoreAutoLayout`-[NSISEngine handleUnsatisfiableRow:usingInfeasibilityHandlingBehavior:prospectiveRowHead:mutuallyExclusiveConstraints:] + 876
+     frame #3: 0x00000001ac977850 CoreAutoLayout`-[NSISEngine tryUsingArtificialVariableToAddConstraintWithMarker:row:usingInfeasibilityHandlingBehavior:mutuallyExclusiveConstraints:] + 908
+     frame #4: 0x00000001ac99aab4 CoreAutoLayout`-[NSISEngine _tryToAddConstraintWithMarkerEngineVar:row:mutuallyExclusiveConstraints:] + 380
+     frame #5: 0x00000001ac99a794 CoreAutoLayout`-[NSISEngine tryToAddConstraintWithMarker:expression:mutuallyExclusiveConstraints:] + 780
+     frame #6: 0x00000001ac99dab0 CoreAutoLayout`-[NSLayoutConstraint _addLoweredExpression:toEngine:lastLoweredConstantWasRounded:mutuallyExclusiveConstraints:] + 224
+     frame #7: 0x00000001ac98ca20 CoreAutoLayout`-[NSLayoutConstraint _addToEngine:mutuallyExclusiveConstraints:] + 184
+     frame #8: 0x00000001a15170a0 AppKit`__60-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:]_block_invoke_2 + 316
+     frame #9: 0x00000001ac978d54 CoreAutoLayout`-[NSISEngine withBehaviors:performModifications:] + 88
+     frame #10: 0x00000001a1517870 AppKit`-[NSView(NSConstraintBasedLayoutInternal) _withAutomaticEngineOptimizationDisabled:] + 48
+     frame #11: 0x00000001a1516f30 AppKit`__60-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:]_block_invoke + 328
+     frame #12: 0x00000001a1516d9c AppKit`-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:] + 492
+     frame #13: 0x00000001a1517008 AppKit`__60-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:]_block_invoke_2 + 164
+     frame #14: 0x00000001ac978d54 CoreAutoLayout`-[NSISEngine withBehaviors:performModifications:] + 88
+     frame #15: 0x00000001a1517870 AppKit`-[NSView(NSConstraintBasedLayoutInternal) _withAutomaticEngineOptimizationDisabled:] + 48
+     frame #16: 0x00000001a1516f30 AppKit`__60-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:]_block_invoke + 328
+     frame #17: 0x00000001a1516d9c AppKit`-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:] + 492
+     frame #18: 0x00000001a1517008 AppKit`__60-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:]_block_invoke_2 + 164
+     frame #19: 0x00000001ac978d54 CoreAutoLayout`-[NSISEngine withBehaviors:performModifications:] + 88
+     frame #20: 0x00000001a1517870 AppKit`-[NSView(NSConstraintBasedLayoutInternal) _withAutomaticEngineOptimizationDisabled:] + 48
+     frame #21: 0x00000001a1516f30 AppKit`__60-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:]_block_invoke + 328
+     frame #22: 0x00000001a1516d9c AppKit`-[NSView(NSConstraintBasedLayoutInternal) _setLayoutEngine:] + 492
+     frame #23: 0x00000001a11fff18 AppKit`__56-[NSView _layoutSubtreeIfNeededAndAllowTemporaryEngine:]_block_invoke + 584
+     frame #24: 0x00000001a08f8e88 AppKit`NSPerformVisuallyAtomicChange + 128
+     frame #25: 0x00000001a08fd3d0 AppKit`-[NSView _layoutSubtreeIfNeededAndAllowTemporaryEngine:] + 100
+     frame #26: 0x00000001a08f8e88 AppKit`NSPerformVisuallyAtomicChange + 128
+     frame #27: 0x00000001a08fd360 AppKit`-[NSView layoutSubtreeIfNeeded] + 96
+     frame #28: 0x00000001002835b8 Before`FluentExpanderHeader.updateAppearance(animated=true) at FluentDisclosure.swift:342:9
+     frame #29: 0x0000000100283800 Before`FluentExpanderHeader.isExpanded.didset(oldValue=false) at FluentDisclosure.swift:151:39
+     frame #30: 0x0000000100283924 Before`FluentExpanderHeader.isExpanded.setter(value=true) at FluentDisclosure.swift:0
+     frame #31: 0x000000010028b0d4 Before`FluentExpanderHost.applyState(animated=false) at FluentDisclosure.swift:608:27
+     frame #32: 0x000000010028a374 Before`FluentExpanderHost.init(binding=some, expandDirection=down, isEnabled=true, accessibilityLabel="Sample", onExpanding=nil, onCollapsed=nil, headerView=0x0000000101911050, contentView=0x00000077d6ce8280, context=FluentKit.FluentRenderContext @ 0x000000016fdfd2b0) at FluentDisclosure.swift:487:9
+     frame #33: 0x000000010028189c Before`FluentExpanderHost.__allocating_init() at FluentDisclosure.swift:0
+  ﹍ frame #34: 0x0000000100281520 Before`FluentExpanderView._makeView(context=FluentKit.FluentRenderContext @ 0x000000016fdfd940) at FluentDisclosure.swift:43:20
+  ﹉ frame #36: 0x000000010025be2c Before`FluentView._mount(context=FluentKit.FluentRenderContext @ 0x000000016fdfd940) at FluentDeclarativeCore.swift:675:30
+  ﹍ frame #37: 0x0000000100001c38 Before`static InitialLayoutAudit.main() at InitialLayoutAudit.swift:16:33
+  ﹉ frame #39: 0x000000010000433c Before`main at InitialLayoutAudit.swift:0
+(lldb) quit

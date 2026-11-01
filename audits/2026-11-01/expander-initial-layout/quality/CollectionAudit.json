@@ -1,0 +1,54 @@
+[
+  {
+    "bodyEvaluations" : 10,
+    "finalText" : "audit-9",
+    "meanMs" : 6.4521833322942257,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 12.144250009441748,
+    "rowMakes" : 0,
+    "rows" : 1000,
+    "rowUpdates" : 180,
+    "shell" : false,
+    "textChanges" : 10
+  },
+  {
+    "bodyEvaluations" : 10,
+    "finalText" : "audit-9",
+    "meanMs" : 5.5113500042352825,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 8.9507499942556024,
+    "rowMakes" : 0,
+    "rows" : 1000,
+    "rowUpdates" : 180,
+    "shell" : true,
+    "textChanges" : 10
+  },
+  {
+    "bodyEvaluations" : 10,
+    "finalText" : "audit-9",
+    "meanMs" : 4.9654291709885001,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 12.793208326911554,
+    "rowMakes" : 0,
+    "rows" : 5000,
+    "rowUpdates" : 180,
+    "shell" : false,
+    "textChanges" : 10
+  },
+  {
+    "bodyEvaluations" : 10,
+    "finalText" : "audit-9",
+    "meanMs" : 7.3058041627518833,
+    "nativeAttachments" : 0,
+    "navigation" : false,
+    "p95Ms" : 10.839624999789521,
+    "rowMakes" : 0,
+    "rows" : 5000,
+    "rowUpdates" : 180,
+    "shell" : true,
+    "textChanges" : 10
+  }
+]
