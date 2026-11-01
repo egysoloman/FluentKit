@@ -6,6 +6,8 @@ Gallery samples in light/dark/RTL environments, captures controlled visual state
 JSON results and collection diagnostics. It does not replace `swift test` or real interaction QA.
 MenuPointerAudit covers 64 native tracking scenarios across themes, directions and contrast modes,
 including delayed close, descendant handoff, sibling replacement and expanded-row rendering.
+MenuBarInteractionAudit covers 36 theme/direction/input cases, including top-level handoff,
+cancelled press/hover, access keys and repeated opening commands.
 
 CI also captures `swift test` output and runs `tools/check_test_diagnostics.py <log>` to reject
 AppKit constraint conflicts even when XCTest passes. `-warnings-as-errors` only promotes compiler

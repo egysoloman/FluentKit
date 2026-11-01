@@ -81,7 +81,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    selection on one-level closure and protect callback-opened replacements. Pointer handoff cancels
    stale sibling opens, closes abandoned branches with a grace period and preserves expanded paint
    and accessibility state separately from selection, including High Contrast and vertical scrollers.
-   Continue application acceptance and the remaining hierarchical contracts.
+   MenuBar preserves input origin across top-level switches, coordinates hover and press lifecycles,
+   and keeps an already-open panel for repeated opening commands. Continue application acceptance,
+   shared popup High Contrast border resolution and the remaining hierarchical contracts.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required

@@ -124,6 +124,22 @@ for row in pointer:
         assert row['expandedTextContrast'] >= 4.5, row
     if row['action'] == 'ownerPaint':
         assert (row['ownerBackgroundAlpha'] == 0) if row['highContrast'] else (row['ownerBackgroundAlpha'] > 0), row
+menubar = load('MenuBarInteractionAudit')
+menubar_actions = {'hover', 'disabled', 'cancel', 'dismissPress', 'keyCross', 'access', 'pointerCross', 'repeat', 'nativeKey'}
+assert len(menubar) == 36 and {(r['dark'], r['rtl'], r['action']) for r in menubar} == {
+    (dark, rtl, action) for dark in (False, True) for rtl in (False, True) for action in menubar_actions
+}, menubar
+for row in menubar:
+    assert row['passed'] is True, row
+    action = row['action']
+    assert row['openIndex'] == {'keyCross': 1, 'access': 0, 'pointerCross': 1, 'repeat': 0, 'nativeKey': 0}.get(action, -1), row
+    assert row['selectedRows'] == {'keyCross': ['Zoom'], 'access': ['Open'], 'repeat': ['Open'], 'nativeKey': ['Open']}.get(action, []), row
+    if action in ('hover', 'disabled', 'cancel', 'dismissPress'):
+        assert row['firstAlpha'] == 0, row
+    if action == 'hover':
+        assert row['secondAlpha'] > 0, row
+    if action == 'repeat':
+        assert row['retainedRoot'] is True, row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

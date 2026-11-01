@@ -88,6 +88,10 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
     private var flyout: FluentMenuFlyout?
     private var suppressDismissCallback = false
     private var accessKeyMonitor: Any?
+    private var lifecycleObservers: [NSObjectProtocol] = []
+    private lazy var hoverCoordinator = FluentHoverCoordinator<FluentMenuBarItemControl> { item, hovering in
+        item.setPointerOver(hovering)
+    }
 
     public init(items: [FluentMenuBarItem]) {
         self.items = items
@@ -103,6 +107,7 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
     deinit {
         flyout?.dismiss(animated: false)
         if let accessKeyMonitor { NSEvent.removeMonitor(accessKeyMonitor) }
+        removeLifecycleObservers()
     }
 
     public override var isFlipped: Bool { true }
@@ -147,6 +152,22 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         super.viewDidMoveToWindow()
         closeMenu()
         installAccessKeyMonitor()
+        installLifecycleObservers()
+    }
+
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { closeMenu() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { closeMenu(); removeLifecycleObservers() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        closeMenu()
     }
 
     public override func setFrameOrigin(_ newOrigin: NSPoint) {
@@ -156,10 +177,12 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
 
     public func openItem(at index: Int) {
         guard items.indices.contains(index), items[index].isEnabled, !items[index].items.isEmpty else { return }
+        if openItemIndex == index, flyout?.isPresented == true { return }
         presentItem(at: index)
     }
 
     public func closeMenu() {
+        cancelPointerState()
         guard flyout != nil || openItemIndex != nil else { return }
         suppressDismissCallback = true
         flyout?.dismiss(animated: false)
@@ -180,7 +203,10 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         guard let index = items.firstIndex(where: {
             $0.isEnabled && $0.accessKey.map { String($0).caseInsensitiveCompare(String(character)) == .orderedSame } == true
         }) else { return false }
-        openItem(at: index)
+        let target = itemViews[index]
+        FluentInputDeviceTracker.shared.record(.keyboard, in: window)
+        guard let current = itemViews.firstIndex(where: { $0 === target }), target.acceptsFirstResponder else { return false }
+        openItem(at: current)
         return true
     }
 
@@ -191,6 +217,31 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         setAccessibilityRole(.menuBar)
         fluentSetDefaultAccessibilityTitle("Menu bar")
         rebuildItems()
+    }
+
+    private func cancelPointerState() {
+        hoverCoordinator.reset(items: itemViews)
+        itemViews.forEach { $0.cancelInteraction() }
+    }
+
+    private func installLifecycleObservers() {
+        removeLifecycleObservers()
+        guard let window else { return }
+        for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification, NSWindow.willMiniaturizeNotification] {
+            lifecycleObservers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] note in
+                // A flyout legitimately takes key status from the host; release the captured
+                // button interaction without dismissing that newly opened menu.
+                if note.name == NSWindow.didResignKeyNotification { self?.cancelPointerState() }
+                else { self?.closeMenu() }
+            })
+        }
+        lifecycleObservers.append(NotificationCenter.default.addObserver(forName: NSApplication.willResignActiveNotification,
+            object: NSApp, queue: .main) { [weak self] _ in self?.closeMenu() })
+    }
+
+    private func removeLifecycleObservers() {
+        lifecycleObservers.forEach(NotificationCenter.default.removeObserver)
+        lifecycleObservers.removeAll()
     }
 
     private func installAccessKeyMonitor() {
@@ -233,7 +284,14 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
             if control.superview !== self { addSubview(control) }
             return control
         }
-        candidates.values.flatMap { $0 }.forEach { $0.removeFromSuperview() }
+        for control in candidates.values.flatMap({ $0 }) {
+            hoverCoordinator.remove(control)
+            control.cancelInteraction()
+            control.onInvoke = nil
+            control.onHoverChange = nil
+            control.onHorizontalNavigation = nil
+            control.removeFromSuperview()
+        }
         if let openControl, let index = itemViews.firstIndex(where: { $0 === openControl }),
            items[index].isEnabled, !items[index].items.isEmpty {
             openItemIndex = index
@@ -243,7 +301,7 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
         } else {
             openControl?.isSelected = false
             openItemIndex = nil
-            closeMenu()
+            if flyout != nil { closeMenu() }
         }
         if let focused {
             let target = itemViews.contains(where: { $0 === focused }) && focused.acceptsFirstResponder
@@ -258,16 +316,31 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
     private func configure(_ control: FluentMenuBarItemControl) {
         control.theme = theme
         control.fluentControlSize = fluentControlSize
-        control.onInvoke = { [weak self, weak control] in
-            guard let self, let control, let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
-            self.toggleItem(at: index)
+        control.onInvoke = { [weak self, weak control] invocation in
+            guard let self, let control, self.itemViews.contains(where: { $0 === control }) else { return }
+            if case .pointer(let device) = invocation {
+                if device == .touch { self.hoverCoordinator.reset(items: self.itemViews) }
+                else { self.hoverCoordinator.update(control, hovering: true) }
+            }
+            FluentInputDeviceTracker.shared.record(invocation.inputDeviceType, in: self.window)
+            // Device-change notifications can synchronously reorder or replace the items.
+            guard let index = self.itemViews.firstIndex(where: { $0 === control }), control.acceptsFirstResponder else { return }
+            if case .keyboard = invocation { self.openItem(at: index) }
+            else { self.toggleItem(at: index) }
         }
-        control.onHover = { [weak self, weak control] in
-            guard let self, let control, let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
-            self.hoverItem(at: index)
+        control.onHoverChange = { [weak self, weak control] hovering in
+            guard let self, let control, self.itemViews.contains(where: { $0 === control }) else { return }
+            self.hoverCoordinator.update(control, hovering: hovering)
+            if hovering {
+                FluentInputDeviceTracker.shared.record(.mouse, in: self.window)
+                guard let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
+                self.hoverItem(at: index)
+            }
         }
         control.onHorizontalNavigation = { [weak self, weak control] offset in
-            guard let self, let control, let index = self.itemViews.firstIndex(where: { $0 === control }) else { return }
+            guard let self, let control else { return }
+            FluentInputDeviceTracker.shared.record(.keyboard, in: self.window)
+            guard let index = self.itemViews.firstIndex(where: { $0 === control }), control.acceptsFirstResponder else { return }
             self.moveFromItem(at: index, physicalOffset: offset, open: false)
         }
     }
@@ -294,7 +367,10 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
     }
 
     private func presentItem(at index: Int) {
-        guard let window, items.indices.contains(index), !items[index].items.isEmpty else { return }
+        guard let window, !isHiddenOrHasHiddenAncestor, items.indices.contains(index),
+              items[index].isEnabled, !items[index].items.isEmpty,
+              !itemViews[index].isHiddenOrHasHiddenAncestor else { return }
+        itemViews.forEach { $0.cancelPress() }
         let old = openItemIndex
         suppressDismissCallback = true
         flyout?.dismiss(animated: false)
@@ -308,8 +384,12 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
             matchesAnchorWidth: false,
             reduceMotion: reduceMotion
         )
-        next.onRootHorizontalNavigation = { [weak self] physicalOffset in
-            guard let self, let current = self.openItemIndex else { return }
+        next.onRootHorizontalNavigation = { [weak self, weak next] physicalOffset in
+            guard let self, let next, self.flyout === next else { return }
+            // The key event belongs to the popup window. Carry its origin back to the bar's
+            // host so the next root cannot inherit the host's stale mouse/touch record.
+            FluentInputDeviceTracker.shared.record(.keyboard, in: self.window)
+            guard self.flyout === next, let current = self.openItemIndex else { return }
             self.moveFromItem(at: current, physicalOffset: physicalOffset, open: true)
         }
         next.onDismiss = { [weak self, weak next] in
@@ -319,6 +399,7 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
                 self.itemViews[open].isSelected = false
             }
             self.openItemIndex = nil
+            self.cancelPointerState()
         }
         flyout = next
         openItemIndex = index
@@ -365,6 +446,17 @@ public final class FluentMenuBar: NSView, FluentControlSizeConfigurable {
     }
 }
 
+private enum FluentMenuBarInvocation {
+    case pointer(FluentInputDeviceType)
+    case keyboard
+    case accessibility
+
+    var inputDeviceType: FluentInputDeviceType {
+        if case .pointer(let device) = self { return device }
+        return .keyboard
+    }
+}
+
 private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfigurable {
     var item: FluentMenuBarItem
     var theme: FluentTheme {
@@ -377,13 +469,17 @@ private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfig
         didSet { setAccessibilityExpanded(isSelected); needsDisplay = true }
     }
     var showsAccessKey = false { didSet { guard oldValue != showsAccessKey else { return }; needsDisplay = true } }
-    var onInvoke: (() -> Void)?
-    var onHover: (() -> Void)?
+    var onInvoke: ((FluentMenuBarInvocation) -> Void)?
+    var onHoverChange: ((Bool) -> Void)?
     var onHorizontalNavigation: ((Int) -> Void)?
 
     private var pointerOver = false
     private var pressed = false
     private var trackingPress = false
+    private lazy var pointerTrackingAreaHost = FluentTrackingAreaHost(
+        view: self, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect]
+    )
+    private var canReceiveInput: Bool { isEnabled && item.isEnabled && window != nil && !isHiddenOrHasHiddenAncestor }
 
     init(item: FluentMenuBarItem, theme: FluentTheme) {
         self.item = item
@@ -401,7 +497,40 @@ private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfig
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override var isFlipped: Bool { true }
-    override var acceptsFirstResponder: Bool { item.isEnabled }
+    override var acceptsFirstResponder: Bool { canReceiveInput }
+    override var isEnabled: Bool {
+        didSet { if oldValue != isEnabled, !isEnabled { cancelInteraction() } }
+    }
+
+    override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { cancelInteraction() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
+
+    func setPointerOver(_ hovering: Bool) {
+        let next = hovering && canReceiveInput
+        guard pointerOver != next else { return }
+        pointerOver = next
+        needsDisplay = true
+    }
+
+    func cancelPress() {
+        trackingPress = false
+        if pressed { pressed = false; needsDisplay = true }
+    }
+
+    func cancelInteraction() {
+        cancelPress()
+        setPointerOver(false)
+        onHoverChange?(false)
+    }
     override func becomeFirstResponder() -> Bool {
         let accepted = super.becomeFirstResponder()
         if accepted { needsDisplay = true }
@@ -429,43 +558,37 @@ private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfig
         setAccessibilityTitle(item.title)
         isEnabled = item.isEnabled
         setAccessibilityEnabled(item.isEnabled)
-        if !item.isEnabled { pointerOver = false; pressed = false; trackingPress = false }
+        if !item.isEnabled { cancelInteraction() }
         if titleChanged { invalidateIntrinsicContentSize() }
         needsDisplay = true
     }
 
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
-        trackingAreas.filter { $0.owner === self }.forEach(removeTrackingArea)
-        addTrackingArea(NSTrackingArea(
-            rect: surfaceRect,
-            options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect],
-            owner: self
-        ))
+        pointerTrackingAreaHost.update()
     }
 
     override func mouseEntered(with event: NSEvent) {
-        guard item.isEnabled else { return }
-        pointerOver = true
-        needsDisplay = true
-        onHover?()
+        guard window != nil, !isHiddenOrHasHiddenAncestor else { return }
+        // Disabled entries still end the previous item's hover ownership.
+        onHoverChange?(true)
     }
     override func mouseExited(with event: NSEvent) {
-        pointerOver = false
-        if !trackingPress { pressed = false }
+        onHoverChange?(false)
+        pressed = false
         needsDisplay = true
     }
     override func mouseDown(with event: NSEvent) {
-        guard item.isEnabled, surfaceRect.contains(convert(event.locationInWindow, from: nil)) else { return }
+        guard canReceiveInput, surfaceRect.contains(convert(event.locationInWindow, from: nil)) else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         window?.makeFirstResponder(self)
         trackingPress = true
         pressed = true
         needsDisplay = true
-        onInvoke?()
+        onInvoke?(.pointer(FluentInputDeviceTracker.deviceType(for: event) ?? .mouse))
     }
     override func mouseDragged(with event: NSEvent) {
-        guard trackingPress else { return }
+        guard trackingPress, canReceiveInput else { return }
         pressed = surfaceRect.contains(convert(event.locationInWindow, from: nil))
         needsDisplay = true
     }
@@ -475,23 +598,25 @@ private final class FluentMenuBarItemControl: NSControl, FluentControlSizeConfig
         needsDisplay = true
     }
     override func keyDown(with event: NSEvent) {
+        guard canReceiveInput else { return }
         guard !event.modifierFlags.contains(.option) else { super.keyDown(with: event); return }
         switch event.keyCode {
-        case 125, 36, 49: onInvoke?()
+        case 125, 36, 49:
+            if !event.isARepeat { onInvoke?(.keyboard) }
         case 124: onHorizontalNavigation?(1)
         case 123: onHorizontalNavigation?(-1)
         default: super.keyDown(with: event)
         }
     }
     override func accessibilityPerformPress() -> Bool {
-        guard item.isEnabled else { return false }
-        onInvoke?()
+        guard canReceiveInput else { return false }
+        onInvoke?(.accessibility)
         return true
     }
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        let state: FluentControlState = !item.isEnabled
+        let state: FluentControlState = !isEnabled || !item.isEnabled
             ? .disabled
             : (pressed ? .pressed : (pointerOver ? .pointerOver : .normal))
         let background: NSColor

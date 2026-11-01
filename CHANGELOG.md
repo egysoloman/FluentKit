@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- MenuBar coordinates hover ownership and clears stale presses on popup dismissal, focus loss,
+  hiding, removal and reparenting. Keyboard/access-key/accessibility opens and cross-root keyboard
+  navigation carry their input origin, while pointer handoff opens without keyboard row selection.
+  Opening keys and `openItem(at:)` retain an already-open panel; repeating opening keys no longer
+  toggle or rebuild it. Mouse clicks and accessibility activation retain explicit toggle behavior.
+  Synchronous input-device observers can reorder items or replace a popup without redirecting the
+  original item action or letting retired navigation override the replacement.
+
 - Hierarchical MenuFlyouts coordinate delayed opening and closing across descendants. Crossing
   into a child cancels pending sibling replacement; leaving the chain or entering a disabled
   sibling closes the old child after a grace period. Expanded branches retain independent paint

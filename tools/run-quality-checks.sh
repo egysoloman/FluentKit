@@ -36,7 +36,7 @@ mkdir -p "$QUALITY_BIN"
 if [ -d "$QUALITY_PRODUCTS/FluentKit_FluentKit.bundle" ]; then
     cp -R "$QUALITY_PRODUCTS/FluentKit_FluentKit.bundle" "$QUALITY_BIN/"
 fi
-for QUALITY_CASE in InputAudit CollectionAudit EditingAudit ComboBoxSelectionAudit ComboBoxTextSearchAudit ComboBoxCompletionAudit ComboBoxSubmissionAudit MenuHierarchyAudit MenuPointerAudit AppearanceAudit; do
+for QUALITY_CASE in InputAudit CollectionAudit EditingAudit ComboBoxSelectionAudit ComboBoxTextSearchAudit ComboBoxCompletionAudit ComboBoxSubmissionAudit MenuHierarchyAudit MenuPointerAudit MenuBarInteractionAudit AppearanceAudit; do
     swiftc -parse-as-library -O -swift-version 5 -warnings-as-errors -I "$QUALITY_MODULES" \
         "$QUALITY_FIXTURES/$QUALITY_CASE.swift" "${QUALITY_OBJECTS[@]}" \
         -o "$QUALITY_BIN/$QUALITY_CASE"
