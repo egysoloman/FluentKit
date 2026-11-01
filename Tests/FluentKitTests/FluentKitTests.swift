@@ -4633,8 +4633,9 @@ final class FluentKitTests: XCTestCase {
         XCTAssertEqual(state.wrappedValue, FluentTime(hour: 8, minute: 10))
 
         state.wrappedValue = FluentTime(hour: 18, minute: 49)
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+        waitForUI(picker.selectedTime == FluentTime(hour: 18, minute: 45))
         XCTAssertEqual(picker.selectedTime, FluentTime(hour: 18, minute: 45))
+        XCTAssertEqual(state.wrappedValue, FluentTime(hour: 18, minute: 45), "The adjusted time is written back to the binding")
         host.update(FluentTimePickerView(
             selection: state.projectedValue,
             minuteIncrement: 15,
