@@ -3313,7 +3313,9 @@ final class FluentKitTests: XCTestCase {
         XCTAssertEqual(listLayout.minimumInteritemSpacing, 2, accuracy: 0.001)
 
         selection.wrappedValue = "Beta"
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+        waitForUI(descendants(in: listHost).contains {
+            $0.accessibilityRole() == .row && $0.isAccessibilitySelected() && $0.accessibilityLabel() == "Item 2"
+        })
         let listCells = descendants(in: listHost).filter { $0.accessibilityRole() == .row }
         XCTAssertEqual(listCells.count, 3)
         XCTAssertEqual(listCells.filter { $0.isAccessibilitySelected() }.count, 1)
@@ -3347,9 +3349,13 @@ final class FluentKitTests: XCTestCase {
         let gridLayout = try XCTUnwrap(gridCollection.collectionViewLayout as? NSCollectionViewFlowLayout)
         XCTAssertEqual(gridLayout.itemSize.height, 88, accuracy: 0.001)
         multiSelection.wrappedValue = [2, 4]
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+        waitForUI(descendants(in: gridHost).filter {
+            $0.accessibilityRole() == .cell && $0.isAccessibilitySelected()
+        }.count == 2)
         let gridCells = descendants(in: gridHost).filter { $0.accessibilityRole() == .cell }
         XCTAssertEqual(gridCells.filter { $0.isAccessibilitySelected() }.count, 2)
+        XCTAssertEqual(Set(gridCells.filter { $0.isAccessibilitySelected() }.compactMap { $0.accessibilityLabel() }),
+                       ["Item 2", "Item 4"])
     }
 
     @MainActor
