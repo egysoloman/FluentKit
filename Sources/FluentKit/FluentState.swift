@@ -121,12 +121,20 @@ enum FluentDependencyTracking {
     }
 }
 
+private final class FluentBindingOperationIdentity {}
+
 public struct FluentBinding<Value> {
     public let get: () -> Value
     public let set: (Value) -> Void
     let observe: ((@escaping (Value) -> Void) -> UUID)?
     let removeObserver: ((UUID) -> Void)?
     let observationIdentity: ObjectIdentifier?
+    private let fallbackOperationIdentity: FluentBindingOperationIdentity?
+    /// Copies of a closure binding share ownership, even without a reusable subscription.
+    /// Mapped observers still use their existing independent subscription policy.
+    var operationIdentity: ObjectIdentifier? {
+        observationIdentity ?? fallbackOperationIdentity.map(ObjectIdentifier.init)
+    }
     var textInputConfiguration = FluentTextInputConfiguration()
 
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
@@ -135,6 +143,7 @@ public struct FluentBinding<Value> {
         observe = nil
         removeObserver = nil
         observationIdentity = nil
+        fallbackOperationIdentity = FluentBindingOperationIdentity()
     }
 
     init(
@@ -149,6 +158,7 @@ public struct FluentBinding<Value> {
         self.observe = observe
         self.removeObserver = removeObserver
         self.observationIdentity = observationIdentity
+        fallbackOperationIdentity = observationIdentity == nil ? FluentBindingOperationIdentity() : nil
     }
 
     public var wrappedValue: Value {

@@ -869,8 +869,38 @@ Replacing that suffix continues the search; deleting it keeps the shorter text i
 completing it again. Typing and completion share native undo, exact matches ignore case while retaining
 typed casing, and stable completion choices survive option reordering or renaming. Marked text completes
 only after native composition finishes, with pending external resets taking priority. The same
-`.isTextSearchEnabled(false)` modifier disables prefix completion. Custom text-submission events remain
-an open contract; unmatched text currently commits through the text binding with a nil option selection.
+`.isTextSearchEnabled(false)` modifier disables prefix completion.
+
+Use `.onTextSubmitted { submission in ... }` for new unmatched editable values. The callback runs
+synchronously on Return, Tab, ordinary dismissal or blur; matched options, Escape and marked text do
+not raise it. After the callback's queued declarative refresh, the control rechecks exact titles
+(ignoring case): an inserted option is selected without an intermediate nil selection; otherwise
+the text binding retains the custom string and option selection becomes nil. Repeated commits of
+the same accepted custom value ignore case and do not raise the event again. Choosing an option or
+resetting the model starts a new custom-value lifetime.
+
+Set `submission.handled = true` to skip default selection. If text remains unchanged, the control
+displays the application's current selected option or the last accepted custom value. Explicit
+text resets, replacement bindings, new native edits and newly opened popups take precedence over
+the old submission. Empty or space-only input restores the current choice without an event.
+Keep closure or mapped bindings in stable storage when an in-flight submission should survive a
+rerender; a newly constructed binding is a new owner. This does not change observer reuse policy.
+
+```swift
+struct CustomSizePicker: FluentView {
+    @FluentState private var sizes = ["Small", "Medium", "Large"]
+    @FluentState private var selected: String? = "Medium"
+    @FluentState private var text = "Medium"
+
+    var body: some FluentView {
+        FluentComboBox(options: sizes, selection: $selected, mode: .editable, text: $text)
+            .onTextSubmitted { submission in
+                if submission.text.count > 40 { submission.handled = true }
+                else { sizes.append(submission.text) }
+            }
+    }
+}
+```
 
 Open ComboBoxes reconcile options by their unique `Hashable` values. Appending, reordering or
 removing options preserves the panel, responder, surviving rows and visible scroll position.

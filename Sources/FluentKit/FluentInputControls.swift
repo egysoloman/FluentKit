@@ -640,6 +640,14 @@ public enum FluentComboBoxSelectionChangedTrigger: Hashable, Sendable {
     case always
 }
 
+/// A committed editable value that does not match an option. The callback is synchronous.
+public struct FluentComboBoxTextSubmittedEvent: Sendable, Equatable {
+    public let text: String
+    /// Skip default selection. If the callback leaves the text unchanged, display the
+    /// current selected option (or the last accepted custom value) instead.
+    public var handled = false
+}
+
 public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     private let options: [Option]
     private let selection: FluentBinding<Option?>
@@ -649,6 +657,7 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     private let style: any FluentTextFieldStyle
     private var selectionTrigger: FluentComboBoxSelectionChangedTrigger = .committed
     private var textSearchEnabled = true
+    private var textSubmitted: ((inout FluentComboBoxTextSubmittedEvent) -> Void)?
 
     public init(
         options: [Option],
@@ -677,6 +686,7 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
             mode: mode,
             selectionTrigger: selectionTrigger,
             textSearchEnabled: textSearchEnabled,
+            onTextSubmitted: textSubmitted,
             title: title,
             theme: context.theme,
             style: style,
@@ -693,6 +703,7 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
             mode: mode,
             selectionTrigger: selectionTrigger,
             textSearchEnabled: textSearchEnabled,
+            onTextSubmitted: textSubmitted,
             title: title,
             theme: context.theme,
             style: style,
@@ -702,9 +713,11 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     }
 
     public func textFieldStyle(_ style: any FluentTextFieldStyle) -> FluentComboBox<Option> {
-        FluentComboBox(options: options, selection: selection, mode: mode, text: text, style: style, title: title)
+        var copy = FluentComboBox(options: options, selection: selection, mode: mode, text: text, style: style, title: title)
             .selectionChangedTrigger(selectionTrigger)
             .isTextSearchEnabled(textSearchEnabled)
+        copy.textSubmitted = textSubmitted
+        return copy
     }
 
     /// Defaults to WinUI's committed selection behavior. Use `.always` for immediate previews.
@@ -718,6 +731,17 @@ public struct FluentComboBox<Option: Hashable>: FluentUpdatablePrimitiveView {
     public func isTextSearchEnabled(_ enabled: Bool) -> Self {
         var copy = self
         copy.textSearchEnabled = enabled
+        return copy
+    }
+
+    /// Called on Return, Tab, ordinary dismissal or blur for a new unmatched value.
+    /// Leave `handled` false to select an exact option inserted by the callback, or keep
+    /// the submitted text with a nil selection. Escape and marked text do not submit.
+    /// Selection/display finalization after a callback waits for its queued declarative
+    /// refresh, so appended options participate without an intermediate nil write.
+    public func onTextSubmitted(_ action: @escaping (inout FluentComboBoxTextSubmittedEvent) -> Void) -> Self {
+        var copy = self
+        copy.textSubmitted = action
         return copy
     }
 }
@@ -1213,6 +1237,12 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private var mode: FluentComboBoxMode
     private var selectionTrigger: FluentComboBoxSelectionChangedTrigger
     private var textSearchEnabled: Bool
+    private var onTextSubmitted: ((inout FluentComboBoxTextSubmittedEvent) -> Void)?
+    private var isCommittingEditableSelection = false
+    private var committedCustomText: String?
+    private var textSubmissionRevision: UInt = 0
+    private var nativeEditRevision: UInt = 0
+    private var pendingTextSubmission: UUID?
     private var textSearch = FluentComboBoxTextSearch()
     private final class SelectionSession {
         var baselineSelection: Option?
@@ -1284,6 +1314,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         mode: FluentComboBoxMode,
         selectionTrigger: FluentComboBoxSelectionChangedTrigger,
         textSearchEnabled: Bool,
+        onTextSubmitted: ((inout FluentComboBoxTextSubmittedEvent) -> Void)?,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
         style: any FluentTextFieldStyle,
@@ -1295,6 +1326,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         self.mode = mode
         self.selectionTrigger = selectionTrigger
         self.textSearchEnabled = textSearchEnabled
+        self.onTextSubmitted = onTextSubmitted
         self.title = title
         self.reduceMotion = reduceMotion
         super.init(frame: .zero)
@@ -1529,6 +1561,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     override func viewWillMove(toWindow newWindow: NSWindow?) {
         if newWindow !== window {
+            textSubmissionRevision &+= 1
             textSearch.reset()
             cancelEditableCompletion()
             cancelPointerInteraction(dismissPopup: false)
@@ -1638,6 +1671,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         mode: FluentComboBoxMode,
         selectionTrigger: FluentComboBoxSelectionChangedTrigger,
         textSearchEnabled: Bool,
+        onTextSubmitted: ((inout FluentComboBoxTextSubmittedEvent) -> Void)?,
         title: @escaping (Option) -> String,
         theme: FluentTheme,
         style: any FluentTextFieldStyle,
@@ -1646,8 +1680,14 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         updateGeneration &+= 1
         let generation = updateGeneration
         let modeChanged = self.mode != mode
-        let knownBindingChanged = self.selection.observationIdentity != selection.observationIdentity
-            || self.text?.observationIdentity != text?.observationIdentity
+        let textBindingChanged = self.text?.observationIdentity != text?.observationIdentity
+        let knownBindingChanged = self.selection.observationIdentity != selection.observationIdentity || textBindingChanged
+        let textReboundDuringSubmission = (isCommittingEditableSelection || pendingTextSubmission != nil)
+            && self.text?.operationIdentity != text?.operationIdentity
+        if modeChanged || knownBindingChanged {
+            textSubmissionRevision &+= 1
+            committedCustomText = nil
+        }
         // A closure binding may have no observation identity. Its last rendered stable value
         // still distinguishes a parent model reset from a theme/title-only update.
         let displayedSelection = self.options.indices.contains(comboBox.indexOfSelectedItem)
@@ -1685,6 +1725,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         self.mode = mode
         self.selectionTrigger = selectionTrigger
         self.textSearchEnabled = textSearchEnabled
+        self.onTextSubmitted = onTextSubmitted
         self.title = title
         self.reduceMotion = reduceMotion
         if self.theme != theme { self.theme = theme }
@@ -1721,7 +1762,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         refreshOpenPopup()
         updateTextBindingCoordinator()
         guard generation == updateGeneration else { return }
-        refreshSelectionSessionFromModel(force: knownBindingChanged)
+        refreshSelectionSessionFromModel(force: knownBindingChanged,
+            preservingText: text != nil && (textBindingChanged || textReboundDuringSubmission))
         applySelection()
         guard generation == updateGeneration else { return }
         updateFocusPill(focused: isTextFocusActive, animated: false)
@@ -1760,6 +1802,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     func controlTextDidChange(_ notification: Notification) {
         guard mode == .editable, !isApplyingSelection else { return }
+        nativeEditRevision &+= 1
+        pendingTextSubmission = nil
         let value = (notification.object as? NSTextField)?.stringValue ?? editableField.stringValue
         editableField.stringValue = value
         comboBox.stringValue = value
@@ -1901,9 +1945,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         // AppKit's field editor owns focus while typing; the NSTextField's responder callback
         // alone does not observe that editor leaving the control.
         cancelPointerInteraction(dismissPopup: false)
+        let popup = comboPopup
         commitEditableSelection()
         isEditingText = false
-        comboPopup?.dismiss(animated: false, reason: .accepted)
+        popup?.dismiss(animated: false, reason: .accepted)
         applyButtonChrome(animated: true)
     }
 
@@ -1982,16 +2027,18 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             } else { requestOpen() }
             return true
         case #selector(NSResponder.insertNewline(_:)):
+            let popup = comboPopup
             commitEditableSelection()
-            comboPopup?.dismiss(animated: false, reason: .accepted)
+            popup?.dismiss(animated: false, reason: .accepted)
             return true
         case #selector(NSResponder.cancelOperation(_:)):
             guard let comboPopup, comboPopup.isPresented else { return false }
             comboPopup.cancelFromKeyboard()
             return true
         case #selector(NSResponder.insertTab(_:)), #selector(NSResponder.insertBacktab(_:)):
+            let popup = comboPopup
             commitEditableSelection()
-            comboPopup?.dismiss(animated: false, reason: .accepted)
+            popup?.dismiss(animated: false, reason: .accepted)
             return false // AppKit keeps responsibility for forward/backward key-view traversal.
         default: return false
         }
@@ -2089,6 +2136,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     private func selectOption(at index: Int, dismiss: Bool, preservingEquivalentText: Bool = false) {
         guard options.indices.contains(index) else { return }
+        committedCustomText = nil
         cancelScheduledEditablePublication()
         let option = options[index]
         if mode == .editable {
@@ -2177,7 +2225,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     private func commitEditableSelection() {
-        guard mode == .editable, (editableField.currentEditor() as? NSTextView)?.hasMarkedText() != true else { return }
+        guard mode == .editable, !isCommittingEditableSelection,
+              (editableField.currentEditor() as? NSTextView)?.hasMarkedText() != true else { return }
+        isCommittingEditableSelection = true
+        defer { isCommittingEditableSelection = false }
         // An unbound navigation preview is already a stable option, even if its title was
         // renamed while open. A new native edit clears this flag and still needs publication.
         if textBindingCoordinator != nil || selectionSession?.isNavigationPreview != true {
@@ -2185,13 +2236,92 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         }
         guard mode == .editable else { return }
         refreshSelectionSessionFromModel()
+        guard pendingTextSubmission == nil else { return }
         if let result = completedOption, result.text == editableField.stringValue, let index = options.firstIndex(of: result.option) {
             selectOption(at: index, dismiss: false, preservingEquivalentText: true)
         } else if let preview = selectionSession?.preview, let index = options.firstIndex(of: preview) {
             selectOption(at: index, dismiss: false, preservingEquivalentText: true)
+        } else if let index = options.firstIndex(where: { FluentComboBoxTextSearch.equalsIgnoringCase(title($0), editableField.stringValue) }) {
+            selectOption(at: index, dismiss: false, preservingEquivalentText: true)
         } else {
-            reconcileEditableSelection(editableField.stringValue)
+            submitCustomText()
         }
+    }
+
+    private func submitCustomText() {
+        let value = editableField.stringValue
+        // Native single-line editing already normalizes line breaks; WinUI ignores empty
+        // strings and strings consisting entirely of literal spaces at submission.
+        guard value.contains(where: { $0 != " " }) else { restoreCommittedEditableText(); return }
+        let session = selectionSession
+        let ownerWindow = window
+        let selectionIdentity = selection.operationIdentity
+        let textIdentity = text?.operationIdentity
+        let previousSelection = selection.get()
+        let revision = textSubmissionRevision
+        let editRevision = nativeEditRevision
+        let previousCustomText = committedCustomText
+        let repeated = previousSelection == nil && committedCustomText.map {
+            FluentComboBoxTextSearch.equalsIgnoringCase($0, value)
+        } == true
+        let token = UUID()
+        pendingTextSubmission = token
+        let callback = repeated ? nil : onTextSubmitted
+        var event = FluentComboBoxTextSubmittedEvent(text: value)
+        callback?(&event)
+        let handled = event.handled
+        let finish = { [weak self] in
+            guard let self, self.pendingTextSubmission == token else { return }
+            self.pendingTextSubmission = nil
+            let wasCommitting = self.isCommittingEditableSelection
+            self.isCommittingEditableSelection = true
+            defer { self.isCommittingEditableSelection = wasCommitting }
+            // A normal close is allowed; a replacement session belongs to its caller.
+            guard self.mode == .editable, self.window === ownerWindow, ownerWindow?.isVisible == true,
+                  !self.isHiddenOrHasHiddenAncestor, self.isControlEnabled,
+                  self.selection.operationIdentity == selectionIdentity, self.text?.operationIdentity == textIdentity,
+                  self.selectionSession == nil || self.selectionSession === session,
+                  self.nativeEditRevision == editRevision,
+                  (self.editableField.currentEditor() as? NSTextView)?.hasMarkedText() != true,
+                  self.editableField.stringValue == value, self.text == nil || self.text?.get() == value else { return }
+            if handled {
+                // Explicitly rewritten text already returned through the guard above.
+                self.restoreCommittedEditableText(fallback: previousCustomText)
+                return
+            }
+            guard revision == self.textSubmissionRevision else { return }
+            // Removing the old option can normalize selection while inserting a new one.
+            guard self.selection.get() == previousSelection || (self.selection.get() == nil
+                && previousSelection.map { !self.options.contains($0) } == true) else { return }
+            if let index = self.options.firstIndex(where: { FluentComboBoxTextSearch.equalsIgnoringCase(self.title($0), value) }) {
+                self.selectOption(at: index, dismiss: false, preservingEquivalentText: true)
+            } else {
+                self.hasEditableDraft = true
+                self.setEditableDisplay(value, selectAll: true)
+                self.publishSelectionValue(nil)
+                // A validating setter may replace the model or bindings during publication.
+                if self.selection.get() == nil, self.editableField.stringValue == value,
+                   self.selection.operationIdentity == selectionIdentity, self.text?.operationIdentity == textIdentity,
+                   self.text == nil || self.text?.get() == value {
+                    self.committedCustomText = value
+                }
+                self.applySelection()
+            }
+        }
+        if callback != nil {
+            // FluentState invalidates the view asynchronously. Finish after the callback's
+            // scheduled render, including handled callbacks that replace model ownership.
+            DispatchQueue.main.async(execute: finish)
+        } else { finish() }
+    }
+
+    private func restoreCommittedEditableText(fallback: String? = nil) {
+        let value = selection.get().flatMap { options.contains($0) ? title($0) : nil }
+            ?? committedCustomText ?? fallback ?? ""
+        hasEditableDraft = selection.get() == nil
+        setEditableDisplay(value, selectAll: true)
+        publishTextValue(value)
+        applySelection()
     }
 
     @discardableResult
@@ -2207,7 +2337,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     /// External changes establish a new cancel baseline; our own writes only advance the
     /// expected model values. This also detects closure bindings refreshed by a parent render.
-    private func refreshSelectionSessionFromModel(force: Bool = false) {
+    private func refreshSelectionSessionFromModel(force: Bool = false, preservingText: Bool = false) {
         guard let session = selectionSession, !isPublishingSelection, !isPublishingText else { return }
         let selected = selection.get()
         let value = mode == .editable ? (text?.get() ?? editableField.stringValue) : session.modelText
@@ -2221,7 +2351,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         hasEditableDraft = false
         session.modelSelection = selected
         session.modelText = value
-        if selectionChanged, !textChanged, mode == .editable, let selected, options.contains(selected) {
+        if selectionChanged, !textChanged, !preservingText, mode == .editable, let selected, options.contains(selected) {
             if !deferExternalSelectionIfComposing() {
                 let title = title(selected)
                 setEditableDisplay(title)
@@ -2299,6 +2429,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
                 if !self.isPublishingSelection { self.textSearch.reset() }
                 if !self.isPublishingSelection { self.cancelEditableCompletion() }
                 if !self.isPublishingSelection { self.hasEditableDraft = false }
+                if !self.isPublishingSelection {
+                    self.textSubmissionRevision &+= 1
+                    self.committedCustomText = nil
+                }
                 if !self.isPublishingSelection { self.deferExternalSelectionIfComposing() }
                 self.refreshSelectionSessionFromModel(force: !self.isPublishingSelection)
                 self.applySelection()
@@ -2327,6 +2461,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             }
             coordinator.onExternalReset = { [weak self, weak coordinator] in
                 guard let self, let coordinator, self.textBindingCoordinator === coordinator else { return }
+                if !self.isPublishingText {
+                    self.textSubmissionRevision &+= 1
+                    self.committedCustomText = nil
+                }
                 self.cancelEditableCompletion()
             }
             coordinator.onExternalValueApplied = { [weak self, weak coordinator] value in

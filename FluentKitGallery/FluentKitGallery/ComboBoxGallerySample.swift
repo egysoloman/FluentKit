@@ -8,6 +8,7 @@ struct ComboBoxGallerySample: FluentView {
     @FluentState private var text = "Option 2"
     @FluentState private var request = 0
     @FluentState private var immediateSelection = false
+    @FluentState private var allowCustomValues = true
     @FluentState private var status = "Queue a change, then open either list before the two-second delay ends."
 
     var body: some FluentView {
@@ -25,10 +26,25 @@ struct ComboBoxGallerySample: FluentView {
                 .selectionChangedTrigger(immediateSelection ? .always : .committed).frame(width: 280)
             FluentText("Editable value", style: .caption)
             FluentText("Type Opt to complete an option. Delete the selected suffix to keep a custom prefix.", style: .caption)
+            FluentText("Submit Option 9 to add it to the list. Other text can be kept or rejected.", style: .caption)
             FluentComboBox(options: options, selection: $editableSelection, mode: .editable,
                 text: $text.textInput(.init(commitPolicy: .committedText)),
                 title: { "Option \($0)" })
-                .selectionChangedTrigger(immediateSelection ? .always : .committed).frame(width: 280)
+                .selectionChangedTrigger(immediateSelection ? .always : .committed)
+                .onTextSubmitted { submission in
+                    if submission.text.hasPrefix("Option "), let value = Int(submission.text.dropFirst(7)), value >= 0 {
+                        if !options.contains(value) { options.append(value) }
+                        status = "Added \(submission.text) and selected it."
+                    } else if allowCustomValues {
+                        status = "Kept custom text: \(submission.text)"
+                    } else {
+                        submission.handled = true
+                        status = "Custom text rejected; restored the current choice."
+                    }
+                }.frame(width: 280)
+            FluentButtonView(allowCustomValues ? "Custom values: allowed" : "Custom values: rejected") {
+                allowCustomValues.toggle()
+            }
             FluentHStack {
                 FluentButtonView("Append in 2 seconds") { schedule(.append) }
                 FluentButtonView("Reverse in 2 seconds") { schedule(.reverse) }

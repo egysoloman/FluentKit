@@ -78,6 +78,23 @@ for row in completion:
     assert row['selection'] == row['selectionAfterDeletion'] == (2 if row['always'] else 0), row
     assert all(row[key] is True for key in ('modelMatches', 'editorPreserved', 'panelPreserved',
         'freeTextCommitted', 'markedTextPreserved', 'externalResetWins')), row
+submission = load('ComboBoxSubmissionAudit')
+submission_actions = {'accept', 'reject', 'insert', 'rebind', 'reset', 'reopen'}
+assert len(submission) == 96 and {(r['dark'], r['rtl'], r['always'], r['open'], r['action']) for r in submission} == {
+    (dark, rtl, always, opened, action) for dark in (False, True) for rtl in (False, True)
+    for always in (False, True) for opened in (False, True) for action in submission_actions
+}, submission
+for row in submission:
+    action = row['action']
+    assert row['beforeSubmissionCount'] == 0 and row['beforeSelection'] == 'Alpha', row
+    assert row['submissions'] == ['Custom'], row
+    assert row['selected'] == {'accept': '<nil>', 'reject': 'Alpha', 'insert': 'Custom',
+        'rebind': 'Bravo', 'reset': '<nil>', 'reopen': 'Alpha'}[action], row
+    assert row['text'] == row['modelText'] == {'reject': 'Alpha', 'reset': 'External reset'}.get(action, 'Custom'), row
+    assert row['popupOpen'] == (action == 'reopen'), row
+    assert all(row[k] is True for k in ('editorPreserved', 'fieldPreserved', 'newPopupPreserved')), row
+    if action == 'insert':
+        assert row['selectedWrites'] == ['Custom'], row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

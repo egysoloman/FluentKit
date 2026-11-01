@@ -4,13 +4,21 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Editable ComboBoxes add `.onTextSubmitted` with synchronous event delivery and a mutable
+  `handled` flag. Selection/display finalization follows queued declarative updates, allowing
+  callback-inserted options to be selected directly. Custom strings retain the text binding with
+  nil selection; repeated case-equivalent commits do not resubmit. Handled submissions and empty
+  or space-only text restore the current choice unless the application explicitly changes text.
+  Binding replacement, composition, new input and reopened popups supersede stale submissions.
+  Callback replacement bindings preserve explicit text even when it equals the prior draft;
+  copies of closure/mapped bindings retain operation ownership without changing observer reuse.
+
 - Editable ComboBoxes complete prefixes through the native editor, preserving suffix selection
   and a single undo step for typing plus completion. Deletion keeps the shorter value; marked text
   waits for native commit, and external resets/rebinding take priority. Completion choices retain
   stable option identity across rename/reorder, and case-equivalent commits keep typed casing.
   `.isTextSearchEnabled(false)` also disables editable completion. Under `.always`, matching text
   selects immediately while unmatched text keeps the prior choice until Return, dismissal or blur.
-  Custom text-submission events remain follow-up work.
 
 - ComboBox row fills and selection indicators no longer inherit implicit Core Animation fades.
   Selection changes remove the old indicator immediately, including under Reduce Motion;

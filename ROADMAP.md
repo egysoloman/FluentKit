@@ -75,8 +75,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    Noneditable prefix search now handles immediate selection, space-separated queries, timeout,
    wrapping, Unicode folding and a developer opt-out without changing arrow-preview policy.
    Editable prefix completion now preserves native suffix selection/undo, deletion, marked text,
-   external-reset precedence and stable option identity. Next add custom text-submission events,
-   including handled callbacks, option insertion/rebinding and repeated-submission suppression.
+   external-reset precedence and stable option identity. Custom text-submission events support
+   handled callbacks, queued declarative option insertion, rebinding/reopening guards and repeated
+   custom-value suppression. Continue hierarchical flyout behavior and application acceptance.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required
