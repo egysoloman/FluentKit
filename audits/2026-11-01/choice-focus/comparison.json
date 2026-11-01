@@ -1,0 +1,8055 @@
+{
+  "before": {
+    "samples": 96,
+    "mismatched_states": 96,
+    "mismatched_fields": 1260,
+    "errors": [
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-native-initial",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-native-down",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-native-up",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-native-resized",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-native-disabled",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-native-blur",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-bound-initial",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-bound-down",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-bound-up",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-bound-resized",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-bound-disabled",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          0.702
+        ]
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8941
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-light-standard-bound-blur",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-native-initial",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-native-down",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-native-up",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-native-resized",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-native-disabled",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-native-blur",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-bound-initial",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-bound-down",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-bound-up",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-bound-resized",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-bound-disabled",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 0
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-light-high-bound-blur",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-initial",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-down",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-up",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-resized",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-disabled",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-native-blur",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-bound-initial",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-bound-down",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-bound-up",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-bound-resized",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-bound-disabled",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0,
+          0,
+          0,
+          0.702
+        ]
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.radius",
+        "actual": 5.25,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-standard-bound-blur",
+        "field": "outer.width",
+        "actual": 1.5,
+        "expected": 2
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-native-initial",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-native-down",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-native-up",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-native-resized",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-native-disabled",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-native-blur",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-bound-initial",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-bound-down",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          190,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 179,
+        "expected": 194
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-bound-up",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "innerVisible",
+        "actual": false,
+        "expected": true
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-bound-resized",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-bound-disabled",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "clips",
+        "actual": true,
+        "expected": false
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "inner.bounds",
+        "actual": null,
+        "expected": [
+          -5,
+          -1,
+          234,
+          34
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "inner.color",
+        "actual": null,
+        "expected": [
+          0.1176,
+          0.1176,
+          0.1176,
+          1
+        ]
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "inner.radius",
+        "actual": null,
+        "expected": 7
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "inner.width",
+        "actual": null,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": 0.5,
+        "expected": -7
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": 2.5,
+        "expected": -3
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 223,
+        "expected": 238
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 27,
+        "expected": 38
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.color[0]",
+        "actual": 0,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.color[1]",
+        "actual": 0.554,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.color[2]",
+        "actual": 0.8646,
+        "expected": 1
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "check-dark-high-bound-blur",
+        "field": "outer.radius",
+        "actual": 5,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-native-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-native-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-native-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-native-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-native-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-native-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-bound-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-bound-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-bound-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-bound-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-bound-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-standard-bound-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-native-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-native-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-native-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-native-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-native-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-native-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-bound-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-bound-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-bound-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-bound-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-bound-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.color[0]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.color[1]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.color[2]",
+        "actual": 0.9625,
+        "expected": 1
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-light-high-bound-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-native-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-native-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-native-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-native-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-native-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-native-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-bound-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-bound-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-bound-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-bound-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-bound-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-standard-bound-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-native-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-native-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-native-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-native-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-native-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-native-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-bound-initial",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-bound-down",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.bounds[2]",
+        "actual": 192,
+        "expected": 190
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "outer.bounds[2]",
+        "actual": 196,
+        "expected": 194
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-bound-up",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-bound-resized",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-bound-disabled",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.bounds[0]",
+        "actual": -6,
+        "expected": -5
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.bounds[1]",
+        "actual": -2,
+        "expected": -1
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.bounds[2]",
+        "actual": 236,
+        "expected": 234
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.bounds[3]",
+        "actual": 36,
+        "expected": 34
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.color[0]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.color[1]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.color[2]",
+        "actual": 0.1674,
+        "expected": 0.1176
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "inner.radius",
+        "actual": 5.4999999999999964,
+        "expected": 7
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "outer.bounds[0]",
+        "actual": -8,
+        "expected": -7
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "outer.bounds[1]",
+        "actual": -4,
+        "expected": -3
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "outer.bounds[2]",
+        "actual": 240,
+        "expected": 238
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "outer.bounds[3]",
+        "actual": 40,
+        "expected": 38
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "outer.color[3]",
+        "actual": 1,
+        "expected": 0.8471
+      },
+      {
+        "id": "radio-dark-high-bound-blur",
+        "field": "outer.radius",
+        "actual": 7,
+        "expected": 9
+      }
+    ]
+  },
+  "after": {
+    "samples": 96,
+    "mismatched_states": 0,
+    "mismatched_fields": 0,
+    "errors": []
+  }
+}

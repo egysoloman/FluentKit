@@ -1,0 +1,12 @@
+{
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/CheckBox_themeresources.xaml": "d278a1df7ddc3e8516e3c8022a42f5eb1dd834686018e574dc85b2de41140017",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/RadioButton_themeresources.xaml": "e81b287331445235b8b3c95bb57929383745c002808f4d8c457306da3825f11a",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/Common_themeresources_any.xaml": "8b1189968a551161fd46a4e876d1e0e6b694f6626dc278d881b8cb5446f97bd3",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/CommonStyles/APITests/CommonStylesTests.cs": "ee396173ad480c5ca544a1335c55c65484cfd44721aa5f08030552aa3e090cba",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/RadioButtons/RadioButtons.cpp": "f740cf5f0baec4b7ef361ab465503377ee043d91dfd5de09463826ccceb7a505",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/BindingExpression_Partial.cpp": "a0ad231346e9065ca8968d6c0a145c17eac47a8be7595dfe8b66ae0005dfebc6",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/FrameworkApplication_Partial.cpp": "2704cdcff882062a25cc8612284296f8b8c4f079e617d5e5a242c466138882b5",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/components/FocusRect/FocusRectManager.cpp": "154903ae948c3e302135eda9b3d12f128eb9f0dec7342381eea0c4ab9c6243b3",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/components/FocusRect/inc/FocusRectNudging.h": "40e0ceaf4a8948e3ad0e7b6c77ec4b22ea04417a38d7a96dc3b5ba4c221f4153",
+  "microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/core/core/elements/geometry.cpp": "eb84fdff99b71b03551191f8f8bf57206ac32923a2fe6da925293111b2901c32"
+}

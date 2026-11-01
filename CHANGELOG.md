@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CheckBox and RadioButton now share WinUI HighVisibility focus borders: 2pt outer / 1pt
+  inner strokes, -7/-3 margins, corrected stroke placement and corner radii, and explicit-theme
+  High Contrast system-color roles. CheckBox replaces its inset accent ring and keeps outside
+  focus drawing visible after AppKit reapplies corner-radius clipping. Standard focus remains
+  static on press; WinUI FocusPress animation belongs to Reveal mode. Evidence and limits:
+  `audits/2026-11-01/choice-focus/REPORT.md`.
+
 - CheckBox now enters Pressed on Space keyDown and commits on keyUp, ignores Return/Enter,
   and supports keypad Add/Subtract like WinUI. CheckBox/RadioButton cancel input on focus loss,
   removal, hiding and window deactivation or disabling, and coordinate combined Space/pointer releases.

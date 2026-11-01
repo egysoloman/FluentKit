@@ -1,0 +1,145 @@
+diff --git a/Sources/FluentKit/FluentChoiceControls.swift b/Sources/FluentKit/FluentChoiceControls.swift
+index d894b8f..e844d3c 100644
+--- a/Sources/FluentKit/FluentChoiceControls.swift
++++ b/Sources/FluentKit/FluentChoiceControls.swift
+@@ -61,7 +61,8 @@ public final class FluentCheckBox: NSControl {
+     private var isSpaceKeyDown = false
+     private var windowResignObserver: NSObjectProtocol?
+     private var suppressesValueNotification = false
+-    private let focusLayer = CALayer()
++    private let focusLayer = CAShapeLayer()
++    private let focusInnerLayer = CAShapeLayer()
+     private let boxLayer = CALayer()
+     private let glyphLayer = CAShapeLayer()
+     private var lastLayoutSize = NSSize(width: -1, height: -1)
+@@ -312,6 +313,8 @@ public final class FluentCheckBox: NSControl {
+ 
+     private func configureView() {
+         wantsLayer = true
++        // AppKit can restore layer clipping from the view; the focus borders extend outside it.
++        clipsToBounds = false
+         focusRingType = .none
+         userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+         setAccessibilityRole(.checkBox)
+@@ -320,13 +323,19 @@ public final class FluentCheckBox: NSControl {
+         setAccessibilityEnabled(isEnabled)
+ 
+         focusLayer.name = "FluentKit.CheckBox.FocusRing"
++        focusInnerLayer.name = "FluentKit.CheckBox.FocusRing.Inner"
+         boxLayer.name = "FluentKit.CheckBox.Box"
+         glyphLayer.name = "FluentKit.CheckBox.Glyph"
+-        focusLayer.opacity = 0
++        layer?.masksToBounds = false
++        for focus in [focusLayer, focusInnerLayer] {
++            focus.fillColor = NSColor.clear.cgColor
++            focus.opacity = 0
++        }
+         glyphLayer.fillColor = NSColor.clear.cgColor
+         glyphLayer.lineCap = .round
+         glyphLayer.lineJoin = .round
+         layer?.addSublayer(focusLayer)
++        layer?.addSublayer(focusInnerLayer)
+         layer?.addSublayer(boxLayer)
+         layer?.addSublayer(glyphLayer)
+         addTrackingArea(
+@@ -396,11 +405,8 @@ public final class FluentCheckBox: NSControl {
+         glyphLayer.lineWidth = max(1.5, box.width * 0.10)
+         glyphLayer.strokeEnd = isChecked ? 1 : 0
+         glyphLayer.opacity = isChecked ? 1 : 0
+-        let focusRect = bounds.insetBy(dx: 0.5, dy: 2.5)
+-        focusLayer.frame = focusRect
+-        focusLayer.cornerRadius = max(appearance.cornerRadius + 2, 4)
+-        focusLayer.borderColor = theme.accent.cgColor
+-        focusLayer.borderWidth = theme.focusStrokeWidth
++        FluentChoiceFocusVisual.update(outer: focusLayer, inner: focusInnerLayer,
++            bounds: bounds, cornerRadius: appearance.cornerRadius, theme: theme)
+         CATransaction.commit()
+     }
+ 
+@@ -445,7 +451,9 @@ public final class FluentCheckBox: NSControl {
+     private func updateFocusRing() {
+         CATransaction.begin()
+         CATransaction.setDisableActions(true)
+-        focusLayer.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
++        let opacity: Float = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
++        focusLayer.opacity = opacity
++        focusInnerLayer.opacity = opacity
+         CATransaction.commit()
+     }
+ 
+@@ -819,6 +827,7 @@ public final class FluentRadioButton: NSControl {
+ 
+     private func configureView() {
+         wantsLayer = true
++        clipsToBounds = false
+         focusRingType = .none
+         userInterfaceLayoutDirection = fluentLayoutDirection.appKitValue
+         setAccessibilityRole(.radioButton)
+@@ -936,25 +945,8 @@ public final class FluentRadioButton: NSControl {
+         pressedDotLayer.cornerRadius = pressedDiameter / 2
+         pressedDotLayer.backgroundColor = appearance.pressedFeedbackColor.cgColor
+         pressedDotLayer.opacity = pressedVisible ? 1 : 0
+-        let focusRect = bounds.insetBy(dx: -7, dy: -3)
+-        focusLayer.frame = bounds
+-        focusLayer.path = CGPath(
+-            roundedRect: focusRect,
+-            cornerWidth: theme.designTokens.controlCornerRadius + 3,
+-            cornerHeight: theme.designTokens.controlCornerRadius + 3,
+-            transform: nil
+-        )
+-        focusLayer.strokeColor = theme.focusStrokeOuter.cgColor
+-        focusLayer.lineWidth = 2
+-        focusInnerLayer.frame = bounds
+-        focusInnerLayer.path = CGPath(
+-            roundedRect: focusRect.insetBy(dx: 1.5, dy: 1.5),
+-            cornerWidth: theme.designTokens.controlCornerRadius + 1.5,
+-            cornerHeight: theme.designTokens.controlCornerRadius + 1.5,
+-            transform: nil
+-        )
+-        focusInnerLayer.strokeColor = theme.focusStrokeInner.cgColor
+-        focusInnerLayer.lineWidth = 1
++        FluentChoiceFocusVisual.update(outer: focusLayer, inner: focusInnerLayer,
++            bounds: bounds, cornerRadius: theme.designTokens.controlCornerRadius, theme: theme)
+         CATransaction.commit()
+     }
+ 
+diff --git a/Sources/FluentKit/FluentFocus.swift b/Sources/FluentKit/FluentFocus.swift
+index ba1ed32..aeee553 100644
+--- a/Sources/FluentKit/FluentFocus.swift
++++ b/Sources/FluentKit/FluentFocus.swift
+@@ -1,5 +1,35 @@
+ import AppKit
+ 
++/// The default CheckBox/RadioButton HighVisibility focus borders. WinUI inflates the
++/// control by (7, 3), then draws a 2pt outer Border and a 1pt inner Border. Its Border
++/// CornerRadius describes the stroke centerline (geometry.cpp), not the painted edge.
++enum FluentChoiceFocusVisual {
++    static func update(
++        outer: CAShapeLayer,
++        inner: CAShapeLayer,
++        bounds: CGRect,
++        cornerRadius: CGFloat,
++        theme: FluentTheme
++    ) {
++        let borderBounds = bounds.insetBy(dx: -7, dy: -3)
++        // FocusRectManager.AdjustCornerRadius uses the average of adjacent margins;
++        // a zero radius deliberately stays square.
++        let radius = cornerRadius > 0 ? cornerRadius + 5 : 0
++        outer.frame = bounds
++        outer.path = CGPath(roundedRect: borderBounds.insetBy(dx: 1, dy: 1),
++            cornerWidth: radius, cornerHeight: radius, transform: nil)
++        outer.lineWidth = 2
++        outer.strokeColor = (theme.isHighContrast
++            ? theme.resolvedHighContrastColor(.controlTextColor) : theme.focusStrokeOuter).cgColor
++        inner.frame = bounds
++        inner.path = CGPath(roundedRect: borderBounds.insetBy(dx: 2.5, dy: 2.5),
++            cornerWidth: max(0, radius - 2), cornerHeight: max(0, radius - 2), transform: nil)
++        inner.lineWidth = 1
++        inner.strokeColor = (theme.isHighContrast
++            ? theme.resolvedHighContrastColor(.controlBackgroundColor) : theme.focusStrokeInner).cgColor
++    }
++}
++
+ /// Tracks whether the active focus was reached from the keyboard. AppKit exposes the first
+ /// responder but not the input modality that produced it, while Fluent focus visuals are shown
+ /// for keyboard navigation and remain hidden for ordinary pointer interaction.

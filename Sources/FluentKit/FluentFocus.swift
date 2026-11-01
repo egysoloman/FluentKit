@@ -1,5 +1,35 @@
 import AppKit
 
+/// The default CheckBox/RadioButton HighVisibility focus borders. WinUI inflates the
+/// control by (7, 3), then draws a 2pt outer Border and a 1pt inner Border. Its Border
+/// CornerRadius describes the stroke centerline (geometry.cpp), not the painted edge.
+enum FluentChoiceFocusVisual {
+    static func update(
+        outer: CAShapeLayer,
+        inner: CAShapeLayer,
+        bounds: CGRect,
+        cornerRadius: CGFloat,
+        theme: FluentTheme
+    ) {
+        let borderBounds = bounds.insetBy(dx: -7, dy: -3)
+        // FocusRectManager.AdjustCornerRadius uses the average of adjacent margins;
+        // a zero radius deliberately stays square.
+        let radius = cornerRadius > 0 ? cornerRadius + 5 : 0
+        outer.frame = bounds
+        outer.path = CGPath(roundedRect: borderBounds.insetBy(dx: 1, dy: 1),
+            cornerWidth: radius, cornerHeight: radius, transform: nil)
+        outer.lineWidth = 2
+        outer.strokeColor = (theme.isHighContrast
+            ? theme.resolvedHighContrastColor(.controlTextColor) : theme.focusStrokeOuter).cgColor
+        inner.frame = bounds
+        inner.path = CGPath(roundedRect: borderBounds.insetBy(dx: 2.5, dy: 2.5),
+            cornerWidth: max(0, radius - 2), cornerHeight: max(0, radius - 2), transform: nil)
+        inner.lineWidth = 1
+        inner.strokeColor = (theme.isHighContrast
+            ? theme.resolvedHighContrastColor(.controlBackgroundColor) : theme.focusStrokeInner).cgColor
+    }
+}
+
 /// Tracks whether the active focus was reached from the keyboard. AppKit exposes the first
 /// responder but not the input modality that produced it, while Fluent focus visuals are shown
 /// for keyboard navigation and remain hidden for ordinary pointer interaction.

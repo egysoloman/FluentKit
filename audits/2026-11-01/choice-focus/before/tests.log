@@ -1,0 +1,364 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (2.03秒)
+Test Suite 'Selected tests' started at 2026-11-01 07:38:33.144.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 07:38:33.145.
+Test Suite 'ChoiceFocusTests' started at 2026-11-01 07:38:33.145.
+Test Case '-[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.5540021061897278") is not equal to ("0.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.8645679354667664") is not equal to ("0.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("1.0") is not equal to ("0.8941176470588236") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : failed - Missing focus brush
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.5540021061897278") is not equal to ("0.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.8645679354667664") is not equal to ("0.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("1.0") is not equal to ("0.8470588235294118") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : failed - Missing focus brush
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.5540021061897278") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.8645679354667664") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : failed - Missing focus brush
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.5540021061897278") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.8645679354667664") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("1.0") is not equal to ("0.8470588235294118") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : failed - Missing focus brush
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("1.0") is not equal to ("0.8470588235294118") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.9625412821769714") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.9625412821769714") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.9625412821769714") is not equal to ("1.0") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:81: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("1.0") is not equal to ("0.8470588235294118") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.16743844747543335") is not equal to ("0.11764705882352941") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.16743844747543335") is not equal to ("0.11764705882352941") +/- ("0.001")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:82: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles] : XCTAssertEqualWithAccuracy failed: ("0.16743844747543335") is not equal to ("0.11764705882352941") +/- ("0.001")
+Test Case '-[FluentKitTests.ChoiceFocusTests testChoiceFocusBrushesFollowExplicitThemeAndHighContrastRoles]' failed (0.411 seconds).
+Test Case '-[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:49: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Primary focus is a 2pt shape border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:50: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Secondary focus is a separate 1pt border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (126, 16)
+    lineto (126, 25)
+    curveto (126, 29.9706) (121.971, 34) (117, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (117, -2)
+    curveto (121.971, -2) (126, 2.02944) (126, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (124.5, 16)
+    lineto (124.5, 25.5)
+    curveto (124.5, 29.366) (121.366, 32.5) (117.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (117.5, -0.5)
+    curveto (121.366, -0.5) (124.5, 2.63401) (124.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(2.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:58: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:49: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Primary focus is a 2pt shape border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:50: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Secondary focus is a separate 1pt border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (246, 16)
+    lineto (246, 25)
+    curveto (246, 29.9706) (241.971, 34) (237, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (237, -2)
+    curveto (241.971, -2) (246, 2.02944) (246, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (244.5, 16)
+    lineto (244.5, 25.5)
+    curveto (244.5, 29.366) (241.366, 32.5) (237.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (237.5, -0.5)
+    curveto (241.366, -0.5) (244.5, 2.63401) (244.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(2.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:58: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:49: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Primary focus is a 2pt shape border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:50: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Secondary focus is a separate 1pt border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (126, 16)
+    lineto (126, 25)
+    curveto (126, 29.9706) (121.971, 34) (117, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (117, -2)
+    curveto (121.971, -2) (126, 2.02944) (126, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (124.5, 16)
+    lineto (124.5, 25.5)
+    curveto (124.5, 29.366) (121.366, 32.5) (117.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (117.5, -0.5)
+    curveto (121.366, -0.5) (124.5, 2.63401) (124.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(2.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:58: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:49: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Primary focus is a 2pt shape border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:50: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertNotNil failed - Secondary focus is a separate 1pt border
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (246, 16)
+    lineto (246, 25)
+    curveto (246, 29.9706) (241.971, 34) (237, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (237, -2)
+    curveto (241.971, -2) (246, 2.02944) (246, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (244.5, 16)
+    lineto (244.5, 25.5)
+    curveto (244.5, 29.366) (241.366, 32.5) (237.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (237.5, -0.5)
+    curveto (241.366, -0.5) (244.5, 2.63401) (244.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(2.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:57: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1.0)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:58: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertFalse failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848a9e0:
+  moveto (127, 16)
+    lineto (127, 28)
+    curveto (127, 31.866) (123.866, 35) (120, 35)
+    lineto (0, 35)
+    curveto (-3.86599, 35) (-7, 31.866) (-7, 28)
+    lineto (-7, 4)
+    curveto (-7, 0.134007) (-3.86599, -3) (3.55271e-15, -3)
+    lineto (120, -3)
+    curveto (123.866, -3) (127, 0.134007) (127, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (126, 16)
+    lineto (126, 25)
+    curveto (126, 29.9706) (121.971, 34) (117, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (117, -2)
+    curveto (121.971, -2) (126, 2.02944) (126, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848b160:
+  moveto (125.5, 16)
+    lineto (125.5, 28)
+    curveto (125.5, 31.0376) (123.038, 33.5) (120, 33.5)
+    lineto (0, 33.5)
+    curveto (-3.03757, 33.5) (-5.5, 31.0376) (-5.5, 28)
+    lineto (-5.5, 4)
+    curveto (-5.5, 0.962434) (-3.03757, -1.5) (2.66454e-15, -1.5)
+    lineto (120, -1.5)
+    curveto (123.038, -1.5) (125.5, 0.962434) (125.5, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (124.5, 16)
+    lineto (124.5, 25.5)
+    curveto (124.5, 29.366) (121.366, 32.5) (117.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (117.5, -0.5)
+    curveto (121.366, -0.5) (124.5, 2.63401) (124.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848aa80:
+  moveto (247, 16)
+    lineto (247, 28)
+    curveto (247, 31.866) (243.866, 35) (240, 35)
+    lineto (0, 35)
+    curveto (-3.86599, 35) (-7, 31.866) (-7, 28)
+    lineto (-7, 4)
+    curveto (-7, 0.134007) (-3.86599, -3) (3.55271e-15, -3)
+    lineto (240, -3)
+    curveto (243.866, -3) (247, 0.134007) (247, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (246, 16)
+    lineto (246, 25)
+    curveto (246, 29.9706) (241.971, 34) (237, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (237, -2)
+    curveto (241.971, -2) (246, 2.02944) (246, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848a940:
+  moveto (245.5, 16)
+    lineto (245.5, 28)
+    curveto (245.5, 31.0376) (243.038, 33.5) (240, 33.5)
+    lineto (0, 33.5)
+    curveto (-3.03757, 33.5) (-5.5, 31.0376) (-5.5, 28)
+    lineto (-5.5, 4)
+    curveto (-5.5, 0.962434) (-3.03757, -1.5) (2.66454e-15, -1.5)
+    lineto (240, -1.5)
+    curveto (243.038, -1.5) (245.5, 0.962434) (245.5, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (244.5, 16)
+    lineto (244.5, 25.5)
+    curveto (244.5, 29.366) (241.366, 32.5) (237.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (237.5, -0.5)
+    curveto (241.366, -0.5) (244.5, 2.63401) (244.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848a760:
+  moveto (127, 16)
+    lineto (127, 28)
+    curveto (127, 31.866) (123.866, 35) (120, 35)
+    lineto (0, 35)
+    curveto (-3.86599, 35) (-7, 31.866) (-7, 28)
+    lineto (-7, 4)
+    curveto (-7, 0.134007) (-3.86599, -3) (3.55271e-15, -3)
+    lineto (120, -3)
+    curveto (123.866, -3) (127, 0.134007) (127, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (126, 16)
+    lineto (126, 25)
+    curveto (126, 29.9706) (121.971, 34) (117, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (117, -2)
+    curveto (121.971, -2) (126, 2.02944) (126, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848a8a0:
+  moveto (125.5, 16)
+    lineto (125.5, 28)
+    curveto (125.5, 31.0376) (123.038, 33.5) (120, 33.5)
+    lineto (0, 33.5)
+    curveto (-3.03757, 33.5) (-5.5, 31.0376) (-5.5, 28)
+    lineto (-5.5, 4)
+    curveto (-5.5, 0.962434) (-3.03757, -1.5) (2.66454e-15, -1.5)
+    lineto (120, -1.5)
+    curveto (123.038, -1.5) (125.5, 0.962434) (125.5, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (124.5, 16)
+    lineto (124.5, 25.5)
+    curveto (124.5, 29.366) (121.366, 32.5) (117.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (117.5, -0.5)
+    curveto (121.366, -0.5) (124.5, 2.63401) (124.5, 6.5)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:53: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848a800:
+  moveto (247, 16)
+    lineto (247, 28)
+    curveto (247, 31.866) (243.866, 35) (240, 35)
+    lineto (0, 35)
+    curveto (-3.86599, 35) (-7, 31.866) (-7, 28)
+    lineto (-7, 4)
+    curveto (-7, 0.134007) (-3.86599, -3) (3.55271e-15, -3)
+    lineto (240, -3)
+    curveto (243.866, -3) (247, 0.134007) (247, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (246, 16)
+    lineto (246, 25)
+    curveto (246, 29.9706) (241.971, 34) (237, 34)
+    lineto (3, 34)
+    curveto (-1.97056, 34) (-6, 29.9706) (-6, 25)
+    lineto (-6, 7)
+    curveto (-6, 2.02944) (-1.97056, -2) (3, -2)
+    lineto (237, -2)
+    curveto (241.971, -2) (246, 2.02944) (246, 7)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:55: error: -[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment] : XCTAssertEqual failed: ("Optional(Path 0x759848a6c0:
+  moveto (245.5, 16)
+    lineto (245.5, 28)
+    curveto (245.5, 31.0376) (243.038, 33.5) (240, 33.5)
+    lineto (0, 33.5)
+    curveto (-3.03757, 33.5) (-5.5, 31.0376) (-5.5, 28)
+    lineto (-5.5, 4)
+    curveto (-5.5, 0.962434) (-3.03757, -1.5) (2.66454e-15, -1.5)
+    lineto (240, -1.5)
+    curveto (243.038, -1.5) (245.5, 0.962434) (245.5, 4)
+    closepath
+)") is not equal to ("Optional(Path 0x75990ece00:
+  moveto (244.5, 16)
+    lineto (244.5, 25.5)
+    curveto (244.5, 29.366) (241.366, 32.5) (237.5, 32.5)
+    lineto (2.5, 32.5)
+    curveto (-1.36599, 32.5) (-4.5, 29.366) (-4.5, 25.5)
+    lineto (-4.5, 6.5)
+    curveto (-4.5, 2.63401) (-1.36599, -0.5) (2.5, -0.5)
+    lineto (237.5, -0.5)
+    curveto (241.366, -0.5) (244.5, 2.63401) (244.5, 6.5)
+    closepath
+)")
+Test Case '-[FluentKitTests.ChoiceFocusTests testChoiceFocusUsesWinUIMarginsBorderWidthsAndCornerAdjustment]' failed (0.005 seconds).
+Test Case '-[FluentKitTests.ChoiceFocusTests testChoiceFocusVisibilityAndStandardModeDoNotInventRevealPressAnimation]' started.
+Test Case '-[FluentKitTests.ChoiceFocusTests testChoiceFocusVisibilityAndStandardModeDoNotInventRevealPressAnimation]' passed (0.033 seconds).
+Test Case '-[FluentKitTests.ChoiceFocusTests testSquareCheckBoxDoesNotGainRoundedFocusCorners]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:125: error: -[FluentKitTests.ChoiceFocusTests testSquareCheckBoxDoesNotGainRoundedFocusCorners] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990edea0:
+  moveto (-6, -2)
+    lineto (186, -2)
+    lineto (186, 34)
+    lineto (-6, 34)
+    closepath
+)")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ChoiceFocusTests.swift:127: error: -[FluentKitTests.ChoiceFocusTests testSquareCheckBoxDoesNotGainRoundedFocusCorners] : XCTAssertEqual failed: ("nil") is not equal to ("Optional(Path 0x75990edea0:
+  moveto (-4.5, -0.5)
+    lineto (184.5, -0.5)
+    lineto (184.5, 32.5)
+    lineto (-4.5, 32.5)
+    closepath
+)")
+Test Case '-[FluentKitTests.ChoiceFocusTests testSquareCheckBoxDoesNotGainRoundedFocusCorners]' failed (0.001 seconds).
+Test Suite 'ChoiceFocusTests' failed at 2026-11-01 07:38:33.595.
+	 Executed 4 tests, with 63 failures (0 unexpected) in 0.450 (0.450) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 07:38:33.595.
+	 Executed 4 tests, with 63 failures (0 unexpected) in 0.450 (0.450) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 07:38:33.595.
+	 Executed 4 tests, with 63 failures (0 unexpected) in 0.450 (0.451) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

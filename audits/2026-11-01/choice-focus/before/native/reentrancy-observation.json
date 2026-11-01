@@ -1,0 +1,25 @@
+{
+  "immediate" : {
+    "events" : [
+      "A->B"
+    ],
+    "model" : "C",
+    "selected" : [
+      false,
+      true,
+      false
+    ]
+  },
+  "republished" : {
+    "events" : [
+      "A->B",
+      "B->C"
+    ],
+    "model" : "C",
+    "selected" : [
+      false,
+      false,
+      true
+    ]
+  }
+}
