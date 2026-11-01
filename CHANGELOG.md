@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Changing a single-line input's font while editing now updates the retained native
+  editor's vertical geometry. Search placeholders, text and the caret keep the current
+  font baseline through theme changes; composition, selection and native horizontal
+  scrolling remain intact. Deferred layout checks cannot reclaim another field's editor.
+
 - ListView and GridView keep one hovered cell per collection even when AppKit misses
   an exit event. Scrolling, detaching and reusing a cell clear stale pointer paint
   without changing selection. Buttons clear hover when moved between parents/windows

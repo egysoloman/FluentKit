@@ -111,6 +111,7 @@ func applyFluentTextControlContentAppearance(
     appearance: FluentTextFieldAppearance,
     theme: FluentTheme
 ) {
+    synchronizeFluentSingleLineEditorGeometry(control)
     if control.textColor?.isEqual(appearance.textColor) != true {
         control.textColor = appearance.textColor
     }

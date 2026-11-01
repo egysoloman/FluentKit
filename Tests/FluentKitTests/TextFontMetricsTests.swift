@@ -141,6 +141,64 @@ final class TextFontMetricsTests: XCTestCase {
     }
 
     @MainActor
+    func testLiveFontChangesKeepTheSharedEditorInTheCurrentTextRectangle() throws {
+        for field: NSTextField in [FluentTextField(), FluentSearchTextField(), FluentSecureTextField()] {
+            try withEditor(field) { _, editor in
+                editor.setMarkedText("nihao", selectedRange: NSRange(location: 2, length: 1),
+                                     replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
+                for size: CGFloat in [21, 12, 18] {
+                    let theme = FluentTheme.custom(typography: FluentTypography(fontProvider: FluentFontProvider { _, _, _ in
+                        NSFont.systemFont(ofSize: size)
+                    }))
+                    switch field {
+                    case let search as FluentSearchTextField: search.theme = theme
+                    case let secure as FluentSecureTextField: secure.theme = theme
+                    case let text as FluentTextField: text.theme = theme
+                    default: XCTFail("Unexpected fixture")
+                    }
+                    field.layoutSubtreeIfNeeded()
+                    RunLoop.main.run(until: Date().addingTimeInterval(0.01))
+                    let cell = try XCTUnwrap(field.cell)
+                    let expected = (cell as? NSSearchFieldCell)?.searchTextRect(forBounds: field.bounds)
+                        ?? cell.titleRect(forBounds: field.bounds)
+                    let actual = editor.convert(editor.bounds, to: field)
+                    XCTAssertEqual(actual.minY, expected.minY, accuracy: 0.01)
+                    XCTAssertEqual(actual.height, expected.height, accuracy: 0.01)
+                    XCTAssertTrue(field.currentEditor() === editor)
+                    XCTAssertTrue(editor.hasMarkedText())
+                    XCTAssertEqual(editor.string, "nihao")
+                    XCTAssertEqual(editor.selectedRange(), NSRange(location: 2, length: 1))
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func testDeferredFontLayoutDoesNotChangeTheNextFieldEditorOwner() throws {
+        let search = FluentSearchTextField()
+        try withEditor(search) { window, _ in
+            search.theme = .custom(typography: FluentTypography(fontProvider: FluentFontProvider { _, _, _ in
+                .systemFont(ofSize: 21)
+            }))
+            let next = FluentTextField()
+            next.frame = NSRect(x: 20, y: 20, width: 310, height: 32)
+            window.contentView?.addSubview(next)
+            next.selectText(nil)
+            let editor = try XCTUnwrap(next.currentEditor() as? NSTextView)
+            editor.setMarkedText("ni", selectedRange: NSRange(location: 2, length: 0),
+                                 replacementRange: NSRange(location: 0, length: 0))
+            RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+            XCTAssertNil(search.currentEditor())
+            XCTAssertTrue(next.currentEditor() === editor)
+            XCTAssertTrue(fluentFieldEditorOwner(editor) === next)
+            XCTAssertEqual(editor.font, next.font)
+            XCTAssertTrue(editor.hasMarkedText())
+            XCTAssertEqual(editor.string, "ni")
+            XCTAssertEqual(editor.selectedRange(), NSRange(location: 2, length: 0))
+        }
+    }
+
+    @MainActor
     func testReusedEditorRestoresNativeDelegateAndInputPolicy() throws {
         let field = FluentSearchTextField()
         try withEditor(field) { window, editor in

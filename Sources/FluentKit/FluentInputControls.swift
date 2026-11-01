@@ -797,6 +797,11 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
 private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLineTextControl {
     func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
 
+    override func layout() {
+        super.layout()
+        synchronizeFluentSingleLineEditorGeometry(self)
+    }
+
     // The host owns the Fluent faceplate size. Native text-field metrics must not
     // compete with its height or inset the field editor relative to the faceplate.
     override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
@@ -1690,6 +1695,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         editableField.controlSize = fluentControlSize.appKitSize
         editableField.font = comboBox.font
         editableField.textColor = theme.textPrimary
+        synchronizeFluentSingleLineEditorGeometry(editableField)
         comboBox.invalidateIntrinsicContentSize()
         applyButtonChrome(animated: false)
         invalidateIntrinsicContentSize()

@@ -124,6 +124,35 @@ func fluentFieldEditorOwner(_ editor: NSTextView) -> NSView? {
     (editor.delegate as? FluentSingleLineEditorDelegate)?.owner ?? editor.delegate as? NSView
 }
 
+/// AppKit updates an active editor's font but can keep its old vertical text metrics.
+/// Reposition the existing viewport instead of ending/restarting composition.
+func synchronizeFluentSingleLineEditorGeometry(_ control: NSTextField, recheckAfterLayout: Bool = true) {
+    guard control is any FluentSingleLineTextControl,
+          let editor = control.currentEditor() as? NSTextView,
+          fluentFieldEditorOwner(editor) === control,
+          let clip = editor.superview as? NSClipView,
+          clip.documentView === editor, clip.isDescendant(of: control),
+          let parent = clip.superview, let cell = control.cell else { return }
+    let textRect = (cell as? NSSearchFieldCell)?.searchTextRect(forBounds: control.bounds)
+        ?? cell.titleRect(forBounds: control.bounds)
+    let heightChanged = editor.frame.height != textRect.height
+    if heightChanged { editor.setFrameSize(NSSize(width: editor.frame.width, height: textRect.height)) }
+    let target = control.convert(textRect, to: parent)
+    let actual = editor.convert(editor.bounds, to: parent)
+    let offset = target.minY - actual.minY
+    guard heightChanged || abs(offset) > 0.001 else { return }
+    // Keep the native clip's padding and horizontal scrolling. Moving the document's
+    // origin makes NSClipView scroll along with it, so translate only the viewport.
+    if abs(offset) > 0.001 { clip.setFrameOrigin(NSPoint(x: clip.frame.minX, y: clip.frame.minY + offset)) }
+    editor.needsDisplay = true
+    if recheckAfterLayout {
+        DispatchQueue.main.async { [weak control, weak editor] in
+            guard let control, let editor, control.currentEditor() === editor else { return }
+            synchronizeFluentSingleLineEditorGeometry(control, recheckAfterLayout: false)
+        }
+    }
+}
+
 /// Bridges AppKit's native field editor to WinUI TextControl visuals and command availability.
 /// The field editor continues to own IME, undo, selection, accessibility, and clipboard execution.
 final class FluentTextEditingSession {
@@ -282,6 +311,7 @@ final class FluentTextEditingSession {
            editor.selectedRange() != preservedSelection {
             editor.setSelectedRange(preservedSelection)
         }
+        synchronizeFluentSingleLineEditorGeometry(control)
     }
 
     /// Classifies the opening event and records it, falling back to the window's last device.
