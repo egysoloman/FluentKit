@@ -563,6 +563,9 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
     private var lastViewportWasNearEnd = false
     private var boundsObserver: NSObjectProtocol?
     private var pointerEventMonitor: Any?
+    private let hoverCoordinator = FluentHoverCoordinator<FluentSectionedCollectionCell> { cell, hovering in
+        cell.setPointerOver(hovering)
+    }
     private var lastViewportWidth: CGFloat = -1
     private var lastResolvedColumnCount = 0
     private var diffableDataSource: NSCollectionViewDiffableDataSource<AnyHashable, AnyHashable>!
@@ -626,6 +629,7 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
         ) { [weak self] _ in
             guard let self else { return }
             self.updateLayoutMetrics()
+            self.hoverCoordinator.currentItem?.reconcilePointerLocation()
             self.maybeRequestMoreItems()
         }
 
@@ -681,6 +685,11 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
         super.viewDidChangeBackingProperties()
         lastViewportWidth = -1
         needsLayout = true
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { hoverCoordinator.reset() }
+        super.viewWillMove(toWindow: newWindow)
     }
 
     fileprivate func setData(
@@ -971,6 +980,7 @@ final class FluentSectionedCollectionView<SectionID: Hashable, ItemID: Hashable>
             focused: indexPath == focusedIndexPath && isKeyboardFocusVisible,
             showsSelectionCheckmark: showsSelectionCheckmark,
             reduceMotion: context.reduceMotion,
+            hoverCoordinator: hoverCoordinator,
             onAccessibilityPress: { [weak self] in self?.performAccessibilityPress(at: indexPath) ?? false }
         )
         host.contentVersion = version
@@ -1729,6 +1739,7 @@ private final class FluentSectionedCollectionItem: NSCollectionViewItem {
         focused: Bool,
         showsSelectionCheckmark: Bool,
         reduceMotion: Bool,
+        hoverCoordinator: FluentHoverCoordinator<FluentSectionedCollectionCell>,
         onAccessibilityPress: @escaping () -> Bool
     ) {
         cellView.updateConfiguration(
@@ -1740,6 +1751,7 @@ private final class FluentSectionedCollectionItem: NSCollectionViewItem {
             focused: focused,
             showsSelectionCheckmark: showsSelectionCheckmark,
             reduceMotion: reduceMotion,
+            hoverCoordinator: hoverCoordinator,
             onAccessibilityPress: onAccessibilityPress
         )
         if let content { cellView.update(content: content, context: context) }
@@ -1788,6 +1800,7 @@ private final class FluentSectionedCollectionCell: NSView {
     private var reordering = false
     private var reorderTarget = false
     private var reduceMotion = false
+    private weak var hoverCoordinator: FluentHoverCoordinator<FluentSectionedCollectionCell>?
     private var onAccessibilityPress: (() -> Bool)?
 
     override init(frame frameRect: NSRect) {
@@ -1853,18 +1866,45 @@ private final class FluentSectionedCollectionCell: NSView {
         )
         pointerTrackingArea = trackingArea
         addTrackingArea(trackingArea)
+        reconcilePointerLocation()
     }
 
     override func mouseEntered(with event: NSEvent) {
         guard enabled else { return }
-        pointerOver = true
-        applyAppearance(animated: true)
+        hoverCoordinator?.update(self, hovering: true)
     }
 
     override func mouseExited(with event: NSEvent) {
-        pointerOver = false
-        pressed = false
+        hoverCoordinator?.update(self, hovering: false)
+    }
+
+    override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { hoverCoordinator?.remove(self) }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { hoverCoordinator?.remove(self) }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    func setPointerOver(_ value: Bool) {
+        let next = enabled && value
+        guard pointerOver != next || (!next && pressed) else { return }
+        pointerOver = next
+        if !next { pressed = false }
         applyAppearance(animated: true)
+    }
+
+    /// Scrolling and tracking-area replacement can remove a hovered cell without an exit event.
+    /// Reconcile only the current owner, keeping viewport work independent of the item count.
+    func reconcilePointerLocation() {
+        guard pointerOver else { return }
+        guard !isHiddenOrHasHiddenAncestor, let window,
+              visibleRect.contains(convert(window.mouseLocationOutsideOfEventStream, from: nil)) else {
+            hoverCoordinator?.remove(self)
+            return
+        }
     }
 
     override func layout() {
@@ -1885,6 +1925,7 @@ private final class FluentSectionedCollectionCell: NSView {
         focused: Bool,
         showsSelectionCheckmark: Bool,
         reduceMotion: Bool,
+        hoverCoordinator: FluentHoverCoordinator<FluentSectionedCollectionCell>,
         onAccessibilityPress: @escaping () -> Bool
     ) {
         let layoutChanged = self.layoutKind != layoutKind
@@ -1896,10 +1937,15 @@ private final class FluentSectionedCollectionCell: NSView {
         self.focused = focused
         self.showsSelectionCheckmark = showsSelectionCheckmark
         self.reduceMotion = reduceMotion
+        if self.hoverCoordinator !== hoverCoordinator {
+            self.hoverCoordinator?.remove(self)
+            self.hoverCoordinator = hoverCoordinator
+        }
         self.onAccessibilityPress = onAccessibilityPress
         animationCoordinator.reduceMotion = reduceMotion
         userInterfaceLayoutDirection = superview?.userInterfaceLayoutDirection ?? userInterfaceLayoutDirection
         if !enabled {
+            hoverCoordinator.remove(self)
             pointerOver = false
             pressed = false
         }
@@ -1968,6 +2014,8 @@ private final class FluentSectionedCollectionCell: NSView {
 
     override func prepareForReuse() {
         super.prepareForReuse()
+        hoverCoordinator?.remove(self)
+        hoverCoordinator = nil
         pointerOver = false
         pressed = false
         focused = false

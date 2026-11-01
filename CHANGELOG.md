@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ListView and GridView keep one hovered cell per collection even when AppKit misses
+  an exit event. Scrolling, detaching and reusing a cell clear stale pointer paint
+  without changing selection. Buttons clear hover when moved between parents/windows
+  and when the pointer exits while disabled.
+
 - Mica now samples a shared, asynchronously blurred wallpaper cache per display. Acrylic
   combines live AppKit blur with WinUI luminosity, tint and noise stages. Material strengths
   can be overridden without losing theme updates; accessibility and disabled effects keep

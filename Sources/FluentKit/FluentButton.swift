@@ -219,6 +219,16 @@ public final class FluentButton: NSButton {
         updateElevationBorderGeometry(for: resolvedAppearance())
     }
 
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { clearPointerHover() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    public override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { clearPointerHover() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         updateElevationBorderGeometry(for: resolvedAppearance())
@@ -236,9 +246,14 @@ public final class FluentButton: NSButton {
     }
 
     public override func mouseExited(with event: NSEvent) {
-        guard isEnabled else { return }
+        // Tracking still reports exits while disabled. Keep that state current so enabling
+        // or reattaching the same native button cannot resurrect an old hover fill.
+        clearPointerHover()
+    }
+
+    private func clearPointerHover() {
         isPointerOver = false
-        controlState = .normal
+        controlState = isEnabled ? .normal : .disabled
     }
 
     public override func mouseDown(with event: NSEvent) {
