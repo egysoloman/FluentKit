@@ -1,0 +1,17 @@
+{
+  "states": 16,
+  "failures": [
+    "light-ltr-long-title/opened: width fits work area",
+    "light-ltr-long-title/resized: width fits work area",
+    "light-ltr-resize/resized: faceplate minimum width",
+    "light-rtl-long-title/opened: width fits work area",
+    "light-rtl-long-title/resized: width fits work area",
+    "light-rtl-resize/resized: faceplate minimum width",
+    "dark-ltr-long-title/opened: width fits work area",
+    "dark-ltr-long-title/resized: width fits work area",
+    "dark-ltr-resize/resized: faceplate minimum width",
+    "dark-rtl-long-title/opened: width fits work area",
+    "dark-rtl-long-title/resized: width fits work area",
+    "dark-rtl-resize/resized: faceplate minimum width"
+  ]
+}

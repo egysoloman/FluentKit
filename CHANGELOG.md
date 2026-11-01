@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox popups constrain long content to the target work area and remeasure
+  their faceplate minimum width while open. Short work areas reduce the viewport
+  by whole rows and retain all options in the scroll document. Resizing preserves
+  panel identity, selection and keyboard access, updates the reveal clip, and
+  restores the preferred size when space becomes available. A faceplate wider
+  than the work area retains its explicit minimum width, matching WinUI.
+
 - Popup work areas now follow the target's monitor instead of the owner window's
   monitor. This covers ComboBox, AutoSuggestBox, menus, CommandBar overflow/flyouts
   and popover edge selection, and keeps tooltip and torn-out tab placement on the

@@ -1,0 +1,28 @@
+Building for debugging...
+[Planning deferred tasks]
+[1 / 7] FluentKitValidation-product
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+[17 / 19] FluentKitTests-product
+Build complete! (2.50秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:45:49.475.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:45:49.477.
+Test Suite 'ComboBoxWorkAreaTests' started at 2026-11-01 16:45:49.477.
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ComboBoxWorkAreaTests.swift:30: error: -[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections] : XCTAssertLessThanOrEqual failed: ("6210.0") is greater than ("1512.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ComboBoxWorkAreaTests.swift:31: error: -[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections] : XCTAssertLessThanOrEqual failed: ("6206.0") is greater than ("1512.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ComboBoxWorkAreaTests.swift:30: error: -[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections] : XCTAssertLessThanOrEqual failed: ("6210.0") is greater than ("1512.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ComboBoxWorkAreaTests.swift:31: error: -[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections] : XCTAssertLessThanOrEqual failed: ("6206.0") is greater than ("1512.0")
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections]' failed (4.996 seconds).
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testOpenPopupRemeasuresTheFaceplateMinimumWidth]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ComboBoxWorkAreaTests.swift:47: error: -[FluentKitTests.ComboBoxWorkAreaTests testOpenPopupRemeasuresTheFaceplateMinimumWidth] : XCTAssertEqualWithAccuracy failed: ("220.0") is not equal to ("600.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testOpenPopupRemeasuresTheFaceplateMinimumWidth]' failed (0.009 seconds).
+Test Suite 'ComboBoxWorkAreaTests' failed at 2026-11-01 16:45:54.483.
+	 Executed 2 tests, with 5 failures (0 unexpected) in 5.006 (5.006) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 16:45:54.483.
+	 Executed 2 tests, with 5 failures (0 unexpected) in 5.006 (5.006) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 16:45:54.483.
+	 Executed 2 tests, with 5 failures (0 unexpected) in 5.006 (5.008) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

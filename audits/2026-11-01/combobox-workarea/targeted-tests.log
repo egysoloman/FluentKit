@@ -1,0 +1,75 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[5 / 20] FluentKit
+[14 / 25] FluentKit
+[16 / 24] FluentGallery-product
+[20 / 28] FluentGallery-product
+[31 / 43] FluentKitTests-product
+[32 / 43] FluentKitTests-product
+[37 / 45] FluentKitTests-product
+[38 / 46] FluentKitTests-product
+[38 / 46] FluentGallery-product
+[40 / 46] FluentKitTests-product
+[41 / 48] FluentGallery-product
+[42 / 48] FluentKitTests-product
+[44 / 51] FluentKitTests-product
+[46 / 51] FluentKitTests-product
+[46 / 49] FluentKitValidation-product
+[47 / 49] FluentKitValidation-product
+[49 / 49] FluentKitValidation-product
+Build complete! (42.16秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:48:51.799.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:48:51.800.
+Test Suite 'ComboBoxWorkAreaTests' started at 2026-11-01 16:48:51.800.
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testConstrainedSizesHonorWorkAreaRowsAndFaceplateMinimum]' started.
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testConstrainedSizesHonorWorkAreaRowsAndFaceplateMinimum]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections]' started.
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testLongTitlesFitTheTargetWorkAreaInBothDirections]' passed (0.163 seconds).
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testOpenPopupRemeasuresTheFaceplateMinimumWidth]' started.
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testOpenPopupRemeasuresTheFaceplateMinimumWidth]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testSmallerWorkAreaKeepsSelectionAndKeyboardReachability]' started.
+Test Case '-[FluentKitTests.ComboBoxWorkAreaTests testSmallerWorkAreaKeepsSelectionAndKeyboardReachability]' passed (0.015 seconds).
+Test Suite 'ComboBoxWorkAreaTests' passed at 2026-11-01 16:48:51.988.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.187 (0.188) seconds
+Test Suite 'InputModeLayoutTests' started at 2026-11-01 16:48:51.988.
+Test Case '-[FluentKitTests.InputModeLayoutTests testComboBoxPopupUsesTouchPaddingAndMinimumWidth]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testComboBoxPopupUsesTouchPaddingAndMinimumWidth]' passed (0.013 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testCommandBarOverflowRowsGrowForTouch]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testCommandBarOverflowRowsGrowForTouch]' passed (0.015 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers]' passed (0.031 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testMenuFlyoutUsesNarrowRowsForPointersAndDefaultRowsForTouch]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testMenuFlyoutUsesNarrowRowsForPointersAndDefaultRowsForTouch]' passed (0.020 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testTextCommandsPreferPrimaryForTouchAndPenOnly]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testTextCommandsPreferPrimaryForTouchAndPenOnly]' passed (0.005 seconds).
+Test Suite 'InputModeLayoutTests' passed at 2026-11-01 16:48:52.071.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.082 (0.083) seconds
+Test Suite 'ScreenPlacementTests' started at 2026-11-01 16:48:52.071.
+Test Case '-[FluentKitTests.ScreenPlacementTests testAllMonitorArrangementsUseScreenCoordinates]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testAllMonitorArrangementsUseScreenCoordinates]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testMissingScreensAndInvalidPointsHaveNoSelection]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testMissingScreensAndInvalidPointsHaveNoSelection]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOffscreenTargetUsesNearestEdgeRatherThanMonitorCenter]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOffscreenTargetUsesNearestEdgeRatherThanMonitorCenter]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows]' passed (0.010 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenNotificationsPreserveAutoSuggestEditorAndMarkedText]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenNotificationsPreserveAutoSuggestEditorAndMarkedText]' passed (0.249 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenObserverIsScopedToItsWindowAndLifetime]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenObserverIsScopedToItsWindowAndLifetime]' passed (0.008 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testSeamsAndRTLUseTheActualTargetPoint]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testSeamsAndRTLUseTheActualTargetPoint]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testTargetScreenCanDifferFromTheParentWindowsScreen]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testTargetScreenCanDifferFromTheParentWindowsScreen]' passed (0.000 seconds).
+Test Suite 'ScreenPlacementTests' passed at 2026-11-01 16:48:52.356.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.285 (0.286) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 16:48:52.356.
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.555 (0.557) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 16:48:52.357.
+	 Executed 19 tests, with 0 failures (0 unexpected) in 0.555 (0.557) seconds

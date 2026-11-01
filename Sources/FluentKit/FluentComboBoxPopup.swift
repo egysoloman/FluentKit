@@ -23,6 +23,28 @@ private enum FluentComboBoxPopupMetrics {
     static let maximumVisibleItemsOnOneSide = 7
 }
 
+/// WinUI caps popup content to the available work area, while the faceplate remains its
+/// minimum width (ComboBox_Partial.cpp, ArrangePopup). Keep the existing 4pt edge inset.
+enum FluentComboBoxPopupSizing {
+    static func constrained(_ preferred: NSSize, faceplateWidth: CGFloat, rowHeight: CGFloat,
+                            workArea: NSRect) -> NSSize {
+        let width = max(1, workArea.width - 8)
+        let height = max(1, workArea.height - 8)
+        let padding = FluentComboBoxPopupMetrics.popupVerticalPadding * 2
+        let rows = max(1, floor((height - padding) / rowHeight))
+        return NSSize(width: max(faceplateWidth, min(preferred.width, width)),
+                      height: min(preferred.height, height, padding + rows * rowHeight))
+    }
+
+    static func visibleRange(_ range: Range<Int>, centeredOn index: Int, height: CGFloat,
+                             rowHeight: CGFloat) -> Range<Int> {
+        let capacity = max(1, Int((height - FluentComboBoxPopupMetrics.popupVerticalPadding * 2) / rowHeight))
+        guard range.count > capacity else { return range }
+        let first = min(max(index - capacity / 2, range.lowerBound), range.upperBound - capacity)
+        return first..<(first + capacity)
+    }
+}
+
 enum FluentComboBoxPopupPlacement: Hashable, Sendable {
     /// The selected row occupies the closed control's faceplate and the popup splits around it.
     case selectionCentered
@@ -48,6 +70,8 @@ final class FluentComboBoxPopup: NSObject {
     private var globalMonitor: Any?
     private var screenObserver: FluentPopupScreenObserver?
     private var selectionCenterFromTop: CGFloat = 0
+    private var contentWidth: CGFloat = 0
+    private var preferredVisibleItemCount = 0
     private let onMove: (Int) -> Void
     private let onCommit: (Int) -> Void
     private let onDismiss: () -> Void
@@ -91,13 +115,18 @@ final class FluentComboBoxPopup: NSObject {
         inputDeviceTypeUsedToOpen = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
         registerAppearanceUpdates(from: anchorWindow)
         let centeredIndex = selectedIndex ?? keyboardIndex ?? 0
-        let visibleRange = placement == .selectionCentered
+        let preferredRange = placement == .selectionCentered
             ? initialVisibleRange(centeredOn: centeredIndex)
             : initialVisibleRangeFromStart()
-        let size = preferredSize(visibleItemCount: visibleRange.count)
+        preferredVisibleItemCount = preferredRange.count
+        measureContentWidth()
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
         let visibleFrame = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
             of: anchorRect, rightToLeft: layoutDirection == .rightToLeft), fallback: anchorWindow)
+        let size = constrainedSize(in: visibleFrame)
+        let visibleRange = FluentComboBoxPopupSizing.visibleRange(preferredRange,
+            centeredOn: placement == .selectionCentered ? centeredIndex : preferredRange.lowerBound,
+            height: size.height, rowHeight: rowHeight)
         let selectedRowCenter = rowCenterFromTop(for: centeredIndex, firstVisibleIndex: visibleRange.lowerBound)
         selectionCenterFromTop = selectedRowCenter
         let proposedOrigin: NSPoint
@@ -198,19 +227,38 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     private func reposition() {
+        guard let anchor, let window = anchor.window else { dismiss(animated: false); return }
+        let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
+        let visible = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: rect, rightToLeft: layoutDirection == .rightToLeft), fallback: window)
+        updateLayout(in: visible)
+    }
+
+    /// Geometry application is separate from screen lookup so every screen notification uses
+    /// the same resizing/scroll-preservation path, including a smaller target work area.
+    func updateLayout(in visibleFrame: NSRect) {
         guard let panel else { return }
         guard let anchor, let window = anchor.window, panel.parent === window else {
             dismiss(animated: false)
             return
         }
         let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
-        let visible = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
-            of: rect, rightToLeft: layoutDirection == .rightToLeft), fallback: window)
-        let size = panel.frame.size
-        let proposed = placement == .editable ? editableOrigin(anchorRect: rect, size: size, visibleFrame: visible)
+        let size = constrainedSize(in: visibleFrame)
+        let center = min(selectionCenterFromTop, max(size.height / 2,
+            size.height - FluentComboBoxPopupMetrics.popupVerticalPadding - rowHeight / 2))
+        let proposed = placement == .editable ? editableOrigin(anchorRect: rect, size: size, visibleFrame: visibleFrame)
             : NSPoint(x: layoutDirection == .rightToLeft ? rect.maxX - size.width : rect.minX,
-                      y: rect.midY - size.height + selectionCenterFromTop)
-        panel.setFrameOrigin(clamped(proposed, size: size, visibleFrame: visible))
+                      y: rect.midY - size.height + center)
+        let origin = clamped(proposed, size: size, visibleFrame: visibleFrame)
+        if size != panel.frame.size {
+            popupView?.prepareForViewportResize()
+            transitionHost?.settleForAppearanceChange()
+            panel.setFrame(NSRect(origin: origin, size: size), display: true)
+            panel.contentView?.layoutSubtreeIfNeeded()
+            transitionHost?.settlePresentation()
+        } else {
+            panel.setFrameOrigin(origin)
+        }
     }
 
     func updateSelectedIndex(_ index: Int?) {
@@ -241,22 +289,20 @@ final class FluentComboBoxPopup: NSObject {
         onDismiss()
     }
 
-    private func preferredSize(visibleItemCount: Int) -> NSSize {
+    private func measureContentWidth() {
         let font = theme.typography.font(for: .body)
-        let widest = titles.reduce(CGFloat(0)) { result, title in
+        contentWidth = ceil(titles.reduce(CGFloat(0)) { result, title in
             max(result, (title as NSString).size(withAttributes: [.font: font]).width)
-        }
-        return NSSize(
-            width: max(
-                inputDeviceTypeUsedToOpen == .touch
-                    ? FluentComboBoxPopupMetrics.popupTouchMinimumWidth
-                    : FluentComboBoxPopupMetrics.popupMinimumWidth,
-                anchor?.bounds.width ?? 0,
-                ceil(widest + 58)
-            ),
-            height: FluentComboBoxPopupMetrics.popupVerticalPadding * 2
-                + CGFloat(visibleItemCount) * rowHeight
-        )
+        } + 58)
+    }
+
+    private func constrainedSize(in workArea: NSRect) -> NSSize {
+        let width = max(contentWidth, inputDeviceTypeUsedToOpen == .touch
+            ? FluentComboBoxPopupMetrics.popupTouchMinimumWidth : FluentComboBoxPopupMetrics.popupMinimumWidth)
+        return FluentComboBoxPopupSizing.constrained(
+            NSSize(width: width, height: FluentComboBoxPopupMetrics.popupVerticalPadding * 2
+                   + CGFloat(preferredVisibleItemCount) * rowHeight),
+            faceplateWidth: anchor?.bounds.width ?? 0, rowHeight: rowHeight, workArea: workArea)
     }
 
     private func initialVisibleRange(centeredOn index: Int) -> Range<Int> {
@@ -376,6 +422,8 @@ final class FluentComboBoxPopup: NSObject {
         self.theme = theme
         transitionHost?.update(theme: theme)
         popupView?.update(theme: theme)
+        measureContentWidth()
+        reposition()
         panel?.appearance = fluentAppKitAppearance(for: theme)
         panel?.contentView?.needsDisplay = true
     }
@@ -405,6 +453,7 @@ private final class FluentComboBoxPopupView: NSView {
     private let scrollView = FluentViewportScrollView()
     private let rowsHost = FluentComboBoxPopupRowsView()
     private var pendingScrollIndex: Int?
+    private var pendingRevealIndex: Int?
     private var showsKeyboardFocus = false
     private let hoverCoordinator = FluentHoverCoordinator<FluentComboBoxPopupRow> { row, hovering in
         row.setPointerOver(hovering)
@@ -484,10 +533,13 @@ private final class FluentComboBoxPopupView: NSView {
 
     override func layout() {
         super.layout()
-        scrollView.frame = bounds.insetBy(
-            dx: FluentComboBoxPopupMetrics.popupHorizontalPadding,
-            dy: FluentComboBoxPopupMetrics.popupVerticalPadding
-        )
+        let insetX = FluentComboBoxPopupMetrics.popupHorizontalPadding
+        let insetY = FluentComboBoxPopupMetrics.popupVerticalPadding
+        let viewport = NSRect(x: insetX, y: insetY, width: max(0, bounds.width - insetX * 2),
+                              height: max(0, bounds.height - insetY * 2))
+        let needsScroller = CGFloat(titles.count) * rowHeight > viewport.height
+        if scrollView.hasVerticalScroller != needsScroller { scrollView.hasVerticalScroller = needsScroller }
+        scrollView.frame = viewport
         rowsHost.frame = NSRect(
             x: 0,
             y: 0,
@@ -512,7 +564,20 @@ private final class FluentComboBoxPopupView: NSView {
             scrollView.reflectScrolledClipView(scrollView.contentView)
             self.pendingScrollIndex = nil
         }
+        if let index = pendingRevealIndex {
+            pendingRevealIndex = nil
+            rowsHost.scrollToVisible(rows[index].frame)
+        }
         refreshPointerState()
+    }
+
+    func prepareForViewportResize() {
+        if showsKeyboardFocus, let keyboardIndex {
+            pendingRevealIndex = keyboardIndex
+        } else if let selectedIndex, rows.indices.contains(selectedIndex),
+                  scrollView.documentVisibleRect.intersects(rows[selectedIndex].frame) {
+            pendingRevealIndex = selectedIndex
+        }
     }
 
     func update(selectedIndex: Int?, keyboardIndex: Int?) {
