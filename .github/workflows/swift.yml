@@ -18,7 +18,7 @@ concurrency:
 jobs:
   test:
     runs-on: macos-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -40,4 +40,7 @@ jobs:
         run: swift build --configuration release -Xswiftc -warnings-as-errors
 
       - name: Check release rendering and input work counts
+        env:
+          # Reuse the exact Release objects validated by the previous build.
+          FLUENTKIT_QUALITY_BUILD: ${{ github.workspace }}/.build
         run: ./tools/run-quality-checks.sh "$RUNNER_TEMP/fluentkit-audit"

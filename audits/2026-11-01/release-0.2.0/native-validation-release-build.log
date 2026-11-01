@@ -1,0 +1,10 @@
+[0/1] Planning build
+Building for production...
+[0/3] Write sources
+[2/5] Write swift-version--58304C5D6DBC2206.txt
+[4/6] Compiling FluentKit Declarative.swift
+[5/7] Compiling FluentKitValidation main.swift
+[5/7] Write Objects.LinkFileList
+[6/7] Linking FluentKitValidation
+Build of product 'FluentKitValidation' complete! (123.76s)
+warning: '--build-system native' has been deprecated and will be removed in a future release; please report an issue at https://github.com/swiftlang/swift-package-manager/issues if you are unable to adopt the default build system.

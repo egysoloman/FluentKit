@@ -65,3 +65,12 @@
 更新用例过程曾误等一个不会发生的取消状态更新（示例只在选中候选时更新该标签）；这次本地失败保存在 `final-observation-tests.log`，修正后 AutoSuggest 24 项、导航 1 项通过，另复验实际 body 标签更新用例 1 项通过，见对应日志。
 
 本批仅改测试和文档，运行时代码仍为 `f369c94`：本地 native SwiftPM 全部 491 项零失败、无约束诊断；全产品 Release、Xcode Gallery、原生验证与 Release 质量门禁均通过，记录为 `final-491-tests.log`、`f369-*.log` 和 `f369-quality/`。以上是本地证据，发布仍需等待最新 main CI 全绿；真实 Windows 逐帧对拍和实机输入验收仍未完成。
+
+
+## 第五次远端 CI：所有测试和 Release 通过，作业总时限不足
+
+[main CI #12](https://github.com/egysoloman/FluentKit/actions/runs/41282824280) 的 Debug 构建、491 项测试（1 项原生材质能力跳过，0 失败）和完整 Release 构建均通过。Release 构建耗时 720.12 秒；质量脚本又从独立 scratch 目录重编框架，随后达到整个作业 20 分钟时限而被取消，未获得最终质量门禁结论。原始记录为 `ci-fifth-timeout.log`。
+
+CI 现在允许 30 分钟，质量工具使用前一步相同的 `.build` Release 模块、对象与资源，不再重复编译框架。所有原有构建、测试、诊断和质量检查继续执行。本地独立复验 native SwiftPM 的 Release 验证程序构建通过（123.76 秒，包含更新后的框架构建），随后复用同一产物的质量门禁全部通过（框架检查仅 0.27 秒）。见 `native-validation-release-build.log`、`reused-native-quality.log` 与 `reused-native-quality/`。Swift 6.4 的 native 引擎弃用提示仍属于主动复现旧构建引擎的工具提示。
+
+`27377-all-tests.log` 保存最新完整 491 项本地通过结果，无 AppKit 约束诊断。此批没有改运行时代码或测试。CI 与本机的编译耗时差异还需分别控制硬件、编译器和构建引擎后分析，不能仅凭两组耗时归因。

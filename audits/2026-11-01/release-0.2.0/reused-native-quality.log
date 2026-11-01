@@ -1,0 +1,7 @@
+[0/1] Planning build
+Building for production...
+[0/1] Write swift-version--58304C5D6DBC2206.txt
+Build of target: 'FluentKit' complete! (0.27s)
+warning: '--build-system native' has been deprecated and will be removed in a future release; please report an issue at https://github.com/swiftlang/swift-package-manager/issues if you are unable to adopt the default build system.
+warning: '--build-system native' has been deprecated and will be removed in a future release; please report an issue at https://github.com/swiftlang/swift-package-manager/issues if you are unable to adopt the default build system.
+Release update counts, attachment identity, external reset, typography and material gates passed.

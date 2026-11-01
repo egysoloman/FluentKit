@@ -34,6 +34,7 @@
 | 26 | **本批修复并验证：Expander 初始化、动态模板高度和标题裁切。** | 旧 frame 的固定高度 mask 与 stack 最小间距冲突；标题/正文改用自然 Auto Layout 高度，宿主按标题自然高度布局并保留 48pt 最小值。13 项相关回归无约束冲突；完整 487 项、原生、Gallery 和 Release 门禁通过。最终 AppKit 已解析断点 0 命中，24 个 Gallery 状态及实际应用开合复验通过，见 `expander-initial-layout/REPORT.md`。中间版本的动态增长失败已保留；第 19 项 Refresh 已另行修复；第 28 项文字换行保持独立跟踪。 |
 | 27 | **源码差异已确认，待独立复现：Toggle 键盘提交时机。** | WinUI `ToggleSwitch_Partial.cpp:750–804` 在 KeyDown 消费按键、KeyUp 提交；当前 `FluentToggle.keyDown` 在 Space/Return 按下时切换。`HandlesKey`（同文件 1002）实际仅接受 Space/GamepadA；共享 KeyUp 帮助器虽有方向键分支，不能据此增加不生效的上游行为。继续复现释放、重复、取消与拖动组合，并修正相应原生验证假设；辅助操作本身仍按 WinUI 立即切换。 |
 | 28 | **截图观察，待独立复现：窄窗口设置卡长描述截断。** | `expander-initial-layout/gallery-final/images/dark-narrow.png` 的外层 Interactive sample 描述未显示末尾 acceptance matrix；检查 `FluentSettingsCardHost` 的两行文字宽度和自然高度，而非只检查外层容器。需要旧基线对比、宽→窄→宽与实际窗口验证，再决定修复。 |
+| 29 | **已测得构建耗时差异，待控制变量定位。** | 发布 CI 的全产品 Release 构建耗时 720.12 秒，框架/Gallery 已完成后仍在编译 1.27 万行验证程序；本机 native SwiftPM 的验证程序及框架构建为 123.76 秒。CI 已增加作业预算并复用 Release 产物，所有检查保留；后续分别比较编译器、硬件和构建引擎，评估验证程序的拆分，不能先归因为某一个因素。见 `release-0.2.0/REPORT.md`。 |
 
 ## 已处理项与明确边界
 
