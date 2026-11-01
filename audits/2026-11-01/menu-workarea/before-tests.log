@@ -1,0 +1,29 @@
+Building for debugging...
+[1 / 1]
+[2 / 13] FluentKitTests-product
+[4 / 15] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (2.01秒)
+Test Suite 'Selected tests' started at 2026-11-01 17:23:50.049.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 17:23:50.050.
+Test Suite 'MenuWorkAreaTests' started at 2026-11-01 17:23:50.050.
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:35: error: -[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem] : XCTAssertGreaterThanOrEqual failed: ("0.0") is less than ("70.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:36: error: -[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem] : XCTAssertLessThanOrEqual failed: ("1804.0") is greater than ("949.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:37: error: -[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem] : XCTAssertLessThanOrEqual failed: ("1804.0") is greater than ("879.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:38: error: -[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem] : XCTUnwrap failed: expected non-nil value of type "NSScrollView"
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem]' failed (0.491 seconds).
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:65: error: -[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection] : XCTAssertLessThanOrEqual failed: ("6634.0") is greater than ("1512.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:66: error: -[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection] : XCTAssertLessThanOrEqual failed: ("6630.0") is greater than ("1512.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:65: error: -[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection] : XCTAssertLessThanOrEqual failed: ("6634.0") is greater than ("1512.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/MenuWorkAreaTests.swift:66: error: -[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection] : XCTAssertLessThanOrEqual failed: ("6630.0") is greater than ("1512.0")
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection]' failed (0.015 seconds).
+Test Suite 'MenuWorkAreaTests' failed at 2026-11-01 17:23:50.556.
+	 Executed 2 tests, with 8 failures (0 unexpected) in 0.506 (0.506) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 17:23:50.556.
+	 Executed 2 tests, with 8 failures (0 unexpected) in 0.506 (0.506) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 17:23:50.556.
+	 Executed 2 tests, with 8 failures (0 unexpected) in 0.506 (0.507) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)
