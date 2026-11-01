@@ -531,7 +531,8 @@ private final class FluentPopoverHost<Content: FluentView, PopoverContent: Fluen
 
     private func automaticEdge(for window: NSWindow) -> NSRectEdge {
         let anchor = window.convertToScreen(convert(bounds, to: nil))
-        let visible = window.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visible = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: anchor, rightToLeft: context.layoutDirection.appKitValue == .rightToLeft), fallback: window)
         let requiredVertical = size.height + 12
         let requiredHorizontal = size.width + 12
         if anchor.minY - visible.minY >= requiredVertical { return .minY }

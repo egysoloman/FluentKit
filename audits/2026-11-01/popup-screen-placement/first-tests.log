@@ -1,0 +1,174 @@
+Building for debugging...
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[1 / 1]
+[9 / 36] FluentKit
+[17 / 44] FluentKit
+[26 / 44] FluentKit
+[29 / 43] FluentGallery-product
+[33 / 47] FluentGallery-product
+[44 / 60] FluentKitTests-product
+[45 / 60] FluentKitTests-product
+[47 / 59] FluentKitTests-product
+[51 / 60] FluentKitTests-product
+[51 / 60] FluentGallery-product
+[53 / 60] FluentKitTests-product
+[53 / 60] FluentGallery-product
+[55 / 64] FluentKitTests-product
+[57 / 64] FluentKitTests-product
+[59 / 62] FluentKitValidation-product
+[60 / 62] FluentKitValidation-product
+[62 / 62] FluentKitValidation-product
+Build complete! (42.31秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:22:40.554.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:22:40.557.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-11-01 16:22:40.557.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery]' passed (0.828 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCancellationRestoresQueryAfterSelectedSuggestionReplacement]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCancellationRestoresQueryAfterSelectedSuggestionReplacement]' passed (2.190 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testClosedSuggestionsOnlyEscapeRestoresOriginalQuery]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testClosedSuggestionsOnlyEscapeRestoresOriginalQuery]' passed (0.403 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCompositionCancelsOldDebounceAndExternalResetWinsOnCommit]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCompositionCancelsOldDebounceAndExternalResetWinsOnCommit]' passed (0.430 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup]' passed (0.229 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' passed (0.868 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeDuringDebounceDoesNotReopenAndDetachClosesPanel]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeDuringDebounceDoesNotReopenAndDetachClosesPanel]' passed (0.241 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeRestoresOriginalQueryAndBindingImmediately]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeRestoresOriginalQueryAndBindingImmediately]' passed (0.224 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetInvalidatesSelectionAndClosesOldSuggestions]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetInvalidatesSelectionAndClosesOldSuggestions]' passed (0.224 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetRemainsCancellationBaselineAcrossFocusChanges]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetRemainsCancellationBaselineAcrossFocusChanges]' passed (0.862 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds]' passed (0.007 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' passed (0.066 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testLiveProviderUpdatePreservesSelectedIDAndResizesFromAnchor]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testLiveProviderUpdatePreservesSelectedIDAndResizesFromAnchor]' passed (0.199 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testObservedBodyRefreshKeepsOriginalQueryAndCandidateSelection]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testObservedBodyRefreshKeepsOriginalQueryAndCandidateSelection]' passed (0.404 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen]' passed (0.226 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor]' passed (0.337 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback]' passed (0.171 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testRemovedAndClosedSuggestionRowsCannotInvokeLater]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testRemovedAndClosedSuggestionRowsCannotInvokeLater]' passed (0.225 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSingleResultDoesNotCycleAndUpdateTextOnSelectCanBeDisabled]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSingleResultDoesNotCycleAndUpdateTextOnSelectCanBeDisabled]' passed (0.192 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion]' passed (0.220 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSuggestionViewportScrollsToKeyboardSelection]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSuggestionViewportScrollsToKeyboardSelection]' passed (0.216 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testTextChangeReasonsAreDebouncedAndCallbacksSupplyCurrentResults]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testTextChangeReasonsAreDebouncedAndCallbacksSupplyCurrentResults]' passed (0.691 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testUnchangedRefreshPreservesManualScrollButResizeRevealsSelection]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testUnchangedRefreshPreservesManualScrollButResizeRevealsSelection]' passed (0.229 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testZeroMaximumHidesSuggestionsAndNegativeUsesAvailableSpace]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testZeroMaximumHidesSuggestionsAndNegativeUsesAvailableSpace]' passed (0.186 seconds).
+Test Suite 'AutoSuggestInteractionTests' passed at 2026-11-01 16:22:50.430.
+	 Executed 24 tests, with 0 failures (0 unexpected) in 9.870 (9.873) seconds
+Test Suite 'ComboBoxFaceplateLayoutTests' started at 2026-11-01 16:22:50.430.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testControlSizesAndExplicitHeightRemainSupported]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testControlSizesAndExplicitHeightRemainSupported]' passed (0.058 seconds).
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testDensityAndLargerTypographyKeepFullTextLineAfterLiveUpdate]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testDensityAndLargerTypographyKeepFullTextLineAfterLiveUpdate]' passed (0.044 seconds).
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testResizingEditableFaceplatePreservesItsActiveMarkedText]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testResizingEditableFaceplatePreservesItsActiveMarkedText]' passed (0.015 seconds).
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers]' started.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers]' passed (0.088 seconds).
+Test Suite 'ComboBoxFaceplateLayoutTests' passed at 2026-11-01 16:22:50.635.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.205 (0.205) seconds
+Test Suite 'CommandBarLifecycleTests' started at 2026-11-01 16:22:50.635.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testAnimatedCloseCannotStealControlsFromReopenedPopup]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testAnimatedCloseCannotStealControlsFromReopenedPopup]' passed (0.357 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testAnimatedCloseRemovesPanelAfterItsCommandBarDetaches]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testAnimatedCloseRemovesPanelAfterItsCommandBarDetaches]' passed (0.326 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testDeclarativeRefreshKeepsControlsOpenPanelAndFocusedCommand]' passed (0.024 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testDisabledRemovedAndReplacedCommandsRecoverFocus]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testDisabledRemovedAndReplacedCommandsRecoverFocus]' passed (0.018 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testFocusedPrimaryKeepsKeyboardFocusAcrossOverflowMoves]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testFocusedPrimaryKeepsKeyboardFocusAcrossOverflowMoves]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testIdentifiedCommandsReorderAcrossGroupsWithoutRecreation]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testIdentifiedCommandsReorderAcrossGroupsWithoutRecreation]' passed (0.014 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testLiveCommandsUseLatestTitleActionStateAndPopupWidth]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testLiveCommandsUseLatestTitleActionStateAndPopupWidth]' passed (0.016 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testLiveRefreshPreservesTheDeviceUsedToOpenOverflow]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testLiveRefreshPreservesTheDeviceUsedToOpenOverflow]' passed (0.009 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testOverflowedPrimaryIsVisibleAndReturnsToStripWhenSpaceBecomesAvailable]' passed (0.016 seconds).
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testResizeWhileOpenPreservesPanelAndFocusedSecondaryInBothDirections]' started.
+Test Case '-[FluentKitTests.CommandBarLifecycleTests testResizeWhileOpenPreservesPanelAndFocusedSecondaryInBothDirections]' passed (0.026 seconds).
+Test Suite 'CommandBarLifecycleTests' passed at 2026-11-01 16:22:51.451.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.815 (0.816) seconds
+Test Suite 'MenuLifecycleTests' started at 2026-11-01 16:22:51.451.
+Test Case '-[FluentKitTests.MenuLifecycleTests testContextMenuRefreshUpdatesWrappedContentAndOpenMenuAction]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testContextMenuRefreshUpdatesWrappedContentAndOpenMenuAction]' passed (0.017 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testDeclarativeRefreshKeepsOpenMenuRowsSelectionAndLatestAction]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testDeclarativeRefreshKeepsOpenMenuRowsSelectionAndLatestAction]' passed (0.014 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testDisabledBranchClosesOnlyItsSubmenuAndRecoversRootSelection]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testDisabledBranchClosesOnlyItsSubmenuAndRecoversRootSelection]' passed (0.017 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testLiveTypographyChangeResizesAnchorAndMenuWithoutLosingSelection]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testLiveTypographyChangeResizesAnchorAndMenuWithoutLosingSelection]' passed (0.015 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testMenuBuildersComposeConditionsLoopsArraysAndEmptyBranches]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testMenuBuildersComposeConditionsLoopsArraysAndEmptyBranches]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testNestedStableIDsKeepPanelsRowsSelectionAndLatestLeafAction]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testNestedStableIDsKeepPanelsRowsSelectionAndLatestLeafAction]' passed (0.016 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testOpenRootAndSubmenuFollowAnchorMovesAndDirectionChanges]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testOpenRootAndSubmenuFollowAnchorMovesAndDirectionChanges]' passed (0.010 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testPendingHoverTracksRetainedIdentityAndNeverOpensAReplacementRow]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testPendingHoverTracksRetainedIdentityAndNeverOpensAReplacementRow]' passed (0.467 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed]' passed (0.102 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testRemovedDisabledOrEmptyTopLevelItemsCloseTheirMenuSafely]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testRemovedDisabledOrEmptyTopLevelItemsCloseTheirMenuSafely]' passed (0.018 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testStandaloneUpdateChangesSlotsStateAndSizeWithoutChangingOpeningDevice]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testStandaloneUpdateChangesSlotsStateAndSizeWithoutChangingOpeningDevice]' passed (0.010 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testTopLevelReorderPreservesOpenAnchorAndUsesItsNewNavigationIndex]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testTopLevelReorderPreservesOpenAnchorAndUsesItsNewNavigationIndex]' passed (0.008 seconds).
+Test Suite 'MenuLifecycleTests' passed at 2026-11-01 16:22:52.146.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.694 (0.695) seconds
+Test Suite 'ScreenPlacementTests' started at 2026-11-01 16:22:52.146.
+Test Case '-[FluentKitTests.ScreenPlacementTests testAllMonitorArrangementsUseScreenCoordinates]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testAllMonitorArrangementsUseScreenCoordinates]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testMissingScreensAndInvalidPointsHaveNoSelection]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testMissingScreensAndInvalidPointsHaveNoSelection]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOffscreenTargetUsesNearestEdgeRatherThanMonitorCenter]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOffscreenTargetUsesNearestEdgeRatherThanMonitorCenter]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testSeamsAndRTLUseTheActualTargetPoint]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testSeamsAndRTLUseTheActualTargetPoint]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testTargetScreenCanDifferFromTheParentWindowsScreen]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testTargetScreenCanDifferFromTheParentWindowsScreen]' passed (0.000 seconds).
+Test Suite 'ScreenPlacementTests' passed at 2026-11-01 16:22:52.147.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ToolTipMotionTests' started at 2026-11-01 16:22:52.147.
+Test Case '-[FluentKitTests.ToolTipMotionTests testCaptionButtonsExposeCustomToolTipsAndKeepNativeActions]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testCaptionButtonsExposeCustomToolTipsAndKeepNativeActions]' passed (1.198 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testCaptionToolTipWrappingPreservesActionsAndRestoreLabel]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testCaptionToolTipWrappingPreservesActionsAndRestoreLabel]' passed (0.023 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipCancelsOldFadeWhenOwnershipChanges]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipCancelsOldFadeWhenOwnershipChanges]' passed (1.513 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipDoesNotTransferAcrossWindowsOrToStandardMode]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipDoesNotTransferAcrossWindowsOrToStandardMode]' passed (2.617 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReducedMotionIsImmediateAndWindowChangeClosesIt]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReducedMotionIsImmediateAndWindowChangeClosesIt]' passed (1.201 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReusesSurfaceAndRetargetsFromIntermediateFrame]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReusesSurfaceAndRetargetsFromIntermediateFrame]' passed (1.968 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipScreenEdgesRTLAndRemovingActiveAnchor]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipScreenEdgesRTLAndRemovingActiveAnchor]' passed (1.208 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testEnablingReducedMotionSettlesAnInFlightToolTip]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testEnablingReducedMotionSettlesAnInFlightToolTip]' passed (1.233 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testPendingToolTipCannotOpenAfterOwnerIsOrderedOut]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testPendingToolTipCannotOpenAfterOwnerIsOrderedOut]' passed (0.885 seconds).
+Test Suite 'ToolTipMotionTests' passed at 2026-11-01 16:23:03.995.
+	 Executed 9 tests, with 0 failures (0 unexpected) in 11.847 (11.848) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 16:23:03.995.
+	 Executed 64 tests, with 0 failures (0 unexpected) in 23.430 (23.439) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 16:23:03.996.
+	 Executed 64 tests, with 0 failures (0 unexpected) in 23.430 (23.441) seconds

@@ -471,7 +471,7 @@ public final class FluentWindowTabCoordinator: NSObject, NSWindowDelegate {
             x: screenLocation.x - leadingInset - pointerOffset.x,
             y: screenLocation.y + 8 + pointerOffset.y
         )
-        let screen = NSScreen.screens.first { $0.frame.contains(screenLocation) } ?? window.screen ?? NSScreen.main
+        let screen = FluentScreenPlacement.screen(nearest: screenLocation) ?? window.screen ?? NSScreen.main
         guard let screen else {
             window.setFrameTopLeftPoint(proposedTopLeft)
             return

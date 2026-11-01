@@ -825,7 +825,8 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         guard size.height > 0 else { dismiss(animated: false); return }
         registerAppearanceUpdates(from: anchorWindow)
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
-        let visibleFrame = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visibleFrame = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: anchorRect, rightToLeft: anchor.userInterfaceLayoutDirection == .rightToLeft), fallback: anchorWindow)
         let origin = origin(
             anchorRect: anchorRect,
             size: size,
@@ -885,9 +886,13 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         popup.orderFront(nil)
         observeAnchorGeometry()
         installOutsideClickMonitors()
-        for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification] {
+        for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification,
+                     NSWindow.didChangeScreenNotification, NSWindow.didChangeBackingPropertiesNotification] {
             windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: anchorWindow, queue: .main) { [weak self] _ in self?.reposition() })
         }
+        windowObservers.append(NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
+        ) { [weak self] _ in self?.reposition() })
         for name in [NSWindow.willCloseNotification, NSWindow.didResignKeyNotification] {
             windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: anchorWindow, queue: .main) { [weak self] _ in self?.dismiss(animated: false) })
         }
@@ -926,7 +931,8 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
         let size = preferredSize(suggestionCount: suggestionsView?.count ?? 0)
         guard size.height > 0 else { dismiss(animated: false); return }
         let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
-        let visible = window.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visible = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: rect, rightToLeft: anchor.userInterfaceLayoutDirection == .rightToLeft), fallback: window)
         let frame = NSRect(origin: origin(anchorRect: rect, size: size, visibleFrame: visible), size: size)
         let resized = frame.size != panel.frame.size
         if panel.frame != frame { panel.setFrame(frame, display: false) }
@@ -979,8 +985,9 @@ private final class FluentAutoSuggestBoxPopup: NSObject {
 
     private func preferredSize(suggestionCount: Int) -> NSSize {
         guard let anchor, let window = anchor.window else { return .zero }
-        let visible = window.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
         let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
+        let visible = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: rect, rightToLeft: anchor.userInterfaceLayoutDirection == .rightToLeft), fallback: window)
         let available = max(0, max(rect.minY - visible.minY - 2, visible.maxY - rect.maxY - 2))
         let contentHeight = CGFloat(suggestionCount) * FluentAutoSuggestBoxHost.rowHeight(for: theme)
             + FluentAutoSuggestBoxHost.popupVerticalPadding * 2

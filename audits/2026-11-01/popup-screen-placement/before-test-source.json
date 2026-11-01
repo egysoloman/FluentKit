@@ -1,0 +1,34 @@
+{
+  "Sources/FluentKit/FluentAutoSuggestBox.swift": {
+    "baselineSHA256": "3bbf0a46e1694c345a19624b6f27a7efdb9f2cf3a264a357859a7a8880cd0d5d",
+    "workingSHA256": "f1c7fe7fe2443c1c4f562f5c1857b05e1782f1de6153c72d6f982ca4fe86fa46"
+  },
+  "Sources/FluentKit/FluentComboBoxPopup.swift": {
+    "baselineSHA256": "649085fbf6905f0adaa0a5f872e44e1421b67aa532f61c0b002aad6787166c93",
+    "workingSHA256": "498d3e0b643d2109b43c08559b052eb4caa8a1a16ffc48e56fbe67b154997038"
+  },
+  "Sources/FluentKit/FluentCommandBar.swift": {
+    "baselineSHA256": "e6566b37414c83bc1c8315386c3be35cd147919bb5b0d189c0a991554c3655e6",
+    "workingSHA256": "b24722eb85c1a1ed4e819a11724f383926fc49667392b8c3570c91fefc75bfab"
+  },
+  "Sources/FluentKit/FluentMenus.swift": {
+    "baselineSHA256": "e8dad7852ffcd9e4d83fa525586ebb2cef46eff382df018ecbd78b1ceceefd58",
+    "workingSHA256": "cfb02716b0c2125e2e43311b564328ec2edee2cdff3addda8ffe6be9b42086b8"
+  },
+  "Sources/FluentKit/FluentOverlays.swift": {
+    "baselineSHA256": "79066136ab2147047b2a13727a2e4da2e03090f6e62c63f481529cdd0d056cee",
+    "workingSHA256": "0e31e5364722c48fab4ef626fb6b1691ff9f386eafbebd28a14f7e2c6fbf44a9"
+  },
+  "Sources/FluentKit/FluentTextCommandFlyout.swift": {
+    "baselineSHA256": "e8d0a45d21d2063b730409215774ff83d9cada24de5b7a5ed405440586daaca6",
+    "workingSHA256": "d8bf618b595ed49484d1e48e05f7911d8163dec1f284d7a67906d95578dbd9f6"
+  },
+  "Sources/FluentKit/FluentToolTip.swift": {
+    "baselineSHA256": "fdd239fb295af0ab35e1bda8024e88f34a9fb9ca076fdbda4761141cd7684979",
+    "workingSHA256": "5139909046d6c3629f6b129a9c8bdf68c7e6d6b0d684b6d423500c3aef89882c"
+  },
+  "Sources/FluentKit/FluentWindowTabView.swift": {
+    "baselineSHA256": "56a8083bd8aea4e54064464e73627fc0856c3f42cce0254174634939b2b67a8b",
+    "workingSHA256": "43105eb290c035ea0ee00bd1ce4c780354502424ee5c71554578cce1de04e2e6"
+  }
+}

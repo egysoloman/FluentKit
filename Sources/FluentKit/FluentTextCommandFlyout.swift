@@ -324,6 +324,7 @@ final class FluentTextCommandFlyout {
     private var appearanceRegistration: UUID?
     private var expansionGeneration = 0
     private var anchorScreenPoint: NSPoint = .zero
+    private var screenObserver: FluentPopupScreenObserver?
     private var opensAbove = true
 
     var onDismiss: (() -> Void)?
@@ -364,7 +365,7 @@ final class FluentTextCommandFlyout {
             expanded: startsExpanded,
             alwaysExpanded: alwaysExpanded
         )
-        let visibleFrame = parentWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visibleFrame = FluentScreenPlacement.visibleFrame(at: anchorScreenPoint, fallback: parentWindow)
         opensAbove = anchorScreenPoint.y - contentSize.height - 8 >= visibleFrame.minY
         let origin = origin(for: contentSize, visibleFrame: visibleFrame)
 
@@ -455,9 +456,19 @@ final class FluentTextCommandFlyout {
             }
         }
         installOutsideClickMonitor()
+        screenObserver = FluentPopupScreenObserver(window: parentWindow) { [weak self, weak anchor] in
+            guard let self, let view = self.view else { return }
+            guard let anchor, let window = anchor.window, self.panel?.parent === window else {
+                self.dismiss(animated: false)
+                return
+            }
+            self.anchorScreenPoint = window.convertPoint(toScreen: anchor.convert(point, to: nil))
+            self.resize(expanded: view.isExpanded, animated: false)
+        }
     }
 
     func dismiss(animated: Bool, notify: Bool = true) {
+        screenObserver = nil
         expansionGeneration += 1
         removeOutsideClickMonitor()
         if let rootLayer = animationRoot?.layer {
@@ -516,7 +527,7 @@ final class FluentTextCommandFlyout {
             expanded: expanded,
             alwaysExpanded: alwaysExpanded
         )
-        let visibleFrame = panel.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visibleFrame = FluentScreenPlacement.visibleFrame(at: anchorScreenPoint, fallback: panel.parent)
         let origin = origin(for: size, visibleFrame: visibleFrame)
         let frame = NSRect(origin: origin, size: size)
         // The source state machine commits Expanded geometry before running its clip storyboard.

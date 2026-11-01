@@ -130,6 +130,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private var localMonitor: Any?
     private var globalMonitor: Any?
     private var resignObserver: NSObjectProtocol?
+    private var screenObserver: FluentPopupScreenObserver?
 
     public init(
         primaryCommands: [FluentCommandBarItem],
@@ -635,7 +636,9 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         controls.forEach { $0.userInterfaceLayoutDirection = userInterfaceLayoutDirection }
         let size = presenter.preferredSize
         let anchor = anchorWindow.convertToScreen(convert(bounds, to: nil))
-        let visible = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? anchor
+        let buttonFrame = anchorWindow.convertToScreen(moreButton.convert(moreButton.bounds, to: nil))
+        let visible = FluentScreenPlacement.visibleFrame(
+            at: NSPoint(x: buttonFrame.midX, y: buttonFrame.midY), fallback: anchorWindow)
         let spaceBelow = anchor.minY - visible.minY
         let opensBelow = spaceBelow >= size.height + 4 || anchor.maxY + size.height > visible.maxY
         let preferredX = userInterfaceLayoutDirection == .rightToLeft ? anchor.minX : anchor.maxX - size.width
@@ -761,9 +764,15 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             object: NSApp,
             queue: .main
         ) { [weak self] _ in self?.dismissOverflow(animated: false, notify: true) }
+        if let window {
+            screenObserver = FluentPopupScreenObserver(window: window) { [weak self] in
+                self?.updateOverflowPresentation(animated: false)
+            }
+        }
     }
 
     private func removeDismissMonitors() {
+        screenObserver = nil
         if let localMonitor { NSEvent.removeMonitor(localMonitor) }
         if let globalMonitor { NSEvent.removeMonitor(globalMonitor) }
         if let resignObserver { NotificationCenter.default.removeObserver(resignObserver) }

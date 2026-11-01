@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Popup work areas now follow the target's monitor instead of the owner window's
+  monitor. This covers ComboBox, AutoSuggestBox, menus, CommandBar overflow/flyouts
+  and popover edge selection, and keeps tooltip and torn-out tab placement on the
+  same nearest-screen policy. Open ComboBox, menu, suggestion and command panels
+  refresh on screen/work-area notifications while retaining their content, selection and
+  focus; geometry stays in AppKit points.
 - SettingsCard and SettingsExpander descriptions now remeasure when their available
   text width changes. Narrowing a window or enlarging a trailing action grows the
   header to fit its existing two-line description; widening it restores the natural

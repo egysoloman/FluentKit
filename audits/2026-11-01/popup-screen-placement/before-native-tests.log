@@ -1,0 +1,39 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[11 / 26] FluentKit
+[12 / 27] FluentKit
+[15 / 30] FluentKit
+[16 / 31] FluentKit
+[24 / 35] FluentKit
+[26 / 34] FluentKit-product
+[26 / 34] FluentGallery-product
+[31 / 37] FluentGallery-product
+[39 / 46] FluentGallery-product
+[41 / 48] FluentKitTests-product
+[45 / 51] FluentKitTests-product
+[47 / 54] FluentKitTests-product
+[49 / 52] FluentKitValidation-product
+[50 / 52] FluentKitValidation-product
+[52 / 52] FluentKitValidation-product
+Build complete! (41.51秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:29:23.068.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:29:23.070.
+Test Suite 'ScreenPlacementTests' started at 2026-11-01 16:29:23.070.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ScreenPlacementTests.swift:77: error: -[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("80.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting]' failed (0.619 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ScreenPlacementTests.swift:116: error: -[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("80.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver]' failed (0.016 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ScreenPlacementTests.swift:100: error: -[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows] : XCTAssertEqualWithAccuracy failed: ("0.0") is not equal to ("80.0") +/- ("0.5")
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows]' failed (0.009 seconds).
+Test Suite 'ScreenPlacementTests' failed at 2026-11-01 16:29:23.715.
+	 Executed 3 tests, with 3 failures (0 unexpected) in 0.644 (0.645) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 16:29:23.715.
+	 Executed 3 tests, with 3 failures (0 unexpected) in 0.644 (0.645) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 16:29:23.715.
+	 Executed 3 tests, with 3 failures (0 unexpected) in 0.644 (0.647) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

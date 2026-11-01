@@ -626,10 +626,7 @@ final class FluentToolTipHost: NSView {
     }
 
     private func screenContaining(targetCenter: NSPoint) -> NSScreen? {
-        NSScreen.screens.first { $0.frame.contains(targetCenter) }
-            ?? NSScreen.screens.min {
-                $0.frame.distanceSquared(to: targetCenter) < $1.frame.distanceSquared(to: targetCenter)
-            }
+        FluentScreenPlacement.screen(nearest: targetCenter)
     }
 
     private func installTransientMonitors() {
@@ -926,11 +923,5 @@ private extension NSRect {
             && abs(minY - other.minY) <= tolerance
             && abs(width - other.width) <= tolerance
             && abs(height - other.height) <= tolerance
-    }
-
-    func distanceSquared(to point: NSPoint) -> CGFloat {
-        let dx = point.x < minX ? minX - point.x : (point.x > maxX ? point.x - maxX : 0)
-        let dy = point.y < minY ? minY - point.y : (point.y > maxY ? point.y - maxY : 0)
-        return dx * dx + dy * dy
     }
 }

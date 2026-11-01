@@ -46,6 +46,8 @@ final class FluentComboBoxPopup: NSObject {
     private var appearanceRegistration: UUID?
     private var localMonitor: Any?
     private var globalMonitor: Any?
+    private var screenObserver: FluentPopupScreenObserver?
+    private var selectionCenterFromTop: CGFloat = 0
     private let onMove: (Int) -> Void
     private let onCommit: (Int) -> Void
     private let onDismiss: () -> Void
@@ -94,8 +96,10 @@ final class FluentComboBoxPopup: NSObject {
             : initialVisibleRangeFromStart()
         let size = preferredSize(visibleItemCount: visibleRange.count)
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
-        let visibleFrame = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visibleFrame = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: anchorRect, rightToLeft: layoutDirection == .rightToLeft), fallback: anchorWindow)
         let selectedRowCenter = rowCenterFromTop(for: centeredIndex, firstVisibleIndex: visibleRange.lowerBound)
+        selectionCenterFromTop = selectedRowCenter
         let proposedOrigin: NSPoint
         switch placement {
         case .selectionCentered:
@@ -190,6 +194,23 @@ final class FluentComboBoxPopup: NSObject {
         if NSApp.isActive { popup.makeKey() }
         popup.makeFirstResponder(root)
         installOutsideClickMonitors()
+        screenObserver = FluentPopupScreenObserver(window: anchorWindow) { [weak self] in self?.reposition() }
+    }
+
+    private func reposition() {
+        guard let panel else { return }
+        guard let anchor, let window = anchor.window, panel.parent === window else {
+            dismiss(animated: false)
+            return
+        }
+        let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
+        let visible = FluentScreenPlacement.visibleFrame(at: FluentScreenPlacement.topLeading(
+            of: rect, rightToLeft: layoutDirection == .rightToLeft), fallback: window)
+        let size = panel.frame.size
+        let proposed = placement == .editable ? editableOrigin(anchorRect: rect, size: size, visibleFrame: visible)
+            : NSPoint(x: layoutDirection == .rightToLeft ? rect.maxX - size.width : rect.minX,
+                      y: rect.midY - size.height + selectionCenterFromTop)
+        panel.setFrameOrigin(clamped(proposed, size: size, visibleFrame: visible))
     }
 
     func updateSelectedIndex(_ index: Int?) {
@@ -202,6 +223,7 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     func dismiss(animated _: Bool) {
+        screenObserver = nil
         guard let popupPanel = panel else { return }
         popupView?.resetPointerState()
         removeOutsideClickMonitors()

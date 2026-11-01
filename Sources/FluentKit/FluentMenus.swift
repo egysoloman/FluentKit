@@ -315,8 +315,16 @@ public final class FluentMenuFlyout {
     private func presentationOrigin(anchor: NSView, size: NSSize) -> (point: NSPoint, edge: FluentPopupRevealEdge)? {
         guard let anchorWindow = anchor.window else { return nil }
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
-        let visibleFrame = anchorWindow.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
         let rtl = layoutDirection == .rightToLeft
+        let targetPoint: NSPoint
+        if owner != nil {
+            targetPoint = NSPoint(x: rtl ? anchorRect.minX - 2 : anchorRect.maxX + 2, y: anchorRect.maxY)
+        } else if placement == .automatic, let point = anchorPoint {
+            targetPoint = anchorWindow.convertPoint(toScreen: anchor.convert(point, to: nil))
+        } else {
+            targetPoint = FluentScreenPlacement.topLeading(of: anchorRect, rightToLeft: rtl)
+        }
+        let visibleFrame = FluentScreenPlacement.visibleFrame(at: targetPoint, fallback: anchorWindow)
         var origin: NSPoint
         if owner != nil {
             origin = NSPoint(x: rtl ? anchorRect.minX - size.width - 2 : anchorRect.maxX + 2,
@@ -574,11 +582,15 @@ public final class FluentMenuFlyout {
     private func installLifecycleObservers(in window: NSWindow) {
         removeLifecycleObservers()
         let center = NotificationCenter.default
-        for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification] {
+        for name in [NSWindow.didMoveNotification, NSWindow.didResizeNotification,
+                     NSWindow.didChangeScreenNotification, NSWindow.didChangeBackingPropertiesNotification] {
             lifecycleObservers.append(center.addObserver(forName: name, object: window, queue: .main) { [weak self] _ in
                 self?.reposition()
             })
         }
+        lifecycleObservers.append(center.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main
+        ) { [weak self] _ in self?.reposition() })
         lifecycleObservers.append(center.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { [weak self] _ in
             self?.dismiss(animated: false)
         })
