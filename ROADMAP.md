@@ -77,7 +77,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    Editable prefix completion now preserves native suffix selection/undo, deletion, marked text,
    external-reset precedence and stable option identity. Custom text-submission events support
    handled callbacks, queued declarative option insertion, rebinding/reopening guards and repeated
-   custom-value suppression. Continue hierarchical flyout behavior and application acceptance.
+   custom-value suppression. Hierarchical menus separate keyboard selection/opening, restore parent
+   selection on one-level closure and protect callback-opened replacements. Continue pointer
+   handoff, open-branch visual state, application acceptance and the remaining hierarchical contracts.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required

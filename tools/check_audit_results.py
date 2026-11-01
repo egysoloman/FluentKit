@@ -95,6 +95,20 @@ for row in submission:
     assert all(row[k] is True for k in ('editorPreserved', 'fieldPreserved', 'newPopupPreserved')), row
     if action == 'insert':
         assert row['selectedWrites'] == ['Custom'], row
+hierarchy = load('MenuHierarchyAudit')
+hierarchy_actions = {'selection', 'childFocus', 'escape', 'back', 'returnOwner', 'reopen', 'dismissReopen', 'rootFocus'}
+assert len(hierarchy) == 32 and {(r['dark'], r['rtl'], r['action']) for r in hierarchy} == {
+    (dark, rtl, action) for dark in (False, True) for rtl in (False, True) for action in hierarchy_actions
+}, hierarchy
+for row in hierarchy:
+    assert row['passed'] is True, row
+    assert row['rootVisible'] == (row['action'] != 'dismissReopen'), row
+    if row['action'] in ('childFocus', 'escape'):
+        assert row['childSelection'] == ['Deep'], row
+    if row['action'] in ('selection', 'back', 'returnOwner', 'rootFocus'):
+        assert row['rootSelection'] == ['Branch'], row
+    if row['action'] == 'escape' and row['initiallyKey']:
+        assert row['childKey'] is True, row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Hierarchical MenuFlyouts separate keyboard selection from delayed pointer opening. Keyboard
+  opening selects the first enabled child; Escape and the closing arrow return one level with
+  parent selection restored, while a standalone root ignores the closing arrow. Tab retains
+  menu focus. Keyboard-opened roots receive initial selection, and changing a parent's keyboard
+  selection closes its old child immediately. Item and dismissal callbacks can replace the same
+  flyout without stale invocations closing it or suspended presentation creating an orphan panel.
+
 - Editable ComboBoxes add `.onTextSubmitted` with synchronous event delivery and a mutable
   `handled` flag. Selection/display finalization follows queued declarative updates, allowing
   callback-inserted options to be selected directly. Custom strings retain the text binding with

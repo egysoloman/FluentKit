@@ -1540,6 +1540,16 @@ FluentDropDownButton(title: "More", items: [
 ])
 ```
 
+Keyboard selection with Up/Down, Home/End or typeahead leaves submenus closed. Enter, Space or the
+opening arrow (Right in LTR, Left in RTL) opens the selected branch and selects its first enabled
+item. Escape or the opposite arrow closes one child level and restores the parent's selected row;
+Escape at the root dismisses the menu, while the opposite arrow leaves a standalone root open.
+MenuBar roots retain their top-level Left/Right navigation. Tab stays in the current menu.
+Menus opened by a recorded keyboard interaction also start at their first enabled item. Pointer
+hover retains its delayed opening and does not apply a keyboard selection to a newly opened child.
+An item or `onDismiss` callback may reopen the same flyout; the retired invocation cannot close the
+replacement, and a pending `present` yields to an explicit reentrant `present` or `dismiss`.
+
 Use `FluentCommandBarFlyout` when commands need WinUI's compact primary icon bar and expandable
 secondary overflow rather than MenuFlyout rows. It supports action, toggle, and separator elements,
 `AlwaysExpanded`, direct `present(relativeTo:at:)`, and a declarative Button attachment:

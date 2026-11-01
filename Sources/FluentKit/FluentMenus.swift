@@ -198,6 +198,7 @@ public final class FluentMenuFlyout {
     private weak var appearanceCoordinator: FluentAppearanceCoordinator?
     private var appearanceRegistration: UUID?
     private var layoutDirection: NSUserInterfaceLayoutDirection = .leftToRight
+    private var presentationRevision: UInt = 0
     /// `FlyoutBase::m_inputDeviceTypeUsedToOpen`, captured when the root menu opens.
     private(set) var inputDeviceTypeUsedToOpen: FluentInputDeviceType = .none
 
@@ -254,7 +255,11 @@ public final class FluentMenuFlyout {
             owner?.present(relativeTo: anchor, at: point, placement: placement)
             return
         }
+        presentationRevision &+= 1
+        let revision = presentationRevision
         dismissBranch(animated: false)
+        // onDismiss may have opened a replacement or explicitly cancelled this request.
+        guard presentationRevision == revision else { return }
         guard !items.isEmpty, let anchorWindow = anchor.window else { return }
         inputDeviceTypeUsedToOpen = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
         anchorView = anchor
@@ -262,7 +267,7 @@ public final class FluentMenuFlyout {
         self.placement = placement
         registerAppearanceUpdates(from: anchorWindow)
         layoutDirection = anchor.userInterfaceLayoutDirection
-        presentAnchoredPanel()
+        presentAnchoredPanel(focusFirstItem: inputDeviceTypeUsedToOpen == .keyboard)
     }
 
     /// Update a live menu without reopening its panel or replacing retained rows/submenus.
@@ -352,13 +357,13 @@ public final class FluentMenuFlyout {
         return (final, size, final.y + size.height / 2 <= anchorRect.midY ? .top : .bottom)
     }
 
-    private func presentAnchoredPanel() {
+    private func presentAnchoredPanel(focusFirstItem: Bool = false) {
         guard let anchor = anchorView, let window = anchor.window else { return }
         let minimum = resolvedMinimumWidth(for: anchor)
         let size = FluentMenuPresenterView.preferredSize(for: items, theme: theme, minimumWidth: minimum, itemHeight: itemHeight)
         guard let origin = presentationLayout(anchor: anchor, preferredSize: size) else { return }
         presentPanel(in: window, origin: origin.point, size: origin.size, direction: layoutDirection,
-                     presenterMinimumWidth: minimum, revealEdge: origin.edge)
+                     presenterMinimumWidth: minimum, revealEdge: origin.edge, focusFirstItem: focusFirstItem)
     }
 
     private func positionPanel() {
@@ -424,18 +429,19 @@ public final class FluentMenuFlyout {
         if let owner {
             owner.root.dismiss(animated: animated)
         } else {
+            presentationRevision &+= 1
             dismissBranch(animated: animated)
         }
     }
 
     private var root: FluentMenuFlyout { owner?.root ?? self }
 
-    private func presentSubmenu(relativeTo anchor: NSView) {
+    private func presentSubmenu(relativeTo anchor: NSView, keyboard: Bool) {
         guard anchor.window != nil else { return }
         dismissBranch(animated: false)
         anchorView = anchor
         layoutDirection = owner?.layoutDirection ?? anchor.userInterfaceLayoutDirection
-        presentAnchoredPanel()
+        presentAnchoredPanel(focusFirstItem: keyboard)
     }
 
     private func presentPanel(
@@ -444,7 +450,8 @@ public final class FluentMenuFlyout {
         size: NSSize,
         direction: NSUserInterfaceLayoutDirection,
         presenterMinimumWidth: CGFloat,
-        revealEdge: FluentPopupRevealEdge
+        revealEdge: FluentPopupRevealEdge,
+        focusFirstItem: Bool
     ) {
         let presenter = FluentMenuPresenterView(
             items: items,
@@ -471,7 +478,7 @@ public final class FluentMenuFlyout {
         panel.hidesOnDeactivate = true
         panel.appearance = anchorWindow.effectiveAppearance
 
-        // One shared Liquid Glass surface owns the fill and edge; the theme-level material switch
+        // One shared popup surface owns the fill and edge; the theme-level material switch
         // replaces it with an opaque fallback without changing popup geometry.
         let transitionHost = FluentPopupTransitionHost(
             content: viewport,
@@ -483,9 +490,20 @@ public final class FluentMenuFlyout {
         transitionHost.autoresizingMask = [.width, .height]
         panel.contentView = transitionHost
 
-        presenter.onDismiss = { [weak self] in self?.root.dismiss() }
-        presenter.onSelection = { [weak self] index, row in self?.scheduleSubmenu(index: index, row: row) }
-        presenter.onSubmenu = { [weak self] index, row in self?.openSubmenu(index: index, row: row) }
+        presenter.onDismiss = { [weak self, weak presenter] in
+            guard let self, let presenter, self.presenter === presenter else { return }
+            self.root.dismiss()
+        }
+        presenter.onEscape = { [weak self] in self?.closeFromKeyboard(dismissRoot: true) }
+        presenter.onSelection = { [weak self] index, row, keyboard in
+            guard let self else { return }
+            if keyboard {
+                self.pendingSubmenuWorkItem?.cancel()
+                self.pendingSubmenuWorkItem = nil
+                if self.childIndex != index { self.closeChild() }
+            } else { self.scheduleSubmenu(index: index, row: row) }
+        }
+        presenter.onSubmenu = { [weak self] index, row, keyboard in self?.openSubmenu(index: index, row: row, keyboard: keyboard) }
         presenter.onCloseSubmenu = { [weak self] in self?.closeFromKeyboard() }
         presenter.onRootHorizontalNavigation = owner == nil ? onRootHorizontalNavigation : nil
         parentWindow = anchorWindow
@@ -516,9 +534,10 @@ public final class FluentMenuFlyout {
         )
         panel.makeKeyAndOrderFront(nil)
         panel.makeFirstResponder(presenter)
+        if focusFirstItem { presenter.focusFirstItem() }
         if let anchor = anchorView {
             anchorObserver = FluentPopupAnchorObserver(anchor: anchor, onChange: { [weak self] in self?.reposition() },
-                onUnavailable: { [weak self] in self?.closeFromKeyboard() })
+                onUnavailable: { [weak self] in self?.closeFromKeyboard(dismissRoot: true) })
         }
     }
 
@@ -542,13 +561,13 @@ public final class FluentMenuFlyout {
         let work = DispatchWorkItem { [weak self, weak row] in
             guard let self, let row, let presenter = self.presenter,
                   let current = presenter.index(of: row), presenter.selectedIndex == current else { return }
-            self.openSubmenu(index: current, row: row)
+            self.openSubmenu(index: current, row: row, keyboard: false)
         }
         pendingSubmenuWorkItem = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
     }
 
-    private func openSubmenu(index: Int, row: FluentMenuItemRow) {
+    private func openSubmenu(index: Int, row: FluentMenuItemRow, keyboard: Bool) {
         pendingSubmenuWorkItem?.cancel()
         pendingSubmenuWorkItem = nil
         guard row.window === panel, row.visibleRect.intersects(row.bounds),
@@ -556,12 +575,21 @@ public final class FluentMenuFlyout {
             closeChild()
             return
         }
-        if childIndex == index, childFlyout?.isPresented == true { return }
+        if childIndex == index, let child = childFlyout, child.isPresented {
+            if keyboard {
+                child.panel?.makeKeyAndOrderFront(nil)
+                if let presenter = child.presenter {
+                    child.panel?.makeFirstResponder(presenter)
+                    presenter.focusFirstItem()
+                }
+            }
+            return
+        }
         closeChild()
         let child = FluentMenuFlyout(items: item.submenu, theme: theme, owner: self)
         childIndex = index
         childFlyout = child
-        child.presentSubmenu(relativeTo: row)
+        child.presentSubmenu(relativeTo: row, keyboard: keyboard)
     }
 
     private func closeChild(cancelPending: Bool = true) {
@@ -587,12 +615,15 @@ public final class FluentMenuFlyout {
         }
     }
 
-    private func closeFromKeyboard() {
+    private func closeFromKeyboard(dismissRoot: Bool = false) {
         if let owner {
+            guard owner.childFlyout === self else { return }
+            let index = owner.childIndex
             owner.closeChild()
             owner.presenter?.window?.makeKeyAndOrderFront(nil)
             if let presenter = owner.presenter { owner.presenter?.window?.makeFirstResponder(presenter) }
-        } else {
+            if let index { owner.presenter?.focusItem(at: index) }
+        } else if dismissRoot {
             dismissBranch(animated: false)
         }
     }
@@ -621,8 +652,8 @@ public final class FluentMenuFlyout {
         popupPanel.parent?.removeChildWindow(popupPanel)
         popupPanel.orderOut(nil)
         // MenuFlyout unload is intentionally immediate in FluentKit. Only entrance motion is
-        // retained; dismissing from an item, Escape, the trigger, or an outside click removes the
-        // complete presenter in one transaction.
+        // retained; removing this branch unloads its complete presenter in one transaction.
+        // Escape in a nested presenter closes that branch and returns to its parent.
         onDismiss?()
     }
 
@@ -805,8 +836,9 @@ private final class FluentMenuViewport: NSView {
 private final class FluentMenuPresenterView: NSView {
     private(set) var preferredSize = NSSize.zero
     var onDismiss: (() -> Void)?
-    var onSelection: ((Int, FluentMenuItemRow) -> Void)?
-    var onSubmenu: ((Int, FluentMenuItemRow) -> Void)?
+    var onEscape: (() -> Void)?
+    var onSelection: ((Int, FluentMenuItemRow, Bool) -> Void)?
+    var onSubmenu: ((Int, FluentMenuItemRow, Bool) -> Void)?
     var onCloseSubmenu: (() -> Void)?
     var onRootHorizontalNavigation: ((Int) -> Void)?
 
@@ -892,7 +924,7 @@ private final class FluentMenuPresenterView: NSView {
                 row.update(item: item, theme: theme, accelerator: Self.accelerator(for: item), layoutDirection: layoutDirection,
                     showsCheckPlaceholder: checkSlot, showsIconPlaceholder: iconSlot)
                 row.onHoverChange = { [weak self] row, hovering in self?.setHoveredRow(row, index: index, hovering: hovering) }
-                row.onInvoke = { [weak self] in self?.invoke(index) }
+                row.onInvoke = { [weak self] keyboard in self?.invoke(index, keyboard: keyboard) }
                 itemRows[index] = row
                 view = row
             }
@@ -946,6 +978,12 @@ private final class FluentMenuPresenterView: NSView {
         acceptsCommands = false
         typeaheadResetWorkItem?.cancel()
         resetPointerState()
+        onDismiss = nil
+        onEscape = nil
+        onSelection = nil
+        onSubmenu = nil
+        onCloseSubmenu = nil
+        onRootHorizontalNavigation = nil
         for row in itemRows.values {
             row.onInvoke = nil
             row.onHoverChange = nil
@@ -955,11 +993,12 @@ private final class FluentMenuPresenterView: NSView {
     override func keyDown(with event: NSEvent) {
         guard acceptsCommands else { return }
         switch event.keyCode {
-        case 53: onDismiss?()
+        case 53: onEscape?()
         case 125: moveSelection(by: 1)
         case 126: moveSelection(by: -1)
         case 36, 49:
-            if let selectedIndex { invoke(selectedIndex) }
+            if let selectedIndex { invoke(selectedIndex, keyboard: true) }
+        case 48: break // Menu navigation retains focus on Tab, as MenuFlyoutPresenter does.
         case 124: handleHorizontalNavigation(physicalOffset: 1)
         case 123: handleHorizontalNavigation(physicalOffset: -1)
         case 115:
@@ -968,7 +1007,7 @@ private final class FluentMenuPresenterView: NSView {
             if let last = enabledIndices.last { select(last, announce: true, keyboard: true) }
         default: super.keyDown(with: event)
         }
-        if ![53, 125, 126, 36, 49, 124, 123, 115, 119].contains(event.keyCode) {
+        if ![53, 125, 126, 36, 49, 48, 124, 123, 115, 119].contains(event.keyCode) {
             handleTypeahead(event)
         }
     }
@@ -985,7 +1024,7 @@ private final class FluentMenuPresenterView: NSView {
            let selectedIndex,
            let row = itemRows[selectedIndex],
            items[selectedIndex].hasSubmenu {
-            onSubmenu?(selectedIndex, row)
+            onSubmenu?(selectedIndex, row, true)
             return
         }
         if let onRootHorizontalNavigation {
@@ -1004,10 +1043,11 @@ private final class FluentMenuPresenterView: NSView {
             selectedIndex = offset >= 0 ? enabled.first : enabled.last
         }
         showsKeyboardSelection = true
+        hoverCoordinator.reset(items: itemRows.values)
         updateSelection()
         revealKeyboardSelection()
         if let selectedIndex, let row = itemRows[selectedIndex] {
-            onSelection?(selectedIndex, row)
+            onSelection?(selectedIndex, row, true)
             NSAccessibility.post(element: row, notification: .focusedUIElementChanged)
         }
     }
@@ -1021,7 +1061,7 @@ private final class FluentMenuPresenterView: NSView {
         updateSelection()
         revealKeyboardSelection()
         if let row = itemRows[index] {
-            onSelection?(index, row)
+            onSelection?(index, row, keyboard)
             if announce { NSAccessibility.post(element: row, notification: .focusedUIElementChanged) }
         }
     }
@@ -1077,13 +1117,16 @@ private final class FluentMenuPresenterView: NSView {
         update(items: items, theme: theme, layoutDirection: layoutDirection, minimumWidth: minimumWidth)
     }
 
-    private func invoke(_ index: Int) {
+    private func invoke(_ index: Int, keyboard: Bool) {
         guard acceptsCommands, items.indices.contains(index), items[index].isEnabled else { return }
         if items[index].hasSubmenu, let row = itemRows[index] {
-            onSubmenu?(index, row)
+            onSubmenu?(index, row, keyboard)
             return
         }
         items[index].action()
+        // Invoking an item can replace the root. Its retired presenter has no authority
+        // to close the application's newly opened menu after the callback returns.
+        guard acceptsCommands else { return }
         onDismiss?()
     }
 
@@ -1094,6 +1137,8 @@ private final class FluentMenuPresenterView: NSView {
     func focusFirstItem() {
         if let first = enabledIndices.first { select(first, announce: false, keyboard: true) }
     }
+
+    func focusItem(at index: Int) { select(index, announce: true, keyboard: true) }
 
     private func handleTypeahead(_ event: NSEvent) {
         guard event.modifierFlags.intersection([.command, .control, .option]).isEmpty,
@@ -1147,7 +1192,7 @@ private final class FluentMenuPresenterView: NSView {
 private final class FluentMenuItemRow: NSControl {
     var isKeyboardSelected = false { didSet { needsDisplay = true } }
     var onHoverChange: ((FluentMenuItemRow, Bool) -> Void)?
-    var onInvoke: (() -> Void)?
+    var onInvoke: ((Bool) -> Void)?
 
     private var item: FluentMenuItem
     private var theme: FluentTheme
@@ -1235,7 +1280,7 @@ private final class FluentMenuItemRow: NSControl {
                 self.updateSelectionPill(animated: true)
                 self.needsDisplay = true
             }
-            if self.window != nil, self.item.isEnabled { self.onInvoke?() }
+            if self.window != nil, self.item.isEnabled { self.onInvoke?(false) }
         }
     }
 
@@ -1281,7 +1326,7 @@ private final class FluentMenuItemRow: NSControl {
 
     override func accessibilityPerformPress() -> Bool {
         guard item.isEnabled else { return false }
-        onInvoke?()
+        onInvoke?(true)
         return true
     }
 
