@@ -820,8 +820,16 @@ struct GalleryScreen: FluentView {
                     FluentButtonView("Left placement")
                         .toolTip("Left placement mirrors in right-to-left layouts.", placement: .left)
                 }
+                FluentHStack(spacing: 0) {
+                    FluentButtonView("First")
+                        .toolTip("First target", placement: .bottom, motion: .continuous)
+                    FluentButtonView("Second")
+                        .toolTip("A wider shared ToolTip", placement: .bottom, motion: .continuous)
+                    FluentButtonView("Third")
+                        .toolTip("Third", placement: .bottom, motion: .continuous)
+                }
                 FluentText(
-                    "Hover a target or reach it from the keyboard; only one automatic ToolTip is visible at a time.",
+                    "The second row opts into FluentKit’s continuous motion: hover once, then move between targets. Reduced motion switches immediately.",
                     style: .caption,
                     color: theme.textSecondary
                 )

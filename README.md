@@ -1296,6 +1296,14 @@ let shareSession = FluentNativeSharingPresenter.shared.presentSharing(
 
 ## Overlays
 
+Use `.toolTip("Help")` for the default delayed ToolTip. Adjacent targets can opt into
+`.toolTip("Help", placement: .bottom, motion: .continuous)` to share a moving, resizing
+surface with a content transition. This is a FluentKit extension, independently implemented
+from a visual reference, and is enabled for the Windows-style caption buttons. The first
+target retains its hover delay; subsequent targets in the same window transition immediately.
+Placement stays at the activation point while moving inside one target. Keyboard activation
+keeps the default delay, and reduced motion switches directly to the final state.
+
 Overlays use native macOS presentation hosts while keeping their content declarative. Use `FluentPopoverButton` for transient content, `FluentSheet` (or the `sheet(isPresented:title:size:)` modifier) for custom modal content, and `confirmationDialog` or `FluentAlert` for native confirmation sheets. A window-owned presentation coordinator serializes custom sheets, native alerts, and file panels because AppKit permits only one attached document-modal sheet at a time. Request tokens isolate stale native completion callbacks, preserve rapid close/reopen state, and restore the parent responder after dismissal. Sheets keep their native window while updating content, title, requested size, theme, and the global material-effects switch in place.
 
 For a binding-driven transient surface, attach `popover(isPresented:placement:size:behavior:)` to the anchor view. The anchor remains mounted, `automatic` placement chooses a fitting edge using the current screen and layout direction, same-size content updates preserve the native popover content identity, and a size change replaces the AppKit presenter without changing the binding state:

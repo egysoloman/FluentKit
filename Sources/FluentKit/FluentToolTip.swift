@@ -13,6 +13,14 @@ public enum FluentToolTipPlacement: Hashable, Sendable {
     case right
 }
 
+/// Optional presentation behavior. Continuous motion is a FluentKit extension, not a WinUI default.
+public enum FluentToolTipMotion: Hashable, Sendable {
+    case standard
+    /// Move one visible surface between pointer targets in the same window. Placement is captured
+    /// on activation; movement inside a target does not chase the pointer. Honors reduced motion.
+    case continuous
+}
+
 /// WinUI default/fallback timing and geometry. Windows reads the actual fade timing, pointer
 /// hover interval, and display duration from system theme parameters; AppKit does not expose
 /// direct equivalents, so FluentKit uses the same documented fallback values.
@@ -28,6 +36,9 @@ enum FluentToolTipMetrics {
     static let screenTolerance: CGFloat = 2
     static let maximumWidth: CGFloat = 320
     static let padding = NSEdgeInsets(top: 6, left: 9, bottom: 8, right: 9)
+    static let continuousMoveDuration: TimeInterval = 0.22
+    static let continuousFadeDuration: TimeInterval = 0.18
+    static let continuousExitDelay: TimeInterval = 0.12
 }
 
 /// The WinUI default ToolTip text presenter: 12pt, wrapping, and constrained to 320pt including
@@ -70,6 +81,7 @@ public struct FluentToolTip<Content: FluentView, ToolTipContent: FluentView>: Fl
     let placement: FluentToolTipPlacement
     let isEnabled: Bool
     let accessibilityText: String?
+    let motion: FluentToolTipMotion
 
     public var body: NeverFluentView { NeverFluentView() }
 
@@ -80,7 +92,8 @@ public struct FluentToolTip<Content: FluentView, ToolTipContent: FluentView>: Fl
             placement: placement,
             isEnabled: isEnabled,
             accessibilityText: accessibilityText,
-            context: context
+            context: context,
+            motion: motion
         )
     }
 
@@ -97,7 +110,8 @@ public struct FluentToolTip<Content: FluentView, ToolTipContent: FluentView>: Fl
             placement: placement,
             isEnabled: isEnabled,
             accessibilityText: accessibilityText,
-            context: context
+            context: context,
+            motion: motion
         )
         return true
     }
@@ -108,14 +122,16 @@ public extension FluentView {
     func toolTip(
         _ text: String,
         placement: FluentToolTipPlacement = .automatic,
-        isEnabled: Bool = true
+        isEnabled: Bool = true,
+        motion: FluentToolTipMotion = .standard
     ) -> FluentToolTip<Self, FluentToolTipText> {
         FluentToolTip(
             content: self,
             toolTipContent: FluentToolTipText(text),
             placement: placement,
             isEnabled: isEnabled,
-            accessibilityText: text
+            accessibilityText: text,
+            motion: motion
         )
     }
 
@@ -125,6 +141,7 @@ public extension FluentView {
         placement: FluentToolTipPlacement = .automatic,
         isEnabled: Bool = true,
         accessibilityText: String? = nil,
+        motion: FluentToolTipMotion = .standard,
         @FluentViewBuilder content: () -> ToolTipContent
     ) -> FluentToolTip<Self, ToolTipContent> {
         FluentToolTip(
@@ -132,7 +149,8 @@ public extension FluentView {
             toolTipContent: content(),
             placement: placement,
             isEnabled: isEnabled,
-            accessibilityText: accessibilityText
+            accessibilityText: accessibilityText,
+            motion: motion
         )
     }
 }
@@ -148,19 +166,21 @@ private final class FluentToolTipCoordinator {
     weak var pending: FluentToolTipHost?
     var lastClosedAt = Date.distantPast
 
-    func claim(_ host: FluentToolTipHost) {
-        guard current !== host else { return }
+    func claim(_ host: FluentToolTipHost) -> FluentToolTipPresentation? {
+        guard current !== host else { return nil }
+        let reused = host.canContinuePresentation(from: current) ? current?.releasePresentation() : nil
         // WinUI force-finishes a closing ToolTip before opening the next automatic one so two
         // transient surfaces never overlap during the hand-off.
-        current?.dismiss(animated: false)
+        if reused == nil { current?.dismiss(animated: false) }
         current = host
         if pending === host { pending = nil }
+        return reused
     }
 
     func prepare(_ host: FluentToolTipHost) {
         guard pending !== host else { return }
         pending?.cancelScheduledOpen()
-        if current !== host { current?.dismiss(animated: false) }
+        if current !== host, !host.canContinuePresentation(from: current) { current?.dismiss(animated: false) }
         pending = host
     }
 
@@ -196,10 +216,18 @@ final class FluentToolTipHost: NSView {
     private var localKeyMonitor: Any?
     private var openWorkItem: DispatchWorkItem?
     private var closeWorkItem: DispatchWorkItem?
-    private var panel: FluentToolTipPanel?
-    private var surface: FluentToolTipSurface?
+    private var pointerExitWorkItem: DispatchWorkItem?
+    private var presentation: FluentToolTipPresentation?
+    private var panel: FluentToolTipPanel? { presentation?.panel }
+    private var surface: FluentToolTipSurface? { presentation?.surface }
+    private var motion: FluentToolTipMotion
+    private var openGeneration: UInt64 = 0
+    private var presentationGeneration: UInt64 = 0
+    private var attachmentGeneration: UInt64 = 0
+    private var isClosing = false
     private var inputMode: FluentToolTipInputMode = .pointer
     private var pointerScreenPoint: NSPoint?
+    private var presentationPointerPoint: NSPoint?
     private var pointerInside = false
     private var focusedInside = false
     private var anchorFrameAtPresentation: NSRect?
@@ -212,7 +240,8 @@ final class FluentToolTipHost: NSView {
         placement: FluentToolTipPlacement,
         isEnabled: Bool,
         accessibilityText: String?,
-        context: FluentRenderContext
+        context: FluentRenderContext,
+        motion: FluentToolTipMotion = .standard
     ) {
         self.contentView = contentView
         self.toolTipView = toolTipView
@@ -220,6 +249,7 @@ final class FluentToolTipHost: NSView {
         self.isEnabled = isEnabled
         self.accessibilityText = accessibilityText
         self.context = context
+        self.motion = motion
         super.init(frame: .zero)
         _ = FluentFocusVisibility.isKeyboardInteraction(in: nil)
         identifier = NSUserInterfaceItemIdentifier("FluentKit.ToolTip.Anchor")
@@ -253,11 +283,29 @@ final class FluentToolTipHost: NSView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         installWindowObservers()
-        if window == nil { dismiss(animated: false) }
+        attachmentGeneration &+= 1
+        if window == nil, presentation != nil, motion == .continuous {
+            // AppKit briefly detaches titlebar accessories while changing appearance. Give a
+            // same-window reattachment this main-loop turn; real removal still closes promptly.
+            cancelScheduledOpen()
+            let generation = attachmentGeneration
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.attachmentGeneration == generation else { return }
+                if self.window == nil { self.dismiss(animated: false) }
+            }
+            return
+        }
+        if window == nil || panel?.parent !== window { dismiss(animated: false) }
+    }
+
+    override func viewDidHide() {
+        super.viewDidHide()
+        dismiss(animated: false)
     }
 
     override func mouseEntered(with event: NSEvent) {
         pointerInside = true
+        cancelPointerExit()
         pointerScreenPoint = screenPoint(for: event)
         scheduleOpen(mode: .pointer)
     }
@@ -288,79 +336,108 @@ final class FluentToolTipHost: NSView {
         placement: FluentToolTipPlacement,
         isEnabled: Bool,
         accessibilityText: String?,
-        context: FluentRenderContext
+        context: FluentRenderContext,
+        motion: FluentToolTipMotion = .standard
     ) {
         let replaced = toolTipView !== newToolTipView
         if replaced {
-            toolTipView.removeFromSuperview()
+            // The surface captures outgoing content before detaching it.
+            if presentation == nil { toolTipView.removeFromSuperview() }
             toolTipView = newToolTipView
         }
         self.placement = placement
         self.isEnabled = isEnabled
         self.accessibilityText = accessibilityText
         self.context = context
+        self.motion = motion
         applyAccessibilityHelp()
         guard isEnabled else {
-            dismiss(animated: true)
+            dismiss(animated: false)
             return
         }
-        if panel != nil { refreshOpenPanel(replacingContent: replaced) }
+        if presentation != nil, !isClosing { refreshOpenPanel(replacingContent: replaced) }
     }
 
     func dismiss(animated: Bool) {
         cancelScheduledOpen()
+        cancelPointerExit()
         closeWorkItem?.cancel()
         closeWorkItem = nil
         removeTransientMonitors()
-        guard let panel else {
+        guard let presentation else {
             FluentToolTipCoordinator.shared.relinquish(self)
             return
         }
+        isClosing = true
+        presentationGeneration &+= 1
+        let generation = presentationGeneration
         FluentToolTipCoordinator.shared.noteClosing(self)
-        let finish = { [weak self, weak panel] in
-            guard let self else { return }
-            if let owner = panel?.parent { owner.removeChildWindow(panel!) }
-            panel?.orderOut(nil)
-            self.toolTipView.removeFromSuperview()
-            self.panel = nil
-            self.surface = nil
+        presentation.fade(to: 0, motion: motion, reduceMotion: context.reduceMotion, animated: animated) { [weak self, weak presentation] in
+            guard let self, let presentation, self.presentation === presentation,
+                  self.presentationGeneration == generation else { return }
+            presentation.close()
+            self.presentation = nil
+            self.isClosing = false
             FluentToolTipCoordinator.shared.relinquish(self, recordClose: false)
-        }
-        if animated && !context.reduceMotion {
-            NSAnimationContext.runAnimationGroup { animation in
-                animation.duration = FluentToolTipMetrics.fadeDuration
-                animation.timingFunction = CAMediaTimingFunction(name: .linear)
-                panel.animator().alphaValue = 0
-            } completionHandler: { DispatchQueue.main.async(execute: finish) }
-        } else {
-            finish()
         }
     }
 
+    fileprivate func canContinuePresentation(from other: FluentToolTipHost?) -> Bool {
+        guard let other, motion == .continuous, other.motion == .continuous,
+              inputMode == .pointer, other.inputMode == .pointer,
+              let window, other.window === window,
+              other.panel?.isVisible == true else { return false }
+        return true
+    }
+
+    fileprivate func releasePresentation() -> FluentToolTipPresentation? {
+        cancelScheduledOpen()
+        cancelPointerExit()
+        closeWorkItem?.cancel()
+        closeWorkItem = nil
+        removeTransientMonitors()
+        presentationGeneration &+= 1
+        let result = presentation
+        presentation = nil
+        isClosing = false
+        return result
+    }
+
     func cancelScheduledOpen() {
+        openGeneration &+= 1
         openWorkItem?.cancel()
         openWorkItem = nil
         FluentToolTipCoordinator.shared.cancelPending(self)
     }
 
     private func scheduleOpen(mode: FluentToolTipInputMode) {
-        guard isEnabled, window != nil, panel == nil else { return }
-        openWorkItem?.cancel()
-        FluentToolTipCoordinator.shared.prepare(self)
+        guard isEnabled, window?.isVisible == true, !isHiddenOrHasHiddenAncestor else { return }
         inputMode = mode
+        if presentation != nil {
+            if isClosing, motion == .continuous, mode == .pointer { present(mode: mode) }
+            return
+        }
+        cancelScheduledOpen()
+        let coordinator = FluentToolTipCoordinator.shared
+        if canContinuePresentation(from: coordinator.current) {
+            present(mode: mode)
+            return
+        }
+        coordinator.prepare(self)
         let delay: TimeInterval
         switch mode {
         case .keyboard:
             delay = FluentToolTipMetrics.keyboardDelay
         case .pointer:
-            let elapsed = Date().timeIntervalSince(FluentToolTipCoordinator.shared.lastClosedAt)
+            let elapsed = Date().timeIntervalSince(coordinator.lastClosedAt)
             delay = elapsed < FluentToolTipMetrics.betweenShowDelay
                 ? FluentToolTipMetrics.reshowPointerDelay
                 : FluentToolTipMetrics.normalPointerDelay
         }
+        let generation = openGeneration
         let work = DispatchWorkItem { [weak self] in
-            guard let self,
-                  self.isEnabled,
+            guard let self, self.openGeneration == generation,
+                  self.isEnabled, !self.isHiddenOrHasHiddenAncestor,
                   (mode == .pointer ? self.pointerInside : self.focusedInside) else { return }
             self.present(mode: mode)
         }
@@ -369,43 +446,67 @@ final class FluentToolTipHost: NSView {
     }
 
     private func present(mode: FluentToolTipInputMode) {
-        guard let ownerWindow = window else { return }
-        FluentToolTipCoordinator.shared.claim(self)
+        guard let ownerWindow = window, ownerWindow.isVisible, !ownerWindow.isMiniaturized else { return }
+        cancelScheduledOpen()
+        cancelPointerExit()
+        closeWorkItem?.cancel()
         inputMode = mode
-        let surface = FluentToolTipSurface(content: toolTipView, context: context)
-        let size = surface.measure(maximumHeight: maximumContentHeight(for: mode))
-        surface.frame = NSRect(origin: .zero, size: size)
-        let panel = FluentToolTipPanel(contentRect: NSRect(origin: .zero, size: size))
-        panel.contentView = surface
-        panel.setFrameOrigin(resolvedOrigin(for: size, mode: mode))
-        panel.alphaValue = context.reduceMotion ? 1 : 0
-        ownerWindow.addChildWindow(panel, ordered: .above)
-        panel.orderFront(nil)
-        self.panel = panel
-        self.surface = surface
+        let reused = FluentToolTipCoordinator.shared.claim(self) ?? presentation
+        let presentation = reused ?? FluentToolTipPresentation(content: toolTipView, context: context)
+        self.presentation = presentation
+        presentationGeneration &+= 1
+        isClosing = false
+        presentationPointerPoint = pointerScreenPoint
+        let animate = motion == .continuous && mode == .pointer && !context.reduceMotion
+        presentation.surface.replaceContent(with: toolTipView, animated: animate)
+        presentation.surface.update(context: context)
+        let size = presentation.surface.measure(maximumHeight: maximumContentHeight(for: mode))
+        let frame = NSRect(origin: resolvedOrigin(for: size, mode: mode), size: size)
+        presentation.show(in: ownerWindow, frame: frame, motion: motion,
+                          animateGeometry: animate, reduceMotion: context.reduceMotion)
         anchorFrameAtPresentation = anchorScreenFrame
         installTransientMonitors()
 
-        if !context.reduceMotion {
-            NSAnimationContext.runAnimationGroup { animation in
-                animation.duration = FluentToolTipMetrics.fadeDuration
-                animation.timingFunction = CAMediaTimingFunction(name: .linear)
-                panel.animator().alphaValue = 1
-            }
+        let generation = presentationGeneration
+        let close = DispatchWorkItem { [weak self] in
+            guard let self, self.presentationGeneration == generation else { return }
+            self.dismiss(animated: true)
         }
-
-        let close = DispatchWorkItem { [weak self] in self?.dismiss(animated: true) }
         closeWorkItem = close
         DispatchQueue.main.asyncAfter(deadline: .now() + FluentToolTipMetrics.showDuration, execute: close)
     }
 
     private func refreshOpenPanel(replacingContent: Bool) {
-        guard let panel, let surface else { return }
-        if replacingContent { surface.replaceContent(with: toolTipView) }
-        surface.update(context: context)
-        let size = surface.measure(maximumHeight: maximumContentHeight(for: inputMode))
-        surface.frame = NSRect(origin: .zero, size: size)
-        panel.setFrame(NSRect(origin: resolvedOrigin(for: size, mode: inputMode), size: size), display: true)
+        guard let presentation else { return }
+        let animate = motion == .continuous && inputMode == .pointer && !context.reduceMotion
+        if replacingContent { presentation.surface.replaceContent(with: toolTipView, animated: animate) }
+        presentation.surface.update(context: context)
+        let size = presentation.surface.measure(maximumHeight: maximumContentHeight(for: inputMode))
+        presentation.move(to: NSRect(origin: resolvedOrigin(for: size, mode: inputMode), size: size),
+                          animated: animate, contentChanged: replacingContent)
+        if context.reduceMotion {
+            presentation.fade(to: 1, motion: motion, reduceMotion: true, animated: false)
+        }
+    }
+
+    private func cancelPointerExit() {
+        pointerExitWorkItem?.cancel()
+        pointerExitWorkItem = nil
+    }
+
+    private func schedulePointerExit() {
+        guard motion == .continuous, !context.reduceMotion else {
+            dismiss(animated: true)
+            return
+        }
+        guard pointerExitWorkItem == nil, !isClosing else { return }
+        let generation = presentationGeneration
+        let work = DispatchWorkItem { [weak self] in
+            guard let self, self.presentationGeneration == generation else { return }
+            self.dismiss(animated: true)
+        }
+        pointerExitWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + FluentToolTipMetrics.continuousExitDelay, execute: work)
     }
 
     private func resolvedOrigin(for size: NSSize, mode: FluentToolTipInputMode) -> NSPoint {
@@ -493,11 +594,13 @@ final class FluentToolTipHost: NSView {
                 if self.inputMode == .keyboard { self.dismiss(animated: true) }
             }
         }
-        windowObservers.append(NotificationCenter.default.addObserver(
-            forName: NSWindow.didResignKeyNotification,
-            object: window,
-            queue: .main
-        ) { [weak self] _ in self?.dismiss(animated: true) })
+        for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification,
+                     NSWindow.willMoveNotification, NSWindow.didMoveNotification, NSWindow.didResizeNotification,
+                     NSWindow.willMiniaturizeNotification] {
+            windowObservers.append(NotificationCenter.default.addObserver(
+                forName: name, object: window, queue: .main
+            ) { [weak self] _ in self?.dismiss(animated: false) })
+        }
     }
 
     private func ownsFirstResponder(_ responder: NSResponder?) -> Bool {
@@ -534,8 +637,12 @@ final class FluentToolTipHost: NSView {
         globalPointerMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]) { [weak self] _ in
             DispatchQueue.main.async { self?.evaluateSafeZone(at: NSEvent.mouseLocation) }
         }
-        localPointerMonitor = NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged]) { [weak self] event in
-            self?.evaluateSafeZone(at: NSEvent.mouseLocation)
+        localPointerMonitor = NSEvent.addLocalMonitorForEvents(matching: [.mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged, .leftMouseDown, .rightMouseDown, .otherMouseDown, .scrollWheel]) { [weak self] event in
+            if [.leftMouseDown, .rightMouseDown, .otherMouseDown, .scrollWheel].contains(event.type) {
+                self?.dismiss(animated: false)
+            } else {
+                self?.evaluateSafeZone(at: NSEvent.mouseLocation)
+            }
             return event
         }
         localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
@@ -561,8 +668,11 @@ final class FluentToolTipHost: NSView {
             dismiss(animated: true)
             return
         }
-        guard !Self.point(point, isInsideConvexHullOf: anchorFrame, and: panel.frame) else { return }
-        dismiss(animated: true)
+        if Self.point(point, isInsideConvexHullOf: anchorFrame, and: panel.frame) {
+            cancelPointerExit()
+        } else {
+            schedulePointerExit()
+        }
     }
 
     private func shouldDismiss(for event: NSEvent) -> Bool {
@@ -572,7 +682,8 @@ final class FluentToolTipHost: NSView {
     }
 
     private func placementTarget(for mode: FluentToolTipInputMode) -> NSRect {
-        if mode == .pointer, let pointerScreenPoint { return NSRect(origin: pointerScreenPoint, size: .zero) }
+        let point = motion == .continuous && panel != nil ? presentationPointerPoint : pointerScreenPoint
+        if mode == .pointer, let point { return NSRect(origin: point, size: .zero) }
         return anchorScreenFrame ?? .zero
     }
 
@@ -646,6 +757,7 @@ final class FluentToolTipHost: NSView {
         windowObservers.forEach(NotificationCenter.default.removeObserver)
         openWorkItem?.cancel()
         closeWorkItem?.cancel()
+        pointerExitWorkItem?.cancel()
         removeTransientMonitors()
     }
 }
@@ -653,6 +765,10 @@ final class FluentToolTipHost: NSView {
 final class FluentToolTipSurface: NSView {
     private(set) var content: NSView
     private let material: FluentMaterialView
+    private let contentContainer = NSView()
+    private var outgoingContent: CALayer?
+    var hasContentTransition: Bool { outgoingContent != nil }
+    private var measuredContentSize: NSSize = .zero
     private var context: FluentRenderContext
 
     init(content: NSView, context: FluentRenderContext) {
@@ -663,7 +779,9 @@ final class FluentToolTipSurface: NSView {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.ToolTip.Surface")
         wantsLayer = true
         addSubview(material)
-        addSubview(content)
+        contentContainer.wantsLayer = true
+        addSubview(contentContainer)
+        contentContainer.addSubview(content)
         setAccessibilityRole(.helpTag)
         update(context: context)
     }
@@ -673,22 +791,68 @@ final class FluentToolTipSurface: NSView {
     override func layout() {
         super.layout()
         material.frame = bounds
+        contentContainer.frame = bounds
         let padding = FluentToolTipMetrics.padding
-        content.frame = NSRect(
-            x: padding.left,
-            y: padding.bottom,
-            width: max(0, bounds.width - padding.left - padding.right),
-            height: max(0, bounds.height - padding.top - padding.bottom)
-        )
+        let size = outgoingContent == nil
+            ? NSSize(width: max(0, bounds.width - padding.left - padding.right),
+                     height: max(0, bounds.height - padding.top - padding.bottom))
+            : measuredContentSize
+        content.frame = NSRect(x: padding.left, y: padding.bottom, width: size.width, height: size.height)
     }
 
-    func replaceContent(with content: NSView) {
+    func replaceContent(with content: NSView, animated: Bool = false) {
+        guard self.content !== content else { return }
+        let image = animated ? captureContent() : nil
+        finishContentTransition()
         self.content.removeFromSuperview()
         self.content = content
-        addSubview(content, positioned: .above, relativeTo: material)
+        contentContainer.addSubview(content)
+        if let image {
+            let snapshot = CALayer()
+            snapshot.contents = image
+            snapshot.frame = contentContainer.bounds
+            contentContainer.layer?.addSublayer(snapshot)
+            outgoingContent = snapshot
+            content.alphaValue = 0
+        }
+        needsLayout = true
+    }
+
+    func setContentTransitionProgress(_ progress: CGFloat) {
+        guard let outgoingContent else { return }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        outgoingContent.opacity = Float(1 - progress)
+        content.alphaValue = progress
+        CATransaction.commit()
+    }
+
+    func finishContentTransition() {
+        outgoingContent?.removeFromSuperlayer()
+        outgoingContent = nil
+        content.alphaValue = 1
+        needsLayout = true
+    }
+
+    private func captureContent() -> CGImage? {
+        layoutSubtreeIfNeeded()
+        contentContainer.displayIfNeeded()
+        CATransaction.flush()
+        let scale = window?.backingScaleFactor ?? 1
+        guard bounds.width > 0, bounds.height > 0,
+              let bitmap = NSBitmapImageRep(bitmapDataPlanes: nil,
+                pixelsWide: Int(ceil(bounds.width * scale)), pixelsHigh: Int(ceil(bounds.height * scale)),
+                bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+                colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0),
+              let cg = NSGraphicsContext(bitmapImageRep: bitmap)?.cgContext else { return nil }
+        cg.scaleBy(x: scale, y: scale)
+        // Capture text/custom content only. The live material is never flattened or duplicated.
+        contentContainer.layer?.render(in: cg)
+        return bitmap.cgImage
     }
 
     func update(context: FluentRenderContext) {
+        if self.context.theme != context.theme || context.reduceMotion { finishContentTransition() }
         self.context = context
         let theme = context.theme
         material.materialStyle = .acrylic
@@ -725,6 +889,8 @@ final class FluentToolTipSurface: NSView {
         content.setFrameSize(NSSize(width: contentSize.width, height: max(1, contentSize.height)))
         content.layoutSubtreeIfNeeded()
         contentSize.height = max(contentSize.height, content.fittingSize.height)
+        measuredContentSize = NSSize(width: contentSize.width,
+            height: max(0, min(contentSize.height, maximumHeight - verticalPadding)))
         return NSSize(
             width: contentSize.width + horizontalPadding,
             height: min(contentSize.height + verticalPadding, maximumHeight)

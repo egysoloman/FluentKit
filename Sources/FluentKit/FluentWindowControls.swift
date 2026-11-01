@@ -211,12 +211,15 @@ private final class FluentWindowControlsCoordinator: NSObject {
     ]
 }
 
-private final class FluentWindowsWindowControlsView: NSView {
+private final class FluentWindowsWindowControlsView: NSView, FluentAppearanceParticipant {
     private static let defaultTitleBarHeight: CGFloat = 32
     private weak var targetWindow: NSWindow?
     private let minimizeButton: FluentWindowsCaptionButton
     private let maximizeButton: FluentWindowsCaptionButton
     private let closeButton: FluentWindowsCaptionButton
+    private var toolTipHosts: [FluentToolTipHost] = []
+    private weak var appearanceCoordinator: FluentAppearanceCoordinator?
+    private var appearanceRegistration: UUID?
 
     private var titleBarHeight: CGFloat
 
@@ -245,7 +248,16 @@ private final class FluentWindowsWindowControlsView: NSView {
         translatesAutoresizingMaskIntoConstraints = false
         setAccessibilityRole(.group)
         setAccessibilityLabel(fluentControlString("Window controls"))
-        [minimizeButton, maximizeButton, closeButton].forEach(addSubview)
+        let context = FluentRenderContext(theme: window.fluentAppearanceCoordinator?.resolvedTheme ?? .current)
+        toolTipHosts = [minimizeButton, maximizeButton, closeButton].map { button in
+            let text = button.accessibilityLabel() ?? ""
+            let host = FluentToolTipHost(contentView: button,
+                toolTipView: FluentToolTipText(text)._mount(in: context), placement: .bottom,
+                isEnabled: button.isEnabled, accessibilityText: text, context: context, motion: .continuous)
+            button.toolTipHost = host
+            addSubview(host)
+            return host
+        }
         refresh()
     }
 
@@ -254,18 +266,45 @@ private final class FluentWindowsWindowControlsView: NSView {
     override func layout() {
         super.layout()
         let width = FluentWindowControlsStyle.windowsControlWidth
-        minimizeButton.frame = NSRect(x: 0, y: 0, width: width, height: bounds.height)
-        maximizeButton.frame = NSRect(x: width, y: 0, width: width, height: bounds.height)
-        closeButton.frame = NSRect(x: width * 2, y: 0, width: width, height: bounds.height)
+        for (index, host) in toolTipHosts.enumerated() {
+            host.frame = NSRect(x: CGFloat(index) * width, y: 0, width: width, height: bounds.height)
+        }
     }
 
     func refresh() {
         guard let targetWindow else { return }
+        let coordinator = targetWindow.fluentAppearanceCoordinator
+        if appearanceCoordinator !== coordinator {
+            if let appearanceRegistration { appearanceCoordinator?.unregister(appearanceRegistration) }
+            appearanceCoordinator = coordinator
+            appearanceRegistration = coordinator?.register(owner: self, updateImmediately: false) { [weak self] theme in
+                self?.applyFluentAppearance(theme)
+            }
+        }
         minimizeButton.isEnabled = targetWindow.styleMask.contains(.miniaturizable)
         maximizeButton.isEnabled = targetWindow.styleMask.contains(.resizable)
         closeButton.isEnabled = targetWindow.styleMask.contains(.closable)
         maximizeButton.refreshWindowState()
-        [minimizeButton, maximizeButton, closeButton].forEach { $0.needsDisplay = true }
+        applyFluentAppearance(targetWindow.fluentAppearanceCoordinator?.resolvedTheme ?? FluentThemeResolver.resolve(
+            preference: .system, appearance: effectiveAppearance, baseTheme: .current))
+    }
+
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        refresh()
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        refresh()
+    }
+
+    func applyFluentAppearance(_ theme: FluentTheme) {
+        let context = FluentRenderContext(theme: theme)
+        [minimizeButton, maximizeButton, closeButton].forEach {
+            $0.refreshToolTip(context: context)
+            $0.needsDisplay = true
+        }
     }
 
     func updateTitleBarHeight(_ requestedHeight: CGFloat?) {
@@ -274,6 +313,10 @@ private final class FluentWindowsWindowControlsView: NSView {
         titleBarHeight = next
         invalidateIntrinsicContentSize()
         needsLayout = true
+    }
+
+    deinit {
+        if let appearanceRegistration { appearanceCoordinator?.unregister(appearanceRegistration) }
     }
 }
 
@@ -288,6 +331,8 @@ private final class FluentWindowsCaptionButton: NSButton {
     private weak var targetWindow: NSWindow?
     private var pointerOver = false
     private var tracking: NSTrackingArea?
+    weak var toolTipHost: FluentToolTipHost?
+    private var toolTipContext = FluentRenderContext()
 
     init(kind: Kind, window: NSWindow) {
         self.kind = kind
@@ -379,8 +424,24 @@ private final class FluentWindowsCaptionButton: NSButton {
         )?.withSymbolConfiguration(configuration)
         image?.isTemplate = true
         setAccessibilityLabel(fluentControlString(label))
-        toolTip = fluentControlString(label)
+        toolTip = nil
+        refreshToolTip(context: toolTipContext)
         needsDisplay = true
+    }
+
+    func refreshToolTip(context: FluentRenderContext) {
+        toolTipContext = context
+        guard let host = toolTipHost else { return }
+        let text = accessibilityLabel() ?? ""
+        let label: NSView
+        if let existing = host.toolTipView as? NSTextField, existing.stringValue == text {
+            _ = FluentToolTipText(text)._updateView(existing, in: context)
+            label = existing
+        } else {
+            label = FluentToolTipText(text)._mount(in: context)
+        }
+        host.update(toolTipView: label, placement: .bottom, isEnabled: isEnabled,
+                    accessibilityText: text, context: context, motion: .continuous)
     }
 
     @objc private func invoke() {

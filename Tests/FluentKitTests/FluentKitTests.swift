@@ -116,7 +116,7 @@ final class FluentKitTests: XCTestCase {
         RunLoop.main.run(until: Date().addingTimeInterval(0.10))
         let panel = try XCTUnwrap(window.childWindows?.first)
         XCTAssertEqual(
-            (panel.contentView?.subviews.compactMap { $0 as? NSTextField }.first)?.stringValue,
+            ((panel.contentView as? FluentToolTipSurface)?.content as? NSTextField)?.stringValue,
             "Second help"
         )
         second.dismiss(animated: false)

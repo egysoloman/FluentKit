@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ToolTips can opt into `motion: .continuous` to move and resize one visible surface between
+  pointer targets in the same window, cross-fading their content. Windows-style caption buttons
+  use this mode with localized labels and theme updates. Interrupted transitions retain their
+  current geometry, stale closures cannot dismiss a new owner, and reduced motion settles
+  immediately. Default ToolTips retain their timing and placement. This is an independent
+  FluentKit extension inspired by a user-provided animation, not native WinUI behavior.
+
 - AutoSuggestBox, ComboBox, ContentDialog, RefreshContainer and NavigationView reflow
   when AppKit changes the scroller style without resizing the window. Documents and rows
   now fit the actual clip width/height, including legacy scroller gutters; FluentList
