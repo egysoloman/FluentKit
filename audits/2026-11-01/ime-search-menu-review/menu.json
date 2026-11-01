@@ -1,0 +1,942 @@
+[
+  {
+    "backend" : "fluentRecipe",
+    "frames" : [
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 0,
+        "presentationOpacity" : 0,
+        "time" : 0.003996041661594063,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.053854472935199738,
+        "time" : 0.0095496666617691517,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.11743710935115814,
+        "time" : 0.014827916660578921,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.18386957049369812,
+        "time" : 0.020340666640549898,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.24516566097736359,
+        "time" : 0.025428541644942015,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.31400501728057861,
+        "time" : 0.031142041640123352,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.37639838457107544,
+        "time" : 0.036321249994216487,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.44502207636833191,
+        "time" : 0.042015958315460011,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.51123058795928955,
+        "time" : 0.047513666650047526,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.5801275372505188,
+        "time" : 0.053230083314701915,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.64677959680557251,
+        "time" : 0.058760958316270262,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.71560138463973999,
+        "time" : 0.064475041668629274,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.78434586524963379,
+        "time" : 0.070181291666813195,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.84871178865432739,
+        "time" : 0.075524041661992669,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.91735142469406128,
+        "time" : 0.081221416650805622,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.98617219924926758,
+        "time" : 0.086933124985080212,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.092237291653873399,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.097931249998509884,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10362062498461455,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10889716664678417,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.114590416662395,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12021112500224262,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12566370831336826,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.13135679165134206,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.13700199997401796,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14268841664306819,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14837145831552334,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15365458332234994,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.1588238749827724,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.1645182499778457,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.1702476249774918,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.17542383330874145,
+        "visible" : true
+      }
+    ],
+    "materialEnabled" : true,
+    "panelShadow" : false,
+    "reduceMotion" : false,
+    "reduceTransparency" : false,
+    "sameEditor" : true,
+    "style" : "default"
+  },
+  {
+    "backend" : "visualEffect",
+    "frames" : [
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 0,
+        "presentationOpacity" : 0,
+        "time" : 0.0018519166624173522,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.063855439424514771,
+        "time" : 0.0071739583218004555,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.1276128739118576,
+        "time" : 0.012465624982723966,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.19667021930217743,
+        "time" : 0.018193583324318752,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.26295581459999084,
+        "time" : 0.023699499986832961,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.3282962441444397,
+        "time" : 0.029122666659532115,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.39036056399345398,
+        "time" : 0.03427324999938719,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.45928263664245605,
+        "time" : 0.039993874990614131,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.52578616142272949,
+        "time" : 0.045515083329519257,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.59099394083023071,
+        "time" : 0.050923624978167936,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.65604013204574585,
+        "time" : 0.056325208308408037,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.72531378269195557,
+        "time" : 0.062070749991107732,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.79443073272705078,
+        "time" : 0.067809291649609804,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.86329448223114014,
+        "time" : 0.073525791667634621,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.93095129728317261,
+        "time" : 0.079141416645143181,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.99965602159500122,
+        "time" : 0.08484570833388716,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.090585874975658953,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.095813624997390434,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.1008717083313968,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10656324998126365,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.11228216666495427,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.11795674997847527,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12350899999728426,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12913312498130836,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.13431887500337325,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14000374998431653,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14568429166683927,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15090858330950141,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15659991666325368,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.16219633331638761,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.16755774998455308,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.17301216666237451,
+        "visible" : true
+      }
+    ],
+    "materialEnabled" : true,
+    "panelShadow" : false,
+    "reduceMotion" : false,
+    "reduceTransparency" : false,
+    "sameEditor" : true,
+    "style" : "nativeAcrylic"
+  },
+  {
+    "backend" : "nativeGlass",
+    "frames" : [
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 0,
+        "presentationOpacity" : 0,
+        "time" : 0.0020669583464041352,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.069264061748981476,
+        "time" : 0.0078333750134333968,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.13788414001464844,
+        "time" : 0.013533124991226941,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.20662300288677216,
+        "time" : 0.019238291657529771,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.27032178640365601,
+        "time" : 0.024523458327166736,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.33921927213668823,
+        "time" : 0.030242958338931203,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.40803816914558411,
+        "time" : 0.035956416657427326,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.47038403153419495,
+        "time" : 0.041129499993985519,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.5355527400970459,
+        "time" : 0.046540291659766808,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.60410284996032715,
+        "time" : 0.052228666667360812,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.67092323303222656,
+        "time" : 0.057774083339609206,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.73974549770355225,
+        "time" : 0.063486666680546477,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.80833375453948975,
+        "time" : 0.06917974998941645,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.87246090173721313,
+        "time" : 0.074501083348877728,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.94127911329269409,
+        "time" : 0.080214416666422039,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.085928874992532656,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.091230416670441628,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.096937333350069821,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10263212499557994,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10801979165989906,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.11371545834117569,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.11936979167512618,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12470141667290591,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.1304061250120867,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.13603679166408256,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14117970832739957,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14687708334531635,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15257479166029952,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15778879166464321,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.163495791668538,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.16919166667503305,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.17446345833013766,
+        "visible" : true
+      }
+    ],
+    "materialEnabled" : true,
+    "panelShadow" : false,
+    "reduceMotion" : false,
+    "reduceTransparency" : false,
+    "sameEditor" : true,
+    "style" : "liquidGlass"
+  },
+  {
+    "backend" : "opaque",
+    "frames" : [
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 0,
+        "presentationOpacity" : 0,
+        "time" : 0.0017362500075250864,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.062951318919658661,
+        "time" : 0.0069793333241250366,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.13048207759857178,
+        "time" : 0.012585458345711231,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.19876810908317566,
+        "time" : 0.018250458320835605,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.26757732033729553,
+        "time" : 0.023960291669936851,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.33498978614807129,
+        "time" : 0.029558250011177734,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.39812356233596802,
+        "time" : 0.034799249988282099,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.46704617142677307,
+        "time" : 0.040517249988624826,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.53597241640090942,
+        "time" : 0.046240333322202787,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.60483622550964355,
+        "time" : 0.051956000010250136,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.67082834243774414,
+        "time" : 0.057431958324741572,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.73608535528182983,
+        "time" : 0.062848958332324401,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.80487847328186035,
+        "time" : 0.068559916660888121,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.87346982955932617,
+        "time" : 0.074252166668884456,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 0.94214349985122681,
+        "time" : 0.079953708336688578,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0.083000000000000004,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.085367416671942919,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.09105479167192243,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.096583208331139758,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10200474999146536,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.10769845833419822,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.11339195832260884,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.11869129166007042,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12380875000962988,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.12951083332882263,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.13519829165306874,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14087724999990314,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.14657279165112413,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15200695832027122,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.15727666666498408,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.16253258334472775,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.16820729165920056,
+        "visible" : true
+      },
+      {
+        "animationDuration" : 0,
+        "modelOpacity" : 1,
+        "presentationOpacity" : 1,
+        "time" : 0.17395945833413862,
+        "visible" : true
+      }
+    ],
+    "materialEnabled" : false,
+    "panelShadow" : false,
+    "reduceMotion" : false,
+    "reduceTransparency" : false,
+    "sameEditor" : true,
+    "style" : "disabled"
+  }
+]
