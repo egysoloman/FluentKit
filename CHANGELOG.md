@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Preserve SettingsExpander and Expander chevron motion through layout, content and hover
+  refreshes. Initial display no longer animates an unchanged direction; detachment, disabling
+  and Reduce Motion settle rotation without replaying it on reattachment or re-enabling.
+
 - Keep TreeView disclosure rotation running through layout, content, theme and accessory
   updates. Reused or detached cells, direction changes and Reduce Motion settle the current
   rotation; backing-scale changes refresh chevron geometry without cancelling motion.

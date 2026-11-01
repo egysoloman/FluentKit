@@ -50,6 +50,8 @@ WinUIEssentials is a reference, not an identical-rendering requirement; see the
    transfer after an owned gesture reaches an edge, and navigation-button visual acceptance.
 6. **Text, windows and visual states.** Complete the open contracts in the table above without
    replacing native editing, responder, accessibility or window lifecycle ownership.
+   SettingsExpander and Expander chevrons now preserve their motion across repeated layout
+   and content updates; audit the remaining shared chevron callers independently.
 
 ## Platform acceptance still required
 

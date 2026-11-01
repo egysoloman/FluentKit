@@ -148,9 +148,9 @@ private enum FluentExpanderMetrics {
 private final class FluentExpanderHeader: NSButton {
     let contentView: NSView
     var context: FluentRenderContext { didSet { updateAppearance(animated: false) } }
-    var isExpanded = false { didSet { updateAppearance(animated: oldValue != isExpanded) } }
+    var isExpanded = false { didSet { if oldValue != isExpanded { updateAppearance(animated: true) } } }
     var expandDirection: FluentExpandDirection = .down {
-        didSet { updateAppearance(animated: oldValue != expandDirection) }
+        didSet { if oldValue != expandDirection { updateAppearance(animated: true) } }
     }
 
     private let chevronLayer = FluentAnimatedChevronLayer()
@@ -158,6 +158,12 @@ private final class FluentExpanderHeader: NSButton {
     private var contentTrailing: NSLayoutConstraint!
     private var trackingAreaReference: NSTrackingArea?
     private var pointerOver = false
+    private var hasLaidOutChevron = false
+    private var pendingChevronAnimation = false
+
+    override var isEnabled: Bool {
+        didSet { if oldValue != isEnabled { updateAppearance(animated: false) } }
+    }
 
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { isEnabled }
@@ -259,6 +265,7 @@ private final class FluentExpanderHeader: NSButton {
 
     override func layout() {
         super.layout()
+        guard bounds.width > 0, bounds.height > 0 else { return }
         let isRTL = context.layoutDirection == .rightToLeft
         let chevronFrame = CGRect(
             x: isRTL
@@ -277,8 +284,11 @@ private final class FluentExpanderHeader: NSButton {
             visual: .upDownSmall,
             direction: chevronDirection,
             backingScale: window?.backingScaleFactor,
-            animated: !context.reduceMotion
+            preservingUnchangedAnimations: window != nil && isEnabled && !context.reduceMotion,
+            animated: pendingChevronAnimation && hasLaidOutChevron && window != nil && isEnabled && !context.reduceMotion
         )
+        hasLaidOutChevron = true
+        pendingChevronAnimation = false
         contentView.alphaValue = isEnabled ? 1 : 0.45
     }
 
@@ -342,9 +352,26 @@ private final class FluentExpanderHeader: NSButton {
         needsLayout = true
         // Let the host allocate the new header size before solving its content. Even an
         // already mounted header can temporarily have an obsolete slot after a template update.
-        if !animated || context.reduceMotion {
-            chevronLayer.removeAllAnimations()
+        if context.reduceMotion || !isEnabled || window == nil {
+            pendingChevronAnimation = false
+            chevronLayer.finishAnimations()
+        } else {
+            pendingChevronAnimation = pendingChevronAnimation || animated
         }
+    }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil {
+            pendingChevronAnimation = false
+            chevronLayer.finishAnimations()
+        }
+        needsLayout = true
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        needsLayout = true
     }
 
     private func updateContentInsets() {

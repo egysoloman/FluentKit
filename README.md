@@ -1507,6 +1507,10 @@ with Windows.
   array and comparing structure still costs O(n); this API does not promise constant-time arbitrary data updates.
 - `FluentObservable` and `FluentState` deduplicate concrete Equatable values. Custom values can
   supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
+- SettingsExpander and Expander preserve chevron transitions through layout, content and hover
+  refreshes. Initial display is static; detachment, disabling and Reduce Motion settle rotation
+  without replaying it on reattachment or re-enabling. Chevron motion uses FluentKit's shared
+  primitive; it does not reproduce every frame of WinUI's AnimatedIcon asset.
 - TreeView reconciles native nodes by stable ID and updates visible content in place when the
   topology is unchanged. Structural updates still reload the outline; reconciliation still walks
   the supplied nodes. Reordering preserves selection by ID. The interactive Gallery sample covers

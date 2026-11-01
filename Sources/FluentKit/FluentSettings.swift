@@ -410,6 +410,17 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
         updateChevron(animated: false)
     }
 
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil { chevronLayer.finishAnimations() }
+        needsLayout = true
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        needsLayout = true
+    }
+
     private func updateDescriptionWidth() {
         // A wrapping field's cached intrinsic height may still reflect the old row
         // width. Use the available alignment width, not its last text-fitting width,
@@ -553,7 +564,10 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
 
     func setChevronExpanded(_ expanded: Bool, animated: Bool) {
         setAccessibilityValue(expanded ? "Expanded" : "Collapsed")
-        guard chevronExpanded != expanded else { return }
+        guard chevronExpanded != expanded else {
+            if !animated { chevronLayer.finishAnimations() }
+            return
+        }
         chevronExpanded = expanded
         updateChevron(animated: animated)
     }
@@ -651,7 +665,10 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
     }
 
     private func updateChevron(animated: Bool) {
-        guard showsChevron, bounds.width > 0, bounds.height > 0 else { return }
+        guard showsChevron, bounds.width > 0, bounds.height > 0 else {
+            chevronLayer.finishAnimations()
+            return
+        }
         let state: FluentControlState = !isEnabled
             ? .disabled
             : (isPressed ? .pressed : (isPointerOver ? .pointerOver : .normal))
@@ -679,7 +696,8 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
             visual: chevronIsExpander ? .upDownSmall : .directional,
             direction: direction,
             backingScale: window?.backingScaleFactor,
-            animated: animated && !context.reduceMotion
+            preservingUnchangedAnimations: window != nil && isEnabled && !context.reduceMotion,
+            animated: animated && window != nil && isEnabled && !context.reduceMotion
         )
     }
 }

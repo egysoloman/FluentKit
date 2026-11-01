@@ -80,6 +80,7 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         direction: FluentChevronDirection = .down,
         inverted: Bool = false,
         backingScale: CGFloat? = nil,
+        preservingUnchangedAnimations: Bool = false,
         animated: Bool
     ) {
         invertedPath = inverted
@@ -90,20 +91,25 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         self.direction = resolvedDirection
         let targetTransform = transform(for: resolvedDirection, pressed: state == .pressed)
         let motion = state == .pressed ? FluentMotion.controlFaster : FluentMotion.controlNormal
-        let changes = [
-            FluentLayerAnimationChange(
+        var changes: [FluentLayerAnimationChange] = []
+        // A layout or unrelated pointer/color update is not a new rotation. Compare model
+        // targets, not presentation samples, so a running transition keeps its original clock.
+        if !preservingUnchangedAnimations || !CATransform3DEqualToTransform(transform, targetTransform) {
+            changes.append(FluentLayerAnimationChange(
                 layer: self,
                 key: "fluent.chevron.press",
                 keyPath: "transform",
                 toValue: NSValue(caTransform3D: targetTransform)
-            ) { [weak self] in self?.transform = targetTransform },
-            FluentLayerAnimationChange(
+            ) { [weak self] in self?.transform = targetTransform })
+        }
+        if !preservingUnchangedAnimations || strokeColor != color.cgColor {
+            changes.append(FluentLayerAnimationChange(
                 layer: self,
                 key: "fluent.chevron.color",
                 keyPath: "strokeColor",
                 toValue: color.cgColor
-            ) { [weak self] in self?.strokeColor = color.cgColor }
-        ]
+            ) { [weak self] in self?.strokeColor = color.cgColor })
+        }
         animationCoordinator.animateState(changes, motion: motion, animated: animated)
     }
 
