@@ -45,6 +45,33 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    /// Layout and theme refreshes must not retarget an in-flight disclosure rotation.
+    func updateLayout(frame: CGRect, color: NSColor, backingScale: CGFloat? = nil) {
+        updateGeometry(frame: frame, backingScale: backingScale)
+        animationCoordinator.cancel(layer: self, key: "fluent.chevron.color")
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        strokeColor = color.cgColor
+        CATransaction.commit()
+    }
+
+    func finishAnimations() {
+        // Model values already hold the destination; removing presentation motion settles it.
+        animationCoordinator.cancelAll(on: [self])
+    }
+
+    private func updateGeometry(frame: CGRect, backingScale: CGFloat?) {
+        let scale = max(backingScale ?? contentsScale, 1)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        bounds = CGRect(origin: .zero, size: frame.size)
+        position = CGPoint(x: frame.midX, y: frame.midY)
+        contentsScale = scale
+        lineWidth = max(1 / scale, FluentPixelGeometry(backingScale: scale).align(1.35))
+        path = chevronPath(in: bounds, scale: scale, visual: visual, inverted: invertedPath)
+        CATransaction.commit()
+    }
+
     func update(
         frame: CGRect,
         color: NSColor,
@@ -55,19 +82,10 @@ final class FluentChevronPrimitiveLayer: CAShapeLayer {
         backingScale: CGFloat? = nil,
         animated: Bool
     ) {
-        let scale = max(backingScale ?? contentsScale, 1)
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        bounds = CGRect(origin: .zero, size: frame.size)
-        position = CGPoint(x: frame.midX, y: frame.midY)
-        contentsScale = scale
-        lineWidth = max(1 / scale, FluentPixelGeometry(backingScale: scale).align(1.35))
         invertedPath = inverted
-        path = chevronPath(in: bounds, scale: scale, visual: visual, inverted: inverted)
-        CATransaction.commit()
-
         self.state = state
         self.visual = visual
+        updateGeometry(frame: frame, backingScale: backingScale)
         let resolvedDirection = visual == .downSmall ? FluentChevronDirection.down : direction
         self.direction = resolvedDirection
         let targetTransform = transform(for: resolvedDirection, pressed: state == .pressed)

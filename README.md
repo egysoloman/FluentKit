@@ -1515,8 +1515,11 @@ with Windows.
   `move.parentID` starting at `move.index`. Descendants move with their selected ancestor.
   Selection order is preserved; initial unordered Set selections use tree order. With no checks,
   it moves the dragged row. Existing `onMove` remains a single-row callback; the last move-handler
-  modifier wins. Native drag/drop acceptance, cross-tree transfer and row expansion animation
-  remain pending.
+  modifier wins. Disclosure rotation survives layout, theme and content refreshes; reused cells,
+  detachment and Reduce Motion settle it at the current node's direction. Native drag/drop
+  acceptance, cross-tree transfer and container entrance/content/reorder transitions remain pending.
+  WinUI's default TreeView transitions distinguish initial entrance from inserted rows; they do
+  not specify an Expander-style height animation for every expansion.
 - TreeView disclosure availability queries do not call `onExpanding`. Actual changes to
   `expandedIDs` after mounting emit `onExpanding` / `onCollapsed`; initial state and restoration
   after reloading children do not repeat them. `onCollapsed` observes the updated binding, so a

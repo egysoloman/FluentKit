@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Keep TreeView disclosure rotation running through layout, content, theme and accessory
+  updates. Reused or detached cells, direction changes and Reduce Motion settle the current
+  rotation; backing-scale changes refresh chevron geometry without cancelling motion.
+
 - Split CalendarView month/year items at era boundaries, including both partial Japanese
   years in 2019 and partial months in 1989. Decade scopes stay within their era and start
   with years 1–9. Header ranges, keyboard paging and month/day preservation follow the same

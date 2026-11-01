@@ -36,7 +36,9 @@ WinUIEssentials is a reference, not an identical-rendering requirement; see the
    context commands, hover lifecycle, scroller style changes, theme propagation and page motion
    in real applications. Synthetic events and green tests alone do not close these items.
 3. **Collections and TreeView.** Validate physical multi-item drag/drop, cross-tree transfer,
-   templates and row expansion animation while preserving selection and stable native identity.
+   templates and container entrance/content/reorder transitions while preserving selection and
+   stable native identity. Disclosure motion now survives layout and content updates; expansion
+   row motion still needs its own policy and acceptance, separate from initial entrance.
 4. **Calendar.** The embedded CalendarView/CalendarDatePicker grid supports selection modes,
    blackout dates, range reconciliation, RTL keyboard navigation and virtualized continuous
    Month/Year/Decade scrolling with era-aware items, scope boundaries and keyboard paging.

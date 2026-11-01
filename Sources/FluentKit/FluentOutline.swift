@@ -1182,9 +1182,11 @@ final class FluentOutlineCellHost: NSTableCellView {
 
     func update(representedItem: ObjectIdentifier, content: FluentAnyView, context: FluentRenderContext, layout: Layout,
                 onToggleExpansion: @escaping () -> Void, onToggleCheck: @escaping () -> Void) {
-        if self.representedItem != representedItem || !layout.isMultiple { cancelCheckBoxPress() }
+        let sameItem = self.representedItem == representedItem
+        let previousLayout = layoutState
+        let previousReduceMotion = reduceMotion
+        if !sameItem || !layout.isMultiple { cancelCheckBoxPress() }
         self.representedItem = representedItem
-        let wasExpanded = layoutState?.isExpanded
         layoutState = layout
         theme = context.theme
         reduceMotion = context.reduceMotion
@@ -1202,7 +1204,12 @@ final class FluentOutlineCellHost: NSTableCellView {
         NSLayoutConstraint.deactivate(layout.isRightToLeft ? ltr : rtl)
         NSLayoutConstraint.activate(layout.isRightToLeft ? rtl : ltr)
         needsLayout = true
-        applyLayers(animated: wasExpanded != nil && wasExpanded != layout.isExpanded && !reduceMotion)
+        let expansionChanged = previousLayout?.isExpanded != layout.isExpanded
+        let directionChanged = previousLayout?.isRightToLeft != layout.isRightToLeft
+        let disclosureChanged = previousLayout?.isExpandable != layout.isExpandable
+        applyLayers(animated: sameItem && expansionChanged && !directionChanged && !disclosureChanged && !reduceMotion,
+                    updateChevronState: !sameItem || expansionChanged || directionChanged || disclosureChanged
+                        || previousReduceMotion != reduceMotion)
         if let state = layout.checkState {
             setAccessibilityValue(state == .checked ? 1 : (state == .mixed ? 2 : 0))
         }
@@ -1275,12 +1282,17 @@ final class FluentOutlineCellHost: NSTableCellView {
         applyLayers(animated: false)
     }
 
-    private func applyLayers(animated: Bool) {
+    private func applyLayers(animated: Bool, updateChevronState: Bool = false) {
         guard let layoutState else { return }
         let direction: FluentChevronDirection = layoutState.isExpanded ? .down : (layoutState.isRightToLeft ? .left : .right)
         chevronLayer.isHidden = !layoutState.isExpandable
-        chevronLayer.update(frame: chevronFrame, color: theme.textPrimary, state: .normal, direction: direction,
-                            animated: animated)
+        if updateChevronState {
+            chevronLayer.update(frame: chevronFrame, color: theme.textPrimary, state: .normal, direction: direction,
+                                backingScale: window?.backingScaleFactor, animated: animated)
+        } else {
+            chevronLayer.updateLayout(frame: chevronFrame, color: theme.textPrimary, backingScale: window?.backingScaleFactor)
+        }
+        if chevronLayer.isHidden { chevronLayer.finishAnimations() }
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         if let state = layoutState.checkState {
@@ -1372,7 +1384,15 @@ final class FluentOutlineCellHost: NSTableCellView {
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
-        if window == nil { cancelCheckBoxPress() }
+        if window == nil {
+            cancelCheckBoxPress()
+            chevronLayer.finishAnimations()
+        } else { applyLayers(animated: false) }
+    }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        applyLayers(animated: false)
     }
 
     func beginCheckBoxPress() {
