@@ -789,6 +789,13 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
 }
 
 private final class FluentComboBoxEditableTextField: NSTextField {
+    // The host owns the Fluent faceplate size. Native text-field metrics must not
+    // compete with its height or inset the field editor relative to the faceplate.
+    override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+    override var intrinsicContentSize: NSSize {
+        NSSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
+    }
+
     var fluentTheme: FluentTheme = .current {
         didSet {
             guard oldValue != fluentTheme else { return }
@@ -910,6 +917,12 @@ private final class FluentComboBoxEditableTextField: NSTextField {
 }
 
 private final class FluentComboBoxNative: NSComboBox {
+    // This is a data/accessibility bridge, not the faceplate's layout authority.
+    // NSComboBox otherwise contributes a 750-priority native height (23pt here).
+    override var intrinsicContentSize: NSSize {
+        NSSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
+    }
+
     var onRequestFlyout: (() -> Void)?
     var onFocusChange: ((Bool) -> Void)?
     var onPressChange: ((Bool) -> Void)?
@@ -1209,7 +1222,12 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     override var intrinsicContentSize: NSSize {
-        NSSize(width: 240 * theme.density.metricScale, height: theme.controlHeight(for: fluentControlSize))
+        // ComboBoxMinHeight is a minimum: larger text still needs a full line plus
+        // the faceplate's 5pt top / 7pt bottom padding.
+        let font = comboBox.font ?? theme.typography.font(for: .body)
+        let textHeight = ceil(font.ascender - font.descender + font.leading)
+        return NSSize(width: 240 * theme.density.metricScale,
+                      height: max(theme.controlHeight(for: fluentControlSize), textHeight + 12))
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {

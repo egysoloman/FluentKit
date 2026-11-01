@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox faceplates now keep their Fluent natural height in stacks, frames and expanders.
+  The hidden AppKit bridge/editor no longer impose their native 23pt sizing or editor insets.
+  Regular controls retain 32pt; larger typography grows the faceplate to fit a complete line
+  plus padding, including compact density and small controls. Explicit heights still apply.
+
 - Windows-style caption buttons now keep the full caption slot when wrapped by ToolTip.
   Native symbol alignment insets had changed 32pt buttons to 27/37/36pt, leaving hover gaps
   or overflow. The geometry is stable for Minimize/Maximize/Restore/Close.
