@@ -11,6 +11,8 @@ struct MaterialGallerySample: FluentView {
 
     private var selectedMaterial: FluentMaterial? {
         switch selection {
+        case "Mica": .mica
+        case "Acrylic": .acrylic
         case "Native Acrylic": .nativeAcrylic
         case "Native Mica": .nativeMica
         case "Liquid Glass": .liquidGlass
@@ -26,7 +28,7 @@ struct MaterialGallerySample: FluentView {
             .with(materialConfiguration: customized ? configuration : nil, for: .container)
             .with(materialConfiguration: customized ? configuration : nil, for: .transient)
         return FluentVStack(spacing: 12, alignment: .leading) {
-            FluentComboBox(options: ["Preset", "Native Acrylic", "Native Mica", "Liquid Glass"],
+            FluentComboBox(options: ["Preset", "Mica", "Acrylic", "Native Acrylic", "Native Mica", "Liquid Glass"],
                 selection: $selection).frame(width: 220)
             FluentToggleView("Material effects", isOn: $enabled)
             FluentToggleView("Teal tint", isOn: $tinted)
@@ -46,7 +48,7 @@ struct MaterialGallerySample: FluentView {
                     .flyout { FluentMenuItem("A menu item", action: {}) }
                     .toolTip("The Tooltip inherits transient material settings", motion: .continuous)
             }.fluentTheme(previewTheme)
-            FluentText("Presets keep Fluent base colors. Native effects use AppKit; Glass requires a supported macOS version. Accessibility settings can force an opaque surface.", style: .caption)
+            FluentText("Mica uses cached desktop wallpaper. Acrylic combines live blur, tint and noise. Native choices keep AppKit recipes. Accessibility settings can force an opaque surface.", style: .caption)
         }
     }
 }

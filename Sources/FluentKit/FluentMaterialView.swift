@@ -1,8 +1,9 @@
 import AppKit
+import CoreImage
 
 public enum FluentMaterialBackend: String, Hashable, Sendable {
     case nativeGlass
-    /// Deterministic opaque approximation of the WinUI material base colors (no desktop sampling).
+    /// WinUI blend stages over cached wallpaper (Mica) or AppKit's live blur (Acrylic).
     case fluentRecipe
     case visualEffect
     case opaque
@@ -37,13 +38,26 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     public var fallbackColor: NSColor = .windowBackgroundColor {
-        didSet { if !isApplyingConfiguration { applySurfaceColor() } }
+        didSet {
+            if !isApplyingConfiguration {
+                hasExplicitFallbackColor = true
+                applySurfaceColor()
+            }
+        }
     }
+    private var hasExplicitFallbackColor = false
 
     public var tintColor: NSColor? {
         didSet {
             if !isApplyingConfiguration { applyResolvedTint(); applyMaterial() }
         }
+    }
+
+    public var tintOpacity: CGFloat? {
+        didSet { if oldValue != tintOpacity, !isApplyingConfiguration { applyMaterial() } }
+    }
+    public var luminosityOpacity: CGFloat? {
+        didSet { if oldValue != luminosityOpacity, !isApplyingConfiguration { applyMaterial() } }
     }
 
     /// Sampling scope used by visual-effect backends. System Glass manages its own sampling.
@@ -85,6 +99,8 @@ public final class FluentMaterialView: NSVisualEffectView {
         isMaterialEnabled = theme.materialEffectsEnabled && resolved.isEnabled != false
         fallbackColor = resolved.fallbackColor ?? binding.fallback?(theme) ?? binding.role.fallback(in: theme)
         tintColor = resolved.tintColor
+        tintOpacity = resolved.tintOpacity
+        luminosityOpacity = resolved.luminosityOpacity
         preferredBlendingMode = resolved.blendingMode ?? binding.role.defaultBlendingMode
         isApplyingConfiguration = false
         applyThemeAppearance()
@@ -104,6 +120,14 @@ public final class FluentMaterialView: NSVisualEffectView {
     // Inserted after the fallback and before content. A positive zPosition paints tint over
     // descendants in WindowServer composition, even when CALayer.render looks unaffected.
     private let tintLayer = CALayer()
+    private let luminosityLayer = CALayer()
+    private let noiseLayer = FluentMaterialNoiseLayer()
+    private let colorBlend = CIFilter(name: "CIColorBlendMode")
+    private let luminosityBlend = CIFilter(name: "CILuminosityBlendMode")
+    private var appliedRecipe: FluentMaterialRecipe?
+    private var wallpaperLayers: [NSScreen: CALayer] = [:]
+    /// False while the wallpaper is unavailable, loading, or the window is inactive.
+    public private(set) var hasWallpaperBackdrop = false
     private var isApplyingMaterial = false
     private var glassBackendView: NSView?
     private var displayOptionsObserver: NSObjectProtocol?
@@ -127,6 +151,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         tintLayer.name = "FluentKit.Material.MicaTint"
         layer?.addSublayer(fallbackLayer)
         layer?.addSublayer(tintLayer)
+        installRecipeLayers()
         installDisplayOptionsObserver()
         applyMaterial()
     }
@@ -145,6 +170,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         tintLayer.name = "FluentKit.Material.MicaTint"
         layer?.addSublayer(fallbackLayer)
         layer?.addSublayer(tintLayer)
+        installRecipeLayers()
         installDisplayOptionsObserver()
         applyMaterial()
     }
@@ -159,6 +185,7 @@ public final class FluentMaterialView: NSVisualEffectView {
         tintLayer.name = "FluentKit.Material.MicaTint"
         layer?.addSublayer(fallbackLayer)
         layer?.addSublayer(tintLayer)
+        installRecipeLayers()
         installDisplayOptionsObserver()
         applyMaterial()
     }
@@ -171,9 +198,25 @@ public final class FluentMaterialView: NSVisualEffectView {
         CATransaction.setDisableActions(true)
         fallbackLayer.frame = bounds
         tintLayer.frame = bounds
+        luminosityLayer.frame = bounds
+        noiseLayer.frame = bounds
+        let hadWallpaper = hasWallpaperBackdrop
+        updateWallpaperBackdrop(enabled: resolvedBackend == .fluentRecipe && resolvedMaterialStyle == .mica)
+        updateWallpaperLayerFrames()
+        if hadWallpaper != hasWallpaperBackdrop { applyMaterial() }
         glassBackendView?.frame = bounds
         synchronizeGlassCornerRadius()
         CATransaction.commit()
+    }
+
+    private func installRecipeLayers() {
+        layerUsesCoreImageFilters = true
+        fallbackLayer.masksToBounds = true
+        luminosityLayer.name = "FluentKit.Material.Luminosity"
+        luminosityLayer.compositingFilter = luminosityBlend
+        noiseLayer.name = "FluentKit.Material.Noise"
+        layer?.insertSublayer(luminosityLayer, below: tintLayer)
+        layer?.insertSublayer(noiseLayer, above: tintLayer)
     }
 
     private func applyMaterial() {
@@ -193,12 +236,13 @@ public final class FluentMaterialView: NSVisualEffectView {
             ? .opaque
             : (usesFluentRecipe ? .fluentRecipe : (usesNativeGlass ? .nativeGlass : .visualEffect))
         applySurfaceColor()
-        fallbackLayer.opacity = usesOpaqueFallback || usesFluentRecipe ? 1 : 0
+        updateWallpaperBackdrop(enabled: usesFluentRecipe && style == .mica)
+        fallbackLayer.opacity = usesOpaqueFallback || (usesFluentRecipe && style == .mica) ? 1 : 0
         let glassView = usesNativeGlass ? resolveGlassBackendView() : glassBackendView
         glassView?.isHidden = !usesNativeGlass
         glassView?.frame = bounds
         applyResolvedTint()
-        let usesInertEffect = usesNativeGlass || usesOpaqueFallback || usesFluentRecipe
+        let usesInertEffect = usesNativeGlass || usesOpaqueFallback || (usesFluentRecipe && style == .mica)
         let nextBlendingMode: NSVisualEffectView.BlendingMode = usesInertEffect ? .withinWindow : preferredBlendingMode
         let nextMaterial: NSVisualEffectView.Material
         if usesInertEffect { nextMaterial = .contentBackground }
@@ -214,21 +258,27 @@ public final class FluentMaterialView: NSVisualEffectView {
         // and straight back rebuilds the native effect on every ordinary content update.
         if blendingMode != nextBlendingMode { blendingMode = nextBlendingMode }
         if material != nextMaterial { material = nextMaterial }
-        tintLayer.isHidden = usesOpaqueFallback || (usesFluentRecipe && tintColor == nil) || usesNativeGlass || style == .liquidGlass
-        if state != .followsWindowActiveState { state = .followsWindowActiveState }
+        let drawsRecipe = usesFluentRecipe && (style == .acrylic || hasWallpaperBackdrop)
+        luminosityLayer.isHidden = !drawsRecipe
+        noiseLayer.isHidden = !drawsRecipe || style != .acrylic
+        tintLayer.isHidden = usesOpaqueFallback || (usesFluentRecipe && !drawsRecipe) || usesNativeGlass || style == .liquidGlass
+        // Nonactivating menu panels keep the editor in their owner window. Their blur must
+        // follow that owner, rather than treating the panel's lack of key status as inactive.
+        let effectState: NSVisualEffectView.State = usesFluentRecipe && style == .acrylic
+            ? (isBackdropActive ? .active : .inactive) : .followsWindowActiveState
+        if state != effectState { state = effectState }
 
     }
 
     private func applySurfaceColor() {
         if resolvedBackend == .fluentRecipe {
             let dark = (fluentTheme ?? .current).isDark
-            let active = window?.isKeyWindow ?? true
-            // Fixed base/fallback colors. Desktop wallpaper sampling is intentionally unavailable
-            // here; callers can explicitly choose nativeMica/nativeAcrylic for AppKit effects.
             let component: CGFloat = resolvedMaterialStyle == .mica
-                ? (dark ? (active ? 32 : 40) : (active ? 243 : 249))
+                ? (dark ? 32 : 243)
                 : (dark ? 44 : 252)
-            fallbackLayer.backgroundColor = NSColor(calibratedWhite: component / 255, alpha: 1).cgColor
+            fallbackLayer.backgroundColor = configurationBinding != nil || hasExplicitFallbackColor
+                ? opaqueFallbackColor(fallbackColor)
+                : NSColor(srgbRed: component / 255, green: component / 255, blue: component / 255, alpha: 1).cgColor
         } else {
             let highContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast || (fluentTheme?.isHighContrast ?? false)
             let color: NSColor
@@ -245,14 +295,87 @@ public final class FluentMaterialView: NSVisualEffectView {
         super.viewDidMoveToWindow()
         activeWindowObservers.forEach(NotificationCenter.default.removeObserver)
         activeWindowObservers.removeAll()
-        if let window {
-            for name in [NSWindow.didBecomeKeyNotification, NSWindow.didResignKeyNotification] {
-                activeWindowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] _ in
-                    self?.applySurfaceColor()
+        if window != nil {
+            for name in [NSWindow.didBecomeKeyNotification, NSWindow.didResignKeyNotification,
+                         NSWindow.didMoveNotification, NSWindow.didChangeScreenNotification,
+                         NSWindow.didChangeBackingPropertiesNotification, NSWindow.didChangeOcclusionStateNotification] {
+                // A child panel can be attached to its parent after this view is mounted.
+                activeWindowObservers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] note in
+                    guard let self, let changed = note.object as? NSWindow,
+                          self.isBackdropOwner(changed) else { return }
+                    self.applyMaterial()
                 })
             }
         }
-        applySurfaceColor()
+        applyMaterial()
+    }
+
+    private var isBackdropActive: Bool {
+        guard window != nil else { return true }
+        var owner = window
+        while let current = owner {
+            if current.isKeyWindow { return true }
+            owner = current.parent
+        }
+        return false
+    }
+
+    private func isBackdropOwner(_ candidate: NSWindow) -> Bool {
+        var owner = window
+        while let current = owner {
+            if current === candidate { return true }
+            owner = current.parent
+        }
+        return false
+    }
+
+    func wallpaperBackdropDidChange() {
+        guard resolvedBackend == .fluentRecipe, resolvedMaterialStyle == .mica else { return }
+        applyMaterial()
+    }
+
+    private func updateWallpaperBackdrop(enabled: Bool) {
+        let source = FluentWallpaperBackdrop.shared
+        guard enabled, isBackdropActive, let window else {
+            source.unsubscribe(self)
+            wallpaperLayers.values.forEach { $0.removeFromSuperlayer() }
+            wallpaperLayers.removeAll()
+            hasWallpaperBackdrop = false
+            return
+        }
+        source.subscribe(self)
+        let screenRect = window.convertToScreen(convert(bounds, to: nil))
+        let screens = NSScreen.screens.filter { $0.frame.intersects(screenRect) }
+        let available = !screens.isEmpty && screens.allSatisfy { source.image(for: $0) != nil }
+        for screen in Array(wallpaperLayers.keys) where !available || !screens.contains(screen) {
+            wallpaperLayers.removeValue(forKey: screen)?.removeFromSuperlayer()
+        }
+        hasWallpaperBackdrop = available
+        guard available else { return }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        for screen in screens {
+            let backdrop = wallpaperLayers[screen] ?? CALayer()
+            if backdrop.superlayer == nil { fallbackLayer.addSublayer(backdrop) }
+            backdrop.name = "FluentKit.Material.Wallpaper"
+            let image = source.image(for: screen)
+            if (backdrop.contents as AnyObject?) !== image { backdrop.contents = image }
+            wallpaperLayers[screen] = backdrop
+        }
+        updateWallpaperLayerFrames()
+        CATransaction.commit()
+    }
+
+    private func updateWallpaperLayerFrames() {
+        guard let window else { return }
+        for (screen, backdrop) in wallpaperLayers {
+            backdrop.frame = convert(window.convertFromScreen(screen.frame), from: nil)
+        }
+        let scale = window.backingScaleFactor
+        if noiseLayer.contentsScale != scale {
+            noiseLayer.contentsScale = scale
+            noiseLayer.setNeedsDisplay()
+        }
     }
 
     private var resolvedMaterialStyle: FluentMaterial {
@@ -268,6 +391,22 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     private func applyResolvedTint() {
+        if resolvedBackend == .fluentRecipe {
+            let recipe = FluentMaterialRecipe(material: resolvedMaterialStyle, dark: (fluentTheme ?? .current).isDark,
+                tint: tintColor, tintOpacity: tintOpacity, luminosityOpacity: luminosityOpacity)
+            if appliedRecipe != recipe {
+                appliedRecipe = recipe
+                tintLayer.compositingFilter = colorBlend
+                let alpha = recipe.color.alphaComponent
+                tintLayer.backgroundColor = resolvedCGColor(recipe.color.withAlphaComponent(alpha * recipe.tintOpacity))
+                luminosityLayer.backgroundColor = resolvedCGColor(recipe.color.withAlphaComponent(alpha * recipe.luminosityOpacity))
+                noiseLayer.opacity = recipe.noiseOpacity
+                noiseLayer.setNeedsDisplay()
+            }
+            return
+        }
+        appliedRecipe = nil
+        tintLayer.compositingFilter = nil
         let color = resolvedTintColor
         tintLayer.backgroundColor = color.map(resolvedCGColor)
         glassBackendView?.setValue(color, forKey: "tintColor")
@@ -341,6 +480,7 @@ public final class FluentMaterialView: NSVisualEffectView {
     }
 
     deinit {
+        FluentWallpaperBackdrop.shared.unsubscribe(self)
         activeWindowObservers.forEach(NotificationCenter.default.removeObserver)
         if let displayOptionsObserver { NSWorkspace.shared.notificationCenter.removeObserver(displayOptionsObserver) }
     }

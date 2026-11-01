@@ -55,7 +55,9 @@ public protocol FluentControlSizeConfigurable: AnyObject {
 public enum FluentMaterial: Hashable, Sendable {
     /// Resolve the role's preset through the theme. Explicit materials remain local overrides.
     case automatic
+    /// Cached desktop wallpaper with the WinUI Mica luminosity and tint stages.
     case mica
+    /// AppKit live blur with WinUI Acrylic luminosity, tint and noise.
     case acrylic
     /// Explicit macOS visual-effect alternatives; appearance follows the operating system.
     case nativeMica
@@ -401,7 +403,7 @@ public struct FluentTheme: Equatable {
         return configuration.material
     }
 
-    private func defaultMaterial(for role: FluentMaterialRole) -> FluentMaterial {
+    func defaultMaterial(for role: FluentMaterialRole) -> FluentMaterial {
         switch role {
         case .window, .navigation:
             switch material {

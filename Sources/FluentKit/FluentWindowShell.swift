@@ -602,7 +602,7 @@ public struct FluentWindowShell<ID: Hashable>: FluentView {
                 rowHeight: rowHeight,
                 paneSectionTitle: paneSectionTitle,
                 contentTransition: configuration.contentTransition,
-                paneMaterialOwnership: .inherited,
+                paneMaterialOwnership: .automatic,
                 selectionIndicatorMode: configuration.selectionIndicatorMode,
                 paneHeader: { paneHeader ?? FluentAnyView(FluentEmptyView()) },
                 // Keep the page header outside NavigationView's transition presenter. The
@@ -745,9 +745,14 @@ private final class FluentWindowSharedChromeHost: NSView {
     }
 
     private func applyAppearance() {
+        let material = context.theme.resolvedMaterialConfiguration(for: .window, preset: .init(material: .mica))
         tintLayer.backgroundColor = context.theme.windowChromeTint.cgColor
         tintLayer.opacity = isWindowActive ? 1 : 0.78
         tintLayer.isHidden = !context.theme.materialEffectsEnabled
+            || material.isEnabled == false
+            || material.material == .mica || material.material == .acrylic
+            || context.theme.isHighContrast
+            || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
             || NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
     }
 

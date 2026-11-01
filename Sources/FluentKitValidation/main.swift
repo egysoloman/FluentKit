@@ -543,7 +543,7 @@ require(
         && micaProbe.tintColor == nil
         && firstLayer(named: "FluentKit.Material.MicaTint", in: micaProbe)?.backgroundColor != nil
         && (micaProbe.resolvedBackend != .visualEffect || micaProbe.material == .underWindowBackground),
-    "Mica uses deterministic base colors without substituting native Liquid Glass"
+    "Mica uses the Fluent wallpaper recipe with a standalone fallback, without substituting Glass"
 )
 micaProbe.isMaterialEnabled = false
 require(
@@ -8987,6 +8987,7 @@ let reusableNavigation = FluentNavigationView(
     paneDisplayMode: .left,
     openPaneLength: 280,
     paneSectionTitle: "Explore",
+    paneMaterialOwnership: .standalone,
     selectionIndicatorMode: .jump
 ) {
     FluentText("FluentKit")
@@ -9504,9 +9505,9 @@ require(
     "NavigationView Auto resolves 800pt to closed Compact mode"
 )
 require(
-    automaticPaneMaterial?.materialStyle == .mica
-        && automaticPane.map(materialViews(in:))?.count == 1,
-    "a standalone NavigationView automatically owns one persistent Mica pane surface"
+    automaticPaneMaterial == nil
+        && automaticPane.map(materialViews(in:))?.isEmpty == true,
+    "a closed compact NavigationView uses WinUI's transparent non-overlay pane background"
 )
 automaticHost.frame = NSRect(x: 0, y: 0, width: 1_200, height: 420)
 automaticHost.layoutSubtreeIfNeeded()
@@ -10217,7 +10218,7 @@ require(
         && shellMaterial?.resolvedBackend == (NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency ? .opaque : .fluentRecipe)
         && shellMaterial?.state == .followsWindowActiveState
         && shellMaterial?.tintColor == nil
-        && firstLayer(named: "FluentKit.Material.MicaTint", in: shellMaterial ?? NSView())?.isHidden == true
+        && firstLayer(named: "FluentKit.Material.MicaTint", in: shellMaterial ?? NSView())?.isHidden == !(shellMaterial?.hasWallpaperBackdrop ?? false)
         && firstLayer(named: "FluentKit.WindowShell.SharedChromeTint", in: settingsShellHost) != nil,
     "WindowShell owns one stable Mica base while ContentSurface solely owns its fill and top-leading clip"
 )
@@ -10257,8 +10258,8 @@ if let sharedChromeTint = firstLayer(named: "FluentKit.WindowShell.SharedChromeT
     drainMainQueue()
     let inactiveOpacity = sharedChromeTint.opacity
     require(
-        activeOpacity == 1 && inactiveOpacity < activeOpacity,
-        "WindowShell updates its one SharedChromeTint together with the active-state Mica backdrop"
+        activeOpacity == 1 && inactiveOpacity < activeOpacity && sharedChromeTint.isHidden,
+        "WindowShell keeps the legacy chrome tint hidden while Mica handles activity"
     )
     NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: settingsShellWindow)
     drainMainQueue()
@@ -10510,10 +10511,9 @@ for colorScheme in [FluentThemeColorScheme.light, .dark] {
     require(
         materialViews(in: schemeHost).count == 1
             && schemeMaterial?.tintColor == nil
-            && firstLayer(named: "FluentKit.Material.MicaTint", in: schemeMaterial ?? NSView())?.isHidden == true
-            && colorMatches(schemeChromeTint?.backgroundColor, schemeTheme.windowChromeTint)
-            && schemeTheme.windowChromeTint.alphaComponent > 0.22,
-        "\(colorScheme) WindowShell keeps one Mica and one visible shared chrome tint"
+            && firstLayer(named: "FluentKit.Material.MicaTint", in: schemeMaterial ?? NSView())?.isHidden == !(schemeMaterial?.hasWallpaperBackdrop ?? false)
+            && schemeChromeTint?.isHidden == true,
+        "\(colorScheme) WindowShell lets the Mica recipe own tint without a second chrome overlay"
     )
 }
 

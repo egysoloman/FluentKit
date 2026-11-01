@@ -19,11 +19,11 @@ public enum FluentNavigationViewDisplayMode: String, CaseIterable, Hashable, Sen
 
 /// Defines which surface owns the persistent NavigationView pane background.
 public enum FluentNavigationPaneMaterialOwnership: String, CaseIterable, Hashable, Sendable {
-    /// Inherit an enclosing WindowShell Mica when present; otherwise own a standalone Mica.
+    /// WinUI presets: transparent while inline/closed; Acrylic while the pane overlays content.
     case automatic
-    /// The pane stays transparent and reveals its enclosing WindowShell backdrop.
+    /// The pane stays transparent and reveals its enclosing background.
     case inherited
-    /// The pane owns one persistent Mica surface when used outside a WindowShell.
+    /// The pane always owns the theme's navigation material, even when inline.
     case standalone
     /// The pane uses the theme's opaque window background without a material sampler.
     case solid
@@ -1145,14 +1145,10 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
 
     private var resolvedPaneMaterialOwnership: FluentNavigationPaneMaterialOwnership {
         guard paneMaterialOwnership == .automatic else { return paneMaterialOwnership }
-        var ancestor = superview
-        while let view = ancestor {
-            if view.identifier?.rawValue == "FluentKit.WindowShell.MaterialSurface" {
-                return .inherited
-            }
-            ancestor = view.superview
-        }
-        return .standalone
+        // NavigationView::UpdatePaneOverlayGroup: only an open overlay pane uses
+        // NavigationViewDefaultPaneBackground; PaneNotOverlaying selects transparent.
+        let overlays = resolvedDisplayMode == .compact || resolvedDisplayMode == .minimal
+        return overlays && (internalPaneOpen || retainsOverlayDuringAnimation) ? .standalone : .inherited
     }
 
     private func applyPaneMaterialOwnership() {
@@ -1177,7 +1173,10 @@ private final class FluentNavigationViewHost<ID: Hashable>: NSView {
                 paneView.addSubview(material, positioned: .below, relativeTo: paneView.subviews.first)
             }
             material.frame = paneView.bounds
-            material.configure(theme: context.theme, role: .navigation)
+            let preset: FluentMaterialConfiguration = paneMaterialOwnership == .automatic
+                ? .init(material: context.theme.defaultMaterial(for: .transient), blendingMode: .withinWindow)
+                : .init()
+            material.configure(theme: context.theme, role: .navigation, preset: preset)
             paneView.layer?.backgroundColor = nil
         case .solid:
             paneMaterial?.removeFromSuperview()

@@ -4,6 +4,16 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Mica now samples a shared, asynchronously blurred wallpaper cache per display. Acrylic
+  combines live AppKit blur with WinUI luminosity, tint and noise stages. Material strengths
+  can be overridden without losing theme updates; accessibility and disabled effects keep
+  opaque fallbacks. Animated wallpaper frames and Windows pixel parity are not supported.
+  Material composition references HO-COOH/WinUIEssentials, credited in README and NOTICE.
+- Automatic NavigationView panes inherit the background while inline or closed, and use
+  in-app Acrylic while open over content. Explicit standalone ownership and developer
+  overrides remain available. WindowShell no longer adds a second blue chrome tint over
+  Fluent Mica/Acrylic. Nonactivating Acrylic submenus follow their ancestor window's activity.
+
 - Single-line text, search, password, and editable ComboBox fields use the supplied font's baseline and
   line height. Native editing still handles validation, composition, selection and
   undo; line-separator filtering remains active through focus and editor reuse.

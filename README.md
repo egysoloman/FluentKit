@@ -5,7 +5,7 @@
 
 A declarative desktop UI framework inspired by Fluent Design, implemented in native Swift and AppKit.
 
-FluentKit provides a composable foundation for desktop interfaces: Fluent theme tokens, adaptive light and dark appearance, explicit Fluent base-color recipes and opt-in macOS materials, state-aware controls, single- and multiline text editing, localized view updates, and a Swift-native declarative view tree. It deliberately has no markup compatibility layer.
+FluentKit provides a composable foundation for desktop interfaces: Fluent theme tokens, adaptive light and dark appearance, wallpaper-backed Mica, Acrylic blend recipes and opt-in macOS materials, state-aware controls, single- and multiline text editing, localized view updates, and a Swift-native declarative view tree. It deliberately has no markup compatibility layer.
 
 ## Button content and document toolbars
 
@@ -502,15 +502,30 @@ FluentButtonView("Help") {}
 Cards retain their ordinary style fill unless a local configuration or a `.container` theme
 configuration opts them in. `.cardStyle(_:material:configuration:)` offers the same choice.
 A generic material background sits behind its content; it does not erase an opaque fill owned
-by a nested control. Container visual effects default to `withinWindow`; windows, navigation
-and transient surfaces use `behindWindow`. `blendingMode` can override AppKit visual effects;
+by a nested control. Container visual effects default to `withinWindow`; windows and
+transient surfaces use `behindWindow`. An automatic NavigationView pane stays transparent
+while inline or closed, and uses in-app Acrylic while open over content. Explicit `.standalone`
+ownership retains the theme's persistent navigation material. `blendingMode` can override AppKit visual effects;
 system Glass owns its own sampling behavior.
 
-`.mica` and `.acrylic` remain deterministic opaque Fluent color recipes without wallpaper
-sampling. `.nativeMica`, `.nativeAcrylic` and `.sidebar` opt into AppKit effects; `.liquidGlass`
-uses native Glass when available, with an AppKit popover-effect fallback on older systems.
+`.mica` reads the desktop image reported by AppKit for each display, caches a blurred version,
+and applies the WinUI Mica luminosity and tint stages. It does not sample covered applications.
+Inactive windows, unavailable wallpaper images and accessibility policies use an opaque fallback.
+Animated wallpaper frames are not captured; the result depends on the still image that AppKit
+reports. Image decoding and blur run off the main thread, with a shared cache per display.
+
+`.acrylic` combines AppKit live blur with WinUI luminosity, tint and 2% noise. Its blur kernel
+and underlying sampling remain controlled by macOS, so it is not pixel-identical to Windows.
+AppKit also colors its backdrop before these blend stages; high-contrast patterns can produce
+color contours that differ from a direct Gaussian-blur Acrylic pipeline.
+`FluentMaterialConfiguration.tintOpacity` and `.luminosityOpacity` override preset strengths;
+nil follows the light/dark preset. `.nativeMica`, `.nativeAcrylic` and `.sidebar` retain AppKit
+material backends; `.liquidGlass` uses native Glass when available, with an AppKit popover-effect
+fallback on older systems.
 Scene windows now default to `.automatic`, allowing theme window overrides; explicit `.mica`
 remains an explicit local choice, and `nil` still removes the material surface.
+WindowShell lets the Fluent Mica/Acrylic recipe own its tint instead of adding a second blue
+chrome overlay. Role and local material configurations still override the presets.
 
 The global material-effects switch, Reduce Transparency and Increase Contrast take precedence
 over developer enablement. Translucent fallback colors are flattened over the theme's window
@@ -1511,11 +1526,11 @@ of complete visual parity with Windows.
   title bars, AppBar buttons and CommandBar items accept `icon:`. Sources preserve aspect ratio,
   expose alignment and RTL mirroring, and distinguish template tint from original image colors.
   Existing `systemImageName:` and button `image:` APIs remain available.
-- `.mica` and `.acrylic` now use deterministic opaque base colors (`.fluentRecipe` backend).
-  They do not sample desktop wallpaper or reproduce Windows composition. Choose `.nativeMica`
-  or `.nativeAcrylic` for OS-dependent AppKit effects, or `.liquidGlass` for explicit native glass.
-  Default transient surfaces use Acrylic. Material-disabled and reduced-transparency modes keep
-  an opaque fallback. These are explicit rendering choices, not a claim of exact Mica/Acrylic parity.
+- `.mica` samples cached desktop wallpaper; `.acrylic` uses live AppKit blur with WinUI
+  luminosity, tint and noise stages. Default transient surfaces use Acrylic. Explicit native
+  materials and Liquid Glass remain available. Disabled effects and accessibility policies
+  select opaque fallbacks. Windows pixel parity, animated wallpapers and physical mixed-DPI
+  multi-monitor behavior still require separate acceptance.
 - AppBar horizontal labels reserve a separate chevron slot in LTR and RTL. `commandHeight: 32`
   on `FluentAppBarButtonView` (or `commandHeight` on the native button) opts into a denser application
   command; the default WinUI AppBar height remains 48. Hover and expanded backgrounds follow that geometry.
@@ -1530,3 +1545,11 @@ controlled screenshots. `tools/compare_snapshots.py` compares reviewed image pai
 rewriting their baselines; capture OS, scale and fonts must match.
 CI also checks XCTest output with `tools/check_test_diagnostics.py` so AppKit constraint conflicts
 fail the build even when the test assertions pass.
+
+## Acknowledgements
+
+Thanks to [HO-COOH/WinUIEssentials](https://github.com/HO-COOH/WinUIEssentials) for the material
+implementation reference: TenMica's cached, heavily blurred wallpaper and luminosity/tint
+composition, and InAppAcrylicVisual's blend stages and theme values. FluentKit adapts these
+ideas to AppKit and Core Image; it does not depend on the Windows library or claim identical
+rendering. Copyright (c) 2023 HO-COOH; [MIT license](LICENSES/WinUIEssentials.txt).

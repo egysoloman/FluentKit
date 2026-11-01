@@ -8,22 +8,29 @@ public struct FluentMaterialConfiguration: Equatable {
     public var fallbackColor: NSColor?
     public var blendingMode: NSVisualEffectView.BlendingMode?
     public var isEnabled: Bool?
+    /// WinUI tint and luminosity strengths. Nil selects the material's light/dark preset.
+    public var tintOpacity: CGFloat?
+    public var luminosityOpacity: CGFloat?
 
     public init(material: FluentMaterial? = nil, tintColor: NSColor? = nil,
                 fallbackColor: NSColor? = nil, blendingMode: NSVisualEffectView.BlendingMode? = nil,
-                isEnabled: Bool? = nil) {
+                isEnabled: Bool? = nil, tintOpacity: CGFloat? = nil, luminosityOpacity: CGFloat? = nil) {
         self.material = material
         self.tintColor = tintColor
         self.fallbackColor = fallbackColor
         self.blendingMode = blendingMode
         self.isEnabled = isEnabled
+        self.tintOpacity = tintOpacity
+        self.luminosityOpacity = luminosityOpacity
     }
 
     func merging(_ override: Self?) -> Self {
         guard let override else { return self }
         return Self(material: override.material ?? material, tintColor: override.tintColor ?? tintColor,
             fallbackColor: override.fallbackColor ?? fallbackColor,
-            blendingMode: override.blendingMode ?? blendingMode, isEnabled: override.isEnabled ?? isEnabled)
+            blendingMode: override.blendingMode ?? blendingMode, isEnabled: override.isEnabled ?? isEnabled,
+            tintOpacity: override.tintOpacity ?? tintOpacity,
+            luminosityOpacity: override.luminosityOpacity ?? luminosityOpacity)
     }
 }
 

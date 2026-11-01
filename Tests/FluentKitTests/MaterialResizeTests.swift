@@ -11,7 +11,7 @@ final class MaterialResizeTests: XCTestCase {
                 let view = FluentMaterialView(material:material); view.isMaterialEnabled = enabled
                 window.contentView = view; window.makeKeyAndOrderFront(nil); view.layoutSubtreeIfNeeded(); CATransaction.flush()
                 let layers = try XCTUnwrap(view.layer?.sublayers).filter { $0.name?.hasPrefix("FluentKit.Material.") == true }
-                XCTAssertEqual(layers.count,2)
+                XCTAssertEqual(layers.count,4)
                 // performZoom lays out children inside an animation transaction. View geometry
                 // already follows the window; custom sublayers must not animate a second time.
                 CATransaction.begin(); CATransaction.setDisableActions(false); CATransaction.setAnimationDuration(1)
