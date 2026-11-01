@@ -50,10 +50,12 @@ WinUIEssentials is a reference, not an identical-rendering requirement; see the
    transfer after an owned gesture reaches an edge, and navigation-button visual acceptance.
 6. **Text, windows and visual states.** Complete the open contracts in the table above without
    replacing native editing, responder, accessibility or window lifecycle ownership.
-   SettingsExpander, Expander, NavigationView group and DropDownButton chevrons now preserve
+   SettingsExpander, Expander, NavigationView group, ComboBox and DropDownButton chevrons preserve
    motion across repeated layout and content updates. Navigation uses the default up/down
    directions; DropDownButton cancels stale activation and updates live menu actions.
-   Audit remaining shared chevron callers and hierarchical flyout behavior independently.
+   ComboBox cancels captured/deferred pointer activation across native lifecycle changes.
+   Audit remaining shared chevron callers, live ComboBox popup refresh and hierarchical
+   flyout behavior independently.
 
 ## Platform acceptance still required
 

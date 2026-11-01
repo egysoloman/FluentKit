@@ -1507,6 +1507,14 @@ with Windows.
   array and comparing structure still costs O(n); this API does not promise constant-time arbitrary data updates.
 - `FluentObservable` and `FluentState` deduplicate concrete Equatable values. Custom values can
   supply `areEquivalent:`; `.observableValue.send()` explicitly publishes an unchanged state.
+- ComboBox preserves its chevron press animation through drawing, layout, content, theme
+  and backing changes in both modes, using the resolved Reduce Motion policy. Hidden or
+  detached controls, disabling, focus loss, window closure and mode/option replacement cancel
+  captured pointer input and queued opens. Editable glyph releases must remain in bounds;
+  native text editing and field-editor focus ownership remain in place. Ordinary pointer
+  states keep the secondary glyph foreground, as specified by the ComboBox resource template.
+  An already open popup retains its panel during same-turn reattachment in the original window;
+  its anchor observer still closes it on lasting detachment or a move to another window.
 - DropDownButton preserves chevron press motion through layout, content, theme and backing
   updates, following the resolved Reduce Motion policy. Space and Return activate on release;
   repeated key-down events do not invoke it. Hiding, detachment, disabling, window closure

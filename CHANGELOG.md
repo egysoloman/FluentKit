@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox preserves chevron motion through layout, drawing, content and theme updates in
+  selection and editable modes. Backing changes refresh its pixel geometry, and explicit
+  Reduce Motion policy applies to the chevron. Captured pointer presses and deferred popup
+  requests are cancelled on detachment, hiding, disabling, focus loss, window closure and
+  mode/option replacement. Editable glyph releases must stay inside the control in LTR and
+  RTL; uncaptured drags cannot arm selection mode. Ordinary hover/press states retain the
+  ComboBox secondary glyph resource, and hidden faceplates no longer intercept hits.
+
 - DropDownButton preserves its chevron press animation through layout, content, theme and
   backing changes, and honors the resolved Reduce Motion policy. Detaching, hiding, disabling,
   closing the window or losing focus cancels captured input and pending menu requests.

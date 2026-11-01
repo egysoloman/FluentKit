@@ -816,12 +816,24 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
         }
     }
     var onRequestFlyout: (() -> Void)?
+    var onRequestFlyoutAfterRelease: (() -> Void)?
+    var onEnabledChange: (() -> Void)?
     var onFocusChange: ((Bool) -> Void)?
     var onPressChange: ((Bool) -> Void)?
     var onPointerChange: ((Bool) -> Void)?
     var onGlyphPointerChange: ((Bool) -> Void)?
     private var pointerTrackingArea: NSTrackingArea?
     private var isTrackingGlyphPress = false
+
+    func cancelPointerTracking() { isTrackingGlyphPress = false }
+
+    override var isEnabled: Bool {
+        didSet {
+            guard oldValue != isEnabled else { return }
+            if !isEnabled { cancelPointerTracking() }
+            onEnabledChange?()
+        }
+    }
     private lazy var textEditingSession = FluentTextEditingSession(control: self, theme: fluentTheme, isSecure: false)
 
     override func updateTrackingAreas() {
@@ -886,6 +898,7 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
     }
 
     override func mouseDown(with event: NSEvent) {
+        guard isEnabled else { return }
         guard isInGlyphColumn(event) else {
             super.mouseDown(with: event)
             return
@@ -909,7 +922,7 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
         isTrackingGlyphPress = false
         onPressChange?(false)
         onGlyphPointerChange?(opensPopup)
-        if opensPopup { DispatchQueue.main.async { [weak self] in self?.onRequestFlyout?() } }
+        if opensPopup { onRequestFlyoutAfterRelease?() }
     }
 
     override func keyDown(with event: NSEvent) {
@@ -922,6 +935,7 @@ private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLi
 
     private func isInGlyphColumn(_ event: NSEvent) -> Bool {
         let point = convert(event.locationInWindow, from: nil)
+        guard bounds.contains(point) else { return false }
         let glyphColumn: CGFloat = 38
         return userInterfaceLayoutDirection == .rightToLeft
             ? point.x <= glyphColumn
@@ -937,6 +951,8 @@ private final class FluentComboBoxNative: NSComboBox {
     }
 
     var onRequestFlyout: (() -> Void)?
+    var onRequestFlyoutAfterRelease: (() -> Void)?
+    var onEnabledChange: (() -> Void)?
     var onFocusChange: ((Bool) -> Void)?
     var onPressChange: ((Bool) -> Void)?
     var onPointerChange: ((Bool) -> Void)?
@@ -950,6 +966,16 @@ private final class FluentComboBoxNative: NSComboBox {
     }
     private var pointerTrackingArea: NSTrackingArea?
     private var isTrackingPress = false
+
+    func cancelPointerTracking() { isTrackingPress = false }
+
+    override var isEnabled: Bool {
+        didSet {
+            guard oldValue != isEnabled else { return }
+            if !isEnabled { cancelPointerTracking() }
+            onEnabledChange?()
+        }
+    }
 
     override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
 
@@ -1020,7 +1046,7 @@ private final class FluentComboBoxNative: NSComboBox {
         let opensPopup = bounds.contains(convert(event.locationInWindow, from: nil))
         isTrackingPress = false
         onPressChange?(false)
-        if opensPopup { DispatchQueue.main.async { [weak self] in self?.onRequestFlyout?() } }
+        if opensPopup { onRequestFlyoutAfterRelease?() }
     }
 
     override func keyDown(with event: NSEvent) {
@@ -1096,6 +1122,9 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private var isPointerOverGlyph = false
     private var isPressed = false
     private var isEditingText = false
+    private var isTrackingPointerPress = false
+    private var openRequestGeneration: UInt64 = 0
+    private var windowObservers: [NSObjectProtocol] = []
 
     override var isFlipped: Bool { true }
 
@@ -1163,8 +1192,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         comboBox.setAccessibilityRole(.comboBox)
         comboBox.fluentSetDefaultAccessibilityHelp("Shows the available options")
         comboBox.onFocusChange = { [weak self] focused in
-            self?.updateFocusPill(focused: focused, animated: false)
-            self?.applyButtonChrome(animated: true)
+            guard let self else { return }
+            self.updateFocusPill(focused: focused, animated: false)
+            if !focused { self.cancelPointerInteraction(dismissPopup: false) }
+            else { self.applyButtonChrome(animated: true) }
         }
         comboBox.onPressChange = { [weak self] pressed in
             self?.isPressed = pressed
@@ -1175,6 +1206,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             self?.applyButtonChrome(animated: true)
         }
         comboBox.onRequestFlyout = { [weak self] in self?.requestOpen() }
+        comboBox.onRequestFlyoutAfterRelease = { [weak self] in self?.scheduleOpen() }
+        comboBox.onEnabledChange = { [weak self] in self?.handleEnabledChange() }
         comboBox.target = self
         comboBox.action = #selector(requestOpen)
         addSubview(comboBox)
@@ -1200,8 +1233,10 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         editableField.setAccessibilityRole(.comboBox)
         editableField.fluentSetDefaultAccessibilityHelp("Edits a value or shows the available options")
         editableField.onFocusChange = { [weak self] focused in
-            self?.updateFocusPill(focused: focused, animated: false)
-            self?.applyButtonChrome(animated: true)
+            guard let self else { return }
+            self.updateFocusPill(focused: focused, animated: false)
+            if !focused { self.cancelPointerInteraction(dismissPopup: false) }
+            else { self.applyButtonChrome(animated: true) }
         }
         editableField.onPressChange = { [weak self] pressed in
             self?.isPressed = pressed
@@ -1216,6 +1251,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             self?.applyButtonChrome(animated: true)
         }
         editableField.onRequestFlyout = { [weak self] in self?.requestOpen() }
+        editableField.onRequestFlyoutAfterRelease = { [weak self] in self?.scheduleOpen() }
+        editableField.onEnabledChange = { [weak self] in self?.handleEnabledChange() }
         addSubview(editableField)
         editableField.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -1245,8 +1282,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     override func hitTest(_ point: NSPoint) -> NSView? {
         let localPoint = superview.map { convert(point, from: $0) } ?? point
-        guard bounds.contains(localPoint) else { return nil }
-        if mode == .selection { return comboBox.isEnabled ? self : nil }
+        guard !isHiddenOrHasHiddenAncestor, bounds.contains(localPoint) else { return nil }
+        if mode == .selection { return isControlEnabled ? self : nil }
         return super.hitTest(point)
     }
 
@@ -1268,7 +1305,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     override func mouseEntered(with event: NSEvent) {
-        guard mode == .selection, comboBox.isEnabled else { return }
+        guard mode == .selection, isControlEnabled else { return }
         isPointerOver = true
         applyButtonChrome(animated: true)
     }
@@ -1280,16 +1317,18 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard mode == .selection, comboBox.isEnabled else { return super.mouseDown(with: event) }
+        guard mode == .selection, isControlEnabled, window != nil, !isHiddenOrHasHiddenAncestor else { return }
+        cancelPendingOpen()
         FluentFocusVisibility.markPointerInteraction(in: window)
         _ = window?.makeFirstResponder(comboBox)
         updateFocusPill(focused: false, animated: false)
+        isTrackingPointerPress = true
         isPressed = true
         applyButtonChrome(animated: true)
     }
 
     override func mouseDragged(with event: NSEvent) {
-        guard mode == .selection else { return super.mouseDragged(with: event) }
+        guard mode == .selection, isTrackingPointerPress else { return }
         let pressed = bounds.contains(convert(event.locationInWindow, from: nil))
         guard pressed != isPressed else { return }
         isPressed = pressed
@@ -1297,7 +1336,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     override func mouseUp(with event: NSEvent) {
-        guard mode == .selection else { return super.mouseUp(with: event) }
+        guard mode == .selection, isTrackingPointerPress else { return }
+        isTrackingPointerPress = false
         let opens = isPressed && bounds.contains(convert(event.locationInWindow, from: nil))
         isPressed = false
         applyButtonChrome(animated: true)
@@ -1314,6 +1354,26 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         synchronizeVisualGeometry()
     }
 
+    override func viewWillMove(toSuperview newSuperview: NSView?) {
+        // A presented popup already observes attachment changes and preserves same-turn
+        // reattachment in its original window. Only captured/pending input expires here.
+        if newSuperview !== superview { cancelPointerInteraction(dismissPopup: false) }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window {
+            cancelPointerInteraction(dismissPopup: false)
+            removeWindowObservers()
+        }
+        super.viewWillMove(toWindow: newWindow)
+    }
+
+    override func viewDidHide() {
+        super.viewDidHide()
+        cancelPointerInteraction()
+    }
+
     override func viewDidMoveToSuperview() {
         super.viewDidMoveToSuperview()
         synchronizeVisualGeometry()
@@ -1322,6 +1382,53 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         synchronizeVisualGeometry()
+        removeWindowObservers()
+        guard let window else { return }
+        for name in [NSWindow.willCloseNotification, NSWindow.didResignKeyNotification] {
+            windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window, queue: .main) { [weak self] notification in
+                // A popup takes key status without ending its owner's text-editing session.
+                self?.cancelPointerInteraction(dismissPopup: notification.name == NSWindow.willCloseNotification)
+            })
+        }
+    }
+
+    private func removeWindowObservers() {
+        windowObservers.forEach(NotificationCenter.default.removeObserver)
+        windowObservers.removeAll()
+    }
+
+    private func cancelPendingOpen() { openRequestGeneration &+= 1 }
+
+    private func cancelPointerInteraction(dismissPopup: Bool = true) {
+        cancelPendingOpen()
+        isTrackingPointerPress = false
+        comboBox.cancelPointerTracking()
+        editableField.cancelPointerTracking()
+        isPressed = false
+        isPointerOver = false
+        isPointerOverGlyph = false
+        if dismissPopup {
+            comboPopup?.dismiss(animated: false)
+            comboPopup = nil
+        }
+        if let layer { animationCoordinator.cancelAll(on: [layer, elevationBorderLayer]) }
+        chevronLayer.finishAnimations()
+        updateFocusPill(focused: false, animated: false)
+        applyButtonChrome(animated: false)
+    }
+
+    private func handleEnabledChange() {
+        if !isControlEnabled { cancelPointerInteraction() }
+        else { applyButtonChrome(animated: false) }
+    }
+
+    private func scheduleOpen() {
+        cancelPendingOpen()
+        let generation = openRequestGeneration
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.openRequestGeneration == generation else { return }
+            self.requestOpen()
+        }
     }
 
     override func viewDidChangeBackingProperties() {
@@ -1382,10 +1489,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             removeTextObserver()
         }
         let optionsChanged = self.options != options
-        if optionsChanged {
-            comboPopup?.dismiss(animated: false)
-            comboPopup = nil
-        }
+        if optionsChanged || modeChanged { cancelPointerInteraction() }
         self.options = options
         self.selection = selection
         self.text = text
@@ -1432,7 +1536,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         if usesEditableTextChrome {
             let appearance = fluentStyle.appearance(
                 for: FluentTextFieldStyleConfiguration(
-                    isEnabled: comboBox.isEnabled,
+                    isEnabled: isControlEnabled,
                     isFocused: true,
                     controlSize: fluentControlSize,
                     theme: theme
@@ -1514,13 +1618,17 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     func controlTextDidEndEditing(_ notification: Notification) {
         guard mode == .editable, (notification.object as? NSTextField) === editableField else { return }
+        // AppKit's field editor owns focus while typing; the NSTextField's responder callback
+        // alone does not observe that editor leaving the control.
+        cancelPointerInteraction(dismissPopup: false)
         flushEditablePublication()
         isEditingText = false
         applyButtonChrome(animated: true)
     }
 
     @objc private func requestOpen() {
-        guard comboBox.isEnabled, !options.isEmpty else { return }
+        guard isControlEnabled, !options.isEmpty, window?.isVisible == true, !isHiddenOrHasHiddenAncestor else { return }
+        cancelPendingOpen()
         if comboPopup?.isPresented == true {
             comboPopup?.dismiss(animated: false)
             comboPopup = nil
@@ -1682,7 +1790,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         comboBox.controlSize = fluentControlSize.appKitSize
         let contentAppearance = fluentStyle.appearance(
             for: FluentTextFieldStyleConfiguration(
-                isEnabled: comboBox.isEnabled,
+                isEnabled: isControlEnabled,
                 isFocused: isTextFocusActive,
                 controlSize: fluentControlSize,
                 theme: theme
@@ -1713,7 +1821,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         visualStateCoordinator.reduceMotion = reduceMotion
         visualStateCoordinator.transition(
             to: .forControlState(resolvedButtonControlState()),
-            animated: animated,
+            animated: animated && window != nil && !isHiddenOrHasHiddenAncestor && isControlEnabled,
             motion: FluentMotion.controlFaster
         ) { [weak self] transition in
             self?.applyButtonVisualState(transition)
@@ -1773,7 +1881,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         focusPillLayer.backgroundColor = theme.accentFillDefault.cgColor
         focusHighlightLayer.borderColor = theme.accent.cgColor
         focusHighlightLayer.backgroundColor = NSColor.clear.cgColor
-        let targetOpacity: Float = mode == .selection && focused && comboBox.isEnabled ? 1 : 0
+        let targetOpacity: Float = mode == .selection && focused && isControlEnabled ? 1 : 0
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         focusHighlightLayer.opacity = targetOpacity
@@ -1792,19 +1900,16 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         let pointerOver = mode == .editable && usesEditableTextChrome
             ? isPointerOverGlyph
             : isPointerOver
-        let state: FluentControlState = !comboBox.isEnabled
+        let state: FluentControlState = !isControlEnabled
             ? .disabled
             : (isPressed
                 ? .pressed
                 : (pointerOver
                     ? .pointerOver
                     : (FluentFocusVisibility.isKeyboardFocusVisible(for: comboBox) ? .focused : .normal)))
-        let color: NSColor = switch state {
-        case .pressed: theme.textSecondary.withAlphaComponent(0.72)
-        case .pointerOver: theme.textSecondary.withAlphaComponent(0.86)
-        case .disabled: theme.textDisabled
-        default: theme.textSecondary
-        }
+        // ComboBox keeps the secondary glyph resource in ordinary pointer states; its
+        // editable overlay changes the background, unlike DropDownButton's foreground roles.
+        let color = state == .disabled ? theme.textDisabled : theme.textSecondary
         let rightToLeft = userInterfaceLayoutDirection == .rightToLeft
         let x = rightToLeft
             ? bounds.minX + FluentComboBoxMetrics.glyphTrailingPadding
@@ -1814,6 +1919,9 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             color: color,
             state: state,
             visual: .downSmall,
+            backingScale: window?.backingScaleFactor,
+            preservingUnchangedAnimations: window != nil && !isHiddenOrHasHiddenAncestor && isControlEnabled && !reduceMotion,
+            reduceMotion: reduceMotion,
             animated: animated
         )
     }
@@ -1875,17 +1983,22 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             for: FluentButtonStyleConfiguration(
                 title: comboBox.stringValue,
                 controlState: state,
-                isEnabled: comboBox.isEnabled,
+                isEnabled: isControlEnabled,
                 theme: theme
             )
         )
     }
 
     private func resolvedButtonControlState() -> FluentControlState {
+        guard isControlEnabled else { return .disabled }
         let focused = isTextFocusActive
         return isPressed
             ? .pressed
             : (isPointerOver ? .pointerOver : (focused ? .focused : .normal))
+    }
+
+    private var isControlEnabled: Bool {
+        comboBox.isEnabled && (mode == .selection || editableField.isEnabled)
     }
 
     private var usesEditableTextChrome: Bool {
@@ -1901,6 +2014,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     deinit {
+        removeWindowObservers()
         cancelScheduledEditablePublication()
         removeSelectionObserver()
         removeTextObserver()
