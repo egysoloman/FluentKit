@@ -752,12 +752,13 @@ struct GalleryScreen: FluentView {
         case .TextBox: return FluentAnyView(FluentTextFieldView(text: $textValue, placeholder: "Enter text").frame(width: 280))
         case .PasswordBox: return FluentAnyView(FluentSecureField($secureValue, placeholder: "Password").frame(width: 280))
         case .ComboBox:
-            return FluentAnyView(
+            return FluentAnyView(FluentVStack(spacing: 16, alignment: .leading) {
                 FluentComboBox(
                     options: ["Option 1", "Option 2", "Option 3"],
                     selection: $comboSelection.undoable(using: undoCoordinator, actionName: "Choose Option")
                 ).frame(width: 240)
-            )
+                ComboBoxGallerySample()
+            })
         case .NumberBox:
             return FluentAnyView(
                 FluentNumberBox(

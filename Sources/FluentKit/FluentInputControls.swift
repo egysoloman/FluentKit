@@ -1108,6 +1108,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private var pendingEditableValue: String?
     private var isApplyingSelection = false
     private var comboPopup: FluentComboBoxPopup?
+    private var updateGeneration: UInt = 0
     private var reduceMotion: Bool
     private let focusHighlightLayer = CALayer()
     private let focusPillLayer = CALayer()
@@ -1480,6 +1481,8 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         style: any FluentTextFieldStyle,
         reduceMotion: Bool
     ) {
+        updateGeneration &+= 1
+        let generation = updateGeneration
         let modeChanged = self.mode != mode
         let reusesSelectionObservation = self.selection.observationIdentity != nil
             && self.selection.observationIdentity == selection.observationIdentity
@@ -1498,7 +1501,9 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             removeTextObserver()
         }
         let optionsChanged = self.options != options
-        if optionsChanged || modeChanged { cancelPointerInteraction() }
+        if optionsChanged || modeChanged {
+            cancelPointerInteraction(dismissPopup: modeChanged || options.isEmpty)
+        }
         self.options = options
         self.selection = selection
         self.text = text
@@ -1533,13 +1538,17 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             elevationBorderLayer.removeAllAnimations()
             chevronLayer.removeAllAnimations()
         }
-        if optionsChanged { reloadOptions() } else { refreshTitles() }
+        reloadOptions()
         applyControlSize()
-        applySelection()
-        updateFocusPill(focused: isTextFocusActive, animated: false)
+        // Reconcile the popup's identity map before publishing new selection indices.
         refreshOpenPopup()
-        if !reusesSelectionObservation { installObserver() }
-        if !reusesTextObservation { installTextObserver() }
+        applySelection()
+        guard generation == updateGeneration else { return }
+        updateFocusPill(focused: isTextFocusActive, animated: false)
+        // An outer update may have assigned these bindings but not installed their observers
+        // before selection normalization re-enters. Restore actual missing subscriptions.
+        if observerID == nil { installObserver() }
+        if textObserverID == nil { installTextObserver() }
     }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -1609,15 +1618,19 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     private func publishEditableValue(_ value: String) {
         guard mode == .editable else { return }
+        let textIdentity = text?.observationIdentity
         if text?.get() != value { text?.set(value) }
+        guard mode == .editable, text?.observationIdentity == textIdentity,
+              text == nil || text?.get() == value else { applySelection(); return }
         let exactIndex = options.firstIndex { title($0) == value }
         if let exactIndex {
             if selection.get() != options[exactIndex] { selection.set(options[exactIndex]) }
         } else if selection.get() != nil {
             selection.set(nil)
         }
-        comboPopup?.updateSelectedIndex(exactIndex)
-        needsDisplay = true
+        // Selection callbacks can reorder/remove options. Recompute the current row instead
+        // of publishing an index that belonged to the collection before the callback.
+        applySelection()
     }
 
     func controlTextDidBeginEditing(_ notification: Notification) {
@@ -1651,6 +1664,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         )
         let selectedIndex = selection.get().flatMap { options.firstIndex(of: $0) }
         let popup = FluentComboBoxPopup(
+            optionIDs: options.map(AnyHashable.init),
             titles: options.map(title),
             selectedIndex: selectedIndex,
             placement: mode == .editable ? .editable : .selectionCentered,
@@ -1676,16 +1690,28 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         cancelScheduledEditablePublication()
         let option = options[index]
         if mode == .editable {
+            let previousSelection = selection.get()
+            let selectionIdentity = selection.observationIdentity
+            let textIdentity = text?.observationIdentity
             let value = title(option)
-            if text?.get() != value { text?.set(value) }
             comboBox.stringValue = value
             editableField.stringValue = value
+            if text?.get() != value { text?.set(value) }
+            // A callback may reorder a surviving option or deliberately replace the model.
+            // Continue by stable value only while that input and its bindings remain valid.
+            guard mode == .editable, options.contains(option),
+                  selection.observationIdentity == selectionIdentity,
+                  text?.observationIdentity == textIdentity,
+                  text == nil || text?.get() == value,
+                  selection.get() == previousSelection || selection.get() == option else {
+                applySelection()
+                return
+            }
         }
         if selection.get() != option {
             selection.set(option)
         }
         applySelection()
-        comboPopup?.updateSelectedIndex(index)
         if dismiss {
             comboPopup?.dismiss(animated: true)
             comboPopup = nil
@@ -1700,14 +1726,15 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         comboBox.addItems(withObjectValues: options.map(title))
     }
 
-    private func refreshTitles() {
-        reloadOptions()
-        applySelection()
-    }
-
     private func applySelection() {
+        let previousApplyingSelection = isApplyingSelection
         isApplyingSelection = true
-        defer { isApplyingSelection = false }
+        defer { isApplyingSelection = previousApplyingSelection }
+        let generation = updateGeneration
+        if let selected = selection.get(), !options.contains(selected) {
+            selection.set(nil)
+            guard generation == updateGeneration else { return }
+        }
         let selectedIndex: Int?
         if mode == .editable, let text {
             let isLocallyEditing = editableField.currentEditor() != nil
@@ -1828,7 +1855,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     }
 
     private func refreshOpenPopup() {
-        comboPopup?.updatePresentation(titles: options.map(title),
+        comboPopup?.updatePresentation(optionIDs: options.map(AnyHashable.init), titles: options.map(title),
             layoutDirection: userInterfaceLayoutDirection, reduceMotion: reduceMotion)
     }
 

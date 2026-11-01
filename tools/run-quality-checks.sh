@@ -50,6 +50,7 @@ swiftc -parse-as-library -O -swift-version 5 -warnings-as-errors -I "$QUALITY_MO
     FluentKitGallery/FluentKitGallery/TreeViewGallerySample.swift \
     FluentKitGallery/FluentKitGallery/MenuBarGallerySample.swift \
     FluentKitGallery/FluentKitGallery/AutoSuggestBoxGallerySample.swift \
+    FluentKitGallery/FluentKitGallery/ComboBoxGallerySample.swift \
     FluentKitGallery/FluentKitGallery/SplitButtonGallerySample.swift \
     FluentKitGallery/FluentKitGallery/MaterialGallerySample.swift \
     FluentKitGallery/FluentKitGallery/CalendarViewGallerySample.swift \

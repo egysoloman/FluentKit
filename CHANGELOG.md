@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox keeps nonempty popups open when options are appended, reordered or removed, reusing
+  rows by stable value and preserving responder, keyboard focus and visible scroll position.
+  Removing the focused option moves focus to a neighbor without selecting it. Removed selections
+  are cleared while editable text remains; empty lists and mode changes still dismiss the popup.
+  Collection changes cancel captured row presses. Synchronous text/selection callbacks can
+  mutate options without a stale index committing or highlighting another item. Gallery includes
+  delayed collection updates in selection and editable modes.
+
 ## [0.3.1] - 2026-11-02
 
 - ComboBox, MenuFlyout, CommandBar overflow and AutoSuggestBox popup entrances use the

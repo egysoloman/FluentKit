@@ -53,6 +53,7 @@ enum FluentComboBoxPopupPlacement: Hashable, Sendable {
 }
 
 final class FluentComboBoxPopup: NSObject {
+    private var optionIDs: [AnyHashable]
     private var titles: [String]
     private var theme: FluentTheme
     private var reduceMotion: Bool
@@ -84,6 +85,7 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     init(
+        optionIDs: [AnyHashable]? = nil,
         titles: [String],
         selectedIndex: Int?,
         placement: FluentComboBoxPopupPlacement = .selectionCentered,
@@ -94,6 +96,7 @@ final class FluentComboBoxPopup: NSObject {
         onCommit: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
+        self.optionIDs = optionIDs ?? titles.indices.map(AnyHashable.init)
         self.titles = titles
         self.selectedIndex = titles.indices.contains(selectedIndex ?? -1) ? selectedIndex : nil
         keyboardIndex = self.selectedIndex
@@ -147,6 +150,7 @@ final class FluentComboBoxPopup: NSObject {
         let origin = clamped(proposedOrigin, size: size, visibleFrame: visibleFrame)
 
         let root = FluentComboBoxPopupView(
+            optionIDs: optionIDs,
             titles: titles,
             selectedIndex: selectedIndex,
             keyboardIndex: keyboardIndex,
@@ -156,14 +160,15 @@ final class FluentComboBoxPopup: NSObject {
             rowHeight: rowHeight,
             initialVisibleRange: visibleRange,
             onMove: { [weak self] index in
-                self?.keyboardIndex = index
-                self?.onMove(index)
+                guard let self, self.isPresented, self.titles.indices.contains(index) else { return }
+                self.keyboardIndex = index
+                self.onMove(index)
             },
             onCommit: { [weak self] index in
                 // Keep the popup alive across the commit. A commit can replace the declarative
                 // anchor (for example when it changes the window theme), whose deinit dismisses
                 // this popup reentrantly while the row's mouse-up callback is still running.
-                guard let self else { return }
+                guard let self, self.isPresented, self.titles.indices.contains(index) else { return }
                 self.onCommit(index)
                 self.dismiss(animated: true)
             },
@@ -275,21 +280,37 @@ final class FluentComboBoxPopup: NSObject {
         )
     }
 
-    /// Stable options may acquire new localized titles or environment values while open.
-    /// Keep the panel, rows, responder and keyboard/scroll state owned by this presentation.
-    func updatePresentation(titles: [String], layoutDirection: NSUserInterfaceLayoutDirection, reduceMotion: Bool) {
-        guard titles.count == self.titles.count else { dismiss(animated: false); return }
+    /// Reconcile declarative options by their stable value, independently of their display text.
+    /// The desktop popup owns its responder and scroll position until explicitly dismissed.
+    func updatePresentation(optionIDs: [AnyHashable], titles: [String],
+                            layoutDirection: NSUserInterfaceLayoutDirection, reduceMotion: Bool) {
+        guard !titles.isEmpty else { dismiss(animated: false); return }
+        let optionsChanged = optionIDs != self.optionIDs
         let titlesChanged = titles != self.titles
         let directionChanged = layoutDirection != self.layoutDirection
         let motionChanged = reduceMotion != self.reduceMotion
-        guard titlesChanged || directionChanged || motionChanged else { return }
+        guard optionsChanged || titlesChanged || directionChanged || motionChanged else { return }
+        if optionsChanged {
+            let oldKeyboardIndex = keyboardIndex
+            selectedIndex = selectedIndex.flatMap { optionIDs.firstIndex(of: self.optionIDs[$0]) }
+            keyboardIndex = keyboardIndex.flatMap { optionIDs.firstIndex(of: self.optionIDs[$0]) }
+                ?? oldKeyboardIndex.map { min($0, optionIDs.count - 1) }
+        }
+        self.optionIDs = optionIDs
         self.titles = titles
         self.layoutDirection = layoutDirection
         self.reduceMotion = reduceMotion
-        if motionChanged && reduceMotion { transitionHost?.settlePresentation() }
+        if optionsChanged || (motionChanged && reduceMotion) { transitionHost?.settlePresentation() }
+        if optionsChanged {
+            let range = placement == .selectionCentered
+                ? initialVisibleRange(centeredOn: keyboardIndex ?? selectedIndex ?? 0) : initialVisibleRangeFromStart()
+            preferredVisibleItemCount = range.count
+            popupView?.reconcileOptions(optionIDs, titles: titles,
+                                        selectedIndex: selectedIndex, keyboardIndex: keyboardIndex)
+        }
         popupView?.updatePresentation(titles: titles, layoutDirection: layoutDirection, reduceMotion: reduceMotion)
-        if titlesChanged { measureContentWidth() }
-        if titlesChanged || directionChanged { reposition() }
+        if titlesChanged || optionsChanged { measureContentWidth() }
+        if optionsChanged || titlesChanged || directionChanged { reposition() }
     }
 
     func dismiss(animated _: Bool) {
@@ -468,6 +489,7 @@ private final class FluentComboBoxPopupPanel: NSPanel {
 }
 
 private final class FluentComboBoxPopupView: NSView {
+    private var optionIDs: [AnyHashable]
     private var titles: [String]
     private var theme: FluentTheme
     private var layoutDirection: NSUserInterfaceLayoutDirection
@@ -481,6 +503,7 @@ private final class FluentComboBoxPopupView: NSView {
     private let scrollView = FluentViewportScrollView()
     private let rowsHost = FluentComboBoxPopupRowsView()
     private var pendingScrollIndex: Int?
+    private var pendingScrollOffset: CGFloat = 0
     private var pendingRevealIndex: Int?
     private var showsKeyboardFocus = false
     private let hoverCoordinator = FluentHoverCoordinator<FluentComboBoxPopupRow> { row, hovering in
@@ -493,6 +516,7 @@ private final class FluentComboBoxPopupView: NSView {
     override var acceptsFirstResponder: Bool { true }
 
     init(
+        optionIDs: [AnyHashable],
         titles: [String],
         selectedIndex: Int?,
         keyboardIndex: Int?,
@@ -505,6 +529,7 @@ private final class FluentComboBoxPopupView: NSView {
         onCommit: @escaping (Int) -> Void,
         onDismiss: @escaping () -> Void
     ) {
+        self.optionIDs = optionIDs
         self.titles = titles
         self.selectedIndex = selectedIndex
         self.keyboardIndex = keyboardIndex
@@ -536,18 +561,7 @@ private final class FluentComboBoxPopupView: NSView {
         scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
         addSubview(scrollView)
         for (index, title) in titles.enumerated() {
-            let row = FluentComboBoxPopupRow(
-                index: index,
-                title: title,
-                theme: theme,
-                layoutDirection: layoutDirection,
-                reduceMotion: reduceMotion,
-                onCommit: { [weak self] index in self?.onCommit(index) },
-                onPointerInteraction: { [weak self] in self?.hideKeyboardFocus() },
-                onHoverChange: { [weak self] row, hovering in
-                    self?.setHoveredRow(row, hovering: hovering)
-                }
-            )
+            let row = makeRow(index: index, title: title)
             rowsHost.addSubview(row)
             rows.append(row)
         }
@@ -586,13 +600,15 @@ private final class FluentComboBoxPopupView: NSView {
             scrollView.contentView.scroll(
                 to: NSPoint(
                     x: 0,
-                    y: CGFloat(pendingScrollIndex) * rowHeight
+                    y: min(max(CGFloat(pendingScrollIndex) * rowHeight + pendingScrollOffset, 0),
+                           max(0, rowsHost.bounds.height - scrollView.contentSize.height))
                 )
             )
             scrollView.reflectScrolledClipView(scrollView.contentView)
             self.pendingScrollIndex = nil
+            pendingScrollOffset = 0
         }
-        if let index = pendingRevealIndex {
+        if let index = pendingRevealIndex, rows.indices.contains(index) {
             pendingRevealIndex = nil
             rowsHost.scrollToVisible(rows[index].frame)
         }
@@ -621,6 +637,50 @@ private final class FluentComboBoxPopupView: NSView {
         needsDisplay = true
     }
 
+    private func makeRow(index: Int, title: String) -> FluentComboBoxPopupRow {
+        FluentComboBoxPopupRow(index: index, title: title, theme: theme,
+            layoutDirection: layoutDirection, reduceMotion: reduceMotion,
+            onCommit: { [weak self] index in self?.onCommit(index) },
+            onPointerInteraction: { [weak self] in self?.hideKeyboardFocus() },
+            onHoverChange: { [weak self] row, hovering in self?.setHoveredRow(row, hovering: hovering) })
+    }
+
+    func reconcileOptions(_ optionIDs: [AnyHashable], titles: [String],
+                          selectedIndex: Int?, keyboardIndex: Int?) {
+        // Cancel before remapping: a mouse-up from the old geometry must not activate the
+        // replacement at that index, even when the original row itself survives the update.
+        resetPointerState()
+        let origin = scrollView.documentVisibleRect.minY
+        let firstIndex = min(max(Int(floor(origin / rowHeight)), 0), max(0, self.optionIDs.count - 1))
+        let visibleID = self.optionIDs.indices.contains(firstIndex) ? self.optionIDs[firstIndex] : nil
+        let retained = Dictionary(uniqueKeysWithValues: zip(self.optionIDs, rows))
+        let nextIDs = Set(optionIDs)
+        for (id, row) in retained where !nextIDs.contains(id) { row.removeFromSuperview() }
+        self.optionIDs = optionIDs
+        self.titles = titles
+        self.selectedIndex = selectedIndex
+        self.keyboardIndex = keyboardIndex
+        rows = optionIDs.enumerated().map { index, id in
+            let row = retained[id] ?? makeRow(index: index, title: titles[index])
+            row.index = index
+            if row.superview == nil { rowsHost.addSubview(row) }
+            return row
+        }
+        // Sorting changes the accessibility/drawing order without removing retained views.
+        rowsHost.sortSubviews({ first, second, _ in
+            guard let first = first as? FluentComboBoxPopupRow,
+                  let second = second as? FluentComboBoxPopupRow else { return .orderedSame }
+            return first.index < second.index ? .orderedAscending : .orderedDescending
+        }, context: nil)
+        setAccessibilityChildren(rows)
+        pendingScrollIndex = visibleID.flatMap { optionIDs.firstIndex(of: $0) }
+            ?? min(firstIndex, max(0, optionIDs.count - 1))
+        pendingScrollOffset = origin - CGFloat(firstIndex) * rowHeight
+        pendingRevealIndex = showsKeyboardFocus ? keyboardIndex : nil
+        updateRows()
+        needsLayout = true
+    }
+
     func updatePresentation(titles: [String], layoutDirection: NSUserInterfaceLayoutDirection, reduceMotion: Bool) {
         guard titles.count == rows.count else { return }
         self.titles = titles
@@ -637,6 +697,7 @@ private final class FluentComboBoxPopupView: NSView {
     }
 
     override func keyDown(with event: NSEvent) {
+        guard window?.isVisible == true else { return }
         switch event.keyCode {
         case 53: onDismiss()
         case 125: moveKeyboardSelection(by: 1)
@@ -662,7 +723,11 @@ private final class FluentComboBoxPopupView: NSView {
         updateRows()
         rowsHost.scrollToVisible(rows[index].frame)
         onMove(index)
-        NSAccessibility.post(element: rows[index], notification: .focusedUIElementChanged)
+        // The binding callback can synchronously remove/reorder the focused item or dismiss
+        // the popup. Announce only the current retained focus, never a pre-callback index.
+        if window?.isVisible == true, let current = keyboardIndex, rows.indices.contains(current) {
+            NSAccessibility.post(element: rows[current], notification: .focusedUIElementChanged)
+        }
     }
 
     private func updateRows() {
@@ -739,7 +804,7 @@ private final class FluentComboBoxPopupRowsView: NSView {
 }
 
 private final class FluentComboBoxPopupRow: NSView {
-    let index: Int
+    var index: Int
     private var title: String
     private var theme: FluentTheme
     private var layoutDirection: NSUserInterfaceLayoutDirection
