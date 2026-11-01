@@ -5,6 +5,11 @@ protocol FluentSingleLineTextControl: AnyObject {
     func didConfigureFluentFieldEditor()
 }
 
+@MainActor
+protocol FluentTextMutationObserving: AnyObject {
+    func willApplyFluentTextChange(in editor: NSTextView, range: NSRange, replacement: String)
+}
+
 @inline(__always)
 func configureFluentSingleLineTextControl(_ control: NSTextField) {
     // NSCell's single-line mode also imposes a fixed baseline that ignores custom font
@@ -64,6 +69,7 @@ final class FluentSingleLineEditorDelegate: NSObject, NSTextViewDelegate {
             if accepted, let value {
                 pendingMarkedReplacement = value.rangeOfCharacter(from: .newlines) == nil ? nil
                     : (NSRange(location: range.location, length: value.utf16.count), value)
+                (owner as? any FluentTextMutationObserving)?.willApplyFluentTextChange(in: textView, range: range, replacement: value)
             }
             return accepted
         }
@@ -76,8 +82,11 @@ final class FluentSingleLineEditorDelegate: NSObject, NSTextViewDelegate {
                                 replacementRange: range)
             return false
         }
-        return originalDelegate?.textView?(textView, shouldChangeTextIn: range,
-                                            replacementString: value) ?? true
+        let accepted = originalDelegate?.textView?(textView, shouldChangeTextIn: range, replacementString: value) ?? true
+        if accepted, let value {
+            (owner as? any FluentTextMutationObserving)?.willApplyFluentTextChange(in: textView, range: range, replacement: value)
+        }
+        return accepted
     }
 
     func textDidChange(_ notification: Notification) {

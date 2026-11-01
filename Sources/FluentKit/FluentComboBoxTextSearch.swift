@@ -36,8 +36,44 @@ struct FluentComboBoxTextSearch {
         return nil
     }
 
+    /// Return the UTF-16 end of the matching prefix in the displayed title. Folding may
+    /// change length, so native suffix selection must end on an actual grapheme boundary.
+    static func completionPrefixEnd(in title: String, for query: String) -> Int? {
+        completionPrefixEnd(in: title, foldedQuery: fold(query))
+    }
+
+    static func completion<Option>(in options: [Option], title: (Option) -> String,
+                                   for query: String) -> (option: Option, prefixEnd: Int)? {
+        let needle = fold(query)
+        guard !needle.isEmpty else { return nil }
+        for option in options {
+            if let end = completionPrefixEnd(in: title(option), foldedQuery: needle) { return (option, end) }
+        }
+        return nil
+    }
+
+    private static func completionPrefixEnd(in title: String, foldedQuery needle: String) -> Int? {
+        guard !needle.isEmpty else { return nil }
+        let trimmed = String(title.drop(while: { $0 == " " }))
+        guard fold(trimmed).hasPrefix(needle) else { return nil }
+        let leading = title.utf16.count - trimmed.utf16.count
+        var prefix = ""
+        for character in trimmed {
+            prefix.append(character)
+            if fold(prefix).hasPrefix(needle) { return leading + prefix.utf16.count }
+        }
+        return nil
+    }
+
+    static func equalsIgnoringCase(_ lhs: String, _ rhs: String) -> Bool {
+        lhs.compare(rhs, options: .caseInsensitive, locale: .current) == .orderedSame
+    }
+
     private static func fold(_ text: String) -> String {
         let folded = text.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: .current)
+        // Latin, already-katakana and other scripts need no transliterator. Avoid its setup
+        // and per-string work on every option in a large search, retaining the kana path.
+        guard folded.unicodeScalars.contains(where: { (0x3040...0x309F).contains($0.value) }) else { return folded }
         return folded.applyingTransform(.hiraganaToKatakana, reverse: false) ?? folded
     }
 }

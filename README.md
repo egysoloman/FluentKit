@@ -854,16 +854,23 @@ Tab, F4, the trigger or an outside click discards that preview. Editable control
 value on Return, Tab, normal dismissal or blur. Escape restores the latest cancellation baseline;
 external model updates replace that baseline. Closed noneditable arrow navigation still selects
 immediately. Visual preview and accessibility selection remain distinct.
-For applications that need the earlier immediate-selection behavior, use
-`.selectionChangedTrigger(.always)`. An empty noneditable list selection then selects its first
-option on opening. This setting is independent of `.textInput`'s IME publication policy.
+Use `.selectionChangedTrigger(.always)` to publish matching navigation and text-search results
+immediately. Unmatched editable text retains the last selected option until committed. An empty
+noneditable list selection then selects its first option on opening. This setting is independent
+of `.textInput`'s IME publication policy.
 Noneditable controls support incremental title search, both closed and open. A matching prefix
 selects immediately under either selection trigger and reveals the matching row. Spaces extend an
 active query; after one second without a character, a new query starts after the current selection
 and wraps. Matching ignores case, diacritics, character width and kana type using macOS Unicode
 folding. Use `.isTextSearchEnabled(false)` to disable this behavior. Model resets and focus changes
-discard stale queries; title/theme refreshes retain them. Editable prefix completion and custom
-text-submission events remain open contracts.
+discard stale queries; title/theme refreshes retain them.
+Editable controls complete matching prefixes using the native editor and select the inserted suffix.
+Replacing that suffix continues the search; deleting it keeps the shorter text instead of immediately
+completing it again. Typing and completion share native undo, exact matches ignore case while retaining
+typed casing, and stable completion choices survive option reordering or renaming. Marked text completes
+only after native composition finishes, with pending external resets taking priority. The same
+`.isTextSearchEnabled(false)` modifier disables prefix completion. Custom text-submission events remain
+an open contract; unmatched text currently commits through the text binding with a nil option selection.
 
 Open ComboBoxes reconcile options by their unique `Hashable` values. Appending, reordering or
 removing options preserves the panel, responder, surviving rows and visible scroll position.

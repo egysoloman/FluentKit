@@ -1135,6 +1135,10 @@ private final class FluentComboBoxPopupRow: NSView {
         } else {
             background = .clear
         }
+        // Row fills and selection visibility update immediately. Ambient Core Animation
+        // actions otherwise fade both pills at once, even when Reduce Motion is enabled.
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
         surfaceLayer.backgroundColor = background.cgColor
         // WinUI ComboBoxItem pointer and pressed states are fills. A row stroke produces the
         // stacked dark rectangles called out in the visual audit.
@@ -1145,6 +1149,7 @@ private final class FluentComboBoxPopupRow: NSView {
             : "FluentKit.ComboBoxItem.Pill.\(index)"
         pillLayer.backgroundColor = theme.accentFillDefault.cgColor
         pillLayer.opacity = isSelected ? 1 : 0
+        CATransaction.commit()
         setAccessibilityValue(isSelected ? "Selected" : "Not selected")
         needsDisplay = true
     }

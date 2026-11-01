@@ -4,6 +4,18 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Editable ComboBoxes complete prefixes through the native editor, preserving suffix selection
+  and a single undo step for typing plus completion. Deletion keeps the shorter value; marked text
+  waits for native commit, and external resets/rebinding take priority. Completion choices retain
+  stable option identity across rename/reorder, and case-equivalent commits keep typed casing.
+  `.isTextSearchEnabled(false)` also disables editable completion. Under `.always`, matching text
+  selects immediately while unmatched text keeps the prior choice until Return, dismissal or blur.
+  Custom text-submission events remain follow-up work.
+
+- ComboBox row fills and selection indicators no longer inherit implicit Core Animation fades.
+  Selection changes remove the old indicator immediately, including under Reduce Motion;
+  explicit press geometry motion remains controlled by the component's animation policy.
+
 - Noneditable ComboBoxes now support incremental title search while closed or open. Matching
   immediately selects and reveals the stable option under either selection trigger; spaces extend
   the active prefix instead of toggling the popup. Searches expire after one second, wrap from the

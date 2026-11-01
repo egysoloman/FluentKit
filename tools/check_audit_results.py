@@ -66,6 +66,18 @@ for row in search:
     cancelled = row['scenario'] == 'escape' and row['open']
     assert row['afterSelection'] == (0 if cancelled else expected), row
     assert row['afterPopupOpen'] == (row['open'] and not cancelled), row
+completion = load('ComboBoxCompletionAudit')
+assert len(completion) == 64 and {(r['dark'], r['rtl'], r['bound'], r['always'], r['open'], r['committedText']) for r in completion} == {
+    (dark, rtl, bound, always, opened, committed) for dark in (False, True) for rtl in (False, True)
+    for bound in (False, True) for always in (False, True) for opened in (False, True) for committed in (False, True)
+}, completion
+for row in completion:
+    assert row['completedText'] == row['redoText'] == 'Charlie' and row['undoText'] == 'Alpha', row
+    assert row['suffix'] == [2, 5] and row['deletedText'] == 'Ch', row
+    assert row['implicitRowAnimations'] == [], row
+    assert row['selection'] == row['selectionAfterDeletion'] == (2 if row['always'] else 0), row
+    assert all(row[key] is True for key in ('modelMatches', 'editorPreserved', 'panelPreserved',
+        'freeTextCommitted', 'markedTextPreserved', 'externalResetWins')), row
 appearance = load('AppearanceAudit')
 assert appearance['materials']['mica'] in ('fluentRecipe', 'opaque'), appearance
 assert appearance['fonts']['title']['size'] == 28 and appearance['fonts']['largeTitle']['size'] == 40

@@ -162,8 +162,12 @@ final class ComboBoxKeyboardContractTests: XCTestCase {
         editor.insertText("Free text", replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
         editor.insertText(" ", replacementRange: NSRange(location: NSNotFound, length: 0))
         waitForUI(f.text.wrappedValue == "Free text ")
-        XCTAssertNil(f.selection.wrappedValue)
+        // Always publishes found matches immediately; unmatched drafts retain the old choice.
+        XCTAssertEqual(f.selection.wrappedValue, 2)
         XCTAssertTrue(f.popup === popup); XCTAssertTrue(f.field.currentEditor() === editor)
+        XCTAssertEqual(editor.string, "Free text ")
+        editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
+        XCTAssertNil(f.selection.wrappedValue)
         XCTAssertEqual(editor.string, "Free text ")
     }
     func testEditableEscapeRestoresOpeningValueWithoutEndingEditing() throws {

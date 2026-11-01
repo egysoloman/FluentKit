@@ -24,6 +24,7 @@ struct ComboBoxGallerySample: FluentView {
                 title: { "Option \($0)" })
                 .selectionChangedTrigger(immediateSelection ? .always : .committed).frame(width: 280)
             FluentText("Editable value", style: .caption)
+            FluentText("Type Opt to complete an option. Delete the selected suffix to keep a custom prefix.", style: .caption)
             FluentComboBox(options: options, selection: $editableSelection, mode: .editable,
                 text: $text.textInput(.init(commitPolicy: .committedText)),
                 title: { "Option \($0)" })

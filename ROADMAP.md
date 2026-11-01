@@ -74,8 +74,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    composition policy, undo/redo and binding replacement; Release gates cover these paths.
    Noneditable prefix search now handles immediate selection, space-separated queries, timeout,
    wrapping, Unicode folding and a developer opt-out without changing arrow-preview policy.
-   Next complete editable prefix completion and custom text submission, retaining native
-   composition ownership and external-reset precedence.
+   Editable prefix completion now preserves native suffix selection/undo, deletion, marked text,
+   external-reset precedence and stable option identity. Next add custom text-submission events,
+   including handled callbacks, option insertion/rebinding and repeated-submission suppression.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required

@@ -48,6 +48,9 @@ final class FluentStringBindingCoordinator {
     private var editorObservers: [NSObjectProtocol] = []
     var currentBinding: FluentBinding<String> { binding }
     var onExternalValueApplied: ((String) -> Void)?
+    /// Optional native completion, performed only after external resets and IME policy win.
+    var prepareUserValueForPublication: (() -> Void)?
+    var onExternalReset: (() -> Void)?
 
     init(field: NSTextField, binding: FluentBinding<String>) {
         self.field = field
@@ -110,23 +113,7 @@ final class FluentStringBindingCoordinator {
     }
 
     private func publishFieldValue() {
-        guard let field else { return }
-        let editor = field.currentEditor() as? NSTextView
-        // Read before applying a deferred reset: an unobserved closure model may have changed
-        // again during composition, and an older reset must never be rendered or selected.
-        let modelValue = modelValue()
-        if let lastModelValue, modelValue != lastModelValue {
-            synchronizeExternalValue(modelValue)
-            return
-        }
-        if let pendingExternalValue {
-            guard editor?.hasMarkedText() != true else { return }
-            self.pendingExternalValue = nil
-            applyExternalValue(pendingExternalValue, to: field)
-            return
-        }
-        if binding.textInputConfiguration.commitPolicy == .committedText,
-           editor?.hasMarkedText() == true { return }
+        guard let (field, modelValue) = preparedFieldValue() else { return }
         let value = field.stringValue
         lastModelValue = value
         guard modelValue != value else { return }
@@ -135,6 +122,40 @@ final class FluentStringBindingCoordinator {
         isPublishing = false
         // A validating setter can transform the value synchronously.
         synchronizeExternalValue(self.modelValue())
+    }
+
+    /// Complete in the native editing transaction so undo includes both typing and its
+    /// suffix; model publication can still be coalesced until the end of the run-loop turn.
+    func prepareCurrentValueForPublication() { _ = preparedFieldValue() }
+
+    private func preparedFieldValue() -> (NSTextField, String)? {
+        guard let field else { return nil }
+        let editor = field.currentEditor() as? NSTextView
+        // Read before applying a deferred reset: an unobserved closure model may have changed
+        // again during composition, and an older reset must never be rendered or selected.
+        let modelValue = modelValue()
+        if let lastModelValue, modelValue != lastModelValue {
+            synchronizeExternalValue(modelValue)
+            return nil
+        }
+        if let pendingExternalValue {
+            guard editor?.hasMarkedText() != true else { return nil }
+            self.pendingExternalValue = nil
+            applyExternalValue(pendingExternalValue, to: field)
+            return nil
+        }
+        if binding.textInputConfiguration.commitPolicy == .committedText,
+           editor?.hasMarkedText() == true { return nil }
+        let generation = publicationGeneration
+        prepareUserValueForPublication?()
+        guard self.field === field, generation == publicationGeneration else { return nil }
+        // Native completion can invoke an application callback that replaces a closure model.
+        let latestModelValue = self.modelValue()
+        guard latestModelValue == modelValue else {
+            synchronizeExternalValue(latestModelValue)
+            return nil
+        }
+        return (field, modelValue)
     }
 
     private func cancelScheduledPublication() {
@@ -172,6 +193,7 @@ final class FluentStringBindingCoordinator {
         guard force || lastModelValue != value else { return }
         lastModelValue = value
         cancelScheduledPublication()
+        onExternalReset?()
         if (field.currentEditor() as? NSTextView)?.hasMarkedText() == true {
             // External updates win after the composition ends; do not interrupt the IME.
             pendingExternalValue = value
@@ -233,6 +255,8 @@ final class FluentStringBindingCoordinator {
     func invalidate() {
         field = nil
         onExternalValueApplied = nil
+        prepareUserValueForPublication = nil
+        onExternalReset = nil
         pendingExternalValue = nil
         editingObservers.forEach(NotificationCenter.default.removeObserver)
         editingObservers.removeAll()
