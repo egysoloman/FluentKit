@@ -115,7 +115,12 @@ final class ComboBoxFaceplateLayoutTests: XCTestCase {
                        manager.defaultBaselineOffset(for: try XCTUnwrap(field.font)), accuracy: 0.01)
         editor.insertText("first\nedit", replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
         XCTAssertEqual(editor.string, "first edit")
-        RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        // Editable publication deliberately runs asynchronously. Wait for that observable
+        // result instead of assuming the CI run loop finishes all pending work in 20 ms.
+        let deadline = Date().addingTimeInterval(1)
+        while text.wrappedValue != "first edit", Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.01))
+        }
         XCTAssertEqual(text.wrappedValue, "first edit")
     }
 

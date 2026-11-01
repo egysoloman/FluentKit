@@ -2,6 +2,11 @@ import XCTest
 @testable import FluentKit
 
 final class MaterialBackdropTests: XCTestCase {
+    @MainActor private var systemRequiresOpaqueMaterial: Bool {
+        NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency
+            || NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
+    }
+
     @MainActor
     func testNavigationUsesAcrylicOnlyWhileItsAutomaticPaneOverlaysContent() throws {
         let open = FluentState(wrappedValue: false)
@@ -112,20 +117,21 @@ final class MaterialBackdropTests: XCTestCase {
         panel.orderFront(nil)
         owner.reportsKey = true
         material.configure(theme: .custom(colorScheme: .dark), role: .transient)
+        let opaque = systemRequiresOpaqueMaterial
         XCTAssertTrue(owner.isKeyWindow)
         XCTAssertFalse(panel.isKeyWindow)
-        XCTAssertEqual(material.state, .active)
-        XCTAssertEqual(material.blendingMode, .behindWindow)
+        XCTAssertEqual(material.state, opaque ? .followsWindowActiveState : .active)
+        XCTAssertEqual(material.blendingMode, opaque ? .withinWindow : .behindWindow)
         let luminosity = try XCTUnwrap(material.layer?.sublayers?.first { $0.name == "FluentKit.Material.Luminosity" })
         let noise = try XCTUnwrap(material.layer?.sublayers?.first { $0.name == "FluentKit.Material.Noise" })
-        XCTAssertFalse(luminosity.isHidden)
-        XCTAssertFalse(noise.isHidden)
+        XCTAssertEqual(luminosity.isHidden, opaque)
+        XCTAssertEqual(noise.isHidden, opaque)
         owner.reportsKey = false
         NotificationCenter.default.post(name: NSWindow.didResignKeyNotification, object: owner)
-        XCTAssertEqual(material.state, .inactive)
+        XCTAssertEqual(material.state, opaque ? .followsWindowActiveState : .inactive)
         owner.reportsKey = true
         NotificationCenter.default.post(name: NSWindow.didBecomeKeyNotification, object: owner)
-        XCTAssertEqual(material.state, .active)
+        XCTAssertEqual(material.state, opaque ? .followsWindowActiveState : .active)
         XCTAssertNotNil(luminosity.compositingFilter)
         material.configure(theme: .custom(contrast: .high, colorScheme: .light), role: .transient)
         XCTAssertEqual(material.resolvedBackend, .opaque)
@@ -133,8 +139,8 @@ final class MaterialBackdropTests: XCTestCase {
         XCTAssertTrue(noise.isHidden)
         XCTAssertTrue(content.superview === material)
         material.configure(theme: .custom(colorScheme: .light), role: .transient)
-        XCTAssertEqual(material.resolvedBackend, .fluentRecipe)
-        XCTAssertFalse(luminosity.isHidden)
+        XCTAssertEqual(material.resolvedBackend, opaque ? .opaque : .fluentRecipe)
+        XCTAssertEqual(luminosity.isHidden, opaque)
         XCTAssertTrue(content.superview === material)
     }
 
@@ -146,11 +152,22 @@ final class MaterialBackdropTests: XCTestCase {
         view.configure(theme: theme, role: .toolTip, configuration: .init(tintOpacity: 0.6))
         let luminosity = try XCTUnwrap(view.layer?.sublayers?.first { $0.name == "FluentKit.Material.Luminosity" })
         let tint = try XCTUnwrap(view.layer?.sublayers?.first { $0.name == "FluentKit.Material.MicaTint" })
-        XCTAssertEqual(try XCTUnwrap(luminosity.backgroundColor).alpha, 0.7, accuracy: 0.001)
-        XCTAssertEqual(try XCTUnwrap(tint.backgroundColor).alpha, 0.6, accuracy: 0.001)
+        func checkStrengths() throws {
+            // Accessibility must suppress rendering while retaining the developer's settings.
+            XCTAssertEqual(view.luminosityOpacity, 0.7)
+            XCTAssertEqual(view.tintOpacity, 0.6)
+            if systemRequiresOpaqueMaterial {
+                XCTAssertEqual(view.resolvedBackend, .opaque)
+                XCTAssertTrue(luminosity.isHidden)
+                XCTAssertTrue(tint.isHidden)
+            } else {
+                XCTAssertEqual(try XCTUnwrap(luminosity.backgroundColor).alpha, 0.7, accuracy: 0.001)
+                XCTAssertEqual(try XCTUnwrap(tint.backgroundColor).alpha, 0.6, accuracy: 0.001)
+            }
+        }
+        try checkStrengths()
         view.fluentTheme = theme.with(colorScheme: .light)
-        XCTAssertEqual(try XCTUnwrap(luminosity.backgroundColor).alpha, 0.7, accuracy: 0.001)
-        XCTAssertEqual(try XCTUnwrap(tint.backgroundColor).alpha, 0.6, accuracy: 0.001)
+        try checkStrengths()
         XCTAssertEqual(theme.resolvedMaterialConfiguration(for: .transient).tintOpacity, 0.3)
         view.materialStyle = .nativeAcrylic
         XCTAssertNil(tint.compositingFilter, "Explicit AppKit alternatives retain normal tint compositing")
