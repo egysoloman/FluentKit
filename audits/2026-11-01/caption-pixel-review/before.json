@@ -1,0 +1,137 @@
+[
+  {
+    "alignmentInsets" : [
+      -2,
+      0,
+      -3,
+      0.5
+    ],
+    "buttonFrame" : "{{0, 3}, {46.5, 27}}",
+    "buttonInHeader" : "{{462, 3}, {46.5, 27}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 32,
+    "hostFrame" : "{{0, 0}, {46, 32}}",
+    "name" : "FluentKit.WindowControls.Minimize"
+  },
+  {
+    "alignmentInsets" : [
+      2.5,
+      0,
+      2.5,
+      0
+    ],
+    "buttonFrame" : "{{0, -2.5}, {46, 37}}",
+    "buttonInHeader" : "{{508, -2.5}, {46, 37}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 32,
+    "hostFrame" : "{{46, 0}, {46, 32}}",
+    "name" : "FluentKit.WindowControls.Maximize"
+  },
+  {
+    "alignmentInsets" : [
+      2.5,
+      0,
+      1.5,
+      0.5
+    ],
+    "buttonFrame" : "{{0, -1.5}, {46.5, 36}}",
+    "buttonInHeader" : "{{554, -1.5}, {46.5, 36}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 32,
+    "hostFrame" : "{{92, 0}, {46, 32}}",
+    "name" : "FluentKit.WindowControls.Close"
+  },
+  {
+    "alignmentInsets" : [
+      -2,
+      0,
+      -3,
+      0.5
+    ],
+    "buttonFrame" : "{{0, 3}, {46.5, 35}}",
+    "buttonInHeader" : "{{462, 3}, {46.5, 35}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 40,
+    "hostFrame" : "{{0, 0}, {46, 40}}",
+    "name" : "FluentKit.WindowControls.Minimize"
+  },
+  {
+    "alignmentInsets" : [
+      2.5,
+      0,
+      2.5,
+      0
+    ],
+    "buttonFrame" : "{{0, -2.5}, {46, 45}}",
+    "buttonInHeader" : "{{508, -2.5}, {46, 45}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 40,
+    "hostFrame" : "{{46, 0}, {46, 40}}",
+    "name" : "FluentKit.WindowControls.Maximize"
+  },
+  {
+    "alignmentInsets" : [
+      2.5,
+      0,
+      1.5,
+      0.5
+    ],
+    "buttonFrame" : "{{0, -1.5}, {46.5, 44}}",
+    "buttonInHeader" : "{{554, -1.5}, {46.5, 44}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 40,
+    "hostFrame" : "{{92, 0}, {46, 40}}",
+    "name" : "FluentKit.WindowControls.Close"
+  },
+  {
+    "alignmentInsets" : [
+      -2,
+      0,
+      -3,
+      0.5
+    ],
+    "buttonFrame" : "{{0, 3}, {46.5, 43}}",
+    "buttonInHeader" : "{{462, 3}, {46.5, 43}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 48,
+    "hostFrame" : "{{0, 0}, {46, 48}}",
+    "name" : "FluentKit.WindowControls.Minimize"
+  },
+  {
+    "alignmentInsets" : [
+      2.5,
+      0,
+      2.5,
+      0
+    ],
+    "buttonFrame" : "{{0, -2.5}, {46, 53}}",
+    "buttonInHeader" : "{{508, -2.5}, {46, 53}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 48,
+    "hostFrame" : "{{46, 0}, {46, 48}}",
+    "name" : "FluentKit.WindowControls.Maximize"
+  },
+  {
+    "alignmentInsets" : [
+      2.5,
+      0,
+      1.5,
+      0.5
+    ],
+    "buttonFrame" : "{{0, -1.5}, {46.5, 52}}",
+    "buttonInHeader" : "{{554, -1.5}, {46.5, 52}}",
+    "contained" : false,
+    "fillsHost" : false,
+    "height" : 48,
+    "hostFrame" : "{{92, 0}, {46, 48}}",
+    "name" : "FluentKit.WindowControls.Close"
+  }
+]

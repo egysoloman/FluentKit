@@ -327,6 +327,11 @@ private final class FluentWindowsCaptionButton: NSButton {
         case close
     }
 
+    // The full caption frame owns both its hit target and custom hover background. Native
+    // image-only NSButton alignment insets depend on each symbol (even on its current glyph),
+    // so pinning that alignment rect inside a Tooltip host otherwise shrinks/expands the frame.
+    override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
+
     private let kind: Kind
     private weak var targetWindow: NSWindow?
     private var pointerOver = false
