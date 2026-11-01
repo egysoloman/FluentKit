@@ -1,0 +1,40 @@
+Building for debugging...
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+Build complete! (2.26秒)
+Test Suite 'Selected tests' started at 2026-11-01 10:57:53.308.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 10:57:53.309.
+Test Suite 'FluentKitTests' started at 2026-11-01 10:57:53.309.
+Test Case '-[FluentKitTests.FluentKitTests testToolTipExclusivePendingOwnerCancelsEarlierDelay]' started.
+Test Case '-[FluentKitTests.FluentKitTests testToolTipExclusivePendingOwnerCancelsEarlierDelay]' passed (1.169 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testToolTipPointerDelayCancelAndAutomaticPresentation]' started.
+Test Case '-[FluentKitTests.FluentKitTests testToolTipPointerDelayCancelAndAutomaticPresentation]' passed (1.863 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testToolTipSafeZoneUsesOwnerTooltipConvexHull]' started.
+Test Case '-[FluentKitTests.FluentKitTests testToolTipSafeZoneUsesOwnerTooltipConvexHull]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testToolTipSourceGeometryAccessibilityAndDeclarativeIdentity]' started.
+Test Case '-[FluentKitTests.FluentKitTests testToolTipSourceGeometryAccessibilityAndDeclarativeIdentity]' passed (0.010 seconds).
+Test Case '-[FluentKitTests.FluentKitTests testWindowControlsSwitchBetweenWindowsAndMacOSStyles]' started.
+Test Case '-[FluentKitTests.FluentKitTests testWindowControlsSwitchBetweenWindowsAndMacOSStyles]' passed (0.056 seconds).
+Test Suite 'FluentKitTests' passed at 2026-11-01 10:57:56.408.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 3.098 (3.099) seconds
+Test Suite 'ToolTipMotionTests' started at 2026-11-01 10:57:56.408.
+Test Case '-[FluentKitTests.ToolTipMotionTests testCaptionButtonsExposeCustomToolTipsAndKeepNativeActions]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ToolTipMotionTests.swift:163: error: -[FluentKitTests.ToolTipMotionTests testCaptionButtonsExposeCustomToolTipsAndKeepNativeActions] : XCTAssertTrue failed - appearance changes preserve the open panel
+Test Case '-[FluentKitTests.ToolTipMotionTests testCaptionButtonsExposeCustomToolTipsAndKeepNativeActions]' failed (1.600 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipCancelsOldFadeWhenOwnershipChanges]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipCancelsOldFadeWhenOwnershipChanges]' passed (1.499 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipDoesNotTransferAcrossWindowsOrToStandardMode]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipDoesNotTransferAcrossWindowsOrToStandardMode]' passed (2.664 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReducedMotionIsImmediateAndWindowChangeClosesIt]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReducedMotionIsImmediateAndWindowChangeClosesIt]' passed (1.658 seconds).
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReusesSurfaceAndRetargetsFromIntermediateFrame]' started.
+Test Case '-[FluentKitTests.ToolTipMotionTests testContinuousToolTipReusesSurfaceAndRetargetsFromIntermediateFrame]' passed (3.310 seconds).
+Test Suite 'ToolTipMotionTests' failed at 2026-11-01 10:58:07.140.
+	 Executed 5 tests, with 1 failure (0 unexpected) in 10.731 (10.732) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 10:58:07.140.
+	 Executed 10 tests, with 1 failure (0 unexpected) in 13.829 (13.831) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 10:58:07.140.
+	 Executed 10 tests, with 1 failure (0 unexpected) in 13.829 (13.832) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

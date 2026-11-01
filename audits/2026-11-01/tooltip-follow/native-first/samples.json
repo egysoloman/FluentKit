@@ -1,0 +1,647 @@
+[
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "first",
+    "text" : "最小化",
+    "time" : 1.1008870601654053,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-0",
+    "text" : "最大化",
+    "time" : 1.1135550737380981,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.39316324389392321,
+    "frame" : [
+      671,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-1",
+    "text" : "最大化",
+    "time" : 1.1393110752105713,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.66623259534799217,
+    "frame" : [
+      683,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-2",
+    "text" : "最大化",
+    "time" : 1.1768560409545898,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.81505450474514873,
+    "frame" : [
+      690,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-3",
+    "text" : "最大化",
+    "time" : 1.2055650949478149,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.90620343211185173,
+    "frame" : [
+      694,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-4",
+    "text" : "最大化",
+    "time" : 1.2369370460510254,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.96052937095691959,
+    "frame" : [
+      697,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-5",
+    "text" : "最大化",
+    "time" : 1.2675280570983887,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.97797762791333298,
+    "frame" : [
+      698,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-6",
+    "text" : "最大化",
+    "time" : 1.2927579879760742,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.99714242364234451,
+    "frame" : [
+      698,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-7",
+    "text" : "最大化",
+    "time" : 1.3268890380859375,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      699,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-8",
+    "text" : "最大化",
+    "time" : 1.3611760139465332,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      699,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-9",
+    "text" : "最大化",
+    "time" : 1.3867319822311401,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      699,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-10",
+    "text" : "最大化",
+    "time" : 1.4127020835876465,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      699,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-second-11",
+    "text" : "最大化",
+    "time" : 1.4383389949798584,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      699,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "second",
+    "text" : "最大化",
+    "time" : 1.4644620418548584,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.75192584486785563,
+    "frame" : [
+      738,
+      383,
+      49,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "to-third",
+    "text" : "关闭",
+    "time" : 1.5453519821166992,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0,
+    "frame" : [
+      738,
+      383,
+      49,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-0",
+    "text" : "最小化",
+    "time" : 1.5737930536270142,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.39818966774282671,
+    "frame" : [
+      704,
+      383,
+      53,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-1",
+    "text" : "最小化",
+    "time" : 1.5991780757904053,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.66727501667855904,
+    "frame" : [
+      681,
+      383,
+      56,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-2",
+    "text" : "最小化",
+    "time" : 1.6260020732879639,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.75192584486785563,
+    "frame" : [
+      674,
+      383,
+      56,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-3",
+    "text" : "最小化",
+    "time" : 1.6595860719680786,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.86571959934690312,
+    "frame" : [
+      664,
+      383,
+      57,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-4",
+    "text" : "最小化",
+    "time" : 1.6849120855331421,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.93805898617347339,
+    "frame" : [
+      658,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-5",
+    "text" : "最小化",
+    "time" : 1.7101420164108276,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.96083723880246907,
+    "frame" : [
+      656,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-6",
+    "text" : "最小化",
+    "time" : 1.7359820604324341,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.99056203287591416,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-7",
+    "text" : "最小化",
+    "time" : 1.7620910406112671,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 0.99740195378717544,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-8",
+    "text" : "最小化",
+    "time" : 1.787708044052124,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-9",
+    "text" : "最小化",
+    "time" : 1.8215010166168213,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-10",
+    "text" : "最小化",
+    "time" : 1.8466670513153076,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "return-first-11",
+    "text" : "最小化",
+    "time" : 1.872776985168457,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "returned",
+    "text" : "最小化",
+    "time" : 1.8988970518112183,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "light",
+    "text" : "最小化",
+    "time" : 1.9297980070114136,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-0",
+    "text" : "最小化",
+    "time" : 1.9421780109405518,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-1",
+    "text" : "最小化",
+    "time" : 1.9680140018463135,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-2",
+    "text" : "最小化",
+    "time" : 1.9934769868850708,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-3",
+    "text" : "最小化",
+    "time" : 2.018760085105896,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-4",
+    "text" : "最小化",
+    "time" : 2.0448809862136841,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 1,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-5",
+    "text" : "最小化",
+    "time" : 2.0702930688858032,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 0.90383223155959058,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-6",
+    "text" : "最小化",
+    "time" : 2.0964010953903198,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 0.81139362261046699,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-7",
+    "text" : "最小化",
+    "time" : 2.1215780973434448,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 0.60450428056128658,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-8",
+    "text" : "最小化",
+    "time" : 2.1556969881057739,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 0.40917259071875378,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-9",
+    "text" : "最小化",
+    "time" : 2.1813230514526367,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 0.25339242075779111,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-10",
+    "text" : "最小化",
+    "time" : 2.2069430351257324,
+    "windowNumber" : 85728
+  },
+  {
+    "alpha" : 0.16380023738520322,
+    "contentAlpha" : 1,
+    "frame" : [
+      653,
+      383,
+      58,
+      29
+    ],
+    "panels" : 1,
+    "stage" : "exit-11",
+    "text" : "最小化",
+    "time" : 2.233051061630249,
+    "windowNumber" : 85728
+  },
+  {
+    "panels" : 0,
+    "stage" : "exit-12",
+    "time" : 2.2591620683670044
+  },
+  {
+    "panels" : 0,
+    "stage" : "exit-13",
+    "time" : 2.285269021987915
+  },
+  {
+    "panels" : 0,
+    "stage" : "exit-14",
+    "time" : 2.3109819889068604
+  },
+  {
+    "panels" : 0,
+    "stage" : "exit-15",
+    "time" : 2.3367960453033447
+  },
+  {
+    "panels" : 0,
+    "stage" : "exit-16",
+    "time" : 2.3628970384597778
+  },
+  {
+    "panels" : 0,
+    "stage" : "exit-17",
+    "time" : 2.3888649940490723
+  }
+]
