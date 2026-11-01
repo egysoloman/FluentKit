@@ -39,8 +39,9 @@ WinUIEssentials is a reference, not an identical-rendering requirement; see the
    templates and row expansion animation while preserving selection and stable native identity.
 4. **Calendar.** The embedded CalendarView/CalendarDatePicker grid supports selection modes,
    blackout dates, range reconciliation, RTL keyboard navigation and virtualized continuous
-   Month/Year/Decade scrolling. Pending work includes optional snap points, scope labels and
-   motion, full calendar-era boundaries, item templates and density indicators.
+   Month/Year/Decade scrolling with era-aware items, scope boundaries and keyboard paging.
+   Pending work includes optional snap points, scope labels and motion, item templates,
+   density indicators and broader calendar/era comparison on Windows.
 5. **FlipView.** Bounded lazy pages, stable-ID selection, horizontal/vertical paging and phased
    drag/settling are implemented. New outward gestures at a settled edge chain to the parent.
    Pending work includes item-container semantics, DirectManipulation behavior, residual scroll

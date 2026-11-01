@@ -17,6 +17,8 @@ public enum FluentCalendarDisplayMode: String, CaseIterable, Sendable {
 /// `numberOfWeeksInView` sets the month viewport (2...8, default 6; outliers are clamped).
 /// Omitted date bounds use January 1 (Gregorian current year - 100) and December 31 (+100)
 /// in the configured time zone. Supply an explicit range to browse beyond these defaults.
+/// Month/year items split at era boundaries; decade scopes stay within one era and begin
+/// with years 1–9. Keyboard navigation and drilling into a partial year retain valid dates.
 public struct FluentCalendarView: FluentUpdatablePrimitiveView {
     private let selection: FluentBinding<[Date]>?
     private let selectedDates: [Date]

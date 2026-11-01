@@ -763,8 +763,12 @@ selection. CalendarDatePicker retains its nonoptional-date API and commits an al
 `displayDate`, `displayMode`, and unbound `selectedDates` apply initially and when their values
 change; unchanged parent values preserve browsing and scroll position. Scroll headers follow the
 visible scope; switching levels retains the browsed location and preserves smaller date fields
-where valid. Coverage remains partial: optional snap points and scope-label/motion parity,
-full multi-era calendar behavior, item templates/density indicators, Windows screenshot comparison,
+where valid. Month/year items split at era boundaries: Heisei 31 and Reiwa 1 are separate items
+in 2019. Decade scopes stay inside one era, with years 1–9 forming its first decade. Partial
+months/years participate in paging, keyboard focus and date clamping without building a full
+date array. The Calendar Gallery includes a Japanese-era example.
+Coverage remains partial: optional snap points and scope-label/motion parity, broader calendar
+comparison on Windows, item templates/density indicators, Windows screenshot comparison,
 and real VoiceOver acceptance are pending.
 
 FlipView lazily mounts the current page and its neighbors (at most three idle pages, with one

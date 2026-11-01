@@ -186,7 +186,7 @@ class FluentCalendarViewNative: NSControl {
         let f = formatter(model.mode == .month ? "MMMM y" : "y")
         let scope = model.scope(for: model.displayedDate)
         if model.mode == .decade {
-            let last = model.calendar.date(byAdding: .year, value: -1, to: scope.end) ?? scope.start
+            let last = scope.end.addingTimeInterval(-1)
             header.title = "\(f.string(from: scope.start)) – \(f.string(from: last))"
         } else { header.title = f.string(from: model.displayedDate) }
         header.setAccessibilityLabel(header.title); header.isEnabled = isEnabled && model.mode != .decade

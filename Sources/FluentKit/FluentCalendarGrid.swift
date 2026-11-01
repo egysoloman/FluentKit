@@ -9,6 +9,7 @@ struct FluentCalendarGridGeometry: Equatable {
     let leadingSlots: Int
     private let indexingCalendar: Calendar
     private let firstIndexDate: Date
+    private let unitIndex: FluentCalendarUnitIndex?
     var columns: Int { mode == .month ? 7 : 4 }
     var unit: Calendar.Component { mode == .month ? .day : mode == .year ? .month : .year }
     var rowCount: Int { (count + leadingSlots + columns - 1) / columns }
@@ -17,8 +18,9 @@ struct FluentCalendarGridGeometry: Equatable {
         calendar = model.calendar; mode = model.mode
         let unit: Calendar.Component = mode == .month ? .day : mode == .year ? .month : .year
         let minDate = model.configuration.effectiveMinDate, maxDate = model.configuration.effectiveMaxDate
-        first = calendar.dateInterval(of: unit, for: minDate)?.start ?? calendar.startOfDay(for: minDate)
-        let last = calendar.dateInterval(of: unit, for: maxDate)?.start ?? calendar.startOfDay(for: maxDate)
+        first = FluentCalendarPeriods.interval(unit, containing: minDate, calendar: calendar).start
+        let last = FluentCalendarPeriods.interval(unit, containing: maxDate, calendar: calendar).start
+        unitIndex = mode == .month ? nil : FluentCalendarUnitIndex(calendar: calendar, unit: unit, first: minDate, last: maxDate)
         // Index month cells by civil dates, not elapsed local days. A date-line change can
         // skip an entire local day (Apia, 2011-12-30); that slot must remain empty so that
         // every later date stays under the correct weekday column.
@@ -27,11 +29,12 @@ struct FluentCalendarGridGeometry: Equatable {
         indexingCalendar = indexing
         firstIndexDate = mode == .month ? Self.project(first, from: calendar, to: indexing) : first
         let lastIndexDate = mode == .month ? Self.project(last, from: calendar, to: indexing) : last
-        count = max(1, (indexing.dateComponents([unit], from: firstIndexDate, to: lastIndexDate).value(for: unit) ?? 0) + 1)
+        count = unitIndex?.count ?? max(1, (indexing.dateComponents([unit], from: firstIndexDate, to: lastIndexDate).value(for: unit) ?? 0) + 1)
         leadingSlots = mode == .month ? (calendar.component(.weekday, from: first) - calendar.firstWeekday + 7) % 7 : 0
     }
     func date(at index: Int) -> Date? {
         guard (0..<count).contains(index) else { return nil }
+        if let unitIndex { return unitIndex.date(at: index) }
         guard let date = indexingCalendar.date(byAdding: unit, value: index, to: firstIndexDate) else { return nil }
         guard mode == .month else { return date }
         let parts = indexingCalendar.dateComponents([.era, .year, .month, .day], from: date)
@@ -40,6 +43,7 @@ struct FluentCalendarGridGeometry: Equatable {
         return calendar.startOfDay(for: local)
     }
     func index(of date: Date) -> Int {
+        if let unitIndex { return unitIndex.index(of: date) }
         let start = calendar.dateInterval(of: unit, for: date)?.start ?? date
         let indexed = mode == .month ? Self.project(start, from: calendar, to: indexingCalendar) : start
         return min(count - 1, max(0, indexingCalendar.dateComponents([unit], from: firstIndexDate, to: indexed).value(for: unit) ?? 0))

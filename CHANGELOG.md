@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Split CalendarView month/year items at era boundaries, including both partial Japanese
+  years in 2019 and partial months in 1989. Decade scopes stay within their era and start
+  with years 1–9. Header ranges, keyboard paging and month/day preservation follow the same
+  boundaries; large date ranges remain virtualized. The Calendar Gallery includes an era demo.
+
 - Keep Mica wallpaper sampling aligned when display origins, ancestor positions or scroll
   offsets change, reusing the shared decoded image. Geometry observers follow reparenting
   and are removed on detachment or material changes. Acrylic grain updates its device-pixel
