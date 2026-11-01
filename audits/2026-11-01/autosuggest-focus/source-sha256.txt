@@ -1,0 +1,7 @@
+3e9954bbbadb1adb2328a3dfaddf78cafc4af316fda1147c85f77739a5a8cd2d  Sources/FluentKit/FluentAutoSuggestBox.swift
+2bf647321f491cfa03b718e14d8b931cefb7f26e59eb4f6afd024fa403c56247  Tests/FluentKitTests/AutoSuggestInteractionTests.swift
+49f3d43b65091a447d94d7a5ba6028e6823973892e403b7f3bcc72b986b6fc2e  audits/2026-11-01/autosuggest-focus/CallbackAudit.swift
+7cef1ee4abb354e9d828af97240df8d92d5bcd666a66666db4d40db110525036  audits/2026-11-01/autosuggest-focus/SubmitApp.swift
+bd7bd0a6b58980f145b0b39c8305e80635fcb7f55514635f6d892f1565391e83  microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/AutoSuggestBox_Partial.cpp
+808159ba773ab1d3bdbd82457a834a13cd013aef6ac875f86481926397991ee7  microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/AutoSuggestBoxTextChangedEventArgs_Partial.h
+230587df789c2f78c36f49ea0aebba8869267a46f119d47218faef88518500dd  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T//fluent-asb-submit.app/Contents/MacOS/SubmitApp

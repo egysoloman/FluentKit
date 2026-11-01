@@ -1,0 +1,30 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[8 / 11] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+[12 / 14] FluentKitTests-product
+Build complete! (3.03秒)
+Test Suite 'Selected tests' started at 2026-11-01 09:36:43.829.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 09:36:43.831.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-11-01 09:36:43.832.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery]' passed (0.758 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetRemainsCancellationBaselineAcrossFocusChanges]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetRemainsCancellationBaselineAcrossFocusChanges]' passed (0.847 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:369: error: -[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback] : XCTAssertEqual failed: ("Optional(true)") is not equal to ("Optional(false)") - Old results must not reopen over the new query
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:370: error: -[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback] : XCTAssertTrue failed
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback]' failed (0.692 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:348: error: -[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion] : XCTAssertNil failed: "FluentAutoSuggestBoxSuggestion(id: AnyHashable(0), title: "Apple 0", subtitle: Optional("Fruit"), systemImageName: Optional("leaf"))" - The external reset invalidates the previous selection
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion]' failed (0.216 seconds).
+Test Suite 'AutoSuggestInteractionTests' failed at 2026-11-01 09:36:46.346.
+	 Executed 4 tests, with 3 failures (0 unexpected) in 2.513 (2.514) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 09:36:46.346.
+	 Executed 4 tests, with 3 failures (0 unexpected) in 2.513 (2.514) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 09:36:46.346.
+	 Executed 4 tests, with 3 failures (0 unexpected) in 2.513 (2.517) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

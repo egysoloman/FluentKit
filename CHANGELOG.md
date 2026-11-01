@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AutoSuggestBox discards provider results when the query changes during the provider callback,
+  preventing stale suggestions from flashing over a newer model value. Enter submission now
+  synchronizes a closure binding before resolving the chosen suggestion, so an external reset
+  cannot submit new text paired with an obsolete item. Existing external-reset cancellation
+  semantics remain unchanged. Evidence: `audits/2026-11-01/autosuggest-focus/REPORT.md`.
+
 - AutoSuggestBox restores the user's query when cancelling a preview whose selected item was
   removed or replaced by a result refresh. Escape also restores after the list closes; Tab only
   restores while it is open, following WinUI's keyboard handler. **Behavior change:** clear/query

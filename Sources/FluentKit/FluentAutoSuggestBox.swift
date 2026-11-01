@@ -33,13 +33,15 @@ public struct FluentAutoSuggestBoxTextChangedEvent: Sendable, Equatable {
 /// A WinUI AutoSuggestBox backed by a Fluent text field, a query/clear adornment column, and an
 /// application-owned suggestion popup.
 ///
-/// The implementation follows the WinUI source contract:
+/// Behavior adapted from WinUI for Fluent bindings:
 /// - TextChanged is debounced for 150 ms before the provider is consulted and the event raised.
 /// - The popup opens below the field when focused with non-empty text and matching suggestions,
 ///   flips above when the screen edge requires it, and closes on Escape, submit, or focus loss.
 /// - Supply stable, unique suggestion IDs to retain rows and selection when the provider updates.
 /// - `onTextChangedEvent` distinguishes input, programmatic changes and suggestion previews;
 ///   the existing string-only `onTextChanged` callback remains supported.
+/// - Applied external binding updates become the cancellation baseline, so Escape preserves
+///   a model reset instead of restoring an older query.
 /// - A zero maximum height hides suggestions; negative heights use available screen space.
 /// - Down/Up move through suggestions and update the text on select; Enter submits the selected
 ///   suggestion (or the raw query), and the query button always submits the raw query.
@@ -533,8 +535,12 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
 
     private func refreshSuggestions(preservingSelection: Bool) {
         let selectedID = preservingSelection && suggestions.indices.contains(selectedIndex) ? suggestions[selectedIndex].id : nil
+        let generation = refreshGeneration
         // Keyboard preview must not turn the previewed title into a new filter query.
         let values = suggestionsProvider(userTypedText)
+        // A provider can synchronously update the binding. Its old results must not reopen
+        // the popup after that update has invalidated the query and scheduled new results.
+        guard refreshGeneration == generation else { return }
         suggestions = values
         selectedIndex = selectedID.flatMap { id in values.firstIndex { $0.id == id } } ?? -1
         updatePopup()
@@ -612,8 +618,9 @@ private final class FluentAutoSuggestBoxHost: NSView, NSTextFieldDelegate {
     }
 
     private func submitCurrentSelection() {
-        let suggestion = popup?.isPresented == true && suggestions.indices.contains(selectedIndex) ? suggestions[selectedIndex] : nil
         bindingCoordinator.publishCurrentValue()
+        // Synchronizing a closure binding can apply an external reset and clear selection.
+        let suggestion = popup?.isPresented == true && suggestions.indices.contains(selectedIndex) ? suggestions[selectedIndex] : nil
         suppressPresentation = true
         popup?.dismiss(animated: true)
         onSubmit?(field.stringValue, suggestion)

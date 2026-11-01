@@ -288,6 +288,88 @@ final class AutoSuggestInteractionTests: XCTestCase {
         XCTAssertEqual(submissions.last?.1, "Apple")
     }
 
+    @MainActor func testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery() throws {
+        let state = FluentState(wrappedValue: "")
+        var queries: [String] = []
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { query in
+            queries.append(query)
+            return [.init(id: 1, title: "Apple"), .init(id: 2, title: "Apricot")]
+        })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        XCTAssertEqual(state.wrappedValue, "Apple")
+        XCTAssertTrue(window.makeFirstResponder(nil))
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+        try field(view).selectText(nil)
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        let resumedEditor = try XCTUnwrap(try field(view).currentEditor() as? NSTextView)
+        XCTAssertEqual(queries.last, "Ap", "Focus must not filter the list by a previewed suggestion")
+        resumedEditor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+        XCTAssertEqual(state.wrappedValue, "Ap")
+        XCTAssertEqual(resumedEditor.string, "Ap")
+    }
+
+    @MainActor func testExternalResetRemainsCancellationBaselineAcrossFocusChanges() throws {
+        for resetWhileFocused in [false, true] {
+            let state = FluentState(wrappedValue: "")
+            let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values })
+                ._makeView(in: .init(reduceMotion: true))
+            let window = mount(view); defer { window.close() }
+            let editor = try type("Ap", in: view)
+            editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+            if resetWhileFocused { state.wrappedValue = "Pear" }
+            XCTAssertTrue(window.makeFirstResponder(nil))
+            if !resetWhileFocused { state.wrappedValue = "Pear" }
+            try field(view).selectText(nil)
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+            let resumedEditor = try XCTUnwrap(try field(view).currentEditor() as? NSTextView)
+            resumedEditor.doCommand(by: #selector(NSResponder.cancelOperation(_:)))
+            XCTAssertEqual(state.wrappedValue, "Pear")
+            XCTAssertEqual(resumedEditor.string, "Pear")
+        }
+    }
+
+    @MainActor func testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion() throws {
+        var model = ""
+        var submitted: String?, chosen: FluentAutoSuggestBoxSuggestion?
+        let binding = FluentBinding(get: { model }, set: { model = $0 })
+        let view = FluentAutoSuggestBox(binding, suggestions: { _ in self.values },
+            onSubmit: { submitted = $0; chosen = $1 })._makeView(in: .init(reduceMotion: true))
+        let window = mount(view); defer { window.close() }
+        let editor = try type("Ap", in: view)
+        editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
+        XCTAssertEqual(model, "Apple 0")
+        // A closure binding can change before a declarative update observes it.
+        model = "Pear"
+        editor.doCommand(by: #selector(NSResponder.insertNewline(_:)))
+        XCTAssertEqual(submitted, "Pear")
+        XCTAssertNil(chosen, "The external reset invalidates the previous selection")
+        XCTAssertEqual(editor.string, "Pear")
+    }
+
+    @MainActor func testProviderCannotPublishResultsForQueryReplacedDuringItsCallback() throws {
+        let state = FluentState(wrappedValue: "")
+        var popupAfterOldProvider: Bool?
+        var window: NSWindow!
+        let view = FluentAutoSuggestBox(state.projectedValue, suggestions: { query in
+            if query == "Ap" {
+                state.wrappedValue = "Pear"
+                DispatchQueue.main.async {
+                    popupAfterOldProvider = window.childWindows?.contains { $0.isVisible } ?? false
+                }
+                return [.init(id: 1, title: "Apple")]
+            }
+            return []
+        })._makeView(in: .init(reduceMotion: true))
+        window = mount(view); defer { window.close() }
+        _ = try type("Ap", in: view)
+        XCTAssertEqual(state.wrappedValue, "Pear")
+        XCTAssertEqual(popupAfterOldProvider, false, "Old results must not reopen over the new query")
+        XCTAssertTrue(window.childWindows?.isEmpty ?? true)
+    }
+
     @MainActor func testCompositionCancelsOldDebounceAndExternalResetWinsOnCommit() throws {
         let state = FluentState(wrappedValue: "")
         var events: [FluentAutoSuggestBoxTextChangedEvent] = []

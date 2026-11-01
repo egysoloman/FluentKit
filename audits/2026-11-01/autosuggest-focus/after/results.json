@@ -1,0 +1,672 @@
+[
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap"
+    ],
+    "field" : "Ap",
+    "model" : "Ap",
+    "preview" : false,
+    "queries" : [
+      "Ap"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "focus",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "reset-focused",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "reset-blurred",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "closure-enter",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "closure-query",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "provider-empty",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+      "Pear result"
+    ],
+    "rtl" : false,
+    "scenario" : "provider-fresh",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "model" : "Ap",
+    "preview" : true,
+    "queries" : [
+      "Ap"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "focus",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "reset-focused",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "reset-blurred",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "closure-enter",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "closure-query",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : false,
+    "scenario" : "provider-empty",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+      "Pear result"
+    ],
+    "rtl" : false,
+    "scenario" : "provider-fresh",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap"
+    ],
+    "field" : "Ap",
+    "model" : "Ap",
+    "preview" : false,
+    "queries" : [
+      "Ap"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "focus",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "reset-focused",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "reset-blurred",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "closure-enter",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "closure-query",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "provider-empty",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : false,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+      "Pear result"
+    ],
+    "rtl" : true,
+    "scenario" : "provider-fresh",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Ap"
+    ],
+    "field" : "Ap",
+    "model" : "Ap",
+    "preview" : true,
+    "queries" : [
+      "Ap"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "focus",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "reset-focused",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "suggestionChosen:Apple",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "reset-blurred",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "closure-enter",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "closure-query",
+    "submitted" : "Pear",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+
+    ],
+    "rtl" : true,
+    "scenario" : "provider-empty",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  },
+  {
+    "chosen" : "none",
+    "editorPreserved" : true,
+    "events" : [
+      "userInput:Ap",
+      "programmaticChange:Pear"
+    ],
+    "field" : "Pear",
+    "model" : "Pear",
+    "preview" : true,
+    "queries" : [
+      "Ap",
+      "Pear"
+    ],
+    "rows" : [
+      "Pear result"
+    ],
+    "rtl" : true,
+    "scenario" : "provider-fresh",
+    "submitted" : "",
+    "transientRows" : [
+
+    ]
+  }
+]

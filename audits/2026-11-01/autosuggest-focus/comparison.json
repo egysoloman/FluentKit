@@ -1,0 +1,125 @@
+{
+  "before": {
+    "states": 28,
+    "fieldDifferences": 12,
+    "errors": [
+      {
+        "scenario": "closure-enter",
+        "rtl": false,
+        "preview": false,
+        "field": "chosen",
+        "actual": "Apple",
+        "expected": "none"
+      },
+      {
+        "scenario": "provider-empty",
+        "rtl": false,
+        "preview": false,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "provider-fresh",
+        "rtl": false,
+        "preview": false,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "closure-enter",
+        "rtl": false,
+        "preview": true,
+        "field": "chosen",
+        "actual": "Apple",
+        "expected": "none"
+      },
+      {
+        "scenario": "provider-empty",
+        "rtl": false,
+        "preview": true,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "provider-fresh",
+        "rtl": false,
+        "preview": true,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "closure-enter",
+        "rtl": true,
+        "preview": false,
+        "field": "chosen",
+        "actual": "Apple",
+        "expected": "none"
+      },
+      {
+        "scenario": "provider-empty",
+        "rtl": true,
+        "preview": false,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "provider-fresh",
+        "rtl": true,
+        "preview": false,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "closure-enter",
+        "rtl": true,
+        "preview": true,
+        "field": "chosen",
+        "actual": "Apple",
+        "expected": "none"
+      },
+      {
+        "scenario": "provider-empty",
+        "rtl": true,
+        "preview": true,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      },
+      {
+        "scenario": "provider-fresh",
+        "rtl": true,
+        "preview": true,
+        "field": "transientRows",
+        "actual": [
+          "Apple"
+        ],
+        "expected": []
+      }
+    ]
+  },
+  "after": {
+    "states": 28,
+    "fieldDifferences": 0,
+    "errors": []
+  }
+}

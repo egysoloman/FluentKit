@@ -1,0 +1,3 @@
+49f3d43b65091a447d94d7a5ba6028e6823973892e403b7f3bcc72b986b6fc2e  /Users/stars/Documents/WinUI-macOS/audits/2026-11-01/autosuggest-focus/CallbackAudit.swift
+0c1bf5045d5b1d5dd018e52d82153b43e79790b1b961d3084469920dc7693ab6  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T//fluentkit-quality-release/out/Products/Release/FluentKit.o
+3cb0a87c2b06f166200df66b10557dc46612d458a7fd5c90e0ae476821e6d74d  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T//fluentkit-callback-probe-CRyayB/CallbackAudit
