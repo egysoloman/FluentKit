@@ -632,6 +632,7 @@ private final class FluentApplicationRunner<App: FluentApp>: NSObject, NSApplica
             defer: false
         )
         window.title = description.title
+        window.autorecalculatesKeyViewLoop = true
         window.contentMinSize = description.minimumSize
         window.minSize = description.minimumSize
         window.isReleasedWhenClosed = false

@@ -31,6 +31,8 @@ private final class GalleryAppDelegate: NSObject, NSApplicationDelegate {
             defer: false
         )
         window.title = "FluentKit Gallery"
+        // Pages replace their controls after the window's initial key loop is built.
+        window.autorecalculatesKeyViewLoop = true
         window.contentMinSize = NSSize(width: 820, height: 560)
         window.isOpaque = false
         window.backgroundColor = .clear

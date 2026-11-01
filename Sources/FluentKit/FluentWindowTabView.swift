@@ -402,6 +402,7 @@ public final class FluentWindowTabCoordinator: NSObject, NSWindowDelegate {
             defer: false
         )
         window.contentMinSize = configuration.minimumSize
+        window.autorecalculatesKeyViewLoop = true
         window.minSize = configuration.minimumSize
         window.isReleasedWhenClosed = false
         window.tabbingMode = .disallowed

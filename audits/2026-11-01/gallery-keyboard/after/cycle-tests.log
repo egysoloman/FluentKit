@@ -1,0 +1,44 @@
+Building for debugging...
+[Planning deferred tasks]
+[1 / 12] FluentKitTests-product
+[6 / 29] FluentKit
+[9 / 32] FluentKit
+[20 / 44] FluentKit
+[21 / 49] FluentKit
+[22 / 49] FluentKit
+[23 / 49] FluentKit
+[25 / 49] FluentKit
+[26 / 49] FluentKit
+[33 / 53] FluentKit
+[37 / 57] FluentGallery-product
+[38 / 57] FluentKit
+[40 / 57] FluentKit
+[44 / 56] FluentGallery-product
+[45 / 58] FluentKitTests-product
+[55 / 71] FluentKitTests-product
+[56 / 71] FluentKitTests-product
+[57 / 71] FluentKitTests-product
+[60 / 70] FluentKitTests-product
+[64 / 73] FluentKitTests-product
+[66 / 73] FluentKitTests-product
+[68 / 71] FluentKitValidation-product
+[69 / 71] FluentKitValidation-product
+[71 / 71] FluentKitValidation-product
+Build complete! (41.31秒)
+Test Suite 'Selected tests' started at 2026-11-01 08:24:10.962.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 08:24:10.963.
+Test Suite 'KeyboardFocusCycleTests' started at 2026-11-01 08:24:10.963.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testContentDialogTrapsTabAfterAutomaticLoopRecalculation]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testContentDialogTrapsTabAfterAutomaticLoopRecalculation]' passed (0.165 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testFieldEditorRoutesThroughItsControlAndKeepsMarkedText]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testFieldEditorRoutesThroughItsControlAndKeepsMarkedText]' passed (0.046 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testNestedScopeAndUnavailableControlsDoNotLeakFocus]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testNestedScopeAndUnavailableControlsDoNotLeakFocus]' passed (0.010 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeKeepsLogicalOrderAfterInsertionAndWindowRecalculation]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeKeepsLogicalOrderAfterInsertionAndWindowRecalculation]' passed (0.012 seconds).
+Test Suite 'KeyboardFocusCycleTests' passed at 2026-11-01 08:24:11.197.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.234 (0.234) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 08:24:11.197.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.234 (0.234) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 08:24:11.197.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.234 (0.235) seconds

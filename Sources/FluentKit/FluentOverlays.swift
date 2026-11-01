@@ -851,6 +851,7 @@ private final class FluentSheetWindowController<Content: FluentView>: NSWindowCo
         requestedSize = size
         let window = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = title
+        window.autorecalculatesKeyViewLoop = true
         window.contentMinSize = size
         window.titlebarAppearsTransparent = true
         window.isOpaque = false

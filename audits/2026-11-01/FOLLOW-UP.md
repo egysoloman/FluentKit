@@ -10,7 +10,7 @@
 | 2 | **本批折叠布局修复完成。** 修复嵌套高度缓存、自然宽度压过指定宽度，以及 Gallery 示例撑宽窄窗口。 | 同一实际 Gallery 的 98pt 多余空白、49pt 裁切及 29pt 越界归零。补充 RTL、Reduce Motion、内容替换、快速反向和动画中缩放；下方兄弟与滚动范围同步。6 项新测试旧基线 15 处失败；当前 376 项全过。见 `expander-layout/REPORT.md`。 |
 | 3 | **本批聚焦文字偏移已修复。** 搜索框恢复原生 cell 所需的编辑器内边距。 | 深浅色、LTR/RTL、中英文、占位/已有文字、1×/2× 的 32 组比较由左移 2pt 变为 0；实际 IME 页面刷新及组合文字缩放保留身份。377 项测试、原生验证、Gallery 和 Release 门禁通过；见 `search-geometry/REPORT.md`。Windows 字形/字体对拍仍保留。 |
 | 4 | **本批圆角裁切与禁用文字刷新已修复。** 三种输入控件清除原生布局补偿，Search/Secure 补齐禁用外观通知。 | 64 个状态及 1×/2× 像素检查中，容器内额外 4pt 宽度消失、四角保留；实际 IME 310/270/480pt 声明宽度与绘制相符。两项新测试旧代码 40 处失败，当前 379 项全过，门禁通过。见 `search-chrome/REPORT.md`。 |
-| 5 | **框架建议浮层已修；实际 IME 分支仍开放。** AutoSuggestBox 现在跟随祖先滚动/移动，完全裁切时关闭。 | 108 个动态状态通过，380 项测试及门禁通过。实际 IME 隔离探针发现原生行锚点导致 6pt 边框重叠、缩放后需再次发布才回位；尚需验证真实 IMK 传入矩形及回调，不算已修。录屏候选条归属仍待确认，参见 `candidate-popup/REPORT.md`。继续检查屏幕边界、展开候选、选词、关闭、主题；不以模拟 marked-text 代替真实输入法验收。 |
+| 5 | **框架浮层脱锚已修；系统拼音与实际 IME 分支仍开放。** AutoSuggestBox 现在跟随祖先滚动/移动，完全裁切时关闭。 | 108 个动态状态通过，380 项测试及门禁通过。用户已确认录屏蓝色候选条来自 macOS 自带拼音，沿客户端输入上下文/文字矩形另查。Fluent IME 独立探针的 6pt 边框重叠、缩放后需再发布回位是另一条待验 IMK 路径，参见 `candidate-popup/REPORT.md`。不以模拟 marked-text 代替真实输入法验收；搜索建议交互续见第 17 项。 |
 | 6 | **本批已修 NavigationView、IME 页面/标题栏及 FlipView 中断。** | 前者 60 个框架状态、16 个实际 IME 状态、100 个 Gallery 联合状态通过，见 `page-motion/REPORT.md`。FlipView 另有 108 个状态：中断突变 215pt→0，原生内容 0×0 布局修复；最多挂载 5 页，384 项测试及门禁通过，见 `flip-motion/REPORT.md`。真实触摸、高刷/复杂页帧时、Windows 逐帧对拍仍开放。 |
 | 7 | **本批 IME 系统主题、ComboBox 浮层与包装层旧内容已修。** | 63 个实际 IME 状态和 21 个 Gallery 状态通过，编辑器、组合文字、焦点、菜单和候选实例保留；显式 light/dark 不受模拟系统切换影响，见 `system-theme/REPORT.md`。另独立复现并修复 24 条旧内容路径，87 状态错误属性 144→0，392 项测试及门禁通过，见 `wrapper-content/REPORT.md`。全局系统设置事件仍需实机验收。 |
 | 8 | **本批集成复验完成，实际 IMK 候选定位继续开放。** | 32 个菜单密度、24 个 Switch、32 个返回按钮状态及 57 个实际设置客户端交互状态通过。菜单展开时主题同步，真实 hua 组合输入切换主题后保留编辑器，放大后四处背景采样一致；实际 IME Release 构建通过。见 `integration/REPORT.md`。不把应用级外观信号、CUA 输入或单张到达截图等同于全局系统事件、物理输入或帧时验收。 |
@@ -21,7 +21,8 @@
 | 13 | **RadioButton 原生分组、AX 及显式高对比度颜色本批已修。** | 5 项测试在 c5ad3bd 的 162 处断言失败归零；112 个独立原生状态的 156 项字段偏差归零。CUA 验证独立控件/组容器可查询，同组互斥、独立组保留及外部清空正常；418 项测试、原生验证、Gallery 和 Release 门禁通过。首版探针的跨控件焦点干扰已纠正并保留原始数据；见 `radio-accessibility/REPORT.md`。 |
 | 14 | **选择控件键盘提交、取消路径、绑定/组合手势本批已修。** | 同一套最终 11 项测试在旧基线的 41 处失败归零；92 个原生状态中 50 项字段偏差归零。换绑取消的中间策略经 WinUI 源码复核撤回，同实例换绑保留手势、释放写当前模型；最终窗口事件日志证明 Space 在 keyUp 提交，Enter 忽略，数字键盘 +/- 正常。429 项测试及门禁通过，见 `choice-input/REPORT.md`。焦点视觉及同步模型归一化的核查见第 15 项。 |
 | 15 | **选择控件默认 HighVisibility 焦点边框本批已修。** | 4 项新测试的 63 处失败归零；96 个原生状态及 128 个像素采样通过（原 104 个像素位置有偏差），433 项测试通过。修复 CheckBox 单层 accent、RadioButton 描边偏移/圆角、HC 角色颜色及圆角更新重新开启裁剪。WinUI 普通焦点不使用 Reveal 的 FocusPress 动画；模型同步归一化已复现，上游也有重入屏蔽，未擅自改为重放。见 `choice-focus/REPORT.md`；祖先边缘挪入、Reveal 和 Windows 实测仍开放。 |
-| 16 | **接续定位：实际 Gallery 的 Tab 焦点停在侧栏 Settings。** | 已在独立 Gallery 副本从 Basic input 进入 CheckBox 后复现，连续 Tab 未进入正文示例；键盘链失效原因尚未确定。先保存原生焦点链与页面切换的前后证据，再决定修复位置；不能用单独控件窗口的成功代替实际宿主验收。见 `choice-focus/after/gallery-ui.md`。 |
+| 16 | **动态页面键盘链及自动重建时的显式循环本批已修。** | 自有窗口启用 AppKit 自动重建；scope/对话框按当前 stack 顺序保持 Tab 循环，保留编辑命令、验证和组合文字，并记录已消费事件的键盘设备。原生 5 项旧失败归零，最终 11 项条件通过；实际 Gallery 已用 Tab/Space 操作 CheckBox/RadioButton，隔离窗口验证循环与对话框。438 项测试、原生验证、Gallery 构建和门禁通过，见 `gallery-keyboard/REPORT.md`。原生程序化焦点、真实 IME/VoiceOver 仍开放。 |
+| 17 | **接续处理：AutoSuggestBox 候选刷新、取消与辅助按钮键盘行为。** | 无 scope 的独立探针已复现：重建候选 ID 后 Tab 留下预览词，稳定 ID 恢复原查询。实际稳定 ID 界面曾出现一次 AX 值不一致，后续带内部日志的复验成功，尚不关闭该分支。Clear 实际可通过 Tab 到达，上游 Delete/Query 按钮为非 TabStop；需对照事件/AX 契约修正并做真实窗口复验。见 `gallery-keyboard/REPORT.md`。 |
 
 ## 已处理项与明确边界
 
@@ -31,7 +32,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前框架批次已通过 433 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（后续 TreeView、CheckBox、RadioButton 批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前框架批次已通过 438 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（后续 TreeView、选择控件、键盘导航批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 

@@ -19,11 +19,12 @@ AutoSuggestBox 的独立 NSPanel 原先只跟踪窗口移动/缩放及输入控�
 
 WinUI 的 [AutoSuggestBox 位置实现](https://raw.githubusercontent.com/microsoft/microsoft-ui-xaml/main/dxaml/xcp/dxaml/lib/AutoSuggestBox_Partial.cpp) 从文本框变换计算建议位置；FluentKit 的独立 AppKit 窗口需显式处理祖先几何变化。本报告没有据此推断 WinUI 对所有裁切场景的关闭策略。
 
-## 三种容易混淆的浮层/候选内容
+## 需要区分的浮层和候选内容
 
 1. **框架 AutoSuggestBox**：本批已修。实际 IME 设置顶部使用 FluentSearchTextField，并非 AutoSuggestBox，不能把这项修复直接算作设置页候选窗修复。
 2. **设置页“试输入”内嵌 CandidateView**：没有组合时继续显示示例候选是当前示例逻辑；它不是滞留的输入法浮窗。
-3. **输入法独立 CandidatePanel**：用户录屏顶部搜索框出现蓝色胶囊候选条，其样式与当前应用源码的灰色选中项/竖向强调条不同。录屏当时的输入法和已安装构建尚未确认。
+3. **系统输入法候选条**：用户已确认录屏顶部蓝色胶囊条来自 **macOS 自带拼音**。因此该录屏需沿系统输入上下文、客户端文字矩形及组合会话检查，不能归因于 Fluent IME 自绘 CandidatePanel 的样式。
+4. **Fluent IME 独立 CandidatePanel**：下面的面板几何发现仍是另一个待验分支，不能冒充该录屏的归因。
 
 电脑界面检查使用链接当前框架的独立设置测试 App。UI 按键 `h/u/a` 后出现组合文字，Escape 清空组合且保持当前页面；检查前后当前输入源均为 `org.fluentime.inputmethod.FluentIME.Hans`。工具捕获的是客户端主窗口，未取得独立输入法候选窗截图，因此不据此宣称候选位置、选词或全部真实 IME 流程验收通过。测试 App 已退出；未安装、替换或停止用户输入法。
 

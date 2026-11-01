@@ -4,6 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- FluentKit-owned windows and both Galleries now automatically recalculate AppKit's key-view
+  loop, allowing Tab to reach controls added by navigation, sheets or detached tabs.
+  Explicit focus scopes and ContentDialog preserve keyboard cycles across that recalculation,
+  using current stack order after insertion/reordering. Text command delegates, editing validation
+  and marked text retain their handling; consumed Tab events also update the input-device tracker.
+  Manually owned NSWindow instances still choose their own native key-loop policy. Evidence and
+  remaining AutoSuggestBox integration issues: `audits/2026-11-01/gallery-keyboard/REPORT.md`.
+
 - CheckBox and RadioButton now share WinUI HighVisibility focus borders: 2pt outer / 1pt
   inner strokes, -7/-3 margins, corrected stroke placement and corner radii, and explicit-theme
   High Contrast system-color roles. CheckBox replaces its inset accent ring and keeps outside

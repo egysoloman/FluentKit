@@ -114,6 +114,12 @@ struct SettingsView: FluentView {
 let host = FluentViewHost(SettingsView())
 ```
 
+When embedding a host in a manually created `NSWindow`, maintain the window's key-view loop
+as content changes. Set `window.autorecalculatesKeyViewLoop = true` for AppKit's geometric
+Tab order, or maintain `nextKeyView` explicitly for custom navigation. `FluentViewHost` leaves
+the owning window's navigation policy to the application.
+FluentKit-created scene, detached-tab and sheet windows enable automatic updates.
+
 The included `FluentGallery` executable is a visual sandbox for the components. Build it with `swift build`, then run `.build/debug/FluentGallery`.
 
 For the full native application catalog, open `FluentKitGallery/FluentKitGallery.xcodeproj` in Xcode. The app consumes the local `FluentKit` package and provides searchable component coverage, navigation history, appearance controls, and focused samples for the production Gallery surface.
@@ -1159,6 +1165,12 @@ overshoot; colors remain clamped in extended sRGB. `transformEffect`, `offset`, 
 `rotationEffect` are visual transforms and do not change the view's layout footprint.
 
 Focus behavior is also declarative. `fluentInitialFocus()` requests the first enabled focusable descendant once a view enters a window, while preserving an existing responder. `fluentFocusScope()` gives controls inside the subtree a deterministic Tab loop; nested scopes keep their own loops. Use `focused(_:)` when application state needs to follow or drive the native responder:
+
+Scopes and ContentDialog retain Tab/Shift-Tab cycles when AppKit rebuilds its window key-view
+loop. Stack traversal follows the current arranged order. Text command delegates and editing
+validation can consume navigation, and marked-text sessions retain their native input handling.
+Explicit programmatic focus requests, including `NSWindow.selectNextKeyView`, remain AppKit
+operations; the keyboard cycle does not intercept them.
 
 ```swift
 FluentVStack(spacing: 10) {

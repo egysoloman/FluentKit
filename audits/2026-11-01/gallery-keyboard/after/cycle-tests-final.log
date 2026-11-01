@@ -1,0 +1,22 @@
+Building for debugging...
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+Build complete! (1.93秒)
+Test Suite 'Selected tests' started at 2026-11-01 08:24:55.214.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 08:24:55.215.
+Test Suite 'KeyboardFocusCycleTests' started at 2026-11-01 08:24:55.215.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testContentDialogTrapsTabAfterAutomaticLoopRecalculation]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testContentDialogTrapsTabAfterAutomaticLoopRecalculation]' passed (0.150 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testFieldEditorRoutesThroughItsControlAndKeepsMarkedText]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testFieldEditorRoutesThroughItsControlAndKeepsMarkedText]' passed (0.037 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testNestedScopeAndUnavailableControlsDoNotLeakFocus]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testNestedScopeAndUnavailableControlsDoNotLeakFocus]' passed (0.011 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeKeepsLogicalOrderAfterInsertionAndWindowRecalculation]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeKeepsLogicalOrderAfterInsertionAndWindowRecalculation]' passed (0.009 seconds).
+Test Suite 'KeyboardFocusCycleTests' passed at 2026-11-01 08:24:55.423.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.207 (0.208) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 08:24:55.423.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.207 (0.208) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 08:24:55.423.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.207 (0.209) seconds

@@ -1,0 +1,86 @@
+[
+  {
+    "automatic" : false,
+    "next" : "A",
+    "selectedNext" : "A",
+    "stage" : "initial"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "selectedNext" : "A",
+    "stage" : "outside-added"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "selectedNext" : "A",
+    "stage" : "outside-settled"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "selectedNext" : "A",
+    "stage" : "resized"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "selectedNext" : "A",
+    "stage" : "inside-added"
+  },
+  {
+    "automatic" : false,
+    "next" : "C",
+    "selectedNext" : "C",
+    "stage" : "inside-removed"
+  },
+  {
+    "automatic" : false,
+    "next" : "After",
+    "selectedNext" : "After",
+    "stage" : "explicit-recalculation"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "selectedNext" : "After",
+    "stage" : "initial"
+  },
+  {
+    "automatic" : true,
+    "next" : "After",
+    "selectedNext" : "After",
+    "stage" : "outside-added"
+  },
+  {
+    "automatic" : true,
+    "next" : "After",
+    "selectedNext" : "After",
+    "stage" : "outside-settled"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "selectedNext" : "A",
+    "stage" : "resized"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "selectedNext" : "After",
+    "stage" : "inside-added"
+  },
+  {
+    "automatic" : true,
+    "next" : "C",
+    "selectedNext" : "After",
+    "stage" : "inside-removed"
+  },
+  {
+    "automatic" : true,
+    "next" : "After",
+    "selectedNext" : "After",
+    "stage" : "explicit-recalculation"
+  }
+]

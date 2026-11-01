@@ -442,7 +442,7 @@ private final class FluentContentDialogHost<DialogContent: FluentView>: NSView {
     }
 }
 
-private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
+private final class FluentContentDialogOverlay<Content: FluentView>: NSView, FluentKeyboardFocusCycle {
     var onRequestClose: ((FluentContentDialogResult) -> Void)?
 
     private let dimmingView = NSView()
@@ -722,6 +722,7 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
     }
 
     func moveFocusIntoDialog() {
+        _ = FluentFocusVisibility.isKeyboardInteraction(in: window)
         let focusable = focusableViews(in: contentHost) + buttons.map(\.button).filter(\.isEnabled)
         guard !focusable.isEmpty else {
             window?.makeFirstResponder(self)
@@ -733,6 +734,12 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
         let preferred = buttons.first(where: { $0.kind == configuration.defaultButton && $0.button.isEnabled })?.button
             ?? focusable.first
         window?.makeFirstResponder(preferred)
+    }
+
+    func moveKeyboardFocus(from view: NSView, backwards: Bool) {
+        guard let window else { return }
+        let focusable = focusableViews(in: contentHost) + buttons.map(\.button).filter(\.isEnabled)
+        FluentFocusVisibility.cycleFocus(focusable, from: view, backwards: backwards, in: window)
     }
 
     private func buildViewHierarchy() {
@@ -979,7 +986,8 @@ private final class FluentContentDialogOverlay<Content: FluentView>: NSView {
                     result.append(view)
                 }
             }
-            view.subviews.forEach(visit)
+            let children = (view as? NSStackView)?.arrangedSubviews ?? view.subviews
+            children.forEach(visit)
         }
         visit(root)
         return result

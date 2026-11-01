@@ -2025,6 +2025,7 @@ final class GalleryWindowController: NSWindowController {
         let theme = Self.requestedTheme()
         let window = NSWindow(contentRect: NSRect(origin: .zero, size: Self.contentSize), styleMask: [.titled, .closable, .resizable, .miniaturizable], backing: .buffered, defer: false)
         window.title = "FluentKit Gallery"
+        window.autorecalculatesKeyViewLoop = true
         window.titlebarAppearsTransparent = false
         window.titleVisibility = .visible
         // Behind-window Liquid Glass needs a composited window so NavigationView and transient

@@ -33,7 +33,7 @@ IME 源码位于 `/Users/stars/Downloads/Fluent IME`，无 git。四个既有文
 
 原始失败在 `before/`。`after/`、`after-preview/`、`after-general/` 为阶段结果；最终结果是 `final-general/`、`final-search/`、`final-preview/` 和 `gallery/`。`preview-initial/` 的探针因搜索事件跳回首页，未正确建立试输入焦点，不能当作预览编辑回归证据；纠正后的结果单独保存，未覆盖旧数据。
 
-探针只修改自身进程的 `NSApp.appearance`，验证原生外观信号之后的解析和传播链；没有用全局系统设置自动切换验收整机事件。搜索采用 AppKit marked text，试输入采用设置页自身的 Rime 路径；不等同于真实 IMK 跨进程输入验收。录屏中的候选条归属及原生候选锚点问题仍见 `../candidate-popup/REPORT.md`。本批不关闭包装层旧内容捕获、VoiceOver、真实触摸或 Windows 像素对照。
+探针只修改自身进程的 `NSApp.appearance`，验证原生外观信号之后的解析和传播链；没有用全局系统设置自动切换验收整机事件。搜索采用 AppKit marked text，试输入采用设置页自身的 Rime 路径；不等同于真实 IMK 跨进程输入验收。用户已确认录屏顶部蓝色候选条来自 macOS 自带拼音，其客户端锚点路径与 Fluent IME 自绘面板分别跟踪，见 `../candidate-popup/REPORT.md`。本批不关闭包装层旧内容捕获、VoiceOver、真实触摸或 Windows 像素对照。源码修复不会自动更新已安装且正在运行的静态链接输入法。
 
 ## 复现
 

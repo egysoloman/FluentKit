@@ -1,5 +1,11 @@
 import AppKit
 
+/// Explicit keyboard cycles remain authoritative when AppKit rebuilds the window's
+/// geometric key-view loop. This does not restrict programmatic focus requests.
+protocol FluentKeyboardFocusCycle: AnyObject {
+    func moveKeyboardFocus(from view: NSView, backwards: Bool)
+}
+
 /// The default CheckBox/RadioButton HighVisibility focus borders. WinUI inflates the
 /// control by (7, 3), then draws a 2pt outer Border and a 1pt inner Border. Its Border
 /// CornerRadius describes the stroke centerline (geometry.cpp), not the painted edge.
@@ -72,13 +78,62 @@ enum FluentFocusVisibility {
         keyboardVisibilityByWindow.setObject(NSNumber(value: false), forKey: window)
     }
 
+    static func handleKeyDown(_ event: NSEvent) -> NSEvent? {
+        markKeyboardInteraction(in: event.window)
+        guard event.keyCode == 48,
+              event.modifierFlags.intersection([.command, .control, .option]).isEmpty,
+              let window = event.window else { return event }
+        let focused: NSView?
+        if let editor = window.firstResponder as? NSTextView {
+            // Let the input method consume Tab while it owns a marked-text session.
+            guard !editor.hasMarkedText() else { return event }
+            focused = editor.isFieldEditor ? (editor.delegate as? NSView) : editor
+        } else {
+            focused = window.firstResponder as? NSView
+        }
+        guard let focused else { return event }
+        var ancestor: NSView? = focused
+        while let view = ancestor {
+            if let cycle = view as? FluentKeyboardFocusCycle {
+                // A consumed event may not reach the separate input-device monitor.
+                FluentInputDeviceTracker.shared.record(.keyboard, in: window)
+                // Text controls can consume Tab, or prepare navigation (for example,
+                // AutoSuggestBox restores its query before leaving a suggestion preview).
+                if let editor = window.firstResponder as? NSTextView {
+                    let command = event.modifierFlags.contains(.shift)
+                        ? #selector(NSResponder.insertBacktab(_:)) : #selector(NSResponder.insertTab(_:))
+                    let consumed: Bool
+                    if editor.isFieldEditor, let field = focused as? NSTextField {
+                        consumed = field.delegate?.control?(field, textView: editor, doCommandBy: command) ?? false
+                    } else {
+                        consumed = editor.delegate?.textView?(editor, doCommandBy: command) ?? false
+                    }
+                    if consumed || window.firstResponder !== editor { return nil }
+                }
+                cycle.moveKeyboardFocus(from: focused, backwards: event.modifierFlags.contains(.shift))
+                return nil
+            }
+            ancestor = view.superview
+        }
+        return event
+    }
+
+    static func cycleFocus(_ candidates: [NSView], from focused: NSView, backwards: Bool, in window: NSWindow) {
+        let views = candidates.filter { $0.window === window && $0.canBecomeKeyView }
+        guard !views.isEmpty else { return }
+        let current = views.firstIndex { focused === $0 || focused.isDescendant(of: $0) }
+        let next = current.map { ($0 + (backwards ? views.count - 1 : 1)) % views.count }
+            ?? (backwards ? views.count - 1 : 0)
+        // A validating text field may refuse to end editing. Preserve that veto.
+        window.makeFirstResponder(views[next])
+    }
+
     private static func installIfNeeded() {
         guard !isInstalled else { return }
         isInstalled = true
 
         if let monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown, handler: { event in
-            markKeyboardInteraction(in: event.window)
-            return event
+            handleKeyDown(event)
         }) {
             monitors.append(monitor)
         }
@@ -302,7 +357,7 @@ public struct FluentFocusScopeView<Content: FluentView>: FluentUpdatablePrimitiv
     }
 }
 
-private final class FluentFocusScopeHost: NSView {
+private final class FluentFocusScopeHost: NSView, FluentKeyboardFocusCycle {
     var contentView: NSView { subviews[0] }
     private weak var observedWindow: NSWindow?
 
@@ -332,11 +387,17 @@ private final class FluentFocusScopeHost: NSView {
     }
 
     func configureKeyViewLoop() {
+        _ = FluentFocusVisibility.isKeyboardInteraction(in: window)
         let focusable = focusableViews(in: contentView)
         guard !focusable.isEmpty else { return }
         for index in focusable.indices {
             focusable[index].nextKeyView = focusable[(index + 1) % focusable.count]
         }
+    }
+
+    func moveKeyboardFocus(from view: NSView, backwards: Bool) {
+        guard let window else { return }
+        FluentFocusVisibility.cycleFocus(focusableViews(in: contentView), from: view, backwards: backwards, in: window)
     }
 
     private func focusableViews(in view: NSView) -> [NSView] {
@@ -350,7 +411,8 @@ private final class FluentFocusScopeHost: NSView {
         if let textView = view as? NSTextView, textView.acceptsFirstResponder, textView.isEditable {
             return [textView]
         }
-        return view.subviews.flatMap(focusableViews(in:))
+        let children = (view as? NSStackView)?.arrangedSubviews ?? view.subviews
+        return children.flatMap(focusableViews(in:))
     }
 
     deinit {

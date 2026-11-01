@@ -1,0 +1,72 @@
+[
+  {
+    "automatic" : false,
+    "next" : "A",
+    "stage" : "initial"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "stage" : "outside-added"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "stage" : "outside-settled"
+  },
+  {
+    "automatic" : false,
+    "next" : "A",
+    "stage" : "resized"
+  },
+  {
+    "automatic" : false,
+    "next" : "C",
+    "stage" : "inside-added"
+  },
+  {
+    "automatic" : false,
+    "next" : "C",
+    "stage" : "inside-removed"
+  },
+  {
+    "automatic" : false,
+    "next" : "After",
+    "stage" : "explicit-recalculation"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "stage" : "initial"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "stage" : "outside-added"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "stage" : "outside-settled"
+  },
+  {
+    "automatic" : true,
+    "next" : "A",
+    "stage" : "resized"
+  },
+  {
+    "automatic" : true,
+    "next" : "C",
+    "stage" : "inside-added"
+  },
+  {
+    "automatic" : true,
+    "next" : "C",
+    "stage" : "inside-removed"
+  },
+  {
+    "automatic" : true,
+    "next" : "After",
+    "stage" : "explicit-recalculation"
+  }
+]
