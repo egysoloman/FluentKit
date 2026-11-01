@@ -1,0 +1,8 @@
+{
+  "source": "/tmp/codex-remote-attachments/01a18cf5-07ed-7750-8513-c1798ac779ef/D19ACACA-4E9D-4D8A-A5A1-13E0147CDB0A/1-ScreenRecording_11-01-2026-11-48-48_1.mov",
+  "sha256": "cc9b6e82a00854e0a45af0cfa25eb5acd56d0d4453054fb776df725ed87bc1a4",
+  "width": 1046,
+  "height": 568,
+  "durationSeconds": 7.041667,
+  "review": "Confirmed hover-background gaps/overflow match the caption alignment-inset regression fixed in d42b101; no additional caption code changes in this review."
+}

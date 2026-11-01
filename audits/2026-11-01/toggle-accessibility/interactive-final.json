@@ -1,0 +1,18 @@
+[
+  {
+    "phase": "show",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Hidden switch, Value: 1\n\t5 switch Visible title, Description: Custom switch name, Value: 1\n\t6 container Named group\n\t\t7 switch Group child, Value: 1\n\t8 text Model: off; binding writes: 0; direct writes: 0\n\t9 button Set model on\n\t10 button Set model off\n\t11 button Change AX visibility\n\t12 text Toggle accessibility audit\n\t13 menu button Window sharing\n14 menu bar\n\t15 Toggle AX Audit\n\t16 File\n\t17 Edit\n\t18 View\n\t19 Window\n\t20 Help\n"
+  },
+  {
+    "phase": "hide",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 container Named group\n\t\t6 switch Group child, Value: 1\n\t7 text Model: off; binding writes: 0; direct writes: 0\n\t8 button Set model on\n\t9 button Set model off\n\t10 button Change AX visibility\n\t11 text Toggle accessibility audit\n\t12 menu button Window sharing\n13 menu bar\n\t14 Toggle AX Audit\n\t15 File\n\t16 Edit\n\t17 View\n\t18 Window\n\t19 Help\n"
+  },
+  {
+    "phase": "bound press",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 1\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 container Named group\n\t\t6 switch Group child, Value: 1\n\t7 text Model: on; binding writes: 1; direct writes: 0\n\t8 button Set model on\n\t9 button Set model off\n\t10 button Change AX visibility\n\t11 text Toggle accessibility audit\n\t12 menu button Window sharing\n13 menu bar\n\t14 Toggle AX Audit\n\t15 File\n\t16 Edit\n\t17 View\n\t18 Window\n\t19 Help\n"
+  },
+  {
+    "phase": "external off and disabled attempt",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 container Named group\n\t\t6 switch Group child, Value: 1\n\t7 text Model: off; binding writes: 1; direct writes: 0\n\t8 button Set model on\n\t9 button Set model off\n\t10 button Change AX visibility\n\t11 text Toggle accessibility audit\n\t12 menu button Window sharing\n13 menu bar\n\t14 Toggle AX Audit\n\t15 File\n\t16 Edit\n\t17 View\n\t18 Window\n\t19 Help\n"
+  }
+]

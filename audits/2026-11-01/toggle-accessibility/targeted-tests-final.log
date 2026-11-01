@@ -1,0 +1,56 @@
+Building for debugging...
+[1 / 1]
+[2 / 17] FluentKit
+[4 / 19] FluentKit
+[12 / 23] FluentKit
+[14 / 22] FluentGallery-product
+[19 / 25] FluentGallery-product
+[22 / 29] FluentGallery-product
+[24 / 31] FluentKitTests-product
+[30 / 37] FluentKitTests-product
+[32 / 35] FluentKitValidation-product
+[33 / 35] FluentKitValidation-product
+[35 / 37] FluentKitValidation-product
+Build complete! (49.77秒)
+Test Suite 'Selected tests' started at 2026-11-01 13:10:27.395.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 13:10:27.398.
+Test Suite 'ToggleAccessibilityTests' started at 2026-11-01 13:10:27.398.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testBoundSwitchExposesOneActionTargetAndPublishesOnlyOneChange]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testBoundSwitchExposesOneActionTargetAndPublishesOnlyOneChange]' passed (0.457 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting]' passed (0.127 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testContainExposesSemanticChildrenAndRespectsHiddenSubtrees]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testContainExposesSemanticChildrenAndRespectsHiddenSubtrees]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testHiddenSubtreeRestoresItsChildrenWithoutReplacingControlsOrChangingLayout]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testHiddenSubtreeRestoresItsChildrenWithoutReplacingControlsOrChangingLayout]' passed (0.073 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testMetadataCrossesTransparentWrappersButStopsAtSemanticGroups]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testMetadataCrossesTransparentWrappersButStopsAtSemanticGroups]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testReconciledSwitchActsOnNewBindingAndPreservesItsAccessibleIdentity]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testReconciledSwitchActsOnNewBindingAndPreservesItsAccessibleIdentity]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testSemanticGroupQueriesCurrentChildrenAfterReorderingAndRemoval]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testSemanticGroupQueriesCurrentChildrenAfterReorderingAndRemoval]' passed (0.004 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testStandaloneSwitchExposesNativeSemanticsAndNumericState]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testStandaloneSwitchExposesNativeSemanticsAndNumericState]' passed (0.001 seconds).
+Test Suite 'ToggleAccessibilityTests' passed at 2026-11-01 13:10:28.064.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.666 (0.667) seconds
+Test Suite 'WrapperContentUpdateTests' started at 2026-11-01 13:10:28.064.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusLoopIncludesNewChildrenAndSkipsRemovedChildren]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusLoopIncludesNewChildrenAndSkipsRemovedChildren]' passed (0.004 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' passed (0.033 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testSettingsCardAppearanceCallbackKeepsTheLatestActionContent]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testSettingsCardAppearanceCallbackKeepsTheLatestActionContent]' passed (0.002 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' passed (0.025 seconds).
+Test Suite 'WrapperContentUpdateTests' passed at 2026-11-01 13:10:28.134.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.069 (0.070) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 13:10:28.134.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.735 (0.736) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 13:10:28.134.
+	 Executed 15 tests, with 0 failures (0 unexpected) in 0.735 (0.739) seconds

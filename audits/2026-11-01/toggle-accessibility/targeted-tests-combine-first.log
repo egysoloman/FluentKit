@@ -1,0 +1,67 @@
+Building for debugging...
+[1 / 12] FluentGallery-product
+[2 / 17] FluentKit
+[5 / 20] FluentKit
+[16 / 32] FluentKit
+[17 / 32] FluentKit
+[23 / 36] FluentKit
+[27 / 40] FluentGallery-product
+[28 / 42] FluentKit
+[31 / 42] FluentKit
+[34 / 41] FluentGallery-product
+[36 / 43] FluentGallery-product
+[46 / 56] FluentKitTests-product
+[47 / 56] FluentKitTests-product
+[52 / 58] FluentKitTests-product
+[53 / 59] FluentKitTests-product
+[55 / 62] FluentKitTests-product
+[56 / 62] FluentKitTests-product
+[57 / 60] FluentKitValidation-product
+[58 / 60] FluentKitValidation-product
+[60 / 62] FluentKitValidation-product
+Build complete! (50.48秒)
+Test Suite 'Selected tests' started at 2026-11-01 13:08:04.066.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 13:08:04.069.
+Test Suite 'ToggleAccessibilityTests' started at 2026-11-01 13:08:04.069.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testBoundSwitchExposesOneActionTargetAndPublishesOnlyOneChange]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testBoundSwitchExposesOneActionTargetAndPublishesOnlyOneChange]' passed (0.337 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ToggleAccessibilityTests.swift:182: error: -[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("Shown, Optional")")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ToggleAccessibilityTests.swift:182: error: -[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("Shown")")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ToggleAccessibilityTests.swift:182: error: -[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting] : XCTAssertEqual failed: ("nil") is not equal to ("Optional("Shown, Optional")")
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testCombinedLabelsExcludeHiddenSubtreesBeforeAndAfterMounting]' failed (0.652 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testHiddenSubtreeRestoresItsChildrenWithoutReplacingControlsOrChangingLayout]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testHiddenSubtreeRestoresItsChildrenWithoutReplacingControlsOrChangingLayout]' passed (0.040 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testMetadataCrossesTransparentWrappersButStopsAtSemanticGroups]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testMetadataCrossesTransparentWrappersButStopsAtSemanticGroups]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testReconciledSwitchActsOnNewBindingAndPreservesItsAccessibleIdentity]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testReconciledSwitchActsOnNewBindingAndPreservesItsAccessibleIdentity]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testSemanticGroupQueriesCurrentChildrenAfterReorderingAndRemoval]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testSemanticGroupQueriesCurrentChildrenAfterReorderingAndRemoval]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testStandaloneSwitchExposesNativeSemanticsAndNumericState]' started.
+Test Case '-[FluentKitTests.ToggleAccessibilityTests testStandaloneSwitchExposesNativeSemanticsAndNumericState]' passed (0.001 seconds).
+Test Suite 'ToggleAccessibilityTests' failed at 2026-11-01 13:08:05.104.
+	 Executed 7 tests, with 3 failures (0 unexpected) in 1.035 (1.035) seconds
+Test Suite 'WrapperContentUpdateTests' started at 2026-11-01 13:08:05.104.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testCombinedAccessibilityLabelUsesUpdatedChildren]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusLoopIncludesNewChildrenAndSkipsRemovedChildren]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusLoopIncludesNewChildrenAndSkipsRemovedChildren]' passed (0.007 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFocusScopeDoesNotRetainItsOwnHost]' passed (0.001 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testFormFieldReplacesIncompatibleContentUsingTheLatestValue]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testLifecycleAndFocusLoopSurviveCompatibleContentUpdates]' passed (0.012 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testSettingsCardAppearanceCallbackKeepsTheLatestActionContent]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testSettingsCardAppearanceCallbackKeepsTheLatestActionContent]' passed (0.003 seconds).
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' started.
+Test Case '-[FluentKitTests.WrapperContentUpdateTests testWrappersForwardLatestContentStyleAndActionWithoutRemounting]' passed (0.034 seconds).
+Test Suite 'WrapperContentUpdateTests' passed at 2026-11-01 13:08:05.166.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.061 (0.062) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 13:08:05.166.
+	 Executed 14 tests, with 3 failures (0 unexpected) in 1.096 (1.097) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 13:08:05.166.
+	 Executed 14 tests, with 3 failures (0 unexpected) in 1.096 (1.100) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -1,0 +1,14 @@
+[
+  {
+    "phase": "bound press",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 1\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: on; binding writes: 1; direct writes: 0\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  },
+  {
+    "phase": "external off",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: off; binding writes: 1; direct writes: 0\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  },
+  {
+    "phase": "direct press",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 1\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: off; binding writes: 1; direct writes: 1\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  }
+]

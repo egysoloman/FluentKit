@@ -1,0 +1,158 @@
+{
+  "before": {
+    "states": 8,
+    "failedStates": 8,
+    "results": [
+      {
+        "stage": "initial",
+        "title": "Direct switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "initial",
+        "title": "Bound switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "pressed",
+        "title": "Direct switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "pressed",
+        "title": "Bound switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "disabled-press",
+        "title": "Direct switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "disabled-press",
+        "title": "Bound switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "external-off",
+        "title": "Direct switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      },
+      {
+        "stage": "external-off",
+        "title": "Bound switch",
+        "mismatchedFields": [
+          "exposed",
+          "role",
+          "subrole",
+          "roleDescription",
+          "isNumericValue",
+          "value",
+          "serializedValueType"
+        ]
+      }
+    ]
+  },
+  "after": {
+    "states": 8,
+    "failedStates": 0,
+    "results": [
+      {
+        "stage": "initial",
+        "title": "Direct switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "initial",
+        "title": "Bound switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "pressed",
+        "title": "Direct switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "pressed",
+        "title": "Bound switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "disabled-press",
+        "title": "Direct switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "disabled-press",
+        "title": "Bound switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "external-off",
+        "title": "Direct switch",
+        "mismatchedFields": []
+      },
+      {
+        "stage": "external-off",
+        "title": "Bound switch",
+        "mismatchedFields": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,2 @@
+6eff5e3f2cb235cc1c7b1c66d22073e1a636b709c16e3c73fbdccdce6f6e046b  microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/ToggleSwitchAutomationPeer_Partial.cpp
+d124a2c155c2c565a21482000468c99fdbe38afcad15652aa1efd4f559aae978  microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/dxaml/lib/ToggleSwitch_Partial.cpp

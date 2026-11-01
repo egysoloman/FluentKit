@@ -1,0 +1,67 @@
+Window: "FluentKit Gallery", App: FluentKitGallery.
+0 standard window FluentKit Gallery, Secondary Actions: Raise
+	1 button Back, ID: FluentKit.TitleBar.Back
+	2 button (disabled) Forward, ID: FluentKit.TitleBar.Forward
+	3 button Navigation, Value: Expanded, ID: FluentKit.TitleBar.PaneToggle
+	4 image FluentKit.TitleBar.Icon
+	5 text Value: FluentKit Gallery WinUI Gallery source comparison, ID: FluentKit.TitleBar.Title
+	6 search text field (settable) Search controls and samples...
+		7 text field Search controls and samples...
+	8 scroll area Secondary Actions: Scroll Up, Scroll Down
+		9 text Overview
+		10 container Description: Coverage, ID: FluentKit.Settings.Card
+		11 disclosure triangle Description: Interactive sample, Value: Expanded, ID: FluentKit.Settings.Expander.Header
+		12 combo box Help: Shows the available options, Value: Preset, ID: FluentKit.ComboBox.NativeBridge
+			13 combo box
+		14 switch Material effects, Value: 1
+		15 switch Teal tint, Value: 1
+		16 switch Larger surface corners, Value: 0
+		17 text Card uses the theme or its preset
+		18 text field (settable) Value: Keep editing while changing material, Placeholder: Edit here
+		19 text Local choice: Native Acrylic, clear tint Generic container
+		20 pop up button Open a themed menu, Help: The Tooltip inherits transient material settings
+		21 text Presets keep Fluent base colors. Native effects use AppKit; Glass requires a supported macOS version. Accessibility settings can force an opaque surface. Source identity
+		22 container Description: WinUI Gallery reference, ID: FluentKit.Settings.Card
+		23 scroll bar (settable, float) 0
+			24 value indicator (settable, float) 0
+			25 increment arrow button
+			26 decrement arrow button
+			27 increment page button
+			28 decrement page button
+	29 text System Backdrops (Mica/Acrylic) Partial · SystemBackdrops
+	30 scroll area ID: FluentKit.NavigationView.PrimaryScroll, Secondary Actions: Scroll Up, Scroll Down
+		31 button (selected) Home, Value: Selected, ID: FluentKit.NavigationView.Item
+		32 button All controls, Value: Not selected, ID: FluentKit.NavigationView.Item
+		33 button Menus & toolbars, Value: Not selected, ID: FluentKit.NavigationView.Item
+		34 button Collections, Value: Not selected, ID: FluentKit.NavigationView.Item
+		35 button Date & time, Value: Not selected, ID: FluentKit.NavigationView.Item
+		36 button Basic input, Value: Not selected, ID: FluentKit.NavigationView.Item
+		37 button Status & info, Value: Not selected, ID: FluentKit.NavigationView.Item
+		38 button Dialogs & flyouts, Value: Not selected, ID: FluentKit.NavigationView.Item
+		39 button Scrolling, Value: Not selected, ID: FluentKit.NavigationView.Item
+		40 button Layout, Value: Not selected, ID: FluentKit.NavigationView.Item
+		41 button Navigation, Value: Not selected, ID: FluentKit.NavigationView.Item
+		42 button Media, Value: Not selected, ID: FluentKit.NavigationView.Item
+		43 button Styles, Value: Not selected, ID: FluentKit.NavigationView.Item
+		44 button Text, Value: Not selected, ID: FluentKit.NavigationView.Item
+		45 button Motion, Value: Not selected, ID: FluentKit.NavigationView.Item
+		46 button Windowing, Value: Not selected, ID: FluentKit.NavigationView.Item
+		47 button System, Value: Not selected, ID: FluentKit.NavigationView.Item
+		48 button Shell, Value: Not selected, ID: FluentKit.NavigationView.Item
+		49 scroll bar (settable, float) 0
+			50 value indicator (settable, float) 0
+			51 increment arrow button
+			52 decrement arrow button
+			53 increment page button
+			54 decrement page button
+	55 button Settings, Value: Not selected, ID: FluentKit.NavigationView.Item
+	56 menu button Window sharing
+57 menu bar
+	58 FluentKitGallery
+	59 File
+	60 Edit
+	61 View
+	62 Window
+	63 Help
+
+The focused UI element is 6 search text field (settable) Search controls and samples...

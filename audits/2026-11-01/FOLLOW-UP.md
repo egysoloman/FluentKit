@@ -30,8 +30,9 @@
 | 22 | **已排队：多显示器、缩放与跨屏壁纸材质。** | 用户要求后续优化不同分辨率/缩放倍率、窗口跨屏时的壁纸采样和材质过渡。分别验证 AppKit 原生材质的自动适配、Fluent 固定配方的边界、浮层的屏幕选择/安全区域、backingScaleFactor 变化、半像素描边和多显示器排列；不能把原生材质自动适配当作已验收。 |
 | 23 | **已修复：Tooltip 接入引起的标题栏三键尺寸回归。** | 用户录屏确认悬停背景高度不一致；32pt 行原生按钮实际为 27/37/36pt。自绘 caption button 清除 SF Symbol 对齐边距后，32/40/48pt 共 9 个原生状态全部准确填满槽位，并重录实际桌面合成视频。见 `caption-pixel-review/REPORT.md`；已在材质批次通过完整门禁。 |
 | 24 | **本批修复并验证：ComboBox 面板裁切。** | 原生 bridge/editor 的 750 优先级尺寸把 32pt 宿主压到 23pt；已移除内部 intrinsic metrics 和 editor 对齐边距，较大字体按完整行高增长。9 个原生状态恢复 32pt，实际 Gallery 的 Preset/Liquid Glass 已确认完整显示；476 项测试、原生验证、Gallery 和 Release 门禁通过。见 `combobox-face-layout/REPORT.md`。 |
-| 25 | **已发现，待独立定位：Toggle 在实际 AX 树中缺失。** | SystemBackdrops 的三个开关可见，但 CUA 树没有相应条目；FluentToggle 设了 checkBox role/title，却需继续核对 isAccessibilityElement、包装层和 AX value 契约。不能以方法返回预期值替代真实查询与 VoiceOver 验收。 |
+| 25 | **本批 Toggle 与包装层语义修复并验证。** | 原生 switch 角色、数值状态和通知；标签转发、隐藏/恢复、动态语义分组及 combine/contain 已修。独立窗口和实际 Gallery 操作通过；484 项测试、Gallery、Release 门禁通过，原生完整验证补齐队列同步后连续两次通过。此前多处验证失败及旧基线失败保留在 `toggle-accessibility/REPORT.md`，不以一次重跑掩盖；完整 VoiceOver 仍开放。 |
 | 26 | **已复现，待定位：Expander 初始挂载的约束冲突。** | 新增 ComboBox 容器复现中，`FluentDisclosure.swift:342` 的即时 header layout 触发约束警告。独立旧源码 `aad6d45` 跑同一测试也触发，确认先于本批 ComboBox 修复；最终几何正确不代表初始冲突已解决。需与第 19 项横向 Refresh 初始化警告分别定位。 |
+| 27 | **源码差异已确认，待独立复现：Toggle 键盘提交时机。** | WinUI `ToggleSwitch_Partial.cpp:750–804` 在 KeyDown 消费按键、KeyUp 提交；当前 `FluentToggle.keyDown` 在 Space/Return 按下时切换。需继续核对实际支持的键、释放、重复、取消与拖动组合，并修正相应原生验证假设；辅助操作本身仍按 WinUI 立即切换。 |
 
 ## 已处理项与明确边界
 
@@ -41,7 +42,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前框架批次已通过 461 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`（本批未安装或替换输入法）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前框架批次已通过 484 项测试、Gallery 构建和 Release 质量门禁；原生验证补齐队列同步后两次通过，原先失败记录见 `toggle-accessibility/REPORT.md`；最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`（本批未安装或替换输入法）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 

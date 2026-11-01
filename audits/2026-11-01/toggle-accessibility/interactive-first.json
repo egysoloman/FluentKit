@@ -1,0 +1,22 @@
+[
+  {
+    "phase": "bound press",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 1\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: on; binding writes: 1; direct writes: 0\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  },
+  {
+    "phase": "external off",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 0\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: off; binding writes: 1; direct writes: 0\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  },
+  {
+    "phase": "direct press",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 1\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: off; binding writes: 1; direct writes: 1\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  },
+  {
+    "phase": "disabled attempt",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 1\n\t4 switch Visible title, Description: Custom switch name, Value: 1\n\t5 text Model: off; binding writes: 1; direct writes: 1\n\t6 button Set model on\n\t7 button Set model off\n\t8 button Change AX visibility\n\t9 text Toggle accessibility audit\n\t10 menu button Window sharing\n11 menu bar\n\t12 Toggle AX Audit\n\t13 File\n\t14 Edit\n\t15 View\n\t16 Window\n\t17 Help\n"
+  },
+  {
+    "phase": "show hidden subtree",
+    "state": "Window: \"Toggle accessibility audit\", App: Toggle AX Audit.\n0 standard window Toggle accessibility audit, Secondary Actions: Raise\n\t1 switch Bound switch, Value: 0\n\t2 switch (disabled) Disabled switch, Value: 1\n\t3 switch Direct switch, Value: 1\n\t4 unknown FluentKit.LayoutContainer\n\t\t5 switch Hidden switch, Value: 1\n\t6 switch Visible title, Description: Custom switch name, Value: 1\n\t7 text Model: off; binding writes: 1; direct writes: 1\n\t8 button Set model on\n\t9 button Set model off\n\t10 button Change AX visibility\n\t11 close button\n\t12 full screen button Help: this button also has an action to zoom the window, Secondary Actions: zoom the window\n\t13 minimize button\n\t14 text Toggle accessibility audit\n15 menu bar\n\t16 Toggle AX Audit\n\t17 File\n\t18 Edit\n\t19 View\n\t20 Window\n\t21 Help\n"
+  }
+]

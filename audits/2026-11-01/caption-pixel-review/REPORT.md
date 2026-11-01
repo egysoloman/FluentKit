@@ -21,3 +21,5 @@
 - Gallery Debug 构建通过，日志位于 `../material-options/gallery-build-first.log`。整个进行中批次的完整测试及 Release 门禁继续执行。
 
 当前仍用 SF Symbols 绘制图标。本批确认并修复的是槽位/背景几何，不宣称完成 Windows 字形逐像素对照或多显示器验收。
+
+补充复核：用户的 `ScreenRecording_11-01-2026 11-48-48_1.mov`（7.04 秒，1046×568；来源及 SHA-256 见 `user-recording.json`）再次逐帧确认同一悬停边界缺陷。当前 `d42b101` 修复已在后续 484 项测试中保留通过；本次没有重复修改 caption 代码。原生几何和桌面合成录屏支持本结论，不扩展为 Windows 字形或跨屏验收。

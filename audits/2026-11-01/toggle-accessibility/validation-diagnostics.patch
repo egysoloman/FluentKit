@@ -1,0 +1,18 @@
+--- a/Sources/FluentKitValidation/main.swift
++++ b/Sources/FluentKitValidation/main.swift
+@@ -1174,6 +1174,7 @@
+ interactiveToggleButton.mouseDown(
+     with: toggleMouseEvent(.leftMouseDown, at: toggleButtonPoint, in: interactiveToggleButton, eventNumber: 13)
+ )
++fputs("TOGGLE-DIAG bounds=\(interactiveToggleButton.bounds) point=\(toggleButtonPoint) state=\(interactiveToggleButton.selectionState) commits=\(interactiveToggleButtonCommits) actual=\(String(describing:interactiveToggleButton.layer?.backgroundColor)) expected=\(theme.buttonBackground(for: .pressed)) localExpected=\(interactiveToggleButton.theme.buttonBackground(for: .pressed))\n", stderr)
+ require(
+     interactiveToggleButton.selectionState == .off
+         && interactiveToggleButtonCommits.isEmpty
+@@ -4016,6 +4017,7 @@
+     )
+ )
+ drainMainQueue()
++fputs("COMBO-DIAG bounds=\(nativeComboBox.bounds) key=\(comboFlyoutWindow.isKeyWindow) active=\(NSApp.isActive) children=\(String(describing:comboFlyoutWindow.childWindows))\n", stderr)
+ require(comboFlyoutWindow.childWindows?.count == 1, "ComboBox reopens for Escape dismissal validation")
+ if let escapeEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, characters: "\u{1b}", charactersIgnoringModifiers: "\u{1b}", isARepeat: false, keyCode: 53) {
+     if let panel = comboFlyoutWindow.childWindows?.first,
