@@ -1,0 +1,860 @@
+[
+  {
+    "case" : "selection-direct",
+    "fitting" : "{390, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 32}",
+        "frame" : "{{20, 448}, {390, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      }
+    ]
+  },
+  {
+    "case" : "selection-frame",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 32}",
+        "frame" : "{{20, 448}, {390, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      }
+    ]
+  },
+  {
+    "case" : "selection-stack",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 61}",
+        "frame" : "{{20, 419}, {390, 61}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentVerticalStackView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 32}",
+        "frame" : "{{0, 29}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{118.5, 17}",
+        "frame" : "{{-2, 0}, {118.5, 17}}",
+        "hugging" : 750,
+        "intrinsic" : "{114.5, 17}",
+        "type" : "NSTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {118.5, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      }
+    ]
+  },
+  {
+    "case" : "selection-expander",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 141}",
+        "frame" : "{{20, 339}, {390, 141}}",
+        "hugging" : 250,
+        "intrinsic" : "{252, 141}",
+        "type" : "FluentExpanderHost"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{194.5, 48}",
+        "frame" : "{{0, 0}, {390, 48}}",
+        "hugging" : 250,
+        "intrinsic" : "{194.5, 48}",
+        "type" : "FluentExpanderHeader"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{122.5, 17}",
+        "frame" : "{{16, 15}, {314, 17}}",
+        "hugging" : 750,
+        "intrinsic" : "{118.5, 17}",
+        "type" : "NSTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {314, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 48}, {390, 93}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 93}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentExpanderContentSurface"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 61}",
+        "frame" : "{{16, 16}, {358, 61}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentVerticalStackView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 32}",
+        "frame" : "{{0, 29}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{118.5, 17}",
+        "frame" : "{{-2, 0}, {118.5, 17}}",
+        "hugging" : 750,
+        "intrinsic" : "{114.5, 17}",
+        "type" : "NSTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {118.5, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      }
+    ]
+  },
+  {
+    "case" : "selection-gallery-sample",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 466}",
+        "frame" : "{{20, 14}, {390, 466}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentVerticalStackView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 32}",
+        "frame" : "{{0, 434}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{153, 32}",
+        "frame" : "{{0, 390}, {153, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentBoundToggle"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{153, 32}",
+        "frame" : "{{0, 0}, {153, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{153, 32}",
+        "type" : "FluentToggle"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{104, 32}",
+        "frame" : "{{0, 346}, {104, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentBoundToggle"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{104, 32}",
+        "frame" : "{{0, 0}, {104, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{104, 32}",
+        "type" : "FluentToggle"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{200, 32}",
+        "frame" : "{{0, 302}, {200, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentBoundToggle"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{200, 32}",
+        "frame" : "{{0, 0}, {200, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{200, 32}",
+        "type" : "FluentToggle"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{316, 263}",
+        "frame" : "{{0, 27}, {316, 263}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentVerticalStackView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{316, 89}",
+        "frame" : "{{0, 174}, {316, 89}}",
+        "hugging" : 750,
+        "intrinsic" : "{316, 89}",
+        "type" : "FluentCard"
+      }
+    ]
+  },
+  {
+    "case" : "editable-direct",
+    "fitting" : "{390, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 32}",
+        "frame" : "{{20, 448}, {390, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{8, 5}, {345.5, 23}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSKeyboardFocusClipView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextSelectionView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {41.5283203125, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextViewportSelectionLineView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextRenderingSurfacesGroupView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextContentView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{-10, 0}, {82, 18}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextViewportElementView"
+      }
+    ]
+  },
+  {
+    "case" : "editable-frame",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 32}",
+        "frame" : "{{20, 448}, {390, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{8, 5}, {345.5, 23}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSKeyboardFocusClipView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextSelectionView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {41.5283203125, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextViewportSelectionLineView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextRenderingSurfacesGroupView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {341, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextContentView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{-10, 0}, {82, 18}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextViewportElementView"
+      }
+    ]
+  },
+  {
+    "case" : "editable-stack",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 61}",
+        "frame" : "{{20, 419}, {390, 61}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentVerticalStackView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 32}",
+        "frame" : "{{0, 29}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{8, 5}, {175.5, 23}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSKeyboardFocusClipView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextSelectionView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {41.5283203125, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextViewportSelectionLineView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextRenderingSurfacesGroupView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextContentView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{-10, 0}, {82, 18}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "_NSTextViewportElementView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{118.5, 17}",
+        "frame" : "{{-2, 0}, {118.5, 17}}",
+        "hugging" : 750,
+        "intrinsic" : "{114.5, 17}",
+        "type" : "NSTextField"
+      }
+    ]
+  },
+  {
+    "case" : "editable-expander",
+    "fitting" : "{240, 32}",
+    "font" : ".AppleSystemUIFont",
+    "fontSize" : 14,
+    "height" : 32,
+    "intrinsic" : "{240, 32}",
+    "tree" : [
+      {
+        "compression" : 750,
+        "fitting" : "{390, 141}",
+        "frame" : "{{20, 339}, {390, 141}}",
+        "hugging" : 250,
+        "intrinsic" : "{252, 141}",
+        "type" : "FluentExpanderHost"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{194.5, 48}",
+        "frame" : "{{0, 0}, {390, 48}}",
+        "hugging" : 250,
+        "intrinsic" : "{194.5, 48}",
+        "type" : "FluentExpanderHeader"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{122.5, 17}",
+        "frame" : "{{16, 15}, {314, 17}}",
+        "hugging" : 750,
+        "intrinsic" : "{118.5, 17}",
+        "type" : "NSTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {314, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 48}, {390, 93}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {390, 93}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentExpanderContentSurface"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 61}",
+        "frame" : "{{16, 16}, {358, 61}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentVerticalStackView"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{220, 32}",
+        "frame" : "{{0, 29}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{220, 32}",
+        "type" : "FluentLayoutContainer"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{240, 32}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 250,
+        "intrinsic" : "{240, 32}",
+        "type" : "FluentComboBoxHost<String>"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxNative"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {220, 32}}",
+        "hugging" : 750,
+        "intrinsic" : "{-1, -1}",
+        "type" : "FluentComboBoxEditableTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{11, 7}, {171, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{118.5, 17}",
+        "frame" : "{{-2, 0}, {118.5, 17}}",
+        "hugging" : 750,
+        "intrinsic" : "{114.5, 17}",
+        "type" : "NSTextField"
+      },
+      {
+        "compression" : 750,
+        "fitting" : "{0, 0}",
+        "frame" : "{{0, 0}, {118.5, 17}}",
+        "hugging" : 250,
+        "intrinsic" : "{-1, -1}",
+        "type" : "NSTextFieldSimpleLabel"
+      }
+    ]
+  }
+]

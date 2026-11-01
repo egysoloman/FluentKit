@@ -1,0 +1,9 @@
+selection-direct 32.0 {240, 32} {390, 32}
+selection-frame 32.0 {240, 32} {240, 32}
+selection-stack 32.0 {240, 32} {240, 32}
+selection-expander 32.0 {240, 32} {240, 32}
+selection-gallery-sample 32.0 {240, 32} {240, 32}
+editable-direct 32.0 {240, 32} {390, 32}
+editable-frame 32.0 {240, 32} {240, 32}
+editable-stack 32.0 {240, 32} {240, 32}
+editable-expander 32.0 {240, 32} {240, 32}

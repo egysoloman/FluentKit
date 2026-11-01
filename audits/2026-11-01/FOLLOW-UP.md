@@ -28,9 +28,10 @@
 | 20 | **本批已实现：可选 Tooltip 连续过渡与标题栏接入。** | `.toolTip(..., motion: .continuous)` 同窗口复用 panel，移动、缩放并淡化内容，默认模式不变；标题栏按钮已接入。覆盖打断、退出、窗口生命周期、主题重挂载、降低动态效果、RTL/边缘、动作与还原标签。461 测试、原生验证、Gallery、Release 门禁通过；47 个原生时间样本验证中间帧，见 `tooltip-follow/REPORT.md`。作者未公开源码，属于独立实现。已补 9.31 秒局部桌面合成录屏（`tooltip-follow/recording/`），过渡和阴影可见；真实鼠标悬停、高刷帧时及多显示器验收仍开放。 |
 | 21 | **本批通用材质与独立复验完成。** | 局部 → 主题角色 → 预置，Card opt-in、通用背景、窗口/浮层共享配置；动态圆角/材质、Glass 半径、高对比度、workspace 通知及 tint 覆盖前景已修。20 个修后合成状态前景差为 0，背景 tint 保留；三轮配对更新成本接近原基线。472 测试、原生验证、Gallery、Release 门禁通过，见 `material-options/REPORT.md`。真实壁纸采样与平台专项验收仍开放；实际 Gallery 新发现的问题见第 24/25 项。 |
 | 22 | **已排队：多显示器、缩放与跨屏壁纸材质。** | 用户要求后续优化不同分辨率/缩放倍率、窗口跨屏时的壁纸采样和材质过渡。分别验证 AppKit 原生材质的自动适配、Fluent 固定配方的边界、浮层的屏幕选择/安全区域、backingScaleFactor 变化、半像素描边和多显示器排列；不能把原生材质自动适配当作已验收。 |
-| 23 | **已修复：Tooltip 接入引起的标题栏三键尺寸回归。** | 用户录屏确认悬停背景高度不一致；32pt 行原生按钮实际为 27/37/36pt。自绘 caption button 清除 SF Symbol 对齐边距后，32/40/48pt 共 9 个原生状态全部准确填满槽位，并重录实际桌面合成视频。见 `caption-pixel-review/REPORT.md`；完整批次门禁继续执行。 |
-| 24 | **已发现，待独立定位：ComboBox 面板文字裁切。** | 实际 Gallery 新的 SystemBackdrops 示例中，标准 ComboBox 的文字底部裁切；源码声明宿主 intrinsic height 为 32pt，内部原生 bridge/editor 也有自身尺寸约束。先分离直接控件、frame 包装、stack 和 Expander 场景，再修根因，不用示例强制高度掩盖。 |
+| 23 | **已修复：Tooltip 接入引起的标题栏三键尺寸回归。** | 用户录屏确认悬停背景高度不一致；32pt 行原生按钮实际为 27/37/36pt。自绘 caption button 清除 SF Symbol 对齐边距后，32/40/48pt 共 9 个原生状态全部准确填满槽位，并重录实际桌面合成视频。见 `caption-pixel-review/REPORT.md`；已在材质批次通过完整门禁。 |
+| 24 | **本批修复并验证：ComboBox 面板裁切。** | 原生 bridge/editor 的 750 优先级尺寸把 32pt 宿主压到 23pt；已移除内部 intrinsic metrics 和 editor 对齐边距，较大字体按完整行高增长。9 个原生状态恢复 32pt，实际 Gallery 的 Preset/Liquid Glass 已确认完整显示；476 项测试、原生验证、Gallery 和 Release 门禁通过。见 `combobox-face-layout/REPORT.md`。 |
 | 25 | **已发现，待独立定位：Toggle 在实际 AX 树中缺失。** | SystemBackdrops 的三个开关可见，但 CUA 树没有相应条目；FluentToggle 设了 checkBox role/title，却需继续核对 isAccessibilityElement、包装层和 AX value 契约。不能以方法返回预期值替代真实查询与 VoiceOver 验收。 |
+| 26 | **已复现，待定位：Expander 初始挂载的约束冲突。** | 新增 ComboBox 容器复现中，`FluentDisclosure.swift:342` 的即时 header layout 触发约束警告。独立旧源码 `aad6d45` 跑同一测试也触发，确认先于本批 ComboBox 修复；最终几何正确不代表初始冲突已解决。需与第 19 项横向 Refresh 初始化警告分别定位。 |
 
 ## 已处理项与明确边界
 

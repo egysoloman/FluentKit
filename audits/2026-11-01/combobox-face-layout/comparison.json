@@ -1,0 +1,123 @@
+{
+  "states": [
+    {
+      "case": "selection-direct",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "selection-frame",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "selection-stack",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "selection-expander",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "selection-gallery-sample",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "editable-direct",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "editable-frame",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "editable-stack",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    },
+    {
+      "case": "editable-expander",
+      "before": {
+        "height": 23,
+        "heightMatches32": false,
+        "editorFillsHost": false
+      },
+      "after": {
+        "height": 32,
+        "heightMatches32": true,
+        "editorFillsHost": true
+      }
+    }
+  ],
+  "beforeFailedConditions": 18,
+  "afterFailedConditions": 0
+}

@@ -1,0 +1,85 @@
+Building for debugging...
+[Pre-planning 1 / 182]
+[Planning deferred tasks]
+[53 / 93] FluentKit_FluentKit
+[54 / 93]
+[55 / 94] FluentKit
+[65 / 189]
+[68 / 189]
+[76 / 189]
+[78 / 189]
+[79 / 189]
+[85 / 189]
+[87 / 189]
+[90 / 189]
+[96 / 189]
+[99 / 189]
+[101 / 189]
+[102 / 189]
+[115 / 189]
+[118 / 189]
+[120 / 189]
+[124 / 189]
+[131 / 189]
+[133 / 189]
+[134 / 189]
+[135 / 189]
+[136 / 189]
+[150 / 189] FluentKit
+[151 / 189] FluentKit
+[152 / 189] FluentKit
+[164 / 191] FluentKit
+[164 / 191] FluentKitValidation-product
+[168 / 195] FluentGallery-product
+[169 / 195] FluentKit
+[171 / 195] FluentKit
+[176 / 196] FluentKitTests-product
+[183 / 221]
+[184 / 221]
+[184 / 221] FluentGallery-product
+[186 / 221] FluentGallery-product
+[188 / 221]
+[189 / 221]
+[191 / 221]
+[192 / 221]
+[203 / 221] FluentKitTests-product
+[204 / 221] FluentKitTests-product
+[210 / 221] FluentKitTests-product
+[212 / 221] FluentKitTests-product
+[214 / 221] FluentKitTests-product
+[216 / 221] FluentKitValidation-product
+[217 / 221] FluentKitValidation-product
+[219 / 221] FluentKitValidation-product
+Build complete! (63.16秒)
+Test Suite 'Selected tests' started at 2026-11-01 12:38:51.177.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 12:38:51.178.
+Test Suite 'ComboBoxFaceplateLayoutTests' started at 2026-11-01 12:38:51.178.
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers]' started.
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 384.0, 23.0)") is not equal to ("(0.0, 0.0, 380.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 384.0, 23.0)") is not equal to ("(0.0, 0.0, 380.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 224.0, 23.0)") is not equal to ("(0.0, 0.0, 220.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Sources/FluentKit/FluentDisclosure.swift:342: warning: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : Conflicting constraints detected: <private>.
+
+Will attempt to recover by breaking <private>.
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 224.0, 23.0)") is not equal to ("(0.0, 0.0, 220.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 384.0, 23.0)") is not equal to ("(0.0, 0.0, 380.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 384.0, 23.0)") is not equal to ("(0.0, 0.0, 380.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 224.0, 23.0)") is not equal to ("(0.0, 0.0, 220.0, 23.0)")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:42: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqualWithAccuracy failed: ("23.0") is not equal to ("32.0") +/- ("0.01")
+/private/tmp/fluentkit-combobox-before-source/Tests/FluentKitTests/ComboBoxFaceplateLayoutTests.swift:46: error: -[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers] : XCTAssertEqual failed: ("(-2.0, 0.0, 224.0, 23.0)") is not equal to ("(0.0, 0.0, 220.0, 23.0)")
+Test Case '-[FluentKitTests.ComboBoxFaceplateLayoutTests testUnconstrainedHeightInBothModesAcrossDeclarativeContainers]' failed (1.131 seconds).
+Test Suite 'ComboBoxFaceplateLayoutTests' failed at 2026-11-01 12:38:52.309.
+	 Executed 1 test, with 16 failures (0 unexpected) in 1.131 (1.131) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 12:38:52.309.
+	 Executed 1 test, with 16 failures (0 unexpected) in 1.131 (1.131) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 12:38:52.309.
+	 Executed 1 test, with 16 failures (0 unexpected) in 1.131 (1.132) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)
