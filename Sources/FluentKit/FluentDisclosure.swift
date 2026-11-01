@@ -154,6 +154,8 @@ private final class FluentExpanderHeader: NSButton {
     }
 
     private let chevronLayer = FluentAnimatedChevronLayer()
+    private var contentLeading: NSLayoutConstraint!
+    private var contentTrailing: NSLayoutConstraint!
     private var trackingAreaReference: NSTrackingArea?
     private var pointerOver = false
 
@@ -184,8 +186,19 @@ private final class FluentExpanderHeader: NSButton {
         focusRingType = .none
         wantsLayer = true
         layer?.masksToBounds = false
-        contentView.translatesAutoresizingMaskIntoConstraints = true
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentView)
+        // Insets are physical here because the chevron side is mirrored explicitly below.
+        contentLeading = contentView.leftAnchor.constraint(equalTo: leftAnchor)
+        contentTrailing = contentView.rightAnchor.constraint(equalTo: rightAnchor)
+        contentTrailing.priority = NSLayoutConstraint.Priority(999)
+        updateContentInsets()
+        // The header's height follows its template. Do not pin the template's height to an
+        // old (or initially zero) frame while its own constraints are changing.
+        NSLayoutConstraint.activate([
+            contentLeading, contentTrailing,
+            contentView.centerYAnchor.constraint(equalTo: centerYAnchor)
+        ])
         layer?.addSublayer(chevronLayer)
         setAccessibilityElement(false)
     }
@@ -246,20 +259,7 @@ private final class FluentExpanderHeader: NSButton {
 
     override func layout() {
         super.layout()
-        let contentSize = resolvedContentSize()
         let isRTL = context.layoutDirection == .rightToLeft
-        let trailingSpan = FluentExpanderMetrics.chevronLeadingMargin
-            + FluentExpanderMetrics.chevronSize
-            + FluentExpanderMetrics.chevronTrailingMargin
-        let availableWidth = max(bounds.width - FluentExpanderMetrics.headerLeading - trailingSpan, 0)
-        contentView.frame = NSRect(
-            x: isRTL
-                ? trailingSpan
-                : FluentExpanderMetrics.headerLeading,
-            y: floor(bounds.midY - contentSize.height / 2),
-            width: availableWidth,
-            height: min(contentSize.height, bounds.height)
-        )
         let chevronFrame = CGRect(
             x: isRTL
                 ? FluentExpanderMetrics.chevronTrailingMargin
@@ -337,12 +337,22 @@ private final class FluentExpanderHeader: NSButton {
     }
 
     func updateAppearance(animated: Bool) {
+        updateContentInsets()
         needsDisplay = true
         needsLayout = true
-        layoutSubtreeIfNeeded()
+        // Let the host allocate the new header size before solving its content. Even an
+        // already mounted header can temporarily have an obsolete slot after a template update.
         if !animated || context.reduceMotion {
             chevronLayer.removeAllAnimations()
         }
+    }
+
+    private func updateContentInsets() {
+        let trailingSpan = FluentExpanderMetrics.chevronLeadingMargin
+            + FluentExpanderMetrics.chevronSize + FluentExpanderMetrics.chevronTrailingMargin
+        let isRTL = context.layoutDirection == .rightToLeft
+        contentLeading.constant = isRTL ? trailingSpan : FluentExpanderMetrics.headerLeading
+        contentTrailing.constant = -(isRTL ? FluentExpanderMetrics.headerLeading : trailingSpan)
     }
 
     private var controlState: FluentControlState {
@@ -427,7 +437,7 @@ private final class FluentExpanderHost: NSView, FluentFillWidthProviding {
                 FluentExpanderMetrics.minimumWidth,
                 max(headerSize.width, contentSize.width)
             ),
-            height: FluentExpanderMetrics.minimumHeight
+            height: headerSize.height
                 + (contentParticipatesInLayout ? contentSize.height : 0)
         )
     }
@@ -473,9 +483,19 @@ private final class FluentExpanderHost: NSView, FluentFillWidthProviding {
         contentClip.layer?.masksToBounds = true
         contentClip.translatesAutoresizingMaskIntoConstraints = true
         contentSurface.translatesAutoresizingMaskIntoConstraints = true
-        contentView.translatesAutoresizingMaskIntoConstraints = true
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         contentClip.addSubview(contentSurface)
         contentSurface.addSubview(contentView)
+        let contentTrailing = contentView.trailingAnchor.constraint(
+            equalTo: contentSurface.trailingAnchor, constant: -FluentExpanderMetrics.contentPadding)
+        contentTrailing.priority = NSLayoutConstraint.Priority(999)
+        NSLayoutConstraint.activate([
+            contentView.leadingAnchor.constraint(equalTo: contentSurface.leadingAnchor,
+                                                 constant: FluentExpanderMetrics.contentPadding),
+            contentTrailing,
+            contentView.topAnchor.constraint(equalTo: contentSurface.topAnchor,
+                                             constant: FluentExpanderMetrics.contentPadding)
+        ])
         addSubview(header)
         addSubview(contentClip)
 
@@ -492,26 +512,17 @@ private final class FluentExpanderHost: NSView, FluentFillWidthProviding {
     override func layout() {
         super.layout()
         let contentHeight = measuredContentSurfaceSize().height
+        let headerHeight = header.intrinsicContentSize.height
         let headerY = expandDirection == .up && contentParticipatesInLayout ? contentHeight : 0
         header.frame = NSRect(
             x: 0,
             y: headerY,
             width: bounds.width,
-            height: FluentExpanderMetrics.minimumHeight
+            height: headerHeight
         )
-        let contentY = expandDirection == .down ? FluentExpanderMetrics.minimumHeight : 0
+        let contentY = expandDirection == .down ? headerHeight : 0
         contentClip.frame = NSRect(x: 0, y: contentY, width: bounds.width, height: contentHeight)
         contentSurface.frame = contentClip.bounds
-        let desired = measuredContentViewSize()
-        contentView.frame = NSRect(
-            x: FluentExpanderMetrics.contentPadding,
-            y: FluentExpanderMetrics.contentPadding,
-            width: max(contentSurface.bounds.width - 2 * FluentExpanderMetrics.contentPadding, 0),
-            height: min(
-                desired.height,
-                max(contentSurface.bounds.height - 2 * FluentExpanderMetrics.contentPadding, 0)
-            )
-        )
         header.layoutSubtreeIfNeeded()
         contentView.layoutSubtreeIfNeeded()
     }
@@ -614,7 +625,9 @@ private final class FluentExpanderHost: NSView, FluentFillWidthProviding {
             contentClip.isHidden = false
             contentSurface.isHidden = false
             invalidateExpanderLayout()
-            layoutSubtreeIfNeeded()
+            // During construction there is no allocated slot yet. Arrange after the parent
+            // supplies it, rather than solving frame-owned descendants against a zero-sized host.
+            if !bounds.isEmpty { layoutSubtreeIfNeeded() }
             let sourceOffset = expandDirection == .down ? -height : height
             animateContent(
                 from: CATransform3DMakeTranslation(0, sourceOffset, 0),

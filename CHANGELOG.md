@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Expander templates now use their natural Auto Layout height instead of fixed autoresizing
+  masks, avoiding constraint conflicts during mounting and when stack content grows. Header
+  appearance changes defer layout until the host allocates the updated slot.
+  Custom headers can grow beyond the WinUI 48pt minimum; the body and nested settings cards
+  follow their measured height on updates, collapse and reopening.
+
 - Toggle now exposes native switch accessibility with numeric state and change notifications.
   Known transparent layout/binding wrappers forward accessibility metadata to their control.
   Accessibility hiding suppresses the entire subtree without changing visual layout or control
