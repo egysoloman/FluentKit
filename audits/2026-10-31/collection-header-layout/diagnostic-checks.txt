@@ -1,6 +1,0 @@
-before-resize.log: expected exit 1, actual exit 1
-AppKit constraint conflicts in test output:
-7: /Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AuditRegressionTests.swift:434: warning: -[FluentKitTests.AuditRegressionTests testGridResizeFitsRowsAndSectionHeadersInBothDirections] : Conflicting constraints detected: <private>.
-
-after/tests.log: expected exit 0, actual exit 0
-AppKit constraint diagnostics: none

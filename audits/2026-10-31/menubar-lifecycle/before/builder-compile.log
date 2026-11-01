@@ -1,7 +1,0 @@
-/Users/stars/Documents/WinUI-macOS/audits/2026-10-31/menubar-lifecycle/MenuLifecycleAudit.swift:50:29: error: cannot pass array of type '[FluentMenuItem]' as variadic arguments of type 'FluentMenuItem'
- 48 |                             FluentMenuItem(revision == 0 ? "PNG" : "PNG — updated export options", state: revision == 0 ? .off : .on) {}
- 49 |                             FluentMenuItem("SVG", keyEquivalent: "e") {}
- 50 |                             if revision > 0 { FluentMenuItem("PDF", systemImageName: "doc.richtext") {} }
-    |                             `- error: cannot pass array of type '[FluentMenuItem]' as variadic arguments of type 'FluentMenuItem'
- 51 |                         }
- 52 |                     ])

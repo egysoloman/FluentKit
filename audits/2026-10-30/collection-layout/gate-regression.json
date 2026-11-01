@@ -1,6 +1,0 @@
-{
-  "fixture": "../repaired/ (previous source revision, preserving its original layout warnings)",
-  "expected": "reject layout diagnostics despite successful behavior assertions",
-  "exitCode": 1,
-  "diagnostic": "Collection audit emitted a layout diagnostic: UICollectionViewFlowLayout is not defined"
-}

@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Remove generated audit reports, captures and logs from the versioned tree. Maintained
+  quality tools and reviewed snapshot baselines remain available; historical evidence is
+  retained locally. Public documentation now links to the maintained checks and roadmap.
+
 - Changing a single-line input's font while editing now updates the retained native
   editor's vertical geometry. Search placeholders, text and the caret keep the current
   font baseline through theme changes; composition, selection and native horizontal
@@ -140,34 +144,31 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
   when AppKit changes the scroller style without resizing the window. Documents and rows
   now fit the actual clip width/height, including legacy scroller gutters; FluentList
   preserves its scroll position during the change. Native preferences remain supported.
-  Evidence: `audits/2026-11-01/scroller-layout/REPORT.md`.
 
 - AutoSuggestBox discards provider results when the query changes during the provider callback,
   preventing stale suggestions from flashing over a newer model value. Enter submission now
   synchronizes a closure binding before resolving the chosen suggestion, so an external reset
   cannot submit new text paired with an obsolete item. Existing external-reset cancellation
-  semantics remain unchanged. Evidence: `audits/2026-11-01/autosuggest-focus/REPORT.md`.
+  semantics remain unchanged.
 
 - AutoSuggestBox restores the user's query when cancelling a preview whose selected item was
   removed or replaced by a result refresh. Escape also restores after the list closes; Tab only
   restores while it is open, following WinUI's keyboard handler. **Behavior change:** clear/query
   helper buttons are no longer Tab stops and pointer activation keeps editing focus in the field;
-  their native actions remain available. See `audits/2026-11-01/autosuggest-cancel/REPORT.md`.
+  their native actions remain available.
 
 - FluentKit-owned windows and both Galleries now automatically recalculate AppKit's key-view
   loop, allowing Tab to reach controls added by navigation, sheets or detached tabs.
   Explicit focus scopes and ContentDialog preserve keyboard cycles across that recalculation,
   using current stack order after insertion/reordering. Text command delegates, editing validation
   and marked text retain their handling; consumed Tab events also update the input-device tracker.
-  Manually owned NSWindow instances still choose their own native key-loop policy. Evidence and
-  remaining AutoSuggestBox integration issues: `audits/2026-11-01/gallery-keyboard/REPORT.md`.
+  Manually owned NSWindow instances still choose their own native key-loop policy.
 
 - CheckBox and RadioButton now share WinUI HighVisibility focus borders: 2pt outer / 1pt
   inner strokes, -7/-3 margins, corrected stroke placement and corner radii, and explicit-theme
   High Contrast system-color roles. CheckBox replaces its inset accent ring and keeps outside
   focus drawing visible after AppKit reapplies corner-radius clipping. Standard focus remains
-  static on press; WinUI FocusPress animation belongs to Reveal mode. Evidence and limits:
-  `audits/2026-11-01/choice-focus/REPORT.md`.
+  static on press; WinUI FocusPress animation belongs to Reveal mode.
 
 - CheckBox now enters Pressed on Space keyDown and commits on keyUp, ignores Return/Enter,
   and supports keypad Add/Subtract like WinUI. CheckBox/RadioButton cancel input on focus loss,
@@ -176,14 +177,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
   current value through the current binding, including after a binding replacement. Changing
   a binding expression alone does not cancel input; obsolete observer callbacks are isolated.
   Choice bindings update synchronously on main and reject stale subscriptions/values.
-  See `audits/2026-11-01/choice-input/REPORT.md` for evidence and remaining limits.
 
 - RadioButton fixes unnamed grouping in ordinary NSView containers and stops merging separate
   single-child containers. The binding adapter remains transparent. **Behavior change:** named
   groups use exact identifiers, including leading/trailing whitespace. Standalone radios and
   the declarative group are exposed to accessibility, with numeric selected values and change
   notifications. Default High Contrast brushes and label colors resolve under the explicit Fluent
-  theme, sharing the CheckBox resolver. See `audits/2026-11-01/radio-accessibility/REPORT.md`.
+  theme, sharing the CheckBox resolver.
 
 - Default CheckBox styling now follows WinUI's unchecked, checked and indeterminate resource
   matrices, including High Contrast, a 4pt corner radius and a 1pt border. Captured presses
@@ -193,18 +193,17 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
   notifications. Style configuration adds optional `isIndeterminate`; appearance adds an
   optional presenter background. Existing style initializer calls remain valid. TreeView uses
   the mixed-state brushes and clips its presenter background inside the HC row border.
-  See `audits/2026-11-01/checkbox-style/REPORT.md` for evidence and remaining limits.
 
 - TreeView accessibility disclosure queries no longer trigger `onExpanding` or lazy loading.
   Expansion events now use the native will-expand notification. **Behavior change:** changes to
   `expandedIDs` after mounting emit expansion/collapse events; initial state and internal reload
   restoration remain silent. `onCollapsed` receives the updated binding state, and requests to
-  reopen from that callback are preserved. See `audits/2026-11-01/treeview-expansion/REPORT.md`.
+  reopen from that callback are preserved.
 
 - TreeView checkbox interactions now commit on release inside their target, cancel when moved
   outside or interrupted, and show hover/pressed feedback. Chevron activation remains on press.
   Hit targets include the full WinUI template padding in LTR/RTL; reused or removed rows cannot
-  receive a stale checkbox release. See `audits/2026-11-01/treeview-pointer/REPORT.md`.
+  receive a stale checkbox release.
 
 - TreeView adds `onMoveItems` for atomic checked-subtree reordering, preserving selection order
   and omitting descendants already carried by a selected ancestor. The drag image shows the

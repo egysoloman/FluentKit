@@ -48,6 +48,15 @@ Snapshot files live in `.snapshots/` and are documented in `SNAPSHOT_BASELINES.m
 should include the relevant regenerated PNGs and a clear explanation of why the new rendering is
 expected. Automated dimension and pixel-variation checks do not replace visual review.
 
+## Validation evidence
+
+Keep raw audit reports, screenshots, recordings, logs and one-off reproduction runs outside
+version control. `tools/run-quality-checks.sh` writes to the system temporary directory by default;
+an explicit output directory should also be outside the checkout. The ignored local `audits/`
+directory may retain historical work, but builds and CI must not depend on it. Commit reusable
+checks in `tools/quality` or `Tests`, together with a short description of their findings.
+The reviewed `.snapshots/` baselines above remain versioned validation fixtures.
+
 ## Pull requests
 
 Pull requests should describe the problem, the chosen approach, compatibility impact, and validation

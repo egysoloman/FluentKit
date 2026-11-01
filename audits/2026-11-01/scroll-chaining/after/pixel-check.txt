@@ -1,1 +1,0 @@
-16/16 initial-state image pairs: complete RGBA pixels identical.

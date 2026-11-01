@@ -1,5 +1,0 @@
-DRAIN barrier=true elapsed=0.023723959922790527
-DRAIN barrier=true elapsed=0.021489977836608887
-DRAIN barrier=true elapsed=0.02040696144104004
-DRAIN barrier=true elapsed=0.02388298511505127
-TOGGLE-DIAG bounds=(0.0, 0.0, 180.0, 32.0) point=(90.0, 16.0) state=off commits=[] actual=Optional(<CGColor 0x7897392990> [<CGColorSpace 0x78970f8a10> (kCGColorSpaceICCBased; kCGColorSpaceModelRGB; Generic RGB Profile)] headroom = 1.000000 ( 0.976471 0.976471 0.976471 0.301961 )) expected=NSCalibratedRGBColorSpace 0.976471 0.976471 0.976471 0.301961 localExpected=NSCalibratedRGBColorSpace 0.976471 0.976471 0.976471 0.301961

@@ -11,11 +11,11 @@ warnings; it does not catch these runtime layout diagnostics. Preserve the test 
 with `set -o pipefail` when recording its output through `tee`.
 
 The Swift probes began with the 2026-10-30 audit and now live here for ongoing maintenance.
-`audits/<date>/` keeps its original probe versions and raw evidence; CI never discovers a probe
-by choosing the latest date. Add or change a maintained probe here and update the gate explicitly.
+Historical reports, one-off probes and raw evidence are local-only; they are not required to
+run these checks. Add or change a maintained probe here and update the gate explicitly.
 
 The default output and build directories are under the system temporary directory, so running the
-checks does not overwrite committed historical results. `FLUENTKIT_QUALITY_BUILD` selects a reusable
+checks does not add generated evidence to the repository. `FLUENTKIT_QUALITY_BUILD` selects a reusable
 build directory. `AUDIT_VISUAL_BASELINE` enables pixel comparison against a reviewed capture from
 the same OS/build, scale and font environment (requires Pillow). Without it, images are emitted for
 review and no claim of pixel agreement is made.

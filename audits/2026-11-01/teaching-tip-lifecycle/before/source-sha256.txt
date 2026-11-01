@@ -1,2 +1,0 @@
-0cb0470a828f25edfed0874ba9d7fbce41b6330e1c3ea933f102bb712b6098dc  /Users/stars/Documents/WinUI-macOS/audits/2026-11-01/teaching-tip-lifecycle/TeachingTipLifecycleAudit.swift
-f5aee948e7ff9884cd7176127b3e4be649db0d7dbf497955be99c6a5472f87e3  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-quality-release/out/Products/Release/FluentKit.o

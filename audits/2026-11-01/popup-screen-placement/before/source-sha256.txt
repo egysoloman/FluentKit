@@ -1,2 +1,0 @@
-4059fa867c055d2b28c2b39afce3f67a09e392d9bb5c7f8adda3a544b11e4a74  /Users/stars/Documents/WinUI-macOS/audits/2026-11-01/popup-screen-placement/ScreenChangeAudit.swift
-e06721be7e765de5758552f724bdfcc3eee6eeb21ad97d6c20db7e885c240690  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-quality-release/out/Products/Release/FluentKit.o

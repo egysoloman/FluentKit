@@ -1,7 +1,0 @@
-init view: true layer: true
-view false view: false layer: false
-layout view: false layer: false
-layer false view: false layer: false
-theme view: false layer: false
-changed corner radius view: true layer: true
-changed background view: true layer: true

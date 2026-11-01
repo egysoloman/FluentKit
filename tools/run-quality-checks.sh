@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -eu
-# Maintained quality gates. Dated audit directories retain their historical fixtures and data.
+# Maintained quality gates. Historical audit evidence stays local and is not a dependency.
 QUALITY_TOOLS="$(cd "$(dirname "$0")" && pwd)"
 QUALITY_REPO="$(cd "$QUALITY_TOOLS/.." && pwd)"
 QUALITY_FIXTURES="$QUALITY_TOOLS/quality"

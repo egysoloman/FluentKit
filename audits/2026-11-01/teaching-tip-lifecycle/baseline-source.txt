@@ -1,2 +1,0 @@
-Commit: cd33892b2b7eb7dad082d54afadde1f5c27eca75
-FluentTeachingTip.swift SHA256: 7eba5e3a45b66f1f77f62606a09a5ed510f30bd3eb3d136c9c6ca273b320105f

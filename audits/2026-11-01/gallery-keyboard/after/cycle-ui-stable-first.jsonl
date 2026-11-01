@@ -1,6 +1,0 @@
-{"device":"touch","focused":"B"}
-{"focused":"A","device":"keyboard"}
-{"focused":"Optional(<_TtC9FluentKitP33_A945539CED2B292A573E9AE176E18D9E25FluentAutoSuggestBoxField: 0x7ca29af700>)","device":"mouse"}
-{"device":"mouse","focused":"Optional(<NSTextView: 0x7ca24e8a00>\n    Frame = {{10.00, 7.00}, {240.00, 17.00}}, Bounds = {{0.00, 0.00}, {240.00, 17.00}}\n    Horizontally resizable: YES, Vertically resizable: YES\n    MinSize = {240.00, 17.00}, MaxSize = {40000.00, 40000.00}\n)"}
-{"focused":"Optional(<NSWindow: 0x7ca35f4780>)","device":"keyboard"}
-{"focused":"Button","device":"keyboard"}

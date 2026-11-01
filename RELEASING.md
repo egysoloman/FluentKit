@@ -1,64 +1,43 @@
 # Releasing FluentKit
 
-FluentKit follows Semantic Versioning. The version in `VERSION`, the changelog heading, the Git tag,
-and the GitHub Release must match.
+The version in `VERSION`, the dated changelog heading, the Git tag and the GitHub Release must
+match. Use Semantic Versioning; document additions, behavior changes and remaining limitations.
 
-## Release checklist
+## Prepare and validate
 
-1. Move completed entries from `Unreleased` into a dated version section in `CHANGELOG.md`.
-2. Update `VERSION` to the same semantic version.
-3. Verify the installation example in `README.md` points to the intended release line.
-4. Run the release gates:
+1. Move completed entries from `Unreleased` into the new dated version section in `CHANGELOG.md`.
+2. Update `VERSION` and the installation example in `README.md`.
+3. Run the required gates from the intended release tree:
 
    ```bash
    swift build -Xswiftc -warnings-as-errors
    swift test -Xswiftc -warnings-as-errors
    swift build --configuration release -Xswiftc -warnings-as-errors
+   ./tools/run-quality-checks.sh
    ```
 
-   Run `swift run FluentKitValidation` in an interactive macOS session as the extended desktop
-   acceptance check, especially when the release changes controls, navigation, motion, or snapshots.
+   Run `swift run FluentKitValidation` in an interactive macOS session. For control, layout,
+   navigation or motion changes, also build the standalone Xcode Gallery and inspect relevant
+   renders according to [SNAPSHOT_BASELINES.md](SNAPSHOT_BASELINES.md). Record the actual platform
+   and validation scope; automated checks do not establish Windows parity or physical input QA.
 
-5. Commit and push the release preparation changes.
-6. Wait for the `main` branch CI workflow to complete successfully.
-7. Create and push an annotated tag:
+4. Commit and push the preparation changes. Wait for CI on that exact `main` commit to succeed.
+5. Prepare concise release notes covering user-visible changes, compatibility and known limits.
+   Store temporary notes and raw validation output outside the checkout. Do not attach audit
+   reports, screenshot batches or logs as release assets.
 
-   ```bash
-   git tag -a v0.1.0 -m "FluentKit 0.1.0"
-   git push origin v0.1.0
-   ```
+## Publish
 
-8. Create a GitHub Release from that tag and mark it as the latest release. Stable versions should
-   not be marked as pre-releases.
+Create an annotated tag from the validated commit, then publish the release:
 
-## Initial 0.1.0 release notes
-
-Use the following summary for the first GitHub Release:
-
-````markdown
-FluentKit 0.1.0 is the first public release of a native Swift/AppKit declarative UI framework
-inspired by Fluent Design.
-
-## Highlights
-
-- Swift-native declarative view composition, state, and bindings
-- Fluent-inspired controls, navigation, windowing, dialogs, and flyouts
-- Native AppKit interoperability and macOS platform behavior
-- Accessibility, localization, RTL, High Contrast, and Reduce Motion support
-- SwiftPM Gallery and a standalone Xcode Gallery application
-- Executable validation and visual regression baselines
-
-## Requirements
-
-- macOS 12 or later
-- Swift 5.9 or later
-
-## Installation
-
-```swift
-.package(
-    url: "https://github.com/egysoloman/FluentKit.git",
-    from: "0.1.0"
-)
+```bash
+RELEASE_VERSION="$(cat VERSION)"
+git tag -a "v$RELEASE_VERSION" -m "FluentKit $RELEASE_VERSION"
+git push origin "v$RELEASE_VERSION"
+gh release create "v$RELEASE_VERSION" --verify-tag --latest \
+  --title "FluentKit $RELEASE_VERSION" --notes-file /tmp/fluentkit-release-notes.md
 ```
-````
+
+Confirm the remote tag resolves to the validated commit and the published release uses that tag.
+Stable releases should not be marked as prereleases. Do not move an existing published tag;
+follow-up fixes belong in a new version.

@@ -1,2 +1,0 @@
-8c4c471e48c193aedbf681f02d3163991f62f9065df1e8e42a49d007cb5ca8ca  microsoft-ui-xaml-winui3-release-2.3.1/src/dxaml/xcp/core/dll/focusmgr.cpp
-84c5e4e056df5c2cc07757cf73215c495f4e58c9ab6f7b2862087bd3d208bfed  microsoft-ui-xaml-winui3-release-2.3.1/src/controls/dev/AutoSuggestBox/AutoSuggestBox_themeresources.xaml

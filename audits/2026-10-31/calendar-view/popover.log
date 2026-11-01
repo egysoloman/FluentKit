@@ -1,4 +1,0 @@
-calendar count: 1
-calendar bounds: (0.0, 0.0, 310.0, 350.0)
-selected: 2026-05-11 16:00:00 +0000, window visible: false
-PASS: shared calendar 310×350, popover (326.0, 366.0), selection committed and popover dismissed

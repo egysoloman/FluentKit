@@ -1,3 +1,0 @@
-TOGGLE-DIAG bounds=(0.0, 0.0, 180.0, 32.0) point=(90.0, 16.0) state=off commits=[] actual=Optional(<CGColor 0x77aabd6d80> [<CGColorSpace 0x77aa958690> (kCGColorSpaceICCBased; kCGColorSpaceModelRGB; Generic RGB Profile)] headroom = 1.000000 ( 0.976471 0.976471 0.976471 0.301961 )) expected=NSCalibratedRGBColorSpace 0.976471 0.976471 0.976471 0.301961 localExpected=NSCalibratedRGBColorSpace 0.976471 0.976471 0.976471 0.301961
-COMBO-DIAG bounds=(0.0, 0.0, 320.0, 160.0) key=false active=false children=Optional([<_TtC9FluentKitP33_0DAA13C81FFDAC6DA799FE51C22EA74024FluentComboBoxPopupPanel: 0x77ac938a00>])
-FAIL: editable ComboBox reveals from the external TextBox faceplate baseline

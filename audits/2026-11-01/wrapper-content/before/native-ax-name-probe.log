@@ -1,6 +1,0 @@
-before NSButton element false role AXUnknown label Button title Button value nil
-attached NSButton element false role AXUnknown label Button title Button value nil
-before NSTextField element false role AXUnknown label nil title nil value Label
-attached NSTextField element false role AXUnknown label nil title nil value Label
-before NSTextField element false role AXUnknown label nil title nil value Editable
-attached NSTextField element false role AXUnknown label nil title nil value Editable

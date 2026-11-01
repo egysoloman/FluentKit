@@ -1,7 +1,0 @@
-/Users/stars/Documents/WinUI-macOS/audits/2026-11-01/popup-screen-placement/ScreenChangeAudit.swift:43:56: error: argument passed to call that takes no arguments
- 41 |                         theme: theme, reduceMotion: true)
- 42 |                     open = { flyout.present(relativeTo: anchor, at: NSPoint(x: 100, y: 16)) }
- 43 |                     close = { flyout.dismiss(animated: false) }
-    |                                                        `- error: argument passed to call that takes no arguments
- 44 |                 default:
- 45 |                     anchor = NSView()

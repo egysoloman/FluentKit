@@ -1,8 +1,0 @@
-Building for debugging...
-[Planning deferred tasks]
-[3 / 6] FluentKitValidation-product
-[5 / 8] FluentKitValidation-product
-[6 / 8] FluentKitValidation-product
-[8 / 10] FluentKitValidation-product
-Build complete! (39.00秒)
-FAIL: light WindowShell keeps one Mica and one visible shared chrome tint

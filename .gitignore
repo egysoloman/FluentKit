@@ -19,3 +19,4 @@ xcuserdata/
 
 # Generated audit evidence stays local; maintained checks belong in tools/quality.
 /audits/
+/fluentkit-gallery-scroll.png

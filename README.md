@@ -1481,9 +1481,10 @@ FluentKit is released under the MIT License. See [LICENSE](LICENSE).
 
 ## Audit-driven rendering and input contracts
 
-The 2026-10-30 repairs and remaining acceptance limits are recorded in
-[audits/2026-10-30/REMEDIATION.md](audits/2026-10-30/REMEDIATION.md). Passing tests is not evidence
-of complete visual parity with Windows.
+The contracts below are covered by maintained tests and [quality checks](tools/quality/README.md).
+[ROADMAP.md](ROADMAP.md) records the remaining acceptance work. Raw audit reports, screenshots
+and logs stay outside version control. Passing tests is not evidence of complete visual parity
+with Windows.
 
 - Use `host.update(content, context: context)` to commit a new tree and environment in one pass.
   `FluentNativeView(existingView)` retains that instance; for creation plus configuration use
@@ -1511,12 +1512,11 @@ of complete visual parity with Windows.
   Selection order is preserved; initial unordered Set selections use tree order. With no checks,
   it moves the dragged row. Existing `onMove` remains a single-row callback; the last move-handler
   modifier wins. Native drag/drop acceptance, cross-tree transfer and row expansion animation
-  remain pending. See the
-  [TreeView multi-drag audit](audits/2026-11-01/treeview-multi-drag/REPORT.md).
+  remain pending.
 - TreeView disclosure availability queries do not call `onExpanding`. Actual changes to
   `expandedIDs` after mounting emit `onExpanding` / `onCollapsed`; initial state and restoration
   after reloading children do not repeat them. `onCollapsed` observes the updated binding, so a
-  callback can request reopening. See the [expansion event audit](audits/2026-11-01/treeview-expansion/REPORT.md).
+  callback can request reopening.
 - Typography uses Caption 12, Body 14, BodyLarge 18, Subtitle 20, Title 28, TitleLarge 40 and Display 68.
   Legacy aliases map `largeTitle` to `titleLarge`, `title2` to `subtitle`, `headline` to `bodyStrong`
   and `callout` to `body`. `FluentTypography(overrides:fontProvider:)` supports per-style size, weight,
