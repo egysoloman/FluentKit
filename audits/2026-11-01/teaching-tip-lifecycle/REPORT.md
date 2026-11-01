@@ -51,3 +51,7 @@ swift test --scratch-path /tmp/fluentkit-repair-tests -Xswiftc -warnings-as-erro
 ```
 
 本批没有安装、替换或停止 Fluent IME，没有调整显示模式。根约束模式的完整打开后回退/裁剪策略、可选屏幕约束策略、物理跨屏与混合倍率，以及 Windows 对拍仍继续核查。
+
+## 后续 CI 状态
+
+CI #18（run `41292393449`，head `ae7d469`）中的本批 9 项 TeachingTip 测试全部通过；全量 525 项有 1 项平台跳过及 1 项已有 tooltip 动画关闭断言失败，因此该次流水线失败，未执行后续 Release/质量门禁。原始日志见 `ci18-failure.log`，复现与测试修正见 `../tooltip-ci-wait/REPORT.md`。上文本地验证结果保留，不等同于远端 CI 成功。

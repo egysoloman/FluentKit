@@ -67,8 +67,18 @@ final class ToolTipMotionTests: XCTestCase {
         wait(0.05)
         XCTAssertEqual(panel.frame, settled)
         third.mouseExited(with: try event(third, point: NSPoint(x: 400, y: -200)))
-        wait(0.4)
-        XCTAssertTrue(window.childWindows?.isEmpty != false)
+        // Delay the exit work item to exercise cleanup when the main run loop is busy.
+        let delayedCallback = expectation(description: "Delayed main-loop callback completed")
+        DispatchQueue.main.asyncAfter(deadline: .now() + FluentToolTipMetrics.continuousExitDelay / 2) {
+            Thread.sleep(forTimeInterval: FluentToolTipMetrics.continuousExitDelay + FluentToolTipMetrics.continuousFadeDuration)
+            delayedCallback.fulfill()
+        }
+        // Drain this callback even if external input has already dismissed the panel.
+        wait(for: [delayedCallback], timeout: 2)
+        waitForUI(window.childWindows?.isEmpty != false)
+        XCTAssertNil(panel.parent)
+        XCTAssertFalse(panel.isVisible)
+        XCTAssertNil(third.toolTipView.superview)
     }
 
     func testContinuousToolTipCancelsOldFadeWhenOwnershipChanges() throws {
