@@ -19,3 +19,7 @@ checks does not overwrite committed historical results. `FLUENTKIT_QUALITY_BUILD
 build directory. `AUDIT_VISUAL_BASELINE` enables pixel comparison against a reviewed capture from
 the same OS/build, scale and font environment (requires Pillow). Without it, images are emitted for
 review and no claim of pixel agreement is made.
+
+Both Swift Build and the earlier native SwiftPM product layouts are supported. The toolchain's
+default engine is used unless `FLUENTKIT_QUALITY_BUILD_SYSTEM` is set (for example, `native` to
+exercise the older layout with a newer toolchain). Use separate build directories for each engine.

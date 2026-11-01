@@ -468,6 +468,19 @@ final class AuditRegressionTests: XCTestCase {
         XCTAssertEqual(layout.collectionViewContentSize.height, 40_010, accuracy: 1)
     }
 
+    func testScriptLocalizationDirectoryCaseDoesNotChangeTheRequestedLanguage() throws {
+        for (directoryName, locale) in [("zh-hans", "zh_CN"), ("zh-hant", "zh_TW"), ("zh-Hans", "zh_CN")] {
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".bundle")
+            let translation = root.appendingPathComponent(directoryName + ".lproj")
+            try FileManager.default.createDirectory(at: translation, withIntermediateDirectories: true)
+            defer { try? FileManager.default.removeItem(at: root) }
+            try "\"Greeting\" = \"你好\";".write(to: translation.appendingPathComponent("Localizable.strings"), atomically: true, encoding: .utf8)
+            let bundle = try XCTUnwrap(Bundle(url: root))
+            XCTAssertEqual(FluentLocalization.localizedString(.init("Greeting", defaultValue: "Missing"),
+                bundle: bundle, locale: Locale(identifier: locale)), "你好", directoryName)
+        }
+    }
+
     @MainActor func testFrameworkLocalizationFollowsHostAndAllowsBundleOverride() throws {
         _ = NSApplication.shared
         let child = FluentTextField()

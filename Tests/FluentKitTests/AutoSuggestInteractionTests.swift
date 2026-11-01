@@ -22,7 +22,7 @@ final class AutoSuggestInteractionTests: XCTestCase {
         field.selectText(nil)
         let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
         editor.insertText(text, replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
-        if wait { RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19)) }
+        if wait { waitForUI(root.window?.childWindows?.first?.isVisible == true) }
         return editor
     }
     private var values: [FluentAutoSuggestBoxSuggestion] {
@@ -106,14 +106,14 @@ final class AutoSuggestInteractionTests: XCTestCase {
         root.frame = NSRect(x: 20, y: 5, width: 400, height: 150)
         root.layoutSubtreeIfNeeded()
         window.autorecalculatesKeyViewLoop = true
-        let editor = try type("Ap", in: root)
+        let editor = try type("Ap", in: root, wait: false)
         let after = try XCTUnwrap(all(root).compactMap { $0 as? FluentButton }.first { $0.title == "After" })
         let clear = try XCTUnwrap(all(root).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.ClearButton" } as? NSButton)
         let query = try XCTUnwrap(all(root).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.QueryButton" } as? NSButton)
         for button in [clear, query] {
             XCTAssertFalse(button.canBecomeKeyView)
         }
-        XCTAssertTrue(after.canBecomeKeyView, "The traversal destination must be visible")
+        XCTAssertTrue(after.canBecomeKeyView, "frame=\(after.frame) visible=\(after.visibleRect) accepts=\(after.acceptsFirstResponder) fullKeyboard=\(NSApp.isFullKeyboardAccessEnabled)")
         let currentField = try field(root)
         window.recalculateKeyViewLoop()
         editor.doCommand(by: #selector(NSResponder.insertTab(_:)))
@@ -153,7 +153,7 @@ final class AutoSuggestInteractionTests: XCTestCase {
         let view = FluentAutoSuggestBox(state.projectedValue, header: "Search fruit", querySystemImageName: "magnifyingglass")._makeView(in: .init(reduceMotion: true, layoutDirection: .rightToLeft))
         view.fluentApplyLayoutDirection(.rightToLeft)
         let window = mount(view); defer { window.close() }
-        _ = try type("Ap", in: view)
+        _ = try type("Ap", in: view, wait: false)
         view.layoutSubtreeIfNeeded()
         let header = try XCTUnwrap(all(view).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.Header" })
         let query = try XCTUnwrap(all(view).first { $0.identifier?.rawValue == "FluentKit.AutoSuggestBox.QueryButton" })
@@ -212,12 +212,14 @@ final class AutoSuggestInteractionTests: XCTestCase {
 
     @MainActor func testZeroMaximumHidesSuggestionsAndNegativeUsesAvailableSpace() throws {
         let state = FluentState(wrappedValue: "")
+        var requested = false
         func content(_ height: CGFloat) -> FluentAutoSuggestBox {
-            FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in self.values }, maxSuggestionListHeight: height)
+            FluentAutoSuggestBox(state.projectedValue, suggestions: { _ in requested = true; return self.values }, maxSuggestionListHeight: height)
         }
         let view = content(0)._makeView(in: .init(reduceMotion: true))
         let window = mount(view); defer { window.close() }
-        _ = try type("Ap", in: view)
+        _ = try type("Ap", in: view, wait: false)
+        waitForUI(requested)
         XCTAssertTrue(window.childWindows?.isEmpty ?? true)
         XCTAssertTrue(content(-1)._updateView(view, in: .init(reduceMotion: true)))
         let popup = try XCTUnwrap(window.childWindows?.first)
@@ -364,7 +366,8 @@ final class AutoSuggestInteractionTests: XCTestCase {
             return []
         })._makeView(in: .init(reduceMotion: true))
         window = mount(view); defer { window.close() }
-        _ = try type("Ap", in: view)
+        _ = try type("Ap", in: view, wait: false)
+        waitForUI(popupAfterOldProvider != nil)
         XCTAssertEqual(state.wrappedValue, "Pear")
         XCTAssertEqual(popupAfterOldProvider, false, "Old results must not reopen over the new query")
         XCTAssertTrue(window.childWindows?.isEmpty ?? true)
@@ -386,7 +389,7 @@ final class AutoSuggestInteractionTests: XCTestCase {
         state.wrappedValue = "reset"
         XCTAssertTrue(editor.hasMarkedText())
         editor.unmarkText(); editor.didChangeText()
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.19))
+        waitForUI(events.last?.text == "reset")
         XCTAssertEqual(editor.string, "reset")
         XCTAssertEqual(state.wrappedValue, "reset")
         XCTAssertEqual(events.last?.text, "reset")
@@ -579,7 +582,7 @@ final class AutoSuggestInteractionTests: XCTestCase {
             let window = mount(view)
             defer { window.close() }
             let editor = try type("Ap", in: view)
-            // A fixed 190ms wait does not guarantee that the 180ms debounce ran under load.
+            // A fixed 190ms wait does not guarantee that the 150ms debounce ran under load.
             // Preview assertions require its result, rather than a particular scheduler speed.
             wait(for: [suggestionsReady], timeout: 2)
             XCTAssertNotNil(window.childWindows?.first, "Suggestions must be open before keyboard preview")

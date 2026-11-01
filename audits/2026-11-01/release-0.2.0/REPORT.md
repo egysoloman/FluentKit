@@ -29,3 +29,18 @@
 3. 仅有运行时 `#available(macOS 27)` 不足以在旧 SDK 编译新的手势属性。保留运行时 OS 检查，使用公开 Objective-C setter 的 responds 检查及 KVC 配置三个属性。没有通过更换 runner 或关闭门禁回避问题。
 
 修改后本机相关 40 项测试通过（`compatibility-tests.log`），包括 macOS 27 真实 recognizer 的触摸数量与取消配置读取。旧系统上的该测试仍按原有条件跳过。后续主分支 CI 必须成功后才能按流程发布；以对应 GitHub 运行结果为准，不把此处本地结果当作远端通过。
+
+## 第二次远端 CI 与环境回归
+
+[main CI #9](https://github.com/egysoloman/FluentKit/actions/runs/41279715448) Debug 编译通过，测试运行 489 项、1 跳过、55 个失败断言。完整日志为 `ci-second-failure.log`，没有忽略这些失败或降低 CI 门禁。
+
+- 独立使用 native SwiftPM Release 产物复现了中文资源查找失败：目录为 `zh-hans.lproj` / `zh-hant.lproj`，大写 script 候选的 Bundle 查找返回 nil。现在先匹配 bundle 实际 localization 名称，新增大小写回归。
+- 将本地 Refresh 回归强制为 legacy scroller，独立复现 16 个失败；内容缩短后 scroller 隐藏，但内容仍保留旧视口宽/高（17pt 差）。共享 FluentViewportScrollView 现在合并并异步通知尺寸变化，避免在父布局中同步设置的 needsLayout 被清掉。扩展测试覆盖 overlay/legacy × 四方向 × LTR/RTL × 内容增减，不调用合成 scrollWheel。
+- ToolTip presentation 的 coordinator 原来再次读取全局减少动态效果设置，覆盖了调用方已经解析的 render context。现在仅由传入策略控制；显式减少动态效果仍立即完成。
+- 测试修正：动画测试明确选择启用动画；TimePicker 检查一个物理像素而非假定 Retina 的 0.5pt；trackpad 绘制测试保留窗口坐标，CGEvent subtype 分类仍由独立测试验证。正向异步结果改为有上限等待实际 UI/回调，保留结果断言。新等待辅助方法最初误等了三处不应有弹层的场景，原失败日志保留，随后改等其真正结果，相关 30 项通过。
+- 焦点问题在本机两个构建引擎都未复现，保留原行为断言，并补充失败时的几何、acceptsFirstResponder、canBecomeKeyView 和系统键盘模式数据。需要下一次远端结果继续定位，不宣称已解决。
+- 质量脚本独立复现旧布局下的 no such module。现在自动识别 Swift Build 与 native SwiftPM 的 module/object 位置，并可显式选择引擎复现。
+
+本地相关运行时 32 项通过，native 引擎焦点 6 项通过。全部原始验证记录在 `environment-compatibility/`。发布仍等待远端全绿。
+
+修复后的 native Release 质量工具全通过，记录在 `environment-compatibility/native-quality*`；Swift 6.4 的 native 引擎弃用提示属于刻意选用旧引擎的工具提示。`locale-before.log` 与 `locale-after.log` 分别来自修复前后静态链接的独立探针；相同资源包由 Copy/Copy 恢复为 复制/複製。

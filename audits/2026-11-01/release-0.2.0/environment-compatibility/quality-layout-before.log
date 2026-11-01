@@ -1,0 +1,6 @@
+tools/quality/InputAudit.swift:2:8: error: no such module 'FluentKit'
+ 1 | import AppKit
+ 2 | import FluentKit
+   |        `- error: no such module 'FluentKit'
+ 3 | 
+ 4 | final class Counters { var bodies = 0; var makes = 0; var updates = 0; var attachments = 0 }

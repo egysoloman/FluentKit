@@ -159,9 +159,10 @@ final class SplitButtonInteractionTests: XCTestCase {
             let primaryBorder = try XCTUnwrap(layer("FluentKit.SplitButton.ElevationBorder", in: button.layer!) as? CAGradientLayer)
             XCTAssertEqual(primaryBorder.colors as? [CGColor], originalBorder)
             button.mouseUp(with: try mouse(.leftMouseUp, at: NSPoint(x: -10, y: 16), in: button))
-            let cg = try XCTUnwrap(try mouse(.leftMouseDown, at: point, in: button).cgEvent)
-            cg.setIntegerValueField(.mouseEventSubtype, value: Int64(NSEvent.EventSubtype.touch.rawValue))
-            let trackpad = try XCTUnwrap(NSEvent(cgEvent: cg))
+            // CGEvent round-tripping loses the window coordinate context on older AppKit.
+            // Classification through that bridge is covered separately in PointerDeviceRegressionTests.
+            let trackpad = TrackpadPointerFixture()
+            trackpad.point = button.convert(point, to: nil)
             XCTAssertFalse(FluentInputDeviceTracker.isTouch(trackpad))
             button.mouseDown(with: trackpad)
             XCTAssertNotEqual(primary.backgroundColor, secondary.backgroundColor, "Trackpad presses keep pointer regions")

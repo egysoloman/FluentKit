@@ -10,6 +10,14 @@ final class DirectTouchPointerFixture: NSEvent {
     override var locationInWindow: NSPoint { point }
 }
 
+final class TrackpadPointerFixture: NSEvent {
+    var point: NSPoint = .zero
+    override var type: NSEvent.EventType { .leftMouseDown }
+    override var subtype: NSEvent.EventSubtype { .touch }
+    override var associatedEventsMask: NSEvent.EventTypeMask { [] }
+    override var locationInWindow: NSPoint { point }
+}
+
 final class PointerDeviceRegressionTests: XCTestCase {
     private func trackpad(_ type: NSEvent.EventType) throws -> NSEvent {
         let event = try XCTUnwrap(NSEvent.mouseEvent(with:type,location:.zero,modifierFlags:[],timestamp:0,

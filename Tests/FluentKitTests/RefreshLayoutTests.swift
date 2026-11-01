@@ -27,39 +27,42 @@ final class RefreshLayoutTests: XCTestCase {
 
     func testContentChangesUpdateScrollExtentWithoutResizingOrReplacingHost() async throws {
         _ = NSApplication.shared
-        for direction in [FluentRefreshPullDirection.topToBottom, .bottomToTop, .leftToRight, .rightToLeft] {
-            for rtl in [false, true] {
-                let vertical = direction == .topToBottom || direction == .bottomToTop
-                let count = FluentState(wrappedValue: 20)
-                let root = FluentViewHost(FluentRefreshContainer(pullDirection: direction, onRefreshRequested: { $0.complete() }) {
-                    Items(count: count, vertical: vertical)
-                }, context: .init(reduceMotion: true, layoutDirection: rtl ? .rightToLeft : .leftToRight))
-                let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 420, height: 300),
-                                      styleMask: [.titled, .resizable], backing: .buffered, defer: false)
-                window.isReleasedWhenClosed = false
-                defer { window.close() }
-                window.contentView = root
-                window.orderFront(nil)
-                let container = try XCTUnwrap(all(root).compactMap { $0 as? FluentRefreshContainerView }.first)
-                let host = container.contentHost
-                let scroll = container.scrollView
-                for value in [20, 2, 40, 0, 20] {
-                    count.wrappedValue = value
-                    await settle()
-                    let viewport = scroll.contentSize
-                    let document = try XCTUnwrap(scroll.documentView)
-                    let natural = CGFloat(value) * (vertical ? 32 : 80) + CGFloat(max(0, value - 1)) * 12
-                    XCTAssertEqual(vertical ? document.frame.height : document.frame.width,
-                        max(natural, vertical ? viewport.height : viewport.width), accuracy: 0.01,
-                        "\(direction), RTL=\(rtl), count=\(value)")
-                    XCTAssertEqual(vertical ? host.frame.width : host.frame.height,
-                                   vertical ? viewport.width : viewport.height, accuracy: 0.01)
-                    XCTAssertTrue(host === container.contentHost)
-                    let labels = all(host).compactMap { $0 as? NSTextField }.filter { $0.stringValue.hasPrefix("Item ") }
-                    XCTAssertEqual(labels.count, value)
-                    for label in labels {
-                        let frame = try XCTUnwrap(label.superview).frame
-                        XCTAssertEqual(vertical ? frame.height : frame.width, vertical ? 32 : 80, accuracy: 0.01)
+        for style in [NSScroller.Style.legacy, .overlay] {
+            for direction in [FluentRefreshPullDirection.topToBottom, .bottomToTop, .leftToRight, .rightToLeft] {
+                for rtl in [false, true] {
+                    let vertical = direction == .topToBottom || direction == .bottomToTop
+                    let count = FluentState(wrappedValue: 20)
+                    let root = FluentViewHost(FluentRefreshContainer(pullDirection: direction, onRefreshRequested: { $0.complete() }) {
+                        Items(count: count, vertical: vertical)
+                    }, context: .init(reduceMotion: true, layoutDirection: rtl ? .rightToLeft : .leftToRight))
+                    let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 420, height: 300),
+                                          styleMask: [.titled, .resizable], backing: .buffered, defer: false)
+                    window.isReleasedWhenClosed = false
+                    defer { window.close() }
+                    window.contentView = root
+                    window.orderFront(nil)
+                    let container = try XCTUnwrap(all(root).compactMap { $0 as? FluentRefreshContainerView }.first)
+                    let host = container.contentHost
+                    let scroll = container.scrollView
+                    scroll.scrollerStyle = style
+                    for value in [20, 2, 40, 0, 20] {
+                        count.wrappedValue = value
+                        await settle()
+                        let viewport = scroll.contentSize
+                        let document = try XCTUnwrap(scroll.documentView)
+                        let natural = CGFloat(value) * (vertical ? 32 : 80) + CGFloat(max(0, value - 1)) * 12
+                        XCTAssertEqual(vertical ? document.frame.height : document.frame.width,
+                            max(natural, vertical ? viewport.height : viewport.width), accuracy: 0.01,
+                            "\(direction), RTL=\(rtl), count=\(value)")
+                        XCTAssertEqual(vertical ? host.frame.width : host.frame.height,
+                                       vertical ? viewport.width : viewport.height, accuracy: 0.01)
+                        XCTAssertTrue(host === container.contentHost)
+                        let labels = all(host).compactMap { $0 as? NSTextField }.filter { $0.stringValue.hasPrefix("Item ") }
+                        XCTAssertEqual(labels.count, value)
+                        for label in labels {
+                            let frame = try XCTUnwrap(label.superview).frame
+                            XCTAssertEqual(vertical ? frame.height : frame.width, vertical ? 32 : 80, accuracy: 0.01)
+                        }
                     }
                 }
             }

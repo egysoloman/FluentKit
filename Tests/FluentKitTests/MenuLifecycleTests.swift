@@ -242,7 +242,7 @@ final class MenuLifecycleTests: XCTestCase {
             windowNumber: root.windowNumber, context: nil, eventNumber: 0, clickCount: 0, pressure: 0))
         rows(root)[0].mouseEntered(with: event)
         bar.items = [FluentMenuBarItem("File", items: [other, branch])]
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.25))
+        waitForUI(root.childWindows?.count == 1)
         XCTAssertEqual(root.childWindows?.count, 1)
         try key(123, in: try XCTUnwrap(root.childWindows?.first))
         let retained = try XCTUnwrap(rows(root).first { $0.accessibilityTitle() == "Export" })

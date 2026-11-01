@@ -66,7 +66,9 @@ public enum FluentLocalization {
         }
         if let languageCode = locale.languageCode { candidates.append(languageCode) }
         for candidate in candidates where !candidate.isEmpty {
-            if let path = bundle.path(forResource: candidate, ofType: "lproj"),
+            // Native SwiftPM lowercases script tags in resource directory names.
+            let localization = bundle.localizations.first { $0.caseInsensitiveCompare(candidate) == .orderedSame } ?? candidate
+            if let path = bundle.path(forResource: localization, ofType: "lproj"),
                let localized = Bundle(path: path) {
                 return localized
             }

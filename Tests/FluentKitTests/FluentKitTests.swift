@@ -109,11 +109,12 @@ final class FluentKitTests: XCTestCase {
             ))
         }
         first.mouseEntered(with: try entered(first, number: 10))
-        RunLoop.main.run(until: Date().addingTimeInterval(0.10))
         second.mouseEntered(with: try entered(second, number: 11))
-        RunLoop.main.run(until: Date().addingTimeInterval(0.75))
+        second.dismiss(animated: false)
+        RunLoop.main.run(until: Date().addingTimeInterval(1))
         XCTAssertTrue(window.childWindows?.isEmpty != false, "the superseded owner cannot open")
-        RunLoop.main.run(until: Date().addingTimeInterval(0.10))
+        second.mouseEntered(with: try entered(second, number: 12))
+        waitForUI(window.childWindows?.first?.isVisible == true)
         let panel = try XCTUnwrap(window.childWindows?.first)
         XCTAssertEqual(
             ((panel.contentView as? FluentToolTipSurface)?.content as? NSTextField)?.stringValue,
@@ -361,6 +362,7 @@ final class FluentKitTests: XCTestCase {
     func testProgressRingIndeterminateAnimationRespectsReducedMotion() throws {
         _ = NSApplication.shared
         let ring = FluentProgressRing()
+        ring.reduceMotion = false
         ring.frame = NSRect(x: 0, y: 0, width: 32, height: 32)
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 64, height: 64),
@@ -4584,7 +4586,8 @@ final class FluentKitTests: XCTestCase {
         let secondDivider = try XCTUnwrap(picker.layer?.sublayers?.first { $0.name == "FluentKit.TimePicker.SecondDivider" })
         XCTAssertFalse(firstDivider.isHidden)
         XCTAssertFalse(secondDivider.isHidden)
-        XCTAssertEqual(firstDivider.frame.width, 0.5, accuracy: 0.001)
+        XCTAssertEqual(firstDivider.frame.width * (NSScreen.main?.backingScaleFactor ?? 1), 1, accuracy: 0.001,
+                       "Divider occupies one physical pixel on both 1x and Retina displays")
 
         picker.selectedTime = FluentTime(hour: 13, minute: 58)
         XCTAssertEqual(picker.selectedTime, FluentTime(hour: 13, minute: 45))
@@ -5393,7 +5396,7 @@ final class FluentKitTests: XCTestCase {
         field.selectText(nil)
         let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
         editor.insertText("Ap", replacementRange: NSRange(location: 0, length: 0))
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.18))
+        waitForUI(window.childWindows?.first?.isVisible == true)
 
         XCTAssertEqual(changed, ["Ap"])
         XCTAssertEqual(text.wrappedValue, "Ap")
@@ -5470,7 +5473,7 @@ final class FluentKitTests: XCTestCase {
         field.selectText(nil)
         let initialEditor = try XCTUnwrap(field.currentEditor() as? NSTextView)
         initialEditor.insertText("Ap", replacementRange: NSRange(location: 0, length: 0))
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.18))
+        waitForUI(window.childWindows?.first?.isVisible == true)
         let firstPopup = try XCTUnwrap(window.childWindows?.first)
         XCTAssertTrue(firstPopup.isVisible)
         XCTAssertFalse(clear.isHidden)

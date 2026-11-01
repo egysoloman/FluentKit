@@ -4,7 +4,9 @@ import AppKit
 final class FluentToolTipPresentation {
     let panel: FluentToolTipPanel
     let surface: FluentToolTipSurface
-    private let animator = FluentAnimationCoordinator()
+    // Each call supplies the resolved render-context policy. Do not apply a second,
+    // stale system preference on top of an explicit context override.
+    private let animator = FluentAnimationCoordinator(reduceMotion: false)
     private var targetFrame: NSRect?
     private var isMoving = false
 

@@ -8,6 +8,12 @@ No unreleased changes yet.
 
 ## [0.2.0] - 2026-11-01
 
+- Resolve localized resources even when the package builder lowercases script directory names.
+  Coalesce scroll viewport changes after parent layout so auto-hidden legacy scrollers release
+  their reserved width/height. ToolTip animations now honor the resolved render-context policy
+  without applying a second system Reduce Motion preference.
+- Support both Swift Build and native SwiftPM module/object layouts in the quality tools.
+
 - Removed ambiguous local/member name lookup in CommandBar and capture setup for Swift 6.3.
   macOS 27 touch configuration resolves public Objective-C setters at runtime so source builds
   with older AppKit SDKs retain the newer runtime capability without referencing missing symbols.

@@ -29,6 +29,12 @@ final class KeyboardFocusCycleTests: XCTestCase {
         return window
     }
     @MainActor private func all(_ v: NSView) -> [NSView] { [v] + v.subviews.flatMap(all) }
+    @MainActor private func focusState(_ w: NSWindow, _ root: NSView) -> String {
+        let controls = all(root).compactMap { $0 as? NSButton }.map {
+            "\($0.title): frame=\($0.frame) visible=\($0.visibleRect) accepts=\($0.acceptsFirstResponder) key=\($0.canBecomeKeyView) enabled=\($0.isEnabled) hidden=\($0.isHiddenOrHasHiddenAncestor)"
+        }
+        return "fullKeyboard=\(NSApp.isFullKeyboardAccessEnabled) active=\(NSApp.isActive) responder=\(String(describing: w.firstResponder)); \(controls.joined(separator: "; "))"
+    }
     @MainActor private func tab(_ window: NSWindow, flags: NSEvent.ModifierFlags = []) -> NSEvent {
         NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags, timestamp: 0,
             windowNumber: window.windowNumber, context: nil, characters: "\t",
@@ -48,11 +54,11 @@ final class KeyboardFocusCycleTests: XCTestCase {
         func button(_ title: String) -> FluentButton { buttons.first { $0.title == title }! }
         w.makeFirstResponder(button("B"))
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(w.firstResponder === button("A"))
+        XCTAssertTrue(w.firstResponder === button("A"), focusState(w, root))
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(w.firstResponder === button("C"))
+        XCTAssertTrue(w.firstResponder === button("C"), focusState(w, root))
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w, flags: .shift)))
-        XCTAssertTrue(w.firstResponder === button("A"))
+        XCTAssertTrue(w.firstResponder === button("A"), focusState(w, root))
         w.makeFirstResponder(button("Outside"))
         XCTAssertNotNil(FluentFocusVisibility.handleKeyDown(tab(w)))
     }
@@ -71,15 +77,15 @@ final class KeyboardFocusCycleTests: XCTestCase {
         w.makeFirstResponder(b("A")); w.recalculateKeyViewLoop()
         FluentInputDeviceTracker.shared.record(.touch, in: w)
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(w.firstResponder === b("B"))
+        XCTAssertTrue(w.firstResponder === b("B"), focusState(w, root))
         XCTAssertEqual(FluentInputDeviceTracker.shared.lastDeviceType(in: w), .keyboard)
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(w.firstResponder === b("A"))
+        XCTAssertTrue(w.firstResponder === b("A"), focusState(w, root))
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w, flags: .shift)))
-        XCTAssertTrue(w.firstResponder === b("B"))
+        XCTAssertTrue(w.firstResponder === b("B"), focusState(w, root))
         for flag: NSEvent.ModifierFlags in [.command, .control, .option] {
             XCTAssertNotNil(FluentFocusVisibility.handleKeyDown(tab(w, flags: flag)))
-            XCTAssertTrue(w.firstResponder === b("B"))
+            XCTAssertTrue(w.firstResponder === b("B"), focusState(w, root))
         }
     }
 
@@ -123,9 +129,9 @@ final class KeyboardFocusCycleTests: XCTestCase {
         let inside = try XCTUnwrap(buttons.first { $0.title == "Inside" })
         w.makeFirstResponder(cancel); w.recalculateKeyViewLoop()
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(w.firstResponder === inside)
+        XCTAssertTrue(w.firstResponder === inside, focusState(w, root))
         XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w, flags: .shift)))
-        XCTAssertTrue(w.firstResponder === cancel)
+        XCTAssertTrue(w.firstResponder === cancel, focusState(w, root))
     }
 
     @MainActor func testScopeLetsAutoSuggestRestoreQueryBeforeTabMovesFocus() throws {
@@ -146,7 +152,7 @@ final class KeyboardFocusCycleTests: XCTestCase {
         w.makeFirstResponder(field); field.selectText(nil)
         let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
         editor.insertText("Ap", replacementRange: NSRange(location: 0, length: 0))
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.18))
+        waitForUI(w.childWindows?.first?.isVisible == true)
         let popup = try XCTUnwrap(w.childWindows?.first)
         editor.doCommand(by: #selector(NSResponder.moveDown(_:)))
         XCTAssertEqual(query.wrappedValue, "Apple")
