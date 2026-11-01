@@ -44,9 +44,17 @@ final class SearchTextAlignmentTests: XCTestCase {
 
     @MainActor func testSearchGlyphsDoNotMoveWhenFocusChangesOrEditorIsReused() throws {
         _ = NSApplication.shared
+        var fontNames: [String?] = [nil, "PingFangSC-Regular"]
+        if NSFont(name: "MicrosoftYaHei", size: 14) != nil { fontNames.append("MicrosoftYaHei") }
+        for fontName in fontNames {
         for dark in [false, true] { for rtl in [false, true] { for text in ["Search settings", "查找设置"] { for placeholder in [false, true] {
             let field = FluentSearchTextField(placeholder: text)
             field.theme = .custom(colorScheme: dark ? .dark : .light, materialEffectsEnabled: false)
+            if let fontName {
+                field.theme = field.theme.with(typography: FluentTypography(fontProvider: FluentFontProvider { _, size, weight in
+                    NSFont(name: fontName, size: size) ?? .systemFont(ofSize: size, weight: weight)
+                }))
+            }
             field.userInterfaceLayoutDirection = rtl ? .rightToLeft : .leftToRight
             field.frame = CGRect(x: 20, y: 20, width: 310, height: 32)
             field.stringValue = placeholder ? "" : text
@@ -79,6 +87,6 @@ final class SearchTextAlignmentTests: XCTestCase {
                 XCTAssertEqual(active.maxX, inactive.maxX, accuracy: 0.5)
                 XCTAssertEqual(active.maxY, inactive.maxY, accuracy: 0.5)
             }
-        }}}}
+        }}}}}
     }
 }

@@ -160,6 +160,7 @@ private final class FluentTextFieldCell: NSTextFieldCell {
             delegate: delegate,
             event: event
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 
     override func select(
@@ -178,6 +179,7 @@ private final class FluentTextFieldCell: NSTextFieldCell {
             start: selStart,
             length: selLength
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 }
 
@@ -532,3 +534,7 @@ public class FluentTextField: NSTextField {
 }
 
 extension FluentTextField: FluentControlSizeConfigurable {}
+
+extension FluentTextField: FluentSingleLineTextControl {
+    func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
+}

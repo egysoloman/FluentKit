@@ -111,30 +111,37 @@ final class KeyboardFocusCycleTests: XCTestCase {
     }
 
     @MainActor func testFieldEditorRoutesThroughItsControlAndKeepsMarkedText() throws {
-        let first = NSTextField(string: "First"), second = NSTextField(string: "Second")
-        let root = FluentViewHost(FluentVStack { FluentNativeView(first); FluentNativeView(second) }.fluentFocusScope())
-        let w = window(root); defer { w.close() }
-        w.makeFirstResponder(first)
-        let commands = TabCommandDelegate(); first.delegate = commands
-        commands.consumesTab = true
-        XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(first.currentEditor() === w.firstResponder)
-        commands.consumesTab = false
-        XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(second.currentEditor() === w.firstResponder)
-        XCTAssertEqual(commands.commands, [#selector(NSResponder.insertTab(_:)), #selector(NSResponder.insertTab(_:))])
-        let editor = try XCTUnwrap(w.firstResponder as? NSTextView)
-        editor.setMarkedText("拼", selectedRange: NSRange(location: 1, length: 0), replacementRange: NSRange(location: NSNotFound, length: 0))
-        XCTAssertNotNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(w.firstResponder === editor); XCTAssertTrue(editor.hasMarkedText())
-        editor.unmarkText()
-        let veto = RefuseFocusChange(); second.delegate = veto
-        XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(second.currentEditor() === w.firstResponder)
-        XCTAssertGreaterThan(veto.attempts, 0)
-        second.delegate = nil
-        XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
-        XCTAssertTrue(first.currentEditor() === w.firstResponder)
+        let pairs: [(NSTextField, NSTextField)] = [
+            (NSTextField(string: "First"), NSTextField(string: "Second")),
+            (FluentTextField(), FluentTextField()),
+            (FluentSearchTextField(), FluentSearchTextField()),
+            (FluentSecureTextField(), FluentSecureTextField())
+        ]
+        for (first, second) in pairs {
+            let root = FluentViewHost(FluentVStack { FluentNativeView(first); FluentNativeView(second) }.fluentFocusScope())
+            let w = window(root); defer { w.close() }
+            w.makeFirstResponder(first)
+            let commands = TabCommandDelegate(); first.delegate = commands
+            commands.consumesTab = true
+            XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
+            XCTAssertTrue(first.currentEditor() === w.firstResponder)
+            commands.consumesTab = false
+            XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
+            XCTAssertTrue(second.currentEditor() === w.firstResponder)
+            XCTAssertEqual(commands.commands, [#selector(NSResponder.insertTab(_:)), #selector(NSResponder.insertTab(_:))])
+            let editor = try XCTUnwrap(w.firstResponder as? NSTextView)
+            editor.setMarkedText("拼", selectedRange: NSRange(location: 1, length: 0), replacementRange: NSRange(location: NSNotFound, length: 0))
+            XCTAssertNotNil(FluentFocusVisibility.handleKeyDown(tab(w)))
+            XCTAssertTrue(w.firstResponder === editor); XCTAssertTrue(editor.hasMarkedText())
+            editor.unmarkText()
+            let veto = RefuseFocusChange(); second.delegate = veto
+            XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
+            XCTAssertTrue(second.currentEditor() === w.firstResponder)
+            XCTAssertGreaterThan(veto.attempts, 0)
+            second.delegate = nil
+            XCTAssertNil(FluentFocusVisibility.handleKeyDown(tab(w)))
+            XCTAssertTrue(first.currentEditor() === w.firstResponder)
+        }
     }
 
     @MainActor func testContentDialogTrapsTabAfterAutomaticLoopRecalculation() throws {

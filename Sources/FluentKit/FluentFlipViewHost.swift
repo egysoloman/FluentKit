@@ -148,7 +148,7 @@ final class FluentFlipViewHost: NSControl {
 
     private func ownsFirstResponder(in root: NSView) -> Bool {
         guard let responder = window?.firstResponder else { return false }
-        if let editor = responder as? NSTextView, let delegate = editor.delegate as? NSView,
+        if let editor = responder as? NSTextView, let delegate = fluentFieldEditorOwner(editor),
            delegate === root || delegate.isDescendant(of: root) { return true }
         guard let view = responder as? NSView else { return false }
         return view === root || view.isDescendant(of: root)

@@ -1,13 +1,127 @@
 import AppKit
 
+@MainActor
+protocol FluentSingleLineTextControl: AnyObject {
+    func didConfigureFluentFieldEditor()
+}
+
 @inline(__always)
 func configureFluentSingleLineTextControl(_ control: NSTextField) {
-    control.usesSingleLineMode = true
+    // NSCell's single-line mode also imposes a fixed baseline that ignores custom font
+    // metrics. These controls enforce single-line input through their editing session;
+    // other native controls retain AppKit's own policy.
+    control.usesSingleLineMode = !(control is any FluentSingleLineTextControl)
     control.maximumNumberOfLines = 1
     guard let cell = control.cell else { return }
     cell.wraps = false
     cell.isScrollable = true
     cell.lineBreakMode = .byClipping
+}
+
+/// Preserves AppKit's field editor and its control delegate while separating input policy
+/// from NSCell's fixed-baseline rendering. Other validation and editing callbacks still
+/// reach the native delegate, including formatters and the control's application delegate.
+final class FluentSingleLineEditorDelegate: NSObject, NSTextViewDelegate {
+    private weak var editor: NSTextView?
+    private weak var originalDelegate: (any NSTextViewDelegate)?
+    private(set) weak var owner: NSTextField?
+    private var pendingMarkedReplacement: (range: NSRange, value: String)?
+    private var isNormalizingComposition = false
+
+    func install(on editor: NSTextView, owner: NSTextField) {
+        guard editor.delegate !== self else { return }
+        // AppKit restores the control during setup. Respect a later client delegate;
+        // wrapping a client that already forwards to us would create a delegate cycle.
+        guard editor.delegate === owner else { return }
+        detach()
+        self.editor = editor
+        self.owner = owner
+        originalDelegate = editor.delegate
+        editor.delegate = self
+    }
+
+    func detach() {
+        if let editor, editor.delegate === self { editor.delegate = originalDelegate }
+        editor = nil
+        originalDelegate = nil
+        owner = nil
+        pendingMarkedReplacement = nil
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        super.responds(to: selector) || (originalDelegate?.responds(to: selector) ?? false)
+    }
+
+    override func forwardingTarget(for selector: Selector!) -> Any? {
+        originalDelegate
+    }
+
+    func textView(_ textView: NSTextView, shouldChangeTextIn range: NSRange,
+                  replacementString value: String?) -> Bool {
+        if textView.hasMarkedText() {
+            let accepted = originalDelegate?.textView?(textView, shouldChangeTextIn: range,
+                                                       replacementString: value) ?? true
+            if accepted, let value {
+                pendingMarkedReplacement = value.rangeOfCharacter(from: .newlines) == nil ? nil
+                    : (NSRange(location: range.location, length: value.utf16.count), value)
+            }
+            return accepted
+        }
+        if let value, value.rangeOfCharacter(from: .newlines) != nil,
+           textView.undoManager?.isUndoing != true, textView.undoManager?.isRedoing != true {
+            // AppKit replaces each separator, including both scalars of CRLF, with a
+            // space. Reenter native insertion so validation, selection and undo apply
+            // to the normalized replacement rather than repairing the storage later.
+            textView.insertText(value.components(separatedBy: .newlines).joined(separator: " "),
+                                replacementRange: range)
+            return false
+        }
+        return originalDelegate?.textView?(textView, shouldChangeTextIn: range,
+                                            replacementString: value) ?? true
+    }
+
+    func textDidChange(_ notification: Notification) {
+        guard !isNormalizingComposition else { return }
+        if let textView = notification.object as? NSTextView { normalizeCommittedComposition(in: textView) }
+        originalDelegate?.textDidChange?(notification)
+    }
+
+    private func normalizeCommittedComposition(in textView: NSTextView) {
+        guard !textView.hasMarkedText(), let pending = pendingMarkedReplacement else { return }
+        pendingMarkedReplacement = nil
+        // AppKit keeps separators inside provisional marked text and filters them only
+        // when it commits. Some commits finish in place, without another shouldChange
+        // callback after unmarking. Finish that same native edit transaction here.
+        guard editor === textView, owner?.currentEditor() === textView,
+              textView.undoManager?.isUndoing != true, textView.undoManager?.isRedoing != true,
+              NSMaxRange(pending.range) <= (textView.string as NSString).length,
+              (textView.string as NSString).substring(with: pending.range) == pending.value else { return }
+        let selection = textView.selectedRange()
+        isNormalizingComposition = true
+        defer { isNormalizingComposition = false }
+        textView.insertText(pending.value.components(separatedBy: .newlines).joined(separator: " "),
+                            replacementRange: pending.range)
+        if editor === textView, owner?.currentEditor() === textView,
+           NSMaxRange(selection) <= (textView.string as NSString).length {
+            textView.setSelectedRange(selection)
+        }
+    }
+
+    func textView(_ textView: NSTextView, doCommandBy command: Selector) -> Bool {
+        switch NSStringFromSelector(command) {
+        case "insertNewlineIgnoringFieldEditor:", "insertLineBreak:",
+             "insertParagraphSeparator:", "insertContainerBreak:":
+            return true
+        default:
+            // Return, Tab, Escape, navigation and editing commands retain native dispatch.
+            return originalDelegate?.textView?(textView, doCommandBy: command) ?? false
+        }
+    }
+}
+
+/// The shared editor can have a forwarding delegate rather than the control itself.
+func fluentFieldEditorOwner(_ editor: NSTextView) -> NSView? {
+    (editor.delegate as? FluentSingleLineEditorDelegate)?.owner ?? editor.delegate as? NSView
 }
 
 /// Bridges AppKit's native field editor to WinUI TextControl visuals and command availability.
@@ -26,6 +140,7 @@ final class FluentTextEditingSession {
     let isSecure: Bool
 
     private weak var editor: NSTextView?
+    private var singleLineDelegate: FluentSingleLineEditorDelegate?
     private var flyout: FluentTextCommandFlyout?
     private var rightClickMonitor: Any?
     static private(set) var activeRightClickMonitorCount = 0
@@ -54,6 +169,7 @@ final class FluentTextEditingSession {
     func didEndEditing() {
         removeRightClickMonitor()
         guard flyout?.isPresented != true else { return }
+        singleLineDelegate?.detach()
         editor = nil
     }
 
@@ -110,8 +226,11 @@ final class FluentTextEditingSession {
     }
 
     private func configureEditor() {
-        guard let editor = editor ?? control?.currentEditor() as? NSTextView else { return }
+        // Deferred setup must not reclaim a shared editor that has moved to another control.
+        guard let control, let editor = control.currentEditor() as? NSTextView else { return }
         self.editor = editor
+        if singleLineDelegate == nil { singleLineDelegate = FluentSingleLineEditorDelegate() }
+        singleLineDelegate?.install(on: editor, owner: control)
         let preservedSelection = editor.selectedRange()
         // The window-owned field editor becomes first responder in place of FluentTextField.
         // Its default focus ring can otherwise leak through after content is remounted into a
@@ -151,7 +270,7 @@ final class FluentTextEditingSession {
         var typingAttributes = editor.typingAttributes
         let currentTypingColor = typingAttributes[.foregroundColor] as? NSColor
         let currentTypingFont = typingAttributes[.font] as? NSFont
-        let targetFont = control?.font
+        let targetFont = control.font
         if currentTypingColor?.isEqual(theme.textPrimary) != true
             || targetFont.map({ currentTypingFont != $0 }) == true {
             typingAttributes[.foregroundColor] = theme.textPrimary
@@ -270,6 +389,7 @@ final class FluentTextEditingSession {
 
     deinit {
         removeRightClickMonitor()
+        singleLineDelegate?.detach()
         flyout?.dismiss(animated: false)
     }
 }

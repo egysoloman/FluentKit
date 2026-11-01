@@ -87,7 +87,7 @@ enum FluentFocusVisibility {
         if let editor = window.firstResponder as? NSTextView {
             // Let the input method consume Tab while it owns a marked-text session.
             guard !editor.hasMarkedText() else { return event }
-            focused = editor.isFieldEditor ? (editor.delegate as? NSView) : editor
+            focused = editor.isFieldEditor ? fluentFieldEditorOwner(editor) : editor
         } else {
             focused = window.firstResponder as? NSView
         }
@@ -240,7 +240,7 @@ private final class FluentFocusHost: NSView {
 
         // Text fields use the window's shared field editor as first responder while editing.
         if let textView = responder as? NSTextView,
-           let delegateView = textView.delegate as? NSView {
+           let delegateView = fluentFieldEditorOwner(textView) {
             return delegateView === contentView || delegateView.isDescendant(of: contentView)
         }
         return false

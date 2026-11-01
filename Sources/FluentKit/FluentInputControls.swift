@@ -33,6 +33,7 @@ private final class FluentSecureTextFieldCell: NSTextFieldCell {
             delegate: delegate,
             event: event
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 
     override func select(
@@ -51,6 +52,7 @@ private final class FluentSecureTextFieldCell: NSTextFieldCell {
             start: selStart,
             length: selLength
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 }
 
@@ -91,6 +93,7 @@ private final class FluentSearchFieldCell: NSSearchFieldCell {
             delegate: delegate,
             event: event
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 
     override func select(
@@ -109,6 +112,7 @@ private final class FluentSearchFieldCell: NSSearchFieldCell {
             start: selStart,
             length: selLength
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 
     private func editorRect(forBounds rect: NSRect) -> NSRect {
@@ -767,6 +771,7 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
         event: NSEvent?
     ) {
         super.edit(withFrame: titleRect(forBounds: frame), in: controlView, editor: textObj, delegate: delegate, event: event)
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 
     override func select(
@@ -785,10 +790,13 @@ private final class FluentComboBoxEditableTextFieldCell: NSTextFieldCell {
             start: selStart,
             length: selLength
         )
+        (controlView as? any FluentSingleLineTextControl)?.didConfigureFluentFieldEditor()
     }
 }
 
-private final class FluentComboBoxEditableTextField: NSTextField {
+private final class FluentComboBoxEditableTextField: NSTextField, FluentSingleLineTextControl {
+    func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
+
     // The host owns the Fluent faceplate size. Native text-field metrics must not
     // compete with its height or inset the field editor relative to the faceplate.
     override var alignmentRectInsets: NSEdgeInsets { NSEdgeInsetsZero }
@@ -2320,4 +2328,12 @@ private final class FluentStepperHost: NSView, NSTextFieldDelegate, FluentContro
     }
 
     deinit { removeObserver() }
+}
+
+extension FluentSecureTextField: FluentSingleLineTextControl {
+    func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
+}
+
+extension FluentSearchTextField: FluentSingleLineTextControl {
+    func didConfigureFluentFieldEditor() { textEditingSession.didBeginEditing() }
 }

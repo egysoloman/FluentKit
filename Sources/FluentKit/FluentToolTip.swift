@@ -607,7 +607,7 @@ final class FluentToolTipHost: NSView {
         if let view = responder as? NSView,
            view === contentView || view.isDescendant(of: contentView) { return true }
         if let editor = responder as? NSTextView,
-           let delegate = editor.delegate as? NSView,
+           let delegate = fluentFieldEditorOwner(editor),
            delegate === contentView || delegate.isDescendant(of: contentView) { return true }
         return false
     }

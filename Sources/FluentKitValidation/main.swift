@@ -2040,11 +2040,11 @@ let styledTextHost = FluentViewHost(
 let nativeStyledTextField = firstFluentTextField(in: styledTextHost)
 require(nativeStyledTextField?.fluentStyle != nil, "text field style mounts on the native field")
 require(
-    nativeStyledTextField?.usesSingleLineMode == true
+    nativeStyledTextField?.usesSingleLineMode == false
         && nativeStyledTextField?.maximumNumberOfLines == 1
         && nativeStyledTextField?.cell?.wraps == false
         && nativeStyledTextField?.cell?.isScrollable == true,
-    "TextBox explicitly uses the shared one-line scrolling cell protocol"
+    "TextBox uses font-based metrics and the shared one-line scrolling protocol"
 )
 styledTextState.wrappedValue = "updated"
 drainMainQueue()
@@ -3256,11 +3256,11 @@ var secureTitleRect: NSRect?
 require(secureField?.stringValue == "initial-secret", "secure field reads its initial binding value")
 require((secureField as? FluentSecureTextField)?.fluentStyle is ValidationTextFieldStyle, "secure field receives the shared text field style")
 require(
-    secureField?.usesSingleLineMode == true
+    secureField?.usesSingleLineMode == false
         && secureField?.maximumNumberOfLines == 1
         && secureField?.cell?.wraps == false
         && secureField?.cell?.isScrollable == true,
-    "PasswordBox uses the shared one-line scrolling cell protocol"
+    "PasswordBox uses font-based metrics and the shared one-line scrolling protocol"
 )
 if let secureField, let cell = secureField.cell {
     secureField.frame = NSRect(x: 0, y: 0, width: 280, height: 32)
@@ -3376,11 +3376,11 @@ let searchField = firstSearchField(in: searchView)
 require((searchField?.placeholderAttributedString?.string ?? searchField?.placeholderString) == "Filter", "search field preserves its placeholder")
 require((searchField as? FluentSearchTextField)?.fluentStyle is ValidationTextFieldStyle, "search field receives the shared text field style")
 require(
-    searchField?.usesSingleLineMode == true
+    searchField?.usesSingleLineMode == false
         && searchField?.maximumNumberOfLines == 1
         && searchField?.cell?.wraps == false
         && searchField?.cell?.isScrollable == true,
-    "SearchBox uses the shared one-line scrolling cell protocol"
+    "SearchBox uses font-based metrics and the shared one-line scrolling protocol"
 )
 if let searchField, let cell = searchField.cell as? NSSearchFieldCell {
     searchField.frame = NSRect(x: 0, y: 0, width: 280, height: 32)
@@ -4085,7 +4085,7 @@ guard let editableTextField = editableFaceplate as? NSTextField else {
     fatalError("Editable ComboBox text faceplate did not mount")
 }
 require(
-    editableTextField.usesSingleLineMode
+    !editableTextField.usesSingleLineMode
         && editableTextField.maximumNumberOfLines == 1
         && editableTextField.cell?.wraps == false
         && editableTextField.cell?.isScrollable == true,
@@ -4277,7 +4277,7 @@ let stepperField = firstFluentTextField(in: stepperView)
 let stepperLabel = firstLabel(in: stepperView)
 require(nativeStepper?.doubleValue == 2, "stepper reads its initial integer binding")
 require(
-    stepperField?.usesSingleLineMode == true
+    stepperField?.usesSingleLineMode == false
         && stepperField?.maximumNumberOfLines == 1
         && stepperField?.cell?.wraps == false,
     "Stepper value editor inherits the shared single-line TextBox protocol"
@@ -4310,7 +4310,7 @@ guard let mountedNumberBox = firstNumberBox(in: numberBoxView) else {
     fatalError("declarative NumberBox did not mount")
 }
 require(
-    mountedNumberBox.textField.usesSingleLineMode
+    !mountedNumberBox.textField.usesSingleLineMode
         && mountedNumberBox.textField.maximumNumberOfLines == 1
         && mountedNumberBox.textField.cell?.wraps == false,
     "NumberBox editor inherits the shared single-line TextBox protocol"

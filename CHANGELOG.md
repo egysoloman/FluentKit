@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Single-line text, search, password, and editable ComboBox fields use the supplied font's baseline and
+  line height. Native editing still handles validation, composition, selection and
+  undo; line-separator filtering remains active through focus and editor reuse.
+
 - Open text editing menus follow direct control theme and material updates in plain
   AppKit windows, preserving the existing field editor, selection, and popup.
 

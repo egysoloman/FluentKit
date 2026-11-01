@@ -94,6 +94,31 @@ final class ComboBoxFaceplateLayoutTests: XCTestCase {
         XCTAssertEqual(try faceplate(native).bounds.height, 44, accuracy: 0.01)
     }
 
+    func testEditableCustomFontKeepsNaturalBaselineAndSingleLineInput() throws {
+        let selection = FluentState<String?>(wrappedValue: nil)
+        let text = FluentState(wrappedValue: "Agpq")
+        let definition = FluentComboBox(options: ["中文"], selection: selection.projectedValue,
+                                       mode: .editable, text: text.projectedValue).frame(width: 220)
+        let theme = FluentTheme.custom(typography: .init(fontProvider: .init { _, size, _ in
+            NSFont(name: "PingFangSC-Regular", size: size)
+        }))
+        let (window, native) = mount(FluentAnyView(definition), theme: theme)
+        defer { window.close() }
+        let host = try faceplate(native)
+        let field = try XCTUnwrap(host.subviews.first { $0.identifier?.rawValue == "FluentKit.ComboBox.EditableText" } as? NSTextField)
+        window.makeFirstResponder(nil)
+        XCTAssertTrue(window.makeFirstResponder(field))
+        let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
+        let manager = try XCTUnwrap(editor.layoutManager)
+        manager.ensureLayout(for: try XCTUnwrap(editor.textContainer))
+        XCTAssertEqual(manager.location(forGlyphAt: 0).y,
+                       manager.defaultBaselineOffset(for: try XCTUnwrap(field.font)), accuracy: 0.01)
+        editor.insertText("first\nedit", replacementRange: NSRange(location: 0, length: editor.string.utf16.count))
+        XCTAssertEqual(editor.string, "first edit")
+        RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+        XCTAssertEqual(text.wrappedValue, "first edit")
+    }
+
     func testResizingEditableFaceplatePreservesItsActiveMarkedText() throws {
         let selection = FluentState<String?>(wrappedValue: nil)
         let text = FluentState(wrappedValue: "")
