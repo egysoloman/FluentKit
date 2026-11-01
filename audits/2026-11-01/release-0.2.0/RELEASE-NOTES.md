@@ -11,6 +11,7 @@ FluentKit 0.2.0 expands the native Swift/AppKit control library and fixes render
 
 ## Migration notes
 
+- FluentButton participates in Tab navigation independently of the native NSButton keyboard preference. Disabled/hidden controls remain excluded; applications can opt out with `refusesFirstResponder`.
 - Explicit `.frame` dimensions now use priority 999. `FluentForEach` inherits its containing stack's axis and spacing; in a default VStack this changes spacing from 8pt to 12pt.
 - ListView group headers default to 48pt and stick while scrolling; disable with `.areStickyGroupHeadersEnabled(false)` when needed. ScrollIntoView request bindings clear after handling.
 - CheckBox/RadioButton keyboard activation commits on Space release; Return is not an activation key. See the changelog for interaction and cancellation details.

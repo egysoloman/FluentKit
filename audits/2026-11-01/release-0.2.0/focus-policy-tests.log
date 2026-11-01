@@ -1,0 +1,50 @@
+Building for debugging...
+[2 / 17]
+[3 / 18] FluentKit
+[5 / 20] FluentKit
+[11 / 26] FluentKit
+[21 / 32] FluentKit
+[23 / 31] FluentGallery-product
+[27 / 35] FluentGallery-product
+[36 / 45] FluentKitTests-product
+[40 / 48] FluentKitTests-product
+[40 / 48] FluentGallery-product
+[42 / 48] FluentGallery-product
+[44 / 50] FluentKitTests-product
+[46 / 53] FluentKitTests-product
+[48 / 53] FluentKitTests-product
+[48 / 51] FluentKitValidation-product
+[49 / 51] FluentKitValidation-product
+[51 / 51] FluentKitValidation-product
+Build complete! (44.18秒)
+Test Suite 'Selected tests' started at 2026-11-01 14:39:09.780.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 14:39:09.781.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-11-01 14:39:09.781.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' passed (0.402 seconds).
+Test Suite 'AutoSuggestInteractionTests' passed at 2026-11-01 14:39:10.184.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.402 (0.403) seconds
+Test Suite 'FluentKitTests' started at 2026-11-01 14:39:10.184.
+Test Case '-[FluentKitTests.FluentKitTests testAutoSuggestBoxClearAndQueryButtonsFollowWinUISemantics]' started.
+Test Case '-[FluentKitTests.FluentKitTests testAutoSuggestBoxClearAndQueryButtonsFollowWinUISemantics]' passed (0.438 seconds).
+Test Suite 'FluentKitTests' passed at 2026-11-01 14:39:10.623.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.438 (0.439) seconds
+Test Suite 'KeyboardFocusCycleTests' started at 2026-11-01 14:39:10.623.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testButtonTabStopPreservesVisibilityEnabledAndOptOutRules]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testButtonTabStopPreservesVisibilityEnabledAndOptOutRules]' passed (0.016 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testContentDialogTrapsTabAfterAutomaticLoopRecalculation]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testContentDialogTrapsTabAfterAutomaticLoopRecalculation]' passed (0.083 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testFieldEditorRoutesThroughItsControlAndKeepsMarkedText]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testFieldEditorRoutesThroughItsControlAndKeepsMarkedText]' passed (0.030 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testNestedScopeAndUnavailableControlsDoNotLeakFocus]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testNestedScopeAndUnavailableControlsDoNotLeakFocus]' passed (0.033 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeKeepsLogicalOrderAfterInsertionAndWindowRecalculation]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeKeepsLogicalOrderAfterInsertionAndWindowRecalculation]' passed (0.024 seconds).
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeLetsAutoSuggestRestoreQueryBeforeTabMovesFocus]' started.
+Test Case '-[FluentKitTests.KeyboardFocusCycleTests testScopeLetsAutoSuggestRestoreQueryBeforeTabMovesFocus]' passed (0.420 seconds).
+Test Suite 'KeyboardFocusCycleTests' passed at 2026-11-01 14:39:11.230.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.606 (0.607) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 14:39:11.230.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 1.447 (1.449) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 14:39:11.230.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 1.447 (1.450) seconds

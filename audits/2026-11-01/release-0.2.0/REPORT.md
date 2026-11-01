@@ -44,3 +44,13 @@
 本地相关运行时 32 项通过，native 引擎焦点 6 项通过。全部原始验证记录在 `environment-compatibility/`。发布仍等待远端全绿。
 
 修复后的 native Release 质量工具全通过，记录在 `environment-compatibility/native-quality*`；Swift 6.4 的 native 引擎弃用提示属于刻意选用旧引擎的工具提示。`locale-before.log` 与 `locale-after.log` 分别来自修复前后静态链接的独立探针；相同资源包由 Copy/Copy 恢复为 复制/複製。
+
+## 第三次远端 CI：焦点差异定位
+
+[main CI #10](https://github.com/egysoloman/FluentKit/actions/runs/41281210290) 的失败减少为 13 个断言（490 项、1 跳过），完整日志为 `ci-third-failure.log`。中文资源、legacy scroller、motion 和之前的其余回归已经通过。
+
+焦点诊断显示 enabled/visible、acceptsFirstResponder 均正常，所有 FluentButton 的 canBecomeKeyView 为 false；系统 fullKeyboard=false。本机同一用例在两种构建引擎均通过，说明此前不能只依据本机通过得出结论。现在 FluentButton 明确实现自己的 Tab 停靠资格，保留可见性、窗口输入能力、禁用与 refusesFirstResponder 限制；README/CHANGELOG/Release notes 已写出这一行为变化。[Apple 的 canBecomeKeyView 合约](https://developer.apple.com/documentation/appkit/nsview/canbecomekeyview) 列明可见、窗口支持键盘输入、接受 first responder 三项前提。新增测试保护主动退出/隐藏/禁用等约束。
+
+另一个 AutoSuggest 失败是清除后第二次输入仍在固定 180ms 后读取弹层；已同样改为限时等待可见结果，没有删除其内容断言。修改后相关 8 项本地测试通过（`focus-policy-tests.log`）。
+
+此前环境修复候选 c71ce1e 的 native SwiftPM 全量 490 项测试、无约束告警、全产品 Release、Xcode Gallery、原生验证均通过，记录为 `c71-*.log`。这些是对应候选的证据；后续按钮焦点提交仍须等远端 CI 通过。

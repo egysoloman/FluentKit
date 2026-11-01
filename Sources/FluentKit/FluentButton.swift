@@ -7,6 +7,13 @@ public enum FluentButtonRole: Hashable, Sendable {
 }
 
 public final class FluentButton: NSButton {
+    /// Fluent buttons participate in Tab navigation independently of the native NSButton
+    /// keyboard preference. Applications can opt out with refusesFirstResponder.
+    public override var canBecomeKeyView: Bool {
+        acceptsFirstResponder && !refusesFirstResponder && !isHiddenOrHasHiddenAncestor
+            && window?.canBecomeKey == true && !visibleRect.isEmpty
+    }
+
     public var theme: FluentTheme = .current {
         didSet {
             guard oldValue != theme else { return }

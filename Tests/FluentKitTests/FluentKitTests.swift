@@ -5487,7 +5487,7 @@ final class FluentKitTests: XCTestCase {
 
         let editor = try XCTUnwrap(field.currentEditor() as? NSTextView)
         editor.insertText("Ba", replacementRange: NSRange(location: 0, length: 0))
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.18))
+        waitForUI(window.childWindows?.first?.isVisible == true)
         let secondPopup = try XCTUnwrap(window.childWindows?.first)
         XCTAssertTrue(secondPopup.isVisible)
         host.layoutSubtreeIfNeeded()

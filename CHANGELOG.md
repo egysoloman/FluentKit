@@ -8,6 +8,10 @@ No unreleased changes yet.
 
 ## [0.2.0] - 2026-11-01
 
+- FluentButton is a Tab stop independently of the native NSButton keyboard preference,
+  fixing empty focus cycles and text-field-to-button traversal on macOS 26. Visibility,
+  enabled state, key-window support and `refusesFirstResponder` opt-out still apply.
+
 - Resolve localized resources even when the package builder lowercases script directory names.
   Coalesce scroll viewport changes after parent layout so auto-hidden legacy scrollers release
   their reserved width/height. ToolTip animations now honor the resolved render-context policy

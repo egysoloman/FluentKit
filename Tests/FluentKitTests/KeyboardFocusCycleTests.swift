@@ -20,6 +20,27 @@ private final class TabCommandDelegate: NSObject, NSTextFieldDelegate {
 }
 
 final class KeyboardFocusCycleTests: XCTestCase {
+    @MainActor func testButtonTabStopPreservesVisibilityEnabledAndOptOutRules() {
+        let button = FluentButton(title: "Action")
+        button.frame = NSRect(x: 20, y: 20, width: 100, height: 32)
+        XCTAssertFalse(button.canBecomeKeyView, "An unattached view is not a window tab stop")
+        let root = NSView(frame: NSRect(x: 0, y: 0, width: 600, height: 400))
+        root.addSubview(button)
+        let w = window(root); defer { w.close() }
+        XCTAssertTrue(button.canBecomeKeyView)
+        button.refusesFirstResponder = true
+        XCTAssertFalse(button.canBecomeKeyView)
+        button.refusesFirstResponder = false
+        XCTAssertTrue(button.canBecomeKeyView)
+        button.isEnabled = false
+        XCTAssertFalse(button.canBecomeKeyView)
+        button.isEnabled = true
+        root.isHidden = true
+        XCTAssertFalse(button.canBecomeKeyView)
+        root.isHidden = false
+        XCTAssertTrue(button.canBecomeKeyView)
+    }
+
     @MainActor private func window(_ view: NSView) -> NSWindow {
         _ = NSApplication.shared
         let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 600, height: 400),

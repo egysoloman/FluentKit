@@ -1212,6 +1212,8 @@ transforms, and colors. Numeric and geometric values extrapolate so underdamped 
 overshoot; colors remain clamped in extended sRGB. `transformEffect`, `offset`, `scaleEffect`, and
 `rotationEffect` are visual transforms and do not change the view's layout footprint.
 
+FluentButton participates in Tab navigation even when the system’s native-button keyboard navigation setting is off. Disabled, hidden, clipped or unattached buttons remain excluded; native applications can opt out using `refusesFirstResponder`.
+
 Focus behavior is also declarative. `fluentInitialFocus()` requests the first enabled focusable descendant once a view enters a window, while preserving an existing responder. `fluentFocusScope()` gives controls inside the subtree a deterministic Tab loop; nested scopes keep their own loops. Use `focused(_:)` when application state needs to follow or drive the native responder:
 
 Scopes and ContentDialog retain Tab/Shift-Tab cycles when AppKit rebuilds its window key-view
