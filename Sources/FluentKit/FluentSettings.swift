@@ -271,11 +271,21 @@ public func FluentSettingsExpander<Action: FluentView, Content: FluentView>(
     )
 }
 
+private final class FluentSettingsLabelStack: NSStackView {
+    var onWidthChange: (() -> Void)?
+
+    override func setFrameSize(_ newSize: NSSize) {
+        let widthChanged = frame.width != newSize.width
+        super.setFrameSize(newSize)
+        if widthChanged { onWidthChange?() }
+    }
+}
+
 private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant, FluentFillWidthProviding {
     private let iconView = NSImageView()
     private let titleLabel = NSTextField(labelWithString: "")
     private let descriptionLabel = NSTextField(labelWithString: "")
-    private let labels = NSStackView()
+    private let labels = FluentSettingsLabelStack()
     private let row = NSStackView()
     private var rowTrailingConstraint: NSLayoutConstraint!
     private let actionContainer = FluentSettingsActionContainer()
@@ -341,6 +351,7 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
         descriptionLabel.maximumNumberOfLines = 2
         labels.addArrangedSubview(titleLabel)
         labels.addArrangedSubview(descriptionLabel)
+        labels.onWidthChange = { [weak self] in self?.updateDescriptionWidth() }
 
         actionContainer.translatesAutoresizingMaskIntoConstraints = false
         actionContainer.identifier = NSUserInterfaceItemIdentifier("FluentKit.Settings.ActionContainer")
@@ -397,6 +408,26 @@ private final class FluentSettingsCardHost: NSView, FluentAppearanceParticipant,
     override func layout() {
         super.layout()
         updateChevron(animated: false)
+    }
+
+    private func updateDescriptionWidth() {
+        // A wrapping field's cached intrinsic height may still reflect the old row
+        // width. Use the available alignment width, not its last text-fitting width,
+        // after the stack receives its new frame (the card's layout runs earlier).
+        let descriptionWidth = descriptionLabel.frame(forAlignmentRect: labels.bounds).width
+        guard descriptionWidth > 0, descriptionLabel.preferredMaxLayoutWidth != descriptionWidth else { return }
+        let oldHeight = descriptionLabel.intrinsicContentSize.height
+        descriptionLabel.preferredMaxLayoutWidth = descriptionWidth
+        if descriptionLabel.intrinsicContentSize.height != oldHeight {
+            // Forward the new natural height through custom fitting-size wrappers,
+            // without forcing a recursive layout while AppKit assigns child frames.
+            var ancestor: NSView? = self
+            while let current = ancestor {
+                current.invalidateIntrinsicContentSize()
+                current.needsLayout = true
+                ancestor = current.superview
+            }
+        }
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {

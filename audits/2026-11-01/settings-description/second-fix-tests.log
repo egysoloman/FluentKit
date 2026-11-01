@@ -1,0 +1,30 @@
+Building for debugging...
+[1 / 1]
+[2 / 15] FluentKit
+[4 / 17] FluentKit
+[12 / 23] FluentKit
+[14 / 22] FluentGallery-product
+[18 / 26] FluentGallery-product
+[28 / 41] FluentKitTests-product
+[31 / 41] FluentKitTests-product
+[34 / 42] FluentKitValidation-product
+[34 / 42] FluentKitTests-product
+[34 / 42] FluentGallery-product
+[36 / 42] FluentGallery-product
+[38 / 45] FluentKitTests-product
+[40 / 45] FluentKitTests-product
+[42 / 45] FluentKitValidation-product
+[43 / 45] FluentKitValidation-product
+[45 / 45] FluentKitValidation-product
+Build complete! (41.67秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:08:36.162.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:08:36.163.
+Test Suite 'SettingsDescriptionLayoutTests' started at 2026-11-01 16:08:36.163.
+Test Case '-[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize]' started.
+Test Case '-[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize]' passed (0.161 seconds).
+Test Suite 'SettingsDescriptionLayoutTests' passed at 2026-11-01 16:08:36.325.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.161 (0.162) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 16:08:36.325.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.161 (0.162) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 16:08:36.325.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.161 (0.163) seconds

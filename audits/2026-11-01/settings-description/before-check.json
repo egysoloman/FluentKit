@@ -1,0 +1,17 @@
+{
+  "states": 24,
+  "clippedDescriptions": [
+    {
+      "variant": "light",
+      "state": "narrow",
+      "available": 20,
+      "required": 30
+    },
+    {
+      "variant": "dark",
+      "state": "narrow",
+      "available": 20,
+      "required": 30
+    }
+  ]
+}

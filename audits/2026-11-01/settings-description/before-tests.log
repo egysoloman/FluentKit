@@ -1,0 +1,23 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+Build complete! (2.04秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:06:10.619.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:06:10.619.
+Test Suite 'SettingsDescriptionLayoutTests' started at 2026-11-01 16:06:10.619.
+Test Case '-[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:42: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertGreaterThanOrEqual failed: ("20.5") is less than ("30.0") - All description lines must fit at window width 500.0
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:44: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertGreaterThan failed: ("64.0") is not greater than ("64.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:42: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertGreaterThanOrEqual failed: ("20.5") is less than ("30.0") - All description lines must fit at window width 500.0
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:44: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertGreaterThan failed: ("64.0") is not greater than ("64.0")
+Test Case '-[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize]' failed (0.582 seconds).
+Test Suite 'SettingsDescriptionLayoutTests' failed at 2026-11-01 16:06:11.201.
+	 Executed 1 test, with 4 failures (0 unexpected) in 0.582 (0.582) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 16:06:11.201.
+	 Executed 1 test, with 4 failures (0 unexpected) in 0.582 (0.582) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 16:06:11.201.
+	 Executed 1 test, with 4 failures (0 unexpected) in 0.582 (0.583) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

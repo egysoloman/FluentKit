@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- SettingsCard and SettingsExpander descriptions now remeasure when their available
+  text width changes. Narrowing a window or enlarging a trailing action grows the
+  header to fit its existing two-line description; widening it restores the natural
+  height and moves following content with it. The Gallery's truncated description
+  is covered by scrolling-layout regressions and before/after native renders.
 - ToggleSwitch now commits ordinary keyboard activation on Space release and forwards
   Return and navigation keys to the responder chain. Space does not enter the pointer
   Pressed visual state. Pointer interaction suppresses overlapping keyboard releases;

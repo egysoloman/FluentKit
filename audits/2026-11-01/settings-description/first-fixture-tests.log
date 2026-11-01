@@ -1,0 +1,24 @@
+Building for debugging...
+[Planning deferred tasks]
+[1 / 1]
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+[17 / 19] FluentKitTests-product
+Build complete! (2.87秒)
+Test Suite 'Selected tests' started at 2026-11-01 16:05:32.586.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 16:05:32.588.
+Test Suite 'SettingsDescriptionLayoutTests' started at 2026-11-01 16:05:32.588.
+Test Case '-[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:33: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertEqualWithAccuracy failed: ("619.0") is not equal to ("500.0") +/- ("0.5")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:41: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertGreaterThan failed: ("64.0") is not greater than ("64.0")
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/SettingsDescriptionLayoutTests.swift:41: error: -[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize] : XCTAssertGreaterThan failed: ("64.0") is not greater than ("64.0")
+Test Case '-[FluentKitTests.SettingsDescriptionLayoutTests testScrollingSettingsHeadersReflowAfterWindowResize]' failed (0.631 seconds).
+Test Suite 'SettingsDescriptionLayoutTests' failed at 2026-11-01 16:05:33.219.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.631 (0.631) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 16:05:33.219.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.631 (0.631) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 16:05:33.219.
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.631 (0.633) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

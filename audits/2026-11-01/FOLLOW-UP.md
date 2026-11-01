@@ -33,7 +33,7 @@
 | 25 | **本批 Toggle 与包装层语义修复并验证。** | 原生 switch 角色、数值状态和通知；标签转发、隐藏/恢复、动态语义分组及 combine/contain 已修。独立窗口和实际 Gallery 操作通过；484 项测试、Gallery、Release 门禁通过，原生完整验证补齐队列同步后连续两次通过。此前多处验证失败及旧基线失败保留在 `toggle-accessibility/REPORT.md`，不以一次重跑掩盖；完整 VoiceOver 仍开放。 |
 | 26 | **本批修复并验证：Expander 初始化、动态模板高度和标题裁切。** | 旧 frame 的固定高度 mask 与 stack 最小间距冲突；标题/正文改用自然 Auto Layout 高度，宿主按标题自然高度布局并保留 48pt 最小值。13 项相关回归无约束冲突；完整 487 项、原生、Gallery 和 Release 门禁通过。最终 AppKit 已解析断点 0 命中，24 个 Gallery 状态及实际应用开合复验通过，见 `expander-initial-layout/REPORT.md`。中间版本的动态增长失败已保留；第 19 项 Refresh 已另行修复；第 28 项文字换行保持独立跟踪。 |
 | 27 | **本批修复并验证：Toggle 普通键盘提交时机。** | Space 在释放时切换，Return/方向键传给父级；键盘按住不使用鼠标 Pressed 外观。覆盖指针重叠、重复、取消、生命周期、模型更新与回调重入。旧代码 44 个失败断言，修复后相关 17 项与完整 500 项通过；原生、Gallery、Release 门禁通过，CUA 事件记录确认提交在 KeyUp 之后。见 `toggle-keyboard/REPORT.md`。真实硬件、控制器与完整 Windows 验收仍开放。 |
-| 28 | **截图观察，待独立复现：窄窗口设置卡长描述截断。** | `expander-initial-layout/gallery-final/images/dark-narrow.png` 的外层 Interactive sample 描述未显示末尾 acceptance matrix；检查 `FluentSettingsCardHost` 的两行文字宽度和自然高度，而非只检查外层容器。需要旧基线对比、宽→窄→宽与实际窗口验证，再决定修复。 |
+| 28 | **本批修复并验证：设置卡与折叠卡说明换行高度。** | 实际 Gallery 深浅色窄窗口中，说明所需 30pt / 实得 20pt 的截断已修；标签容器收到最终宽度后更新测量，并向祖先传播新高度。24 个 Release Gallery 状态的两处裁切归零，卡片 64→74pt 并在放宽后恢复；动态说明、尾部 action、RTL 与后续行验证通过。完整 502 项测试、原生验证、Gallery 和 Release 门禁通过，见 `settings-description/REPORT.md`。 |
 | 29 | **已测得构建耗时差异，待控制变量定位。** | 发布 CI 的全产品 Release 构建耗时 720.12 秒，框架/Gallery 已完成后仍在编译 1.27 万行验证程序；本机 native SwiftPM 的验证程序及框架构建为 123.76 秒。CI 已增加作业预算并复用 Release 产物，所有检查保留；后续分别比较编译器、硬件和构建引擎，评估验证程序的拆分，不能先归因为某一个因素。见 `release-0.2.0/REPORT.md`。 |
 
 ## 已处理项与明确边界
@@ -44,7 +44,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前发布候选已通过 489 项测试且全量日志无约束冲突，原生验证、Gallery 构建和 Release 门禁通过，见 `release-0.2.0/REPORT.md`；此前原生验证的失败及队列同步修复见 `toggle-accessibility/REPORT.md`；最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`（本批未安装或替换输入法）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- `v0.2.0` 已正式发布，main/tag CI 均通过（491 项测试，1 项平台能力跳过、0 失败），见 `release-0.2.0/REPORT.md`。发布后 Toggle 键盘及设置卡说明修复的本地完整 502 项测试、原生验证、Gallery 和 Release 门禁通过，见第 27/28 项。最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`；未安装或替换运行中的输入法。以上检查不关闭尚未验收的专项，运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 
