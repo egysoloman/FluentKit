@@ -1,0 +1,2 @@
+bd0b79a62156c114e5ad53c4b2157d66176b4417a4024910dbaeb162c49addd1  /Users/stars/Documents/WinUI-macOS/audits/2026-11-01/popup-anchor-lifecycle/PopupAnchorAudit.swift
+5b76d8e4e4fc9c2078a9c396ed15feea79c217ad2fec4d5a9d2bca1475e2f884  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-quality-release/out/Products/Release/FluentKit.o

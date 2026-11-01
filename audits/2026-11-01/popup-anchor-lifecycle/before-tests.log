@@ -1,0 +1,34 @@
+Building for debugging...
+[Planning deferred tasks]
+[1 / 1]
+[7 / 18] FluentKitTests-product
+[9 / 20] FluentKitTests-product
+[15 / 19] FluentKitTests-product
+[17 / 19] FluentKitTests-product
+Build complete! (2.47秒)
+Test Suite 'Selected tests' started at 2026-11-01 17:52:32.799.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 17:52:32.800.
+Test Suite 'PopupAnchorLifecycleTests' started at 2026-11-01 17:52:32.800.
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testComboBoxFollowsItsActualAutoLayoutSizeChange]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:37: error: -[FluentKitTests.PopupAnchorLifecycleTests testComboBoxFollowsItsActualAutoLayoutSizeChange] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:39: error: -[FluentKitTests.PopupAnchorLifecycleTests testComboBoxFollowsItsActualAutoLayoutSizeChange] : XCTAssertEqualWithAccuracy failed: ("456.0") is not equal to ("276.0") +/- ("0.5")
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testComboBoxFollowsItsActualAutoLayoutSizeChange]' failed (2.623 seconds).
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testMenuTracksAutoLayoutAnchorAfterRootWindowResize]' started.
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testMenuTracksAutoLayoutAnchorAfterRootWindowResize]' passed (0.017 seconds).
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testRetainedComboBoxTargetUnloadClosesPanelWithoutChangingSelection]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:87: error: -[FluentKitTests.PopupAnchorLifecycleTests testRetainedComboBoxTargetUnloadClosesPanelWithoutChangingSelection] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:88: error: -[FluentKitTests.PopupAnchorLifecycleTests testRetainedComboBoxTargetUnloadClosesPanelWithoutChangingSelection] : XCTAssertNil failed: "<NSWindow: 0x78f807d400>"
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testRetainedComboBoxTargetUnloadClosesPanelWithoutChangingSelection]' failed (2.029 seconds).
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testRetainedMenuTargetUnloadClosesPanel]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:72: error: -[FluentKitTests.PopupAnchorLifecycleTests testRetainedMenuTargetUnloadClosesPanel] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:73: error: -[FluentKitTests.PopupAnchorLifecycleTests testRetainedMenuTargetUnloadClosesPanel] : XCTAssertNil failed: "<NSWindow: 0x78f8adcf00>"
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:74: error: -[FluentKitTests.PopupAnchorLifecycleTests testRetainedMenuTargetUnloadClosesPanel] : XCTAssertEqual failed: ("0") is not equal to ("1")
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testRetainedMenuTargetUnloadClosesPanel]' failed (2.033 seconds).
+Test Suite 'PopupAnchorLifecycleTests' failed at 2026-11-01 17:52:39.502.
+	 Executed 4 tests, with 7 failures (0 unexpected) in 6.702 (6.702) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 17:52:39.502.
+	 Executed 4 tests, with 7 failures (0 unexpected) in 6.702 (6.702) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 17:52:39.502.
+	 Executed 4 tests, with 7 failures (0 unexpected) in 6.702 (6.704) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

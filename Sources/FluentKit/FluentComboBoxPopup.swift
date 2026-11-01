@@ -69,6 +69,7 @@ final class FluentComboBoxPopup: NSObject {
     private var localMonitor: Any?
     private var globalMonitor: Any?
     private var screenObserver: FluentPopupScreenObserver?
+    private var anchorObserver: FluentPopupAnchorObserver?
     private var selectionCenterFromTop: CGFloat = 0
     private var contentWidth: CGFloat = 0
     private var preferredVisibleItemCount = 0
@@ -224,6 +225,8 @@ final class FluentComboBoxPopup: NSObject {
         popup.makeFirstResponder(root)
         installOutsideClickMonitors()
         screenObserver = FluentPopupScreenObserver(window: anchorWindow) { [weak self] in self?.reposition() }
+        anchorObserver = FluentPopupAnchorObserver(anchor: anchor, onChange: { [weak self] in self?.reposition() },
+            onUnavailable: { [weak self] in self?.dismiss(animated: false) })
     }
 
     private func reposition() {
@@ -272,6 +275,8 @@ final class FluentComboBoxPopup: NSObject {
 
     func dismiss(animated _: Bool) {
         screenObserver = nil
+        anchorObserver?.invalidate()
+        anchorObserver = nil
         guard let popupPanel = panel else { return }
         popupView?.resetPointerState()
         removeOutsideClickMonitors()
@@ -429,9 +434,13 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     deinit {
+        anchorObserver?.invalidate()
         removeOutsideClickMonitors()
         unregisterAppearanceUpdates()
-        panel?.orderOut(nil)
+        if let panel {
+            panel.parent?.removeChildWindow(panel)
+            panel.orderOut(nil)
+        }
     }
 }
 

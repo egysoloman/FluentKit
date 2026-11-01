@@ -189,6 +189,7 @@ public final class FluentMenuFlyout {
     private var localMonitor: Any?
     private var globalMonitor: Any?
     private var lifecycleObservers: [NSObjectProtocol] = []
+    private var anchorObserver: FluentPopupAnchorObserver?
     private weak var parentWindow: NSWindow?
     private weak var anchorView: NSView?
     private var anchorPoint: NSPoint?
@@ -515,6 +516,10 @@ public final class FluentMenuFlyout {
         )
         panel.makeKeyAndOrderFront(nil)
         panel.makeFirstResponder(presenter)
+        if let anchor = anchorView {
+            anchorObserver = FluentPopupAnchorObserver(anchor: anchor, onChange: { [weak self] in self?.reposition() },
+                onUnavailable: { [weak self] in self?.closeFromKeyboard() })
+        }
     }
 
     private func prepareSurfaceEntrance(
@@ -593,6 +598,8 @@ public final class FluentMenuFlyout {
     }
 
     private func dismissBranch(animated _: Bool) {
+        anchorObserver?.invalidate()
+        anchorObserver = nil
         pendingSubmenuWorkItem?.cancel()
         pendingSubmenuWorkItem = nil
         childFlyout?.dismissBranch(animated: false)
@@ -710,6 +717,7 @@ public final class FluentMenuFlyout {
     }
 
     deinit {
+        anchorObserver?.invalidate()
         removeLifecycleObservers()
         removeOutsideClickMonitors()
         unregisterAppearanceUpdates()

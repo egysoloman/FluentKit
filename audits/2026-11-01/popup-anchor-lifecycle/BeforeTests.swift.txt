@@ -1,0 +1,92 @@
+import XCTest
+@testable import FluentKit
+
+final class PopupAnchorLifecycleTests: XCTestCase {
+    @MainActor private func all(_ v: NSView) -> [NSView] { [v] + v.subviews.flatMap(all) }
+
+    @MainActor private func mount(_ anchor: NSView) -> (NSWindow, NSLayoutConstraint) {
+        _ = NSApplication.shared
+        let frame = NSScreen.main!.visibleFrame
+        let window = NSWindow(contentRect: NSRect(x: frame.minX + 100, y: frame.minY + 100, width: 600, height: 400),
+                              styleMask: [.titled], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        let root = window.contentView!
+        anchor.translatesAutoresizingMaskIntoConstraints = false
+        root.addSubview(anchor)
+        let width = anchor.widthAnchor.constraint(equalToConstant: 220)
+        NSLayoutConstraint.activate([width, anchor.heightAnchor.constraint(equalToConstant: 32),
+            anchor.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -24),
+            anchor.topAnchor.constraint(equalTo: root.topAnchor, constant: 120)])
+        window.makeKeyAndOrderFront(nil)
+        root.layoutSubtreeIfNeeded()
+        return (window, width)
+    }
+
+    @MainActor func testComboBoxFollowsItsActualAutoLayoutSizeChange() throws {
+        let state = FluentState<String?>(wrappedValue: "First")
+        let anchor = FluentComboBox(options: ["First", "Second"], selection: state.projectedValue)._makeView(in: .init(reduceMotion: true))
+        let (window, width) = mount(anchor)
+        defer { window.close() }
+        let native = try XCTUnwrap(all(anchor).compactMap { $0 as? NSComboBox }.first)
+        native.performClick(nil)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        let content = panel.contentView, responder = panel.firstResponder
+        width.constant = 400
+        window.contentView!.layoutSubtreeIfNeeded()
+        XCTAssertEqual(anchor.frame.width, 400, accuracy: 0.01)
+        waitForUI(abs(panel.frame.width - anchor.frame.width) < 0.5)
+        let rect = window.convertToScreen(anchor.convert(anchor.bounds, to: nil))
+        XCTAssertEqual(panel.frame.minX, rect.minX, accuracy: 0.5)
+        XCTAssertTrue(panel === window.childWindows?.first)
+        XCTAssertTrue(panel.contentView === content)
+        XCTAssertTrue(panel.firstResponder === responder)
+        XCTAssertEqual(state.wrappedValue, "First")
+        native.performClick(nil)
+    }
+
+    @MainActor func testMenuTracksAutoLayoutAnchorAfterRootWindowResize() throws {
+        let anchor = NSView()
+        let (window, _) = mount(anchor)
+        let menu = FluentMenuFlyout(items: [FluentMenuItem("One") {}], reduceMotion: true)
+        defer { menu.dismiss(animated: false); window.close() }
+        menu.present(relativeTo: anchor)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        let original = panel.frame, initial = anchor.frame
+        window.setContentSize(NSSize(width: 760, height: 400))
+        window.contentView!.layoutSubtreeIfNeeded()
+        XCTAssertEqual(anchor.frame.minX - initial.minX, 160, accuracy: 0.5)
+        waitForUI(abs(panel.frame.minX - original.minX - 160) < 0.5)
+        XCTAssertTrue(panel === window.childWindows?.first)
+    }
+
+    @MainActor func testRetainedMenuTargetUnloadClosesPanel() throws {
+        let anchor = NSView()
+        let (window, _) = mount(anchor)
+        let menu = FluentMenuFlyout(items: [FluentMenuItem("One") {}], reduceMotion: true)
+        var dismissals = 0
+        menu.onDismiss = { dismissals += 1 }
+        defer { menu.dismiss(animated: false); window.close() }
+        menu.present(relativeTo: anchor)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        anchor.removeFromSuperview()
+        waitForUI(!menu.isPresented)
+        XCTAssertNil(panel.parent)
+        XCTAssertEqual(dismissals, 1)
+        withExtendedLifetime(anchor) {}
+    }
+
+    @MainActor func testRetainedComboBoxTargetUnloadClosesPanelWithoutChangingSelection() throws {
+        let state = FluentState<String?>(wrappedValue: "First")
+        let anchor = FluentComboBox(options: ["First", "Second"], selection: state.projectedValue)._makeView(in: .init(reduceMotion: true))
+        let (window, _) = mount(anchor)
+        defer { window.close() }
+        let native = try XCTUnwrap(all(anchor).compactMap { $0 as? NSComboBox }.first)
+        native.performClick(nil)
+        let panel = try XCTUnwrap(window.childWindows?.first)
+        anchor.removeFromSuperview()
+        waitForUI(!panel.isVisible)
+        XCTAssertNil(panel.parent)
+        XCTAssertEqual(state.wrappedValue, "First")
+        withExtendedLifetime(anchor) {}
+    }
+}

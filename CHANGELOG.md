@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- ComboBox and menu popups follow target size changes and ancestor movement without
+  requiring a screen notification. Retained targets leaving their window, becoming
+  hidden, or scrolling completely out of the viewport dismiss the popup. Same-window
+  reattachment preserves the panel and refreshes its ancestor observers; cleanup
+  removes observers and child-window ownership without changing the selection.
+
 - MenuFlyout constrains oversized content to the target monitor's work area and
   scrolls the complete menu document vertically. Keyboard navigation and typeahead
   reveal the focused item; nested menus follow visible rows and close when their

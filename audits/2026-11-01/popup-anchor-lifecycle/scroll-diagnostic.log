@@ -1,0 +1,28 @@
+Building for debugging...
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+[11 / 13] FluentKitTests-product
+Build complete! (2.60秒)
+Test Suite 'Selected tests' started at 2026-11-01 18:10:29.623.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 18:10:29.626.
+Test Suite 'PopupAnchorLifecycleTests' started at 2026-11-01 18:10:29.626.
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:204: error: -[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:206: error: -[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets] : XCTAssertTrue failed
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:204: error: -[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:209: error: -[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/PopupAnchorLifecycleTests.swift:210: error: -[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets] : XCTAssertFalse failed
+Test Case '-[FluentKitTests.PopupAnchorLifecycleTests testAncestorScrollingRepositionsThenClosesFullyClippedTargets]' failed (7.192 seconds).
+Test Suite 'PopupAnchorLifecycleTests' failed at 2026-11-01 18:10:36.818.
+	 Executed 1 test, with 5 failures (0 unexpected) in 7.192 (7.192) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 18:10:36.818.
+	 Executed 1 test, with 5 failures (0 unexpected) in 7.192 (7.193) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 18:10:36.818.
+	 Executed 1 test, with 5 failures (0 unexpected) in 7.192 (7.195) seconds
+SCROLL initial combo=false anchor=(24.0, 100.0, 220.0, 32.0) visible=(-24.0, -268.0, 600.0, 400.0) document=(0.0, 0.0, 600.0, 1000.0) clip=(0.0, 0.0, 600.0, 400.0) notifications=true panel=(124.0, 389.0, 220.0, 40.0)
+SCROLL partial combo=false anchor=(24.0, 100.0, 220.0, 32.0) visible=(-24.0, -318.0, 268.0, 284.0) clip=(0.0, 50.0, 600.0, 400.0) panel=(124.0, 587.0, 220.0, 40.0) attached=false
+SCROLL initial combo=true anchor=(24.0, 100.0, 220.0, 32.0) visible=(0.0, 0.0, 220.0, 32.0) document=(0.0, 0.0, 600.0, 1000.0) clip=(0.0, 0.0, 600.0, 400.0) notifications=true panel=(124.0, 389.0, 220.0, 80.0)
+SCROLL partial combo=true anchor=(24.0, 100.0, 220.0, 32.0) visible=(0.0, 0.0, 0.0, 0.0) clip=(0.0, 50.0, 600.0, 400.0) panel=(124.0, 587.0, 220.0, 80.0) attached=true
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)
