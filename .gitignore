@@ -16,3 +16,6 @@ xcuserdata/
 # Local upstream source used only as a visual/behavioral reference.
 /microsoft-ui-xaml-winui3-release-2.3.1/
 /WinUI-Gallery-*/
+
+# Generated audit evidence stays local; maintained checks belong in tools/quality.
+/audits/
