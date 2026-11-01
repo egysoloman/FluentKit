@@ -3,6 +3,18 @@ import XCTest
 
 @MainActor
 final class ComboBoxLivePopupTests: XCTestCase {
+    private final class ClockWindow: NSWindow {
+        var pausesPopupClock = false
+        override func addChildWindow(_ childWin: NSWindow, ordered place: NSWindow.OrderingMode) {
+            super.addChildWindow(childWin, ordered: place)
+            guard pausesPopupClock, let layer = childWin.contentView?.layer else { return }
+            // Pause before the popup installs its entrance, so a slow native presentation
+            // cannot finish the animation before the cancellation assertion observes it.
+            let time = layer.convertTime(CACurrentMediaTime(), from: nil)
+            layer.speed = 0
+            layer.timeOffset = time
+        }
+    }
     private struct Fixture {
         let window: NSWindow
         let hosting: FluentViewHost<FluentComboBox<Int>>
@@ -17,15 +29,16 @@ final class ComboBoxLivePopupTests: XCTestCase {
     }
 
     private func all(_ view: NSView) -> [NSView] { [view] + view.subviews.flatMap(all) }
-    private func mount(_ mode: FluentComboBoxMode = .selection, reduced: Bool = true) throws -> Fixture {
+    private func mount(_ mode: FluentComboBoxMode = .selection, reduced: Bool = true, pausePopupClock: Bool = false) throws -> Fixture {
         _ = NSApplication.shared
         let selection = FluentState<Int?>(wrappedValue: 20)
         let definition = FluentComboBox(options: Array(0..<40), selection: selection.projectedValue, mode: mode,
             title: { "Option \($0)" })
         let hosting = FluentViewHost(definition, context: .init(reduceMotion: reduced, layoutDirection: .leftToRight))
-        let window = NSWindow(contentRect: NSRect(x: 150, y: 180, width: 700, height: 400),
+        let window = ClockWindow(contentRect: NSRect(x: 150, y: 180, width: 700, height: 400),
             styleMask: [.titled], backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
+        window.pausesPopupClock = pausePopupClock
         window.contentView?.addSubview(hosting)
         hosting.translatesAutoresizingMaskIntoConstraints = true
         hosting.frame = NSRect(x: 60, y: 220, width: 180, height: 32)
@@ -98,7 +111,7 @@ final class ComboBoxLivePopupTests: XCTestCase {
     }
 
     func testLiveReduceMotionSettlesOpeningAndDoesNotReplay() throws {
-        let f = try mount(reduced: false)
+        let f = try mount(reduced: false, pausePopupClock: true)
         defer { f.window.close() }
         let (panel, host, _, _) = try open(f)
         XCTAssertFalse((host.revealMaskLayer.animationKeys() ?? []).isEmpty)
