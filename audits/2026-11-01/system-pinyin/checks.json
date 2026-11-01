@@ -1,0 +1,14 @@
+{
+  "coordinateQueries": 9,
+  "errors": [],
+  "systemPinyinMarkedQueries": 0,
+  "sourceMismatchesSinceBuild": [
+    "/Users/stars/Downloads/Fluent IME/Sources/FluentIME/CandidateView.swift",
+    "/Users/stars/Downloads/Fluent IME/Sources/FluentIME/FluentInputController.swift",
+    "/Users/stars/Downloads/Fluent IME/Sources/FluentIME/Preferences.swift",
+    "/Users/stars/Downloads/Fluent IME/Sources/FluentIME/SettingsWindow.swift",
+    "/Users/stars/Downloads/Fluent IME/Sources/FluentIMECore/InputSession.swift",
+    "/Users/stars/Downloads/Fluent IME/Sources/FluentIMECore/RimeEngine.swift"
+  ],
+  "candidateWindowValidation": "not established; no stable system-Pinyin composition was captured"
+}

@@ -26,7 +26,7 @@
 
 392 项完整测试、原生验证、Gallery Debug 构建及 Release 门禁见 `../wrapper-content/after-final/`。实际 IME Release 产品在本批也以 warnings-as-errors 构建成功，见 `ime-release.log`。本批原生日志未出现约束诊断。
 
-真实候选浮层的跨进程位置仍未关闭：编辑器报告输入源 `org.fluentime.inputmethod.FluentIME.Hans`，但工具只读取得已安装输入法的设置窗口，未获得候选窗口坐标。`settings/run.log` 还出现 IMK mach-port 消息错误，不能据此宣称候选链路正常。录屏中蓝色候选条的归属、真实 IMK 行矩形、移动/缩放回调及屏幕边界仍需专项验证。既有同进程探针的 6pt 边框重叠和移动后滞后证据保留在 `../candidate-popup/REPORT.md`，未盲目添加固定偏移。
+真实候选浮层的跨进程位置仍未关闭：编辑器报告输入源 `org.fluentime.inputmethod.FluentIME.Hans`，但工具只读取得已安装输入法的设置窗口，未获得候选窗口坐标。`settings/run.log` 还出现 IMK mach-port 消息错误，不能据此宣称候选链路正常。用户后来确认录屏蓝色候选条来自 macOS 自带拼音；真实 IMK 行矩形、移动/缩放回调及屏幕边界仍需专项验证，客户端后续核查见 `../system-pinyin/REPORT.md`。既有同进程探针的 6pt 边框重叠和移动后滞后证据保留在 `../candidate-popup/REPORT.md`，未盲目添加固定偏移。
 
 已安装输入法是旧静态链接客户端，不会因本仓库编译而自动更新。Windows 对拍、真实触屏、高刷帧时和 VoiceOver 仍保留在总计划；本批不把这些标记为通过。
 
