@@ -1,0 +1,73 @@
+Building for debugging...
+[1 / 4] FluentKit
+[2 / 7] FluentKitTests-product
+[5 / 10] FluentKitTests-product
+[8 / 11] FluentKitTests-product
+[10 / 14] FluentKitTests-product
+[12 / 14] FluentKitTests-product
+Build complete! (2.78秒)
+Test Suite 'Selected tests' started at 2026-11-01 14:53:14.818.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 14:53:14.820.
+Test Suite 'AutoSuggestInteractionTests' started at 2026-11-01 14:53:14.820.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testBlurAndRefocusDoNotAdoptSuggestionPreviewAsTypedQuery]' passed (0.737 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCancellationRestoresQueryAfterSelectedSuggestionReplacement]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCancellationRestoresQueryAfterSelectedSuggestionReplacement]' passed (2.126 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testClosedSuggestionsOnlyEscapeRestoresOriginalQuery]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testClosedSuggestionsOnlyEscapeRestoresOriginalQuery]' passed (0.393 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCompositionCancelsOldDebounceAndExternalResetWinsOnCommit]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testCompositionCancelsOldDebounceAndExternalResetWinsOnCommit]' passed (0.437 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testDirectionChangeWhileEditingKeepsEditorSelectionAndPopup]' passed (0.219 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEditorShowsWholeGlyphsAndKeepsAlignmentDuringPreviewAndReset]' passed (0.839 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeDuringDebounceDoesNotReopenAndDetachClosesPanel]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeDuringDebounceDoesNotReopenAndDetachClosesPanel]' passed (0.232 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeRestoresOriginalQueryAndBindingImmediately]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testEscapeRestoresOriginalQueryAndBindingImmediately]' passed (0.217 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetInvalidatesSelectionAndClosesOldSuggestions]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetInvalidatesSelectionAndClosesOldSuggestions]' passed (0.230 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetRemainsCancellationBaselineAcrossFocusChanges]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testExternalResetRemainsCancellationBaselineAcrossFocusChanges]' passed (0.842 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHeaderAndRTLAdornmentsFitInsideTheirBounds]' passed (0.011 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testHelperButtonsSkipTabButRetainActionsAndEditingFocus]' passed (0.067 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testLiveProviderUpdatePreservesSelectedIDAndResizesFromAnchor]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testLiveProviderUpdatePreservesSelectedIDAndResizesFromAnchor]' passed (0.196 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testObservedBodyRefreshKeepsOriginalQueryAndCandidateSelection]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/AutoSuggestInteractionTests.swift:563: error: -[FluentKitTests.AutoSuggestInteractionTests testObservedBodyRefreshKeepsOriginalQueryAndCandidateSelection] : XCTAssertTrue failed - Timed out waiting for the expected UI state
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testObservedBodyRefreshKeepsOriginalQueryAndCandidateSelection]' failed (2.682 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupMovesWithAnchorResizesItsClipAndFlipsInsideScreen]' passed (0.211 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testPopupTracksScrollingAncestor]' passed (0.323 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testProviderCannotPublishResultsForQueryReplacedDuringItsCallback]' passed (0.185 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testRemovedAndClosedSuggestionRowsCannotInvokeLater]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testRemovedAndClosedSuggestionRowsCannotInvokeLater]' passed (0.222 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSingleResultDoesNotCycleAndUpdateTextOnSelectCanBeDisabled]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSingleResultDoesNotCycleAndUpdateTextOnSelectCanBeDisabled]' passed (0.196 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSubmitSynchronizesUnobservedModelBeforeResolvingChosenSuggestion]' passed (0.224 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSuggestionViewportScrollsToKeyboardSelection]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testSuggestionViewportScrollsToKeyboardSelection]' passed (0.224 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testTextChangeReasonsAreDebouncedAndCallbacksSupplyCurrentResults]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testTextChangeReasonsAreDebouncedAndCallbacksSupplyCurrentResults]' passed (0.692 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testUnchangedRefreshPreservesManualScrollButResizeRevealsSelection]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testUnchangedRefreshPreservesManualScrollButResizeRevealsSelection]' passed (0.225 seconds).
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testZeroMaximumHidesSuggestionsAndNegativeUsesAvailableSpace]' started.
+Test Case '-[FluentKitTests.AutoSuggestInteractionTests testZeroMaximumHidesSuggestionsAndNegativeUsesAvailableSpace]' passed (0.190 seconds).
+Test Suite 'AutoSuggestInteractionTests' failed at 2026-11-01 14:53:26.743.
+	 Executed 24 tests, with 1 failure (0 unexpected) in 11.920 (11.923) seconds
+Test Suite 'NavigationInterruptionTests' started at 2026-11-01 14:53:26.743.
+Test Case '-[FluentKitTests.NavigationInterruptionTests testRapidNavigationKeepsVisibleOutgoingPageUntilReplacementEnters]' started.
+Test Case '-[FluentKitTests.NavigationInterruptionTests testRapidNavigationKeepsVisibleOutgoingPageUntilReplacementEnters]' passed (0.624 seconds).
+Test Suite 'NavigationInterruptionTests' passed at 2026-11-01 14:53:27.368.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.624 (0.625) seconds
+Test Suite 'FluentKitTests.xctest' failed at 2026-11-01 14:53:27.368.
+	 Executed 25 tests, with 1 failure (0 unexpected) in 12.544 (12.548) seconds
+Test Suite 'Selected tests' failed at 2026-11-01 14:53:27.368.
+	 Executed 25 tests, with 1 failure (0 unexpected) in 12.544 (12.550) seconds
+Note: Some test targets reported failures:
+  - FluentKitTests (XCTest)

@@ -19,7 +19,7 @@ FluentKit 0.2.0 expands the native Swift/AppKit control library and fixes render
 
 ## Validation and remaining work
 
-The release candidate passed 489 XCTest tests with no AppKit constraint diagnostics, native executable validation, Debug/Release builds, the Xcode Gallery build, and deterministic Release rendering/input gates. Light/Dark/RTL Gallery captures were regenerated and reviewed.
+The release candidate passed 491 XCTest tests with no AppKit constraint diagnostics, native executable validation, Debug/Release builds, the Xcode Gallery build, and deterministic Release rendering/input gates. Light/Dark/RTL Gallery captures were regenerated and reviewed.
 
 Known follow-ups include Toggle keyboard commit timing and narrow SettingsCard description wrapping. Physical mouse/trackpad/touch acceptance, real system IME/VoiceOver sessions, multi-display scaling/wallpaper behavior, and Windows pixel/frame comparisons remain open. Full control parity and Lottie playback are not claimed. See [the follow-up queue](https://github.com/egysoloman/FluentKit/blob/v0.2.0/audits/2026-11-01/FOLLOW-UP.md).
 
