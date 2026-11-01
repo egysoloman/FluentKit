@@ -1,0 +1,2 @@
+548c192fb138daee3c818808d02a6abe9284b66a4b9bf1c135cec4370da075fe  /Users/stars/Documents/WinUI-macOS/audits/2026-11-01/menu-workarea/MenuWorkAreaAudit.swift
+97d9e7df4c78601ec0b17c3decf80c4d6e3d72e6522b497b42a53f9cf4d3765e  /var/folders/_0/mlkt8lqx2bxgnj5f74lpzmyr0000gn/T/fluentkit-quality-release/out/Products/Release/FluentKit.o

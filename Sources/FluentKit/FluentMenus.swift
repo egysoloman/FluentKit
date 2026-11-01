@@ -182,6 +182,7 @@ public final class FluentMenuFlyout {
     private weak var owner: FluentMenuFlyout?
     private var panel: FluentMenuPanel?
     private var presenter: FluentMenuPresenterView?
+    private weak var viewport: FluentMenuViewport?
     private var childFlyout: FluentMenuFlyout?
     private var childIndex: Int?
     private var pendingSubmenuWorkItem: DispatchWorkItem?
@@ -312,7 +313,7 @@ public final class FluentMenuFlyout {
         matchesAnchorWidth ? max(minimumWidth, anchor.bounds.width) : minimumWidth
     }
 
-    private func presentationOrigin(anchor: NSView, size: NSSize) -> (point: NSPoint, edge: FluentPopupRevealEdge)? {
+    private func presentationLayout(anchor: NSView, preferredSize: NSSize) -> (point: NSPoint, size: NSSize, edge: FluentPopupRevealEdge)? {
         guard let anchorWindow = anchor.window else { return nil }
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
         let rtl = layoutDirection == .rightToLeft
@@ -325,6 +326,10 @@ public final class FluentMenuFlyout {
             targetPoint = FluentScreenPlacement.topLeading(of: anchorRect, rightToLeft: rtl)
         }
         let visibleFrame = FluentScreenPlacement.visibleFrame(at: targetPoint, fallback: anchorWindow)
+        // FlyoutBase caps the presenter at the available monitor bounds. As in
+        // FrameworkElement::GetMinMax, an explicit minimum still wins over the maximum.
+        let size = NSSize(width: max(resolvedMinimumWidth(for: anchor), min(preferredSize.width, max(1, visibleFrame.width - 8))),
+                          height: min(preferredSize.height, max(1, visibleFrame.height - 8)))
         var origin: NSPoint
         if owner != nil {
             origin = NSPoint(x: rtl ? anchorRect.minX - size.width - 2 : anchorRect.maxX + 2,
@@ -334,7 +339,7 @@ public final class FluentMenuFlyout {
             }
         } else if placement == .comboBoxSelection {
             origin = NSPoint(x: rtl ? anchorRect.maxX - size.width : anchorRect.minX,
-                             y: anchorRect.midY - size.height + (selectedRowCenterFromTop() ?? size.height / 2))
+                             y: anchorRect.midY - size.height + min(size.height, max(0, selectedRowCenterFromTop() ?? size.height / 2)))
         } else if placement == .automatic, let point = anchorPoint {
             let screenPoint = anchorWindow.convertPoint(toScreen: anchor.convert(point, to: nil))
             origin = NSPoint(x: screenPoint.x - (rtl ? size.width : 0), y: screenPoint.y - size.height)
@@ -343,22 +348,28 @@ public final class FluentMenuFlyout {
             origin = belowOrigin(anchorRect: anchorRect, size: size, visibleFrame: visibleFrame, rightToLeft: rtl)
         }
         let final = clamped(origin, size: size, visibleFrame: visibleFrame)
-        return (final, final.y + size.height / 2 <= anchorRect.midY ? .top : .bottom)
+        return (final, size, final.y + size.height / 2 <= anchorRect.midY ? .top : .bottom)
     }
 
     private func presentAnchoredPanel() {
         guard let anchor = anchorView, let window = anchor.window else { return }
         let minimum = resolvedMinimumWidth(for: anchor)
         let size = FluentMenuPresenterView.preferredSize(for: items, theme: theme, minimumWidth: minimum, itemHeight: itemHeight)
-        guard let origin = presentationOrigin(anchor: anchor, size: size) else { return }
-        presentPanel(in: window, origin: origin.point, direction: layoutDirection,
+        guard let origin = presentationLayout(anchor: anchor, preferredSize: size) else { return }
+        presentPanel(in: window, origin: origin.point, size: origin.size, direction: layoutDirection,
                      presenterMinimumWidth: minimum, revealEdge: origin.edge)
     }
 
     private func positionPanel() {
-        guard let panel, let presenter, let host = transitionHost, let anchor = anchorView else { return }
-        let size = presenter.preferredSize
-        guard let origin = presentationOrigin(anchor: anchor, size: size) else { return }
+        guard let panel, let presenter, let viewport, let host = transitionHost, let anchor = anchorView,
+              let geometry = presentationLayout(anchor: anchor, preferredSize: presenter.preferredSize) else { return }
+        let size = geometry.size
+        viewport.setFrameSize(size)
+        viewport.needsLayout = true
+        viewport.layoutSubtreeIfNeeded()
+        presenter.revealKeyboardSelection()
+        // Selection-centered placement uses the selected row's viewport coordinate.
+        guard let origin = presentationLayout(anchor: anchor, preferredSize: presenter.preferredSize) else { return }
         let resized = host.bounds.size != size
         let frame = NSRect(origin: origin.point, size: size)
         if panel.frame != frame { panel.setFrame(frame, display: true) }
@@ -401,7 +412,7 @@ public final class FluentMenuFlyout {
         var top: CGFloat = 2
         for (index, item) in items.enumerated() {
             if index == selectedIndex {
-                return top + itemHeight / 2
+                return top + itemHeight / 2 - (viewport?.scrollOffset ?? 0)
             }
             top += item.isSeparator ? 9 : itemHeight
         }
@@ -429,6 +440,7 @@ public final class FluentMenuFlyout {
     private func presentPanel(
         in anchorWindow: NSWindow,
         origin: NSPoint,
+        size: NSSize,
         direction: NSUserInterfaceLayoutDirection,
         presenterMinimumWidth: CGFloat,
         revealEdge: FluentPopupRevealEdge
@@ -440,7 +452,8 @@ public final class FluentMenuFlyout {
             minimumWidth: presenterMinimumWidth,
             itemHeight: itemHeight
         )
-        let size = presenter.preferredSize
+        let viewport = FluentMenuViewport(presenter: presenter)
+        viewport.frame = NSRect(origin: .zero, size: size)
         let panel = FluentMenuPanel(
             contentRect: NSRect(origin: .zero, size: size),
             styleMask: [.borderless],
@@ -460,7 +473,7 @@ public final class FluentMenuFlyout {
         // One shared Liquid Glass surface owns the fill and edge; the theme-level material switch
         // replaces it with an opaque fallback without changing popup geometry.
         let transitionHost = FluentPopupTransitionHost(
-            content: presenter,
+            content: viewport,
             theme: theme,
             cornerRadius: theme.designTokens.cardCornerRadius,
             name: "FluentKit.MenuFlyout"
@@ -478,8 +491,17 @@ public final class FluentMenuFlyout {
         anchorWindow.addChildWindow(panel, ordered: .above)
         self.panel = panel
         self.presenter = presenter
+        self.viewport = viewport
         self.transitionHost = transitionHost
+        viewport.onScroll = { [weak self, weak viewport] in
+            guard let self, self.viewport === viewport else { return }
+            self.viewportDidScroll()
+        }
         panel.setFrameOrigin(origin)
+        transitionHost.layoutSubtreeIfNeeded()
+        viewport.layoutSubtreeIfNeeded()
+        if placement == .comboBoxSelection { presenter.revealCheckedSelection() }
+        positionPanel()
         if owner == nil {
             installOutsideClickMonitors()
             installLifecycleObservers(in: anchorWindow)
@@ -524,7 +546,8 @@ public final class FluentMenuFlyout {
     private func openSubmenu(index: Int, row: FluentMenuItemRow) {
         pendingSubmenuWorkItem?.cancel()
         pendingSubmenuWorkItem = nil
-        guard let item = presenter?.item(at: index), item.isEnabled, item.hasSubmenu else {
+        guard row.window === panel, row.visibleRect.intersects(row.bounds),
+              let item = presenter?.item(at: index), item.isEnabled, item.hasSubmenu else {
             closeChild()
             return
         }
@@ -536,12 +559,27 @@ public final class FluentMenuFlyout {
         child.presentSubmenu(relativeTo: row)
     }
 
-    private func closeChild() {
-        pendingSubmenuWorkItem?.cancel()
-        pendingSubmenuWorkItem = nil
+    private func closeChild(cancelPending: Bool = true) {
+        if cancelPending {
+            pendingSubmenuWorkItem?.cancel()
+            pendingSubmenuWorkItem = nil
+        }
         childFlyout?.dismissBranch(animated: false)
         childFlyout = nil
         childIndex = nil
+    }
+
+    private func viewportDidScroll() {
+        presenter?.refreshPointerAfterScrolling()
+        guard let child = childFlyout, let anchor = child.anchorView else { return }
+        if anchor.window !== panel || !anchor.visibleRect.intersects(anchor.bounds) {
+            let wasKey = child.containsKeyWindow
+            closeChild(cancelPending: false)
+            if let presenter { panel?.makeFirstResponder(presenter) }
+            if wasKey { panel?.makeKey() }
+        } else {
+            child.reposition()
+        }
     }
 
     private func closeFromKeyboard() {
@@ -561,6 +599,8 @@ public final class FluentMenuFlyout {
         childFlyout = nil
         childIndex = nil
         presenter?.deactivate()
+        viewport?.onScroll = nil
+        viewport = nil
         if owner == nil {
             removeOutsideClickMonitors()
             removeLifecycleObservers()
@@ -692,10 +732,70 @@ private final class FluentMenuPanel: NSPanel {
     override var canBecomeKey: Bool { true }
 }
 
-private final class FluentMenuPresenterView: NSView {
-    var preferredSize: NSSize {
-        Self.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth, itemHeight: itemHeight)
+/// WinUI MenuFlyoutPresenter's vertical ScrollViewer keeps the complete menu document.
+private final class FluentMenuViewport: NSView {
+    let scrollView = FluentViewportScrollView()
+    private let presenter: FluentMenuPresenterView
+    var onScroll: (() -> Void)?
+    var scrollOffset: CGFloat { scrollView.contentView.bounds.minY }
+    private var boundsObserver: NSObjectProtocol?
+    private var scrollNotificationPending = false
+
+    override var isFlipped: Bool { true }
+
+    init(presenter: FluentMenuPresenterView) {
+        self.presenter = presenter
+        super.init(frame: .zero)
+        setAccessibilityElement(false)
+        scrollView.setAccessibilityElement(false)
+        scrollView.contentView.setAccessibilityElement(false)
+        scrollView.drawsBackground = false
+        scrollView.contentView.drawsBackground = false
+        scrollView.borderType = .noBorder
+        scrollView.scrollerStyle = .overlay
+        scrollView.autohidesScrollers = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.horizontalScrollElasticity = .none
+        scrollView.verticalScrollElasticity = .none
+        scrollView.documentView = presenter
+        addSubview(scrollView)
+        scrollView.onViewportSizeChange = { [weak self] in self?.needsLayout = true }
+        scrollView.contentView.postsBoundsChangedNotifications = true
+        boundsObserver = NotificationCenter.default.addObserver(forName: NSView.boundsDidChangeNotification,
+            object: scrollView.contentView, queue: .main) { [weak self] _ in self?.scheduleScrollNotification() }
     }
+
+    override func layout() {
+        super.layout()
+        scrollView.frame = bounds
+        scrollView.userInterfaceLayoutDirection = presenter.userInterfaceLayoutDirection
+        scrollView.hasVerticalScroller = presenter.preferredSize.height > bounds.height
+        scrollView.tile()
+        presenter.frame = NSRect(x: 0, y: 0, width: scrollView.contentSize.width,
+                                 height: max(scrollView.contentSize.height, presenter.preferredSize.height))
+        presenter.layoutSubtreeIfNeeded()
+        scrollView.reflectScrolledClipView(scrollView.contentView)
+    }
+
+    private func scheduleScrollNotification() {
+        guard !scrollNotificationPending else { return }
+        scrollNotificationPending = true
+        // Bounds can change in the middle of a retained-row update; inspect anchors only
+        // after the new row frames and viewport have settled.
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            self.scrollNotificationPending = false
+            self.layoutSubtreeIfNeeded()
+            self.onScroll?()
+        }
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    deinit { if let boundsObserver { NotificationCenter.default.removeObserver(boundsObserver) } }
+}
+
+private final class FluentMenuPresenterView: NSView {
+    private(set) var preferredSize = NSSize.zero
     var onDismiss: (() -> Void)?
     var onSelection: ((Int, FluentMenuItemRow) -> Void)?
     var onSubmenu: ((Int, FluentMenuItemRow) -> Void)?
@@ -766,6 +866,7 @@ private final class FluentMenuPresenterView: NSView {
         self.layoutDirection = layoutDirection
         self.minimumWidth = minimumWidth
         userInterfaceLayoutDirection = layoutDirection
+        preferredSize = Self.preferredSize(for: items, theme: theme, minimumWidth: minimumWidth, itemHeight: itemHeight)
         let checkSlot = items.contains { !$0.isSeparator && $0.reservesCheckSlot }
         let iconSlot = items.contains { !$0.isSeparator && $0.icon != nil }
         itemRows = [:]
@@ -896,6 +997,7 @@ private final class FluentMenuPresenterView: NSView {
         }
         showsKeyboardSelection = true
         updateSelection()
+        revealKeyboardSelection()
         if let selectedIndex, let row = itemRows[selectedIndex] {
             onSelection?(selectedIndex, row)
             NSAccessibility.post(element: row, notification: .focusedUIElementChanged)
@@ -909,6 +1011,7 @@ private final class FluentMenuPresenterView: NSView {
         selectedIndex = index
         showsKeyboardSelection = keyboard
         updateSelection()
+        revealKeyboardSelection()
         if let row = itemRows[index] {
             onSelection?(index, row)
             if announce { NSAccessibility.post(element: row, notification: .focusedUIElementChanged) }
@@ -940,6 +1043,26 @@ private final class FluentMenuPresenterView: NSView {
             selectedIndex = nil
             updateSelection()
         }
+    }
+
+    func revealKeyboardSelection() {
+        guard showsKeyboardSelection, let index = selectedIndex, let row = itemRows[index] else { return }
+        scrollToVisible(row.frame)
+    }
+
+    func revealCheckedSelection() {
+        guard let index = items.firstIndex(where: { !$0.isSeparator && $0.isEnabled && $0.state == .on }) ?? enabledIndices.first,
+              let row = itemRows[index] else { return }
+        scrollToVisible(row.frame)
+    }
+
+    func refreshPointerAfterScrolling() {
+        resetPointerState()
+        // Programmatic scrolling must not replace keyboard focus with a stationary cursor.
+        guard !showsKeyboardSelection, let window, window.isVisible, window.isKeyWindow else { return }
+        let point = convert(window.mouseLocationOutsideOfEventStream, from: nil)
+        guard visibleRect.contains(point), let (index, row) = itemRows.first(where: { $0.value.frame.contains(point) }) else { return }
+        setHoveredRow(row, index: index, hovering: true)
     }
 
     func update(theme: FluentTheme) {
@@ -1218,6 +1341,7 @@ private final class FluentMenuItemRow: NSControl {
         )
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = rightToLeft ? .right : .left
+        paragraph.lineBreakMode = .byClipping
         (item.title as NSString).draw(
             in: NSRect(
                 x: titleRect.minX,

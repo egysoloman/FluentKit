@@ -1,0 +1,104 @@
+Building for debugging...
+[Using on-disk description]
+[1 / 1]
+[6 / 29] FluentKit
+[8 / 31] FluentKit
+[19 / 43] FluentKit
+[20 / 43] FluentKit
+[24 / 45] FluentKit
+[26 / 46] FluentGallery-product
+[30 / 50] FluentKit
+[30 / 50] FluentGallery-product
+[31 / 50] FluentKit
+[31 / 50] FluentGallery-product
+[32 / 50] FluentKit
+[34 / 50] FluentKit
+[38 / 49] FluentKit-product
+[38 / 49] FluentGallery-product
+[40 / 51] FluentGallery-product
+[50 / 66] FluentKitTests-product
+[53 / 65] FluentKitTests-product
+[57 / 65] FluentKitTests-product
+[57 / 66] FluentKitTests-product
+[59 / 66] FluentKitTests-product
+[61 / 66] FluentKitTests-product
+[61 / 64] FluentKitValidation-product
+[62 / 64] FluentKitValidation-product
+[64 / 64] FluentKitValidation-product
+Build complete! (50.71秒)
+Test Suite 'Selected tests' started at 2026-11-01 17:35:00.374.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 17:35:00.376.
+Test Suite 'InputModeLayoutTests' started at 2026-11-01 17:35:00.376.
+Test Case '-[FluentKitTests.InputModeLayoutTests testComboBoxPopupUsesTouchPaddingAndMinimumWidth]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testComboBoxPopupUsesTouchPaddingAndMinimumWidth]' passed (0.144 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testCommandBarOverflowRowsGrowForTouch]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testCommandBarOverflowRowsGrowForTouch]' passed (0.022 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testFlipViewButtonsIgnoreTouchPointers]' passed (0.048 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testMenuFlyoutUsesNarrowRowsForPointersAndDefaultRowsForTouch]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testMenuFlyoutUsesNarrowRowsForPointersAndDefaultRowsForTouch]' passed (0.029 seconds).
+Test Case '-[FluentKitTests.InputModeLayoutTests testTextCommandsPreferPrimaryForTouchAndPenOnly]' started.
+Test Case '-[FluentKitTests.InputModeLayoutTests testTextCommandsPreferPrimaryForTouchAndPenOnly]' passed (0.007 seconds).
+Test Suite 'InputModeLayoutTests' passed at 2026-11-01 17:35:00.627.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.250 (0.251) seconds
+Test Suite 'MenuLifecycleTests' started at 2026-11-01 17:35:00.627.
+Test Case '-[FluentKitTests.MenuLifecycleTests testContextMenuRefreshUpdatesWrappedContentAndOpenMenuAction]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testContextMenuRefreshUpdatesWrappedContentAndOpenMenuAction]' passed (0.025 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testDeclarativeRefreshKeepsOpenMenuRowsSelectionAndLatestAction]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testDeclarativeRefreshKeepsOpenMenuRowsSelectionAndLatestAction]' passed (0.018 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testDisabledBranchClosesOnlyItsSubmenuAndRecoversRootSelection]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testDisabledBranchClosesOnlyItsSubmenuAndRecoversRootSelection]' passed (0.022 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testLiveTypographyChangeResizesAnchorAndMenuWithoutLosingSelection]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testLiveTypographyChangeResizesAnchorAndMenuWithoutLosingSelection]' passed (0.023 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testMenuBuildersComposeConditionsLoopsArraysAndEmptyBranches]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testMenuBuildersComposeConditionsLoopsArraysAndEmptyBranches]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testNestedStableIDsKeepPanelsRowsSelectionAndLatestLeafAction]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testNestedStableIDsKeepPanelsRowsSelectionAndLatestLeafAction]' passed (0.021 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testOpenRootAndSubmenuFollowAnchorMovesAndDirectionChanges]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testOpenRootAndSubmenuFollowAnchorMovesAndDirectionChanges]' passed (0.024 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testPendingHoverTracksRetainedIdentityAndNeverOpensAReplacementRow]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testPendingHoverTracksRetainedIdentityAndNeverOpensAReplacementRow]' passed (0.511 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testQueuedClickCannotInvokeAfterItsRowIsRemovedOrMenuIsDismissed]' passed (0.128 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testRemovedDisabledOrEmptyTopLevelItemsCloseTheirMenuSafely]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testRemovedDisabledOrEmptyTopLevelItemsCloseTheirMenuSafely]' passed (0.083 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testStandaloneUpdateChangesSlotsStateAndSizeWithoutChangingOpeningDevice]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testStandaloneUpdateChangesSlotsStateAndSizeWithoutChangingOpeningDevice]' passed (0.047 seconds).
+Test Case '-[FluentKitTests.MenuLifecycleTests testTopLevelReorderPreservesOpenAnchorAndUsesItsNewNavigationIndex]' started.
+Test Case '-[FluentKitTests.MenuLifecycleTests testTopLevelReorderPreservesOpenAnchorAndUsesItsNewNavigationIndex]' passed (0.041 seconds).
+Test Suite 'MenuLifecycleTests' passed at 2026-11-01 17:35:01.571.
+	 Executed 12 tests, with 0 failures (0 unexpected) in 0.943 (0.944) seconds
+Test Suite 'MenuWorkAreaTests' started at 2026-11-01 17:35:01.571.
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem]' started.
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongMenusFitWorkAreaAndKeyboardCanRevealAndInvokeTheLastItem]' passed (0.027 seconds).
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection]' started.
+Test Case '-[FluentKitTests.MenuWorkAreaTests testLongTitleDoesNotGrowPastWorkAreaInEitherDirection]' passed (0.039 seconds).
+Test Suite 'MenuWorkAreaTests' passed at 2026-11-01 17:35:01.637.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.066 (0.066) seconds
+Test Suite 'ScreenPlacementTests' started at 2026-11-01 17:35:01.637.
+Test Case '-[FluentKitTests.ScreenPlacementTests testAllMonitorArrangementsUseScreenCoordinates]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testAllMonitorArrangementsUseScreenCoordinates]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testMissingScreensAndInvalidPointsHaveNoSelection]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testMissingScreensAndInvalidPointsHaveNoSelection]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOffscreenTargetUsesNearestEdgeRatherThanMonitorCenter]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOffscreenTargetUsesNearestEdgeRatherThanMonitorCenter]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenComboRepositionsOnScreenChangeWithoutReopeningOrCommitting]' passed (0.017 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenCommandBarRepositionsOnScreenChangeAndReleasesObserver]' passed (0.028 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testOpenMenuRepositionsOnScreenChangeWithoutRebuildingRows]' passed (0.023 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenNotificationsPreserveAutoSuggestEditorAndMarkedText]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenNotificationsPreserveAutoSuggestEditorAndMarkedText]' passed (0.253 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenObserverIsScopedToItsWindowAndLifetime]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testScreenObserverIsScopedToItsWindowAndLifetime]' passed (0.022 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testSeamsAndRTLUseTheActualTargetPoint]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testSeamsAndRTLUseTheActualTargetPoint]' passed (0.000 seconds).
+Test Case '-[FluentKitTests.ScreenPlacementTests testTargetScreenCanDifferFromTheParentWindowsScreen]' started.
+Test Case '-[FluentKitTests.ScreenPlacementTests testTargetScreenCanDifferFromTheParentWindowsScreen]' passed (0.000 seconds).
+Test Suite 'ScreenPlacementTests' passed at 2026-11-01 17:35:01.981.
+	 Executed 10 tests, with 0 failures (0 unexpected) in 0.342 (0.343) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 17:35:01.981.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 1.602 (1.605) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 17:35:01.981.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 1.602 (1.607) seconds

@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- MenuFlyout constrains oversized content to the target monitor's work area and
+  scrolls the complete menu document vertically. Keyboard navigation and typeahead
+  reveal the focused item; nested menus follow visible rows and close when their
+  anchor scrolls out of view. Live updates preserve rows, selection and responders;
+  legacy scroller retiling and anchor resizing update the document width. Explicit
+  minimum widths remain authoritative, and long titles use WinUI's default clipping.
+
 - TeachingTip now closes immediately when its retained target leaves the window,
   moves to another window, or its owner closes. The binding resets and Closed/Dismiss
   fire once; as in WinUI, unload bypasses cancellable Closing. Stale opening/closing

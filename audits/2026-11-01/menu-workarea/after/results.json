@@ -1,0 +1,1202 @@
+[
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      354,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      354,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      354,
+      -531,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      354,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      532,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ],
+      [
+        528,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      532,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ],
+      [
+        528,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      334,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      334,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      334,
+      -531,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      334,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      156,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ],
+      [
+        152,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      156,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ],
+      [
+        152,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "light-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      354,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      354,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      354,
+      -531,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      354,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      532,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ],
+      [
+        528,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      532,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        350,
+        69,
+        180,
+        876
+      ],
+      [
+        528,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-ltr-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-title",
+    "lastRowFrame" : [
+      8,
+      327,
+      1496,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        4,
+        323,
+        1504,
+        40
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 1,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-title",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      334,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-root",
+    "lastRowFrame" : [
+      334,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-root",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      334,
+      -531,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "opened",
+    "requireLast" : false,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      334,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "end",
+    "requireLast" : true,
+    "rowCount" : 41,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      156,
+      -855,
+      172,
+      32
+    ],
+    "lastSelected" : false,
+    "lastVisible" : false,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ],
+      [
+        152,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-opened",
+    "requireLast" : false,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-submenu",
+    "visible" : true
+  },
+  {
+    "fitsWorkArea" : true,
+    "kind" : "long-submenu",
+    "lastRowFrame" : [
+      156,
+      69,
+      172,
+      32
+    ],
+    "lastSelected" : true,
+    "lastVisible" : true,
+    "panelFrames" : [
+      [
+        330,
+        69,
+        180,
+        876
+      ],
+      [
+        152,
+        69,
+        180,
+        876
+      ]
+    ],
+    "phase" : "child-end",
+    "requireLast" : true,
+    "rowCount" : 50,
+    "sameRootContent" : true,
+    "sameRootPanel" : true,
+    "sameRootResponder" : true,
+    "scale" : 2,
+    "screen" : [
+      0,
+      65,
+      1512,
+      884
+    ],
+    "scrollable" : true,
+    "variant" : "dark-rtl-long-submenu",
+    "visible" : true
+  }
+]
