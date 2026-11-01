@@ -1,0 +1,5618 @@
+[
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          391,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          311,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      652
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          356
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          368,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      603
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          145,
+          408,
+          307
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          251,
+          328,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          319,
+          328,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          951,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          871,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      231,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      632
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          346
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          348,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      583
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+      {
+        "frame" : [
+          32,
+          135,
+          968,
+          297
+        ],
+        "id" : "FluentKit.Settings.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          231,
+          888,
+          48
+        ],
+        "id" : "FluentKit.Expander"
+      },
+      {
+        "frame" : [
+          72,
+          299,
+          888,
+          97
+        ],
+        "id" : "FluentKit.Expander"
+      }
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentViewportScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  }
+]

@@ -1,0 +1,3152 @@
+[
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : -1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 562,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "home",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : -1,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 1,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 0,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 1,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 0,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      1360
+    ],
+    "overlayCompatible" : false,
+    "page" : "general",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : -1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 560,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "keys",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : -1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "appearance",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : -1,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 1,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 0,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 1,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 0,
+    "rightGap" : 9,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      559,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      579,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      599,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1039,
+      740
+    ],
+    "overlayCompatible" : false,
+    "page" : "dictionary",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 100,
+    "viewport" : [
+      0,
+      100,
+      1059,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : -1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 540,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "advanced",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 574,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : -1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 574,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 574,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 574,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 1,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 574,
+    "document" : [
+      0,
+      0,
+      550,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 0,
+    "rightGap" : 26,
+    "scroll" : [
+      24,
+      136,
+      576,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      576,
+      624
+    ],
+    "width" : 600
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 602,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 602,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 602,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 602,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 602,
+    "document" : [
+      0,
+      0,
+      596,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      616,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      616,
+      624
+    ],
+    "width" : 640
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 860,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : -1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 0,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 860,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 1,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 860,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 2,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 860,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 1,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 3,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  },
+  {
+    "actualStyle" : 0,
+    "childMaxX" : 860,
+    "document" : [
+      0,
+      0,
+      1056,
+      624
+    ],
+    "overlayCompatible" : false,
+    "page" : "preview",
+    "requestedStyle" : 0,
+    "rightGap" : 20,
+    "scroll" : [
+      24,
+      136,
+      1076,
+      624
+    ],
+    "scrollerClass" : "SettingsScroller",
+    "step" : 4,
+    "targetY" : 0,
+    "viewport" : [
+      0,
+      0,
+      1076,
+      624
+    ],
+    "width" : 1100
+  }
+]

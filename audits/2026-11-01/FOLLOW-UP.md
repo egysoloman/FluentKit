@@ -24,7 +24,10 @@
 | 16 | **动态页面键盘链及自动重建时的显式循环本批已修。** | 自有窗口启用 AppKit 自动重建；scope/对话框按当前 stack 顺序保持 Tab 循环，保留编辑命令、验证和组合文字，并记录已消费事件的键盘设备。原生 5 项旧失败归零，最终 11 项条件通过；实际 Gallery 已用 Tab/Space 操作 CheckBox/RadioButton，隔离窗口验证循环与对话框。438 项测试、原生验证、Gallery 构建和门禁通过，见 `gallery-keyboard/REPORT.md`。原生程序化焦点、真实 IME/VoiceOver 仍开放。 |
 | 17 | **候选取消、辅助按钮顺序及外部更新回调一致性已分批修复。** | 身份变化后的取消与按钮顺序见 `autosuggest-cancel/REPORT.md`（40 个原生状态、118 项字段差异归零）。本批又修复提供器返回旧结果重新弹出、闭包绑定提交时携带过期候选：28 个原生状态的 12 项差异归零，实际窗口验证 ap→Apple→外部 Pear→Enter 提交 Pear/nil 并保留焦点；445 项测试及门禁通过，见 `autosuggest-focus/REPORT.md`。保留外部模型重置优先规则，未为照搬 WinUI 内部字段而恢复旧值覆盖。一次稳定 ID 的 AX 值不一致未再次复现；无需输入重新聚焦的列表开启、完整程序化 Text 契约和 CheckCurrent 式 API 仍开放。 |
 | 18 | **客户端普通文本坐标已核查；真实系统拼音候选仍开放。** | 实际设置页与原生输入框共 9 次显式坐标查询，640/600/1000pt 宽度下控件与字符矩形同步移动，设置页 95pt 位移一致、编辑器身份保留。会话未稳定建立系统拼音组合状态，不算候选验收，不据此改定位或关闭第 5 项。录屏无系统候选打开期间缩放过程；外部 IME 源码又有并行变动，结果限于记录构建。见 `system-pinyin/REPORT.md`；继续真实 marked text、跨进程候选、移动/缩放和提交/取消验收。 |
-| 19 | **已排队：连接鼠标后滚动条常驻导致布局变化。** 用户要求先完成当前搜索框批次。 | 分别检查 overlay/legacy 初始状态及运行中切换，不依赖缩放窗口触发修正；覆盖 Gallery 通用滚动页/Expander、列表/TreeView、弹出列表及实际 IME 设置页，核对 viewport、文档宽度、滚动位置和右侧裁切。Apple 文档确认设备与系统设置可改变 preferredScrollerStyle，AppKit 会重新 tile；不能把 `autohidesScrollers` 当作强制浮动模式，也不要求用户断开鼠标或修改全局设置。既有 Collection 测试只覆盖设置样式后的窗口缩放，不能直接关闭本项。IME 的自定义 SettingsScroller 及页面最小宽度另查；保留并行应用改动，不盲目全局强制 overlay。 |
+| 19 | **本批已修复常驻滚动条下的尺寸与跳顶问题；硬件事件验收仍开放。** | 修复 AutoSuggestBox、ComboBox、ContentDialog、RefreshContainer、旧 FluentList 及 NavigationView：88 个原生状态的 42 项失败条件归零；实际 Gallery 的 192 个状态（含 Expander/设置折叠卡开合）32 项失败归零。实际 IME 自绘滚动条兼容性、固定最小宽度及视口重排独立修复，105 个状态的 87 项失败归零，完整来源快照 Release 构建通过。452 项测试、原生验证、Gallery 和门禁通过，见 `scroller-layout/REPORT.md`。未改变全局偏好或替换运行中的 IME；真实鼠标插拔仍需验收。横向 Refresh 初次挂载的既有约束告警仍待分离 fixture/框架原因，不据测试通过关闭。 |
+| 20 | **已排队：独立实现用户动图中的 Tooltip 跟随及平滑过渡。** | 用户明确配色不重要，参考是第三方作者的 WinUI 风格作品，并非 WinUI 原生行为；作者尚未公开源码，因此不直接移植代码。完成第 19 项后，逐帧分析跟随锚点、跨按钮移动、显示/隐藏延迟、文字与浮层尺寸过渡，再基于现有 Fluent Tooltip 独立实现。标题栏目前仍用系统 `toolTip` 和即时重绘；须覆盖快速移入移出、切换/关闭窗口、屏幕边缘及减少动态效果。参考用户 140 帧 GIF `codex-clipboard-ca3b8ac9-3df0-428e-86fb-07bd74d12de5.gif`。 |
+| 21 | **已排队：通用、可选的透明材质能力。** | 用户澄清并非只修某处透明异常，而是希望窗口背景和菜单/Tooltip 等浮层都能更广泛使用可选材质。完成滚动条及 Tooltip 批次后，先审核现有 FluentMaterial API，再统一窗口、容器、卡片和浮层的材质入口、叠层与回退规则；覆盖深浅色、活动/非活动、系统降低透明度/高对比度及嵌套场景，补充 Gallery 示例。保留显式选择，不将 Mica、Acrylic、Liquid Glass 混称或以材质替代语义背景。 |
+
 
 ## 已处理项与明确边界
 
@@ -34,7 +37,7 @@
 - `b85dcd1`：Switch 按压形变审计；框架默认尺寸正确，IME 的固定 12pt 自定义样式覆盖了动画，已保存并应用可逆补丁。依据：`../2026-10-31/toggle-pressed-review/REPORT.md`。
 - `ede65a6`：标题栏返回按钮逻辑和箭头动画修复，见 `titlebar-button/REPORT.md`。IME 的“返回首页”路由仍是应用选择；应用自己的标题栏过渡在第 6 项继续查。
 - `497edab`：FlipView 边界手势向父级传递，见 `scroll-chaining/REPORT.md`。手势中途到达边界后的残余滚动传递、完整物理行为仍开放。
-- 当前框架批次已通过 445 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME Release 构建见 `integration/REPORT.md`（后续 TreeView、选择控件、键盘导航和搜索建议批次未改 IME 源码）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
+- 当前框架批次已通过 452 项测试、原生验证、Gallery 构建和 Release 质量门禁；最近一次实际 IME 来源快照 Release 构建及两份应用补丁见 `scroller-layout/REPORT.md`（本批未安装或替换输入法）。这些检查不关闭上表尚未复现的问题。实际运行中的旧 IME 不会自动加载静态链接的新框架。
 
 ## 不从计划中删除的早期事项
 

@@ -1,0 +1,1404 @@
+{
+  "native": {
+    "statesPerBuild": 88,
+    "beforeErrors": [
+      [
+        [
+          "list",
+          false,
+          1
+        ],
+        "scroll position"
+      ],
+      [
+        [
+          "list",
+          false,
+          2
+        ],
+        "scroll position"
+      ],
+      [
+        [
+          "list",
+          false,
+          3
+        ],
+        "scroll position"
+      ],
+      [
+        [
+          "refresh",
+          false,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "refresh",
+          false,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "refresh",
+          false,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "refresh",
+          false,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "refresh-horizontal",
+          false,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "refresh-horizontal",
+          false,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "autosuggest",
+          false,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "autosuggest",
+          false,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "autosuggest",
+          false,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "autosuggest",
+          false,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "combo",
+          false,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "combo",
+          false,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "combo",
+          false,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "combo",
+          false,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "dialog",
+          false,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "dialog",
+          false,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "dialog",
+          false,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "dialog",
+          false,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "list",
+          true,
+          1
+        ],
+        "scroll position"
+      ],
+      [
+        [
+          "list",
+          true,
+          2
+        ],
+        "scroll position"
+      ],
+      [
+        [
+          "list",
+          true,
+          3
+        ],
+        "scroll position"
+      ],
+      [
+        [
+          "refresh",
+          true,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "refresh",
+          true,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "refresh",
+          true,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "refresh",
+          true,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "refresh-horizontal",
+          true,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "refresh-horizontal",
+          true,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "autosuggest",
+          true,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "autosuggest",
+          true,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "autosuggest",
+          true,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "autosuggest",
+          true,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "combo",
+          true,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "combo",
+          true,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "combo",
+          true,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "combo",
+          true,
+          3
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "dialog",
+          true,
+          1
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "dialog",
+          true,
+          1
+        ],
+        "row extends beyond viewport"
+      ],
+      [
+        [
+          "dialog",
+          true,
+          3
+        ],
+        "document cross-axis size"
+      ],
+      [
+        [
+          "dialog",
+          true,
+          3
+        ],
+        "row extends beyond viewport"
+      ]
+    ],
+    "afterErrors": []
+  },
+  "gallery": {
+    "statesPerBuild": 192,
+    "beforeErrors": [
+      [
+        [
+          false,
+          false,
+          720,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          720,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          720,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          720,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          1280,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          1280,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          1280,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          false,
+          1280,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          720,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          720,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          720,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          720,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          1280,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          1280,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          1280,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          false,
+          true,
+          1280,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          720,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          720,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          720,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          720,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          1280,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          1280,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          1280,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          false,
+          1280,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          720,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          720,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          720,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          720,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          1280,
+          1,
+          "settled",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          1280,
+          1,
+          "toggle-inner",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          1280,
+          1,
+          "toggle-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ],
+      [
+        [
+          true,
+          true,
+          1280,
+          1,
+          "reopen-settings",
+          1
+        ],
+        "document exceeds viewport"
+      ]
+    ],
+    "afterErrors": []
+  },
+  "ime": {
+    "statesPerBuild": 105,
+    "beforeErrors": [
+      [
+        [
+          "home",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "home",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "home",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "home",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "home",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "home",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "home",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "home",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "home",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "home",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "home",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "general",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "general",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "general",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "general",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "general",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "general",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "general",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "general",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "general",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "general",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "general",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "keys",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "keys",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "keys",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "keys",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "keys",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "keys",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "keys",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "keys",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "keys",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "keys",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "keys",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "appearance",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "appearance",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "appearance",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "appearance",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "appearance",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "dictionary",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "dictionary",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "dictionary",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "dictionary",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "dictionary",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "advanced",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "advanced",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "advanced",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "advanced",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "advanced",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          600,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          600,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          600,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          600,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          600,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          600,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          600,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          640,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          640,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          640,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          640,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          640,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          640,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          640,
+          4
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          0
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          1
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          1
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          2
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          3
+        ],
+        "requested scroller style rejected"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          3
+        ],
+        "trailing space"
+      ],
+      [
+        [
+          "preview",
+          1100,
+          4
+        ],
+        "trailing space"
+      ]
+    ],
+    "afterErrors": []
+  }
+}

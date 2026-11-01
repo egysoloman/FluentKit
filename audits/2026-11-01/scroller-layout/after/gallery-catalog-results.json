@@ -1,0 +1,5618 @@
+[
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : false,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : false,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      455,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      455,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      472,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      472,
+      419
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 720
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 0,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1015,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      1015,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      233.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      233.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 1,
+    "style" : 0,
+    "viewport" : [
+      0,
+      0,
+      231,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "settled",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-inner",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentScrollHost",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      1032,
+      800
+    ],
+    "documentClass" : "FluentScrollDocumentView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 0,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      1032,
+      419
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "FluentSectionedCollectionView<String, String>",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      250.5,
+      3098
+    ],
+    "documentClass" : "FluentCollectionNativeView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 1,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      250.5,
+      360
+    ],
+    "width" : 1280
+  },
+  {
+    "change" : "toggle-settings",
+    "class" : "NSScrollView",
+    "dark" : true,
+    "document" : [
+      0,
+      0,
+      248,
+      760
+    ],
+    "documentClass" : "FluentNavigationItemsView",
+    "expanders" : [
+
+    ],
+    "rtl" : true,
+    "scrollIndex" : 2,
+    "step" : 2,
+    "style" : 1,
+    "viewport" : [
+      0,
+      0,
+      248,
+      450
+    ],
+    "width" : 1280
+  }
+]

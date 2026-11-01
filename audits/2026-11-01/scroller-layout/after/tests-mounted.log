@@ -1,0 +1,33 @@
+Building for debugging...
+[1 / 1]
+[2 / 7] FluentKitTests-product
+[4 / 9] FluentKitTests-product
+[9 / 13] FluentKitTests-product
+[11 / 13] FluentKitTests-product
+Build complete! (3.11秒)
+Test Suite 'Selected tests' started at 2026-11-01 10:19:51.231.
+Test Suite 'FluentKitTests.xctest' started at 2026-11-01 10:19:51.233.
+Test Suite 'ScrollerLayoutRegressionTests' started at 2026-11-01 10:19:51.233.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testAutoSuggestRowsFollowLiveScrollerStyleWithoutRevealingSelection]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testAutoSuggestRowsFollowLiveScrollerStyleWithoutRevealingSelection]' passed (3.009 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testComboBoxRowsFollowLiveScrollerStyleWithoutRevealingSelection]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testComboBoxRowsFollowLiveScrollerStyleWithoutRevealingSelection]' passed (2.076 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testContentDialogReservesScrollerWidthAndPreservesScrollPosition]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testContentDialogReservesScrollerWidthAndPreservesScrollPosition]' passed (2.182 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle]' started.
+/Users/stars/Documents/WinUI-macOS/Tests/FluentKitTests/ScrollerLayoutRegressionTests.swift:26: warning: -[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle] : Conflicting constraints detected: <private>.
+
+Will attempt to recover by breaking <private>.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testHorizontalRefreshContentFollowsLiveScrollerStyle]' passed (2.466 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testLegacyListPreservesScrollPositionWhenScrollerStyleChanges]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testLegacyListPreservesScrollPositionWhenScrollerStyleChanges]' passed (2.031 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testNavigationRowsFitLiveScrollerViewportInExpandedAndCompactModes]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testNavigationRowsFitLiveScrollerViewportInExpandedAndCompactModes]' passed (4.158 seconds).
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testVerticalRefreshContentFollowsLiveScrollerStyle]' started.
+Test Case '-[FluentKitTests.ScrollerLayoutRegressionTests testVerticalRefreshContentFollowsLiveScrollerStyle]' passed (2.185 seconds).
+Test Suite 'ScrollerLayoutRegressionTests' passed at 2026-11-01 10:20:09.341.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 18.107 (18.108) seconds
+Test Suite 'FluentKitTests.xctest' passed at 2026-11-01 10:20:09.341.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 18.107 (18.108) seconds
+Test Suite 'Selected tests' passed at 2026-11-01 10:20:09.341.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 18.107 (18.111) seconds
