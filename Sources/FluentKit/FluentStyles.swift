@@ -214,6 +214,7 @@ func applyFluentButtonChrome(
     animationCoordinator: FluentAnimationCoordinator,
     motion: FluentMotionToken,
     keyPrefix: String = "fluent.buttonChrome",
+    preservingUnchangedAnimations: Bool = false,
     animated: Bool
 ) {
     let colors = (appearance.borderGradientColors ?? [appearance.borderColor, appearance.borderColor]).map(\.cgColor)
@@ -237,7 +238,15 @@ func applyFluentButtonChrome(
             keyPath: "colors",
             toValue: colors
         ) { elevationLayer.colors = colors }
-    ]
+    ].filter { change in
+        guard preservingUnchangedAnimations else { return true }
+        switch change.keyPath {
+        case "backgroundColor": return layer.backgroundColor != appearance.backgroundColor.cgColor
+        case "cornerRadius": return layer.cornerRadius != appearance.cornerRadius
+        case "colors": return (elevationLayer.colors as? [CGColor]) != colors
+        default: return true
+        }
+    }
     layer.borderWidth = 0
     layer.cornerCurve = .continuous
     elevationLayer.isHidden = false

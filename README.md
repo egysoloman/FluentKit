@@ -836,6 +836,12 @@ and exact option titles synchronize the stable selection. Both modes provide key
 type-ahead, Escape/outside-click dismissal, RTL placement, and the source-derived partial-content
 entrance rather than the native AppKit combo-box popup.
 
+When option identities stay the same, an open ComboBox updates changed titles, measured width,
+RTL placement and Reduce Motion in place, retaining its rows, responder and keyboard position.
+Row activation requires a valid press/release or a live accessibility action. Replacing the
+option collection or switching editable/selection mode currently closes the popup; preserving
+desktop selection and focus through collection mutations remains planned work.
+
 Progress bars use stable Fluent-owned track and indicator layers. Determinate values interpolate with
 the 250ms control-normal token; indeterminate mode uses a coordinated dual-layer loop, while paused
 and error states settle without losing the native accessibility role. RTL and Reduce Motion are

@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Open ComboBox popups refresh titles, measured width, layout direction and Reduce Motion
+  without replacing their panel, rows or keyboard/scroll position. Enabling Reduce Motion
+  settles the entrance and row press effects; disabling it does not replay the entrance.
+  Faceplate background transitions survive drawing and unchanged content updates. Popup rows
+  require a valid prior press, and cancelled or retired rows cannot commit a stale selection.
+
 - PipsPager scales only the navigation icon during a press, leaving its hit area, background
   and focus ring unchanged. Pip and navigation hover ownership is exclusive; hiding,
   disabling, reparenting, focus loss and window deactivation cancel stale presses. Space and

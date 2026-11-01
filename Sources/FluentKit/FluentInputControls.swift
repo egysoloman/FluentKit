@@ -1128,6 +1128,15 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
 
     override var isFlipped: Bool { true }
 
+    override var userInterfaceLayoutDirection: NSUserInterfaceLayoutDirection {
+        didSet {
+            guard oldValue != userInterfaceLayoutDirection else { return }
+            synchronizeVisualGeometry()
+            refreshOpenPopup()
+            needsDisplay = true
+        }
+    }
+
     init(
         options: [Option],
         selection: FluentBinding<Option?>,
@@ -1528,6 +1537,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         applyControlSize()
         applySelection()
         updateFocusPill(focused: isTextFocusActive, animated: false)
+        refreshOpenPopup()
         if !reusesSelectionObservation { installObserver() }
         if !reusesTextObservation { installTextObserver() }
     }
@@ -1817,6 +1827,11 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
         needsDisplay = true
     }
 
+    private func refreshOpenPopup() {
+        comboPopup?.updatePresentation(titles: options.map(title),
+            layoutDirection: userInterfaceLayoutDirection, reduceMotion: reduceMotion)
+    }
+
     private func applyButtonChrome(animated: Bool) {
         visualStateCoordinator.reduceMotion = reduceMotion
         visualStateCoordinator.transition(
@@ -1831,6 +1846,9 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
     private func applyButtonVisualState(_ transition: FluentVisualStateTransition) {
         if usesEditableTextChrome {
             guard let layer else { return }
+            animationCoordinator.cancel(layer: layer, key: "fluent.buttonChrome.background")
+            animationCoordinator.cancel(layer: layer, key: "fluent.buttonChrome.cornerRadius")
+            animationCoordinator.cancel(layer: elevationBorderLayer, key: "fluent.buttonChrome.elevation")
             CATransaction.begin()
             CATransaction.setDisableActions(true)
             layer.backgroundColor = NSColor.clear.cgColor
@@ -1854,6 +1872,7 @@ private final class FluentComboBoxHost<Option: Hashable>: NSView, NSComboBoxDele
             backingScale: window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 1,
             animationCoordinator: animationCoordinator,
             motion: transition.motion,
+            preservingUnchangedAnimations: !reduceMotion && window != nil && !isHiddenOrHasHiddenAncestor && isControlEnabled,
             animated: transition.isAnimated
         )
         updateDropDownOverlay()

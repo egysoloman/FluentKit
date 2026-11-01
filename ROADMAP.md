@@ -60,9 +60,10 @@ is not required. The macOS composition and developer overrides remain intentiona
    RepeatButton cancels long presses across lifecycle changes. Directional glyphs use static
    press geometry and preserve foreground transitions; PipsPager forwards motion policy to
    retained children immediately. PipsPager scales only its navigation icon, coordinates hover
-   ownership and cancels stale presses across lifecycle changes. Review live ComboBox popup
-   refresh and hierarchical flyout behavior next; retain PipsPager High Contrast resource and
-   full keyboard/application-flow acceptance in the remaining platform work.
+   ownership and cancels stale presses across lifecycle changes. Open ComboBox popups update
+   stable-option titles, direction and motion policy while retaining native identity and focus.
+   Continue desktop collection-mutation and full keyboard contracts, then hierarchical flyout
+   behavior; retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required
 

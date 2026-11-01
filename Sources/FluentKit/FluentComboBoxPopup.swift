@@ -53,10 +53,10 @@ enum FluentComboBoxPopupPlacement: Hashable, Sendable {
 }
 
 final class FluentComboBoxPopup: NSObject {
-    private let titles: [String]
+    private var titles: [String]
     private var theme: FluentTheme
-    private let reduceMotion: Bool
-    private let layoutDirection: NSUserInterfaceLayoutDirection
+    private var reduceMotion: Bool
+    private var layoutDirection: NSUserInterfaceLayoutDirection
     private let placement: FluentComboBoxPopupPlacement
     private var selectedIndex: Int?
     private var keyboardIndex: Int?
@@ -265,12 +265,31 @@ final class FluentComboBoxPopup: NSObject {
     }
 
     func updateSelectedIndex(_ index: Int?) {
-        selectedIndex = titles.indices.contains(index ?? -1) ? index : nil
+        let next = titles.indices.contains(index ?? -1) ? index : nil
+        guard selectedIndex != next else { return }
+        selectedIndex = next
         if keyboardIndex == nil { keyboardIndex = selectedIndex }
         popupView?.update(
             selectedIndex: selectedIndex,
             keyboardIndex: keyboardIndex
         )
+    }
+
+    /// Stable options may acquire new localized titles or environment values while open.
+    /// Keep the panel, rows, responder and keyboard/scroll state owned by this presentation.
+    func updatePresentation(titles: [String], layoutDirection: NSUserInterfaceLayoutDirection, reduceMotion: Bool) {
+        guard titles.count == self.titles.count else { dismiss(animated: false); return }
+        let titlesChanged = titles != self.titles
+        let directionChanged = layoutDirection != self.layoutDirection
+        let motionChanged = reduceMotion != self.reduceMotion
+        guard titlesChanged || directionChanged || motionChanged else { return }
+        self.titles = titles
+        self.layoutDirection = layoutDirection
+        self.reduceMotion = reduceMotion
+        if motionChanged && reduceMotion { transitionHost?.settlePresentation() }
+        popupView?.updatePresentation(titles: titles, layoutDirection: layoutDirection, reduceMotion: reduceMotion)
+        if titlesChanged { measureContentWidth() }
+        if titlesChanged || directionChanged { reposition() }
     }
 
     func dismiss(animated _: Bool) {
@@ -449,10 +468,10 @@ private final class FluentComboBoxPopupPanel: NSPanel {
 }
 
 private final class FluentComboBoxPopupView: NSView {
-    private let titles: [String]
+    private var titles: [String]
     private var theme: FluentTheme
-    private let layoutDirection: NSUserInterfaceLayoutDirection
-    private let reduceMotion: Bool
+    private var layoutDirection: NSUserInterfaceLayoutDirection
+    private var reduceMotion: Bool
     private let onMove: (Int) -> Void
     private let onCommit: (Int) -> Void
     private let onDismiss: () -> Void
@@ -602,6 +621,21 @@ private final class FluentComboBoxPopupView: NSView {
         needsDisplay = true
     }
 
+    func updatePresentation(titles: [String], layoutDirection: NSUserInterfaceLayoutDirection, reduceMotion: Bool) {
+        guard titles.count == rows.count else { return }
+        self.titles = titles
+        self.layoutDirection = layoutDirection
+        self.reduceMotion = reduceMotion
+        userInterfaceLayoutDirection = layoutDirection
+        scrollView.userInterfaceLayoutDirection = layoutDirection
+        rowsHost.userInterfaceLayoutDirection = layoutDirection
+        for (row, title) in zip(rows, titles) {
+            row.updatePresentation(title: title, layoutDirection: layoutDirection, reduceMotion: reduceMotion)
+        }
+        needsLayout = true
+        layoutSubtreeIfNeeded()
+    }
+
     override func keyDown(with event: NSEvent) {
         switch event.keyCode {
         case 53: onDismiss()
@@ -706,9 +740,9 @@ private final class FluentComboBoxPopupRowsView: NSView {
 
 private final class FluentComboBoxPopupRow: NSView {
     let index: Int
-    private let title: String
+    private var title: String
     private var theme: FluentTheme
-    private let layoutDirection: NSUserInterfaceLayoutDirection
+    private var layoutDirection: NSUserInterfaceLayoutDirection
     private let onCommit: (Int) -> Void
     private let onPointerInteraction: () -> Void
     private let onHoverChange: (FluentComboBoxPopupRow, Bool) -> Void
@@ -808,6 +842,7 @@ private final class FluentComboBoxPopupRow: NSView {
     override func mouseExited(with event: NSEvent) { onHoverChange(self, false) }
 
     override func mouseDown(with event: NSEvent) {
+        guard canReceiveInput, visibleRect.contains(convert(event.locationInWindow, from: nil)) else { return }
         onPointerInteraction()
         onHoverChange(self, true)
         if pointerState.setPressed(true) {
@@ -818,7 +853,7 @@ private final class FluentComboBoxPopupRow: NSView {
 
     override func mouseUp(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
-        let shouldCommit = bounds.contains(point)
+        let shouldCommit = pointerState.isPressed && canReceiveInput && visibleRect.contains(point)
         if pointerState.setPressed(false) { updateVisualState(animated: true) }
         if shouldCommit { onCommit(index) }
     }
@@ -831,6 +866,31 @@ private final class FluentComboBoxPopupRow: NSView {
     func resetPointerState() {
         guard pointerState.reset() else { return }
         updateVisualState(animated: false)
+        pillLayer.removeAllAnimations()
+    }
+
+    private var canReceiveInput: Bool { window?.isVisible == true && !isHiddenOrHasHiddenAncestor }
+
+    override func viewDidHide() { super.viewDidHide(); resetPointerState() }
+    override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { resetPointerState() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    func updatePresentation(title: String, layoutDirection: NSUserInterfaceLayoutDirection, reduceMotion: Bool) {
+        if self.title != title {
+            self.title = title
+            setAccessibilityTitle(title)
+            needsDisplay = true
+        }
+        if self.layoutDirection != layoutDirection {
+            self.layoutDirection = layoutDirection
+            userInterfaceLayoutDirection = layoutDirection
+            needsLayout = true
+            needsDisplay = true
+        }
+        visualStateCoordinator.reduceMotion = reduceMotion
+        if reduceMotion { pillLayer.removeAllAnimations() }
     }
 
     func update(theme: FluentTheme) {
@@ -847,6 +907,7 @@ private final class FluentComboBoxPopupRow: NSView {
     }
 
     override func accessibilityPerformPress() -> Bool {
+        guard canReceiveInput else { return false }
         onCommit(index)
         return true
     }
