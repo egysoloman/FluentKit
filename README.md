@@ -517,6 +517,9 @@ system Glass owns its own sampling behavior.
 `.mica` reads the desktop image reported by AppKit for each display, caches a blurred version,
 and applies the WinUI Mica luminosity and tint stages. It does not sample covered applications.
 Inactive windows, unavailable wallpaper images and accessibility policies use an opaque fallback.
+Unspecified and System material themes inherit the containing view/window's effective appearance,
+including when it differs from the application's appearance. Live appearance changes resolve the
+recipe, adaptive tint and configured fallback again, preserving local opacity overrides.
 Animated wallpaper frames are not captured; the result depends on the still image that AppKit
 reports. Image decoding and blur run off the main thread, with a shared cache per display.
 

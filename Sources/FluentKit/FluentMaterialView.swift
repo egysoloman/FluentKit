@@ -92,7 +92,7 @@ public final class FluentMaterialView: NSVisualEffectView {
 
     private func resolveConfiguration() {
         guard let binding = configurationBinding else { return }
-        let theme = fluentTheme ?? .current
+        let theme = effectiveTheme
         let resolved = theme.resolvedMaterialConfiguration(for: binding.role, preset: binding.preset, override: binding.override)
         isApplyingConfiguration = true
         materialStyle = resolved.material ?? .mica
@@ -135,6 +135,13 @@ public final class FluentMaterialView: NSVisualEffectView {
     private var wallpaperGeometryObservers: [NSObjectProtocol] = []
     private var wallpaperAncestorIDs: [ObjectIdentifier] = []
     private var wallpaperGeometryUpdatePending = false
+    private var appearanceUpdatePending = false
+
+    /// A System request inherits the containing window/view, which can intentionally differ
+    /// from NSApp. Keep the requested theme intact so subsequent appearance changes still flow.
+    private var effectiveTheme: FluentTheme {
+        fluentResolvedTheme(fluentTheme ?? FluentTheme(), using: effectiveAppearance)
+    }
 
     public override var intrinsicContentSize: NSSize {
         NSSize(width: NSView.noIntrinsicMetric, height: NSView.noIntrinsicMetric)
@@ -277,7 +284,7 @@ public final class FluentMaterialView: NSVisualEffectView {
 
     private func applySurfaceColor() {
         if resolvedBackend == .fluentRecipe {
-            let dark = (fluentTheme ?? .current).isDark
+            let dark = effectiveTheme.isDark
             let component: CGFloat = resolvedMaterialStyle == .mica
                 ? (dark ? 32 : 243)
                 : (dark ? 44 : 252)
@@ -288,7 +295,7 @@ public final class FluentMaterialView: NSVisualEffectView {
             let highContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast || (fluentTheme?.isHighContrast ?? false)
             let color: NSColor
             if highContrast {
-                let theme = (fluentTheme ?? .current).with(contrast: .high)
+                let theme = effectiveTheme.with(contrast: .high)
                 let role = configurationBinding?.role ?? .transient
                 color = role.fallback(in: theme)
             } else { color = fallbackColor }
@@ -327,20 +334,27 @@ public final class FluentMaterialView: NSVisualEffectView {
         applyMaterial()
     }
 
+    private var backdropRoot: NSWindow? {
+        var root = window
+        while let parent = root?.parent { root = parent }
+        return root
+    }
+
     private var isBackdropActive: Bool {
-        guard window != nil else { return true }
-        var owner = window
-        while let current = owner {
-            if current.isKeyWindow { return true }
-            owner = current.parent
+        guard let root = backdropRoot else { return true }
+        func containsKeyWindow(_ candidate: NSWindow) -> Bool {
+            candidate.isKeyWindow || (candidate.childWindows ?? []).contains(where: containsKeyWindow)
         }
-        return false
+        // Fluent menus/sheets may own the key window while their parent remains the active
+        // application surface. Keep every material in that window family on the same state.
+        return containsKeyWindow(root)
     }
 
     private func isBackdropOwner(_ candidate: NSWindow) -> Bool {
-        var owner = window
+        guard let root = backdropRoot else { return false }
+        var owner: NSWindow? = candidate
         while let current = owner {
-            if current === candidate { return true }
+            if current === root { return true }
             owner = current.parent
         }
         return false
@@ -438,20 +452,29 @@ public final class FluentMaterialView: NSVisualEffectView {
 
     private var resolvedMaterialStyle: FluentMaterial {
         materialStyle == .automatic
-            ? ((fluentTheme ?? .current).resolvedMaterialConfiguration(for: .window).material ?? .mica)
+            ? (effectiveTheme.resolvedMaterialConfiguration(for: .window).material ?? .mica)
             : materialStyle
     }
 
     private var resolvedTintColor: NSColor? {
         if let tintColor { return tintColor }
         guard resolvedMaterialStyle == .mica || resolvedMaterialStyle == .nativeMica else { return nil }
-        return (fluentTheme ?? .current).micaTint
+        return effectiveTheme.micaTint
     }
 
     private func applyResolvedTint() {
         if resolvedBackend == .fluentRecipe {
-            let recipe = FluentMaterialRecipe(material: resolvedMaterialStyle, dark: (fluentTheme ?? .current).isDark,
-                tint: tintColor, tintOpacity: tintOpacity, luminosityOpacity: luminosityOpacity)
+            // Resolve adaptive NSColors before comparing the recipe or applying alpha. The
+            // dynamic color object stays equal across appearances even when its pixels change.
+            let resolvedTint = tintColor.map { color -> NSColor in
+                var result = color
+                effectiveAppearance.performAsCurrentDrawingAppearance {
+                    result = color.usingColorSpace(.sRGB) ?? color
+                }
+                return result
+            }
+            let recipe = FluentMaterialRecipe(material: resolvedMaterialStyle, dark: effectiveTheme.isDark,
+                tint: resolvedTint, tintOpacity: tintOpacity, luminosityOpacity: luminosityOpacity)
             if appliedRecipe != recipe {
                 appliedRecipe = recipe
                 tintLayer.compositingFilter = colorBlend
@@ -513,7 +536,7 @@ public final class FluentMaterialView: NSVisualEffectView {
     private func opaqueFallbackColor(_ color: NSColor) -> CGColor {
         let resolved = resolvedCGColor(color)
         guard resolved.alpha < 1 else { return resolved }
-        let base = resolvedCGColor((fluentTheme ?? .current).windowBackground)
+        let base = resolvedCGColor(effectiveTheme.windowBackground)
         guard resolved.alpha > 0 else { return base.copy(alpha: 1) ?? base }
         let foreground = NSColor(cgColor: resolved)?.usingColorSpace(.sRGB) ?? .black
         let background = NSColor(cgColor: base)?.usingColorSpace(.sRGB) ?? .black
@@ -534,6 +557,17 @@ public final class FluentMaterialView: NSVisualEffectView {
         fluentNotifyAppearanceCoordinator(from: self)
         applySurfaceColor()
         applyResolvedTint()
+        // Re-evaluate bound fallback closures after AppKit has finished its own material
+        // notification. Calling material/configuration setters here can re-enter AppKit.
+        if !appearanceUpdatePending {
+            appearanceUpdatePending = true
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.appearanceUpdatePending = false
+                if self.configurationBinding != nil { self.resolveConfiguration() }
+                else { self.applyMaterial() }
+            }
+        }
         needsDisplay = true
     }
 

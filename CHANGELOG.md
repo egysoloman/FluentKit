@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Mica and Acrylic resolve inherited light/dark appearance from their containing window. Theme
+  changes refresh the complete recipe, adaptive tint colors and configured fallback colors,
+  while preserving developer opacity overrides. A dark window inside a light application no
+  longer draws a light material or retains the previous adaptive tint.
+  Opening a child menu keeps the parent Mica backdrop active; fallback begins when the entire
+  window family loses key status.
+
 - MenuBar coordinates hover ownership and clears stale presses on popup dismissal, focus loss,
   hiding, removal and reparenting. Keyboard/access-key/accessibility opens and cross-root keyboard
   navigation carry their input origin, while pointer handoff opens without keyboard row selection.
