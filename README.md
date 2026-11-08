@@ -1644,8 +1644,29 @@ a leaf closes the entire command menu. Hover opens after a short delay, with tim
 gap into a child. Primary toolbar buttons keep their ordinary flyout placement and click behavior.
 Leaf actions may remove their own command or attachment and still close the outer menu;
 explicitly opened replacement branches retain their presentation.
-Configure this through the native `FluentAppBarButton.flyoutItems`; `FluentCommandBarItem` and
-the separate `FluentCommandBarFlyout` do not yet expose attached submenu configuration.
+Both native `FluentCommandBar` and `FluentCommandBarFlyout` accept attached menus through the
+same button model:
+
+```swift
+FluentCommandBarItem(id: "export", "Export", systemImageName: "square.and.arrow.up",
+    flyoutItems: [
+        FluentMenuItem(id: "pdf", "PDF") { exportPDF() },
+        FluentMenuItem(id: "image", "Image") { exportImage() }
+    ])
+```
+
+Primary buttons invoke their optional action and open the menu; choosing a leaf keeps the
+primary command surface available. Secondary items open as cascading branches without invoking
+their parent action; a leaf closes the command chain. Menu items support nested submenus as usual.
+Stable IDs retain open menu rows during updates. Standalone flyouts also retain the child panel
+when its command moves between primary and secondary groups. Theme and reduced-motion updates
+reach attached menus, and pointer/keyboard versus direct-touch opening selects the menu density.
+Toggle commands keep their toggle behavior and do not expose attached-menu configuration.
+
+Existing native `FluentAppBarButton.flyoutItems` assignments remain supported. A model without
+`flyoutItems` preserves a manual attachment until the model has supplied one; subsequently omitting
+it clears that model-owned attachment. An explicit empty array always clears it. Original button
+initializer calls and initializer function references remain supported.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,

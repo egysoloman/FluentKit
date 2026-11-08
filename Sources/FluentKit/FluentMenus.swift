@@ -283,8 +283,13 @@ public final class FluentMenuFlyout {
     }
 
     func presentAsSubmenu(relativeTo anchor: NSView, keyboard: Bool, inputDevice: FluentInputDeviceType?) {
-        isAttachedSubmenu = true
-        presentRoot(relativeTo: anchor, at: nil, placement: .automatic, keyboard: keyboard, inputDevice: inputDevice)
+        presentAttached(relativeTo: anchor, asSubmenu: true, keyboard: keyboard, inputDevice: inputDevice)
+    }
+
+    func presentAttached(relativeTo anchor: NSView, asSubmenu: Bool, keyboard: Bool, inputDevice: FluentInputDeviceType?) {
+        isAttachedSubmenu = asSubmenu
+        presentRoot(relativeTo: anchor, at: nil, placement: asSubmenu ? .automatic : .below,
+                    keyboard: keyboard, inputDevice: inputDevice)
     }
 
     private func presentRoot(relativeTo anchor: NSView, at point: NSPoint?, placement: FluentMenuPlacement,
@@ -320,6 +325,23 @@ public final class FluentMenuFlyout {
     }
 
     var hasKeyboardFocus: Bool { containsKeyWindow }
+
+    /// Move a retained command's menu between a flyout's primary strip and overflow without
+    /// replacing its panel, rows or selected item. Both anchors belong to the same root panel.
+    func reanchor(to anchor: NSView, asSubmenu: Bool) {
+        guard owner == nil, panel != nil, anchor.window === parentWindow else { return }
+        anchorObserver?.invalidate()
+        anchorView = anchor
+        anchorPoint = nil
+        isAttachedSubmenu = asSubmenu
+        placement = asSubmenu ? .automatic : .below
+        appearanceContext.observe(anchor: anchor, prepare: { [weak self] in
+            self?.prepareForAppearanceChange()
+        }, update: { [weak self] theme in self?.apply(theme: theme) })
+        anchorObserver = FluentPopupAnchorObserver(anchor: anchor, onChange: { [weak self] in self?.reposition() },
+            onUnavailable: { [weak self] in self?.closeFromKeyboard(dismissRoot: true) })
+        reposition()
+    }
 
     /// Update a live menu without reopening its panel or replacing retained rows/submenus.
     /// Supply unique item IDs within each level when inserting or reordering menu items.
@@ -844,7 +866,7 @@ public final class FluentMenuFlyout {
         }
     }
 
-    private func contains(window: NSWindow?) -> Bool {
+    func contains(window: NSWindow?) -> Bool {
         guard let window else { return false }
         if panel === window { return true }
         return childFlyout?.contains(window: window) ?? false

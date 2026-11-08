@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CommandBar button models now supply `flyoutItems` to both native CommandBar and standalone
+  CommandBarFlyout. Attached menus support live items, nested branches, keyboard/RTL navigation,
+  hover bridging, input-device density, theme/motion updates and expanded accessibility state.
+  Primary and overflow commands retain their distinct invocation/closure behavior; replacement
+  presentations survive old callbacks. Standalone group moves retain the child panel, and removing
+  a root anchor dismisses its flyout chain. Legacy manual AppBar attachments and original button
+  initializer function signatures remain supported. Native overflow now paints the actual keyboard
+  shortcut in its accelerator column, fixing a duplicated, truncated command title.
+
 - Standalone MenuFlyout and CommandBarFlyout preserve explicit themes across window coordinator
   updates, including an explicit update equal to the currently displayed theme. Without a theme
   argument they inherit the anchor's appearance and window theme tokens. Requested System themes

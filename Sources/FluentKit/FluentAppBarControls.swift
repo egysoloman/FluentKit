@@ -88,6 +88,9 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             needsDisplay = true
         }
     }
+    // Only the shared command model sets this flag; nil models must preserve legacy attachments.
+    var hasModelOwnedFlyout = false
+
     public var flyoutPlacement: FluentMenuPlacement = .below {
         didSet { if !useOverflowStyle { menuFlyout?.reposition(placement: flyoutPlacement) } }
     }
@@ -665,11 +668,11 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         resolvedIcon?.draw(in: rect, color: color, layoutDirection: userInterfaceLayoutDirection)
     }
 
-    private func drawLabel(in rect: CGRect, font: NSFont, color: NSColor, alignment: NSTextAlignment) {
+    private func drawLabel(in rect: CGRect, font: NSFont, color: NSColor, alignment: NSTextAlignment, text: String? = nil) {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = alignment
         paragraph.lineBreakMode = .byTruncatingTail
-        (label as NSString).draw(in: rect, withAttributes: [.font: font, .foregroundColor: color, .paragraphStyle: paragraph])
+        ((text ?? label) as NSString).draw(in: rect, withAttributes: [.font: font, .foregroundColor: color, .paragraphStyle: paragraph])
     }
 
     private func drawOverflowContent(color: NSColor) {
@@ -690,7 +693,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             drawIcon(in: CGRect(x: x, y: 12 * scale, width: 16 * scale, height: 16 * scale), color: color)
         }
         let leading = overflowLeadingInset
-        let acceleratorWidth = (keyboardAcceleratorTextOverride as NSString).size(withAttributes: [.font: labelFont]).width
+        let acceleratorWidth = ceil((keyboardAcceleratorTextOverride as NSString).size(withAttributes: [.font: labelFont]).width)
         let acceleratorSpace = keyboardAcceleratorTextOverride.isEmpty ? 0 : acceleratorWidth + 24 * scale
         let textX = rtl ? 12 * scale + acceleratorSpace + flyoutChevronSpace : leading
         drawLabel(
@@ -701,7 +704,9 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         )
         if !keyboardAcceleratorTextOverride.isEmpty {
             let x = rtl ? 12 * scale + flyoutChevronSpace : bounds.maxX - 12 * scale - acceleratorWidth - flyoutChevronSpace
-            drawLabel(in: CGRect(x: x, y: 11 * scale, width: acceleratorWidth, height: 18 * scale), font: labelFont, color: interactionState == .pressed ? theme.textTertiary : theme.textSecondary, alignment: rtl ? .left : .right)
+            drawLabel(in: CGRect(x: x, y: 11 * scale, width: acceleratorWidth, height: 18 * scale),
+                      font: labelFont, color: interactionState == .pressed ? theme.textTertiary : theme.textSecondary,
+                      alignment: rtl ? .left : .right, text: keyboardAcceleratorTextOverride)
         }
         drawAttachedFlyoutChevron(color: color, overflow: true)
     }

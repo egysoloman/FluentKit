@@ -339,6 +339,10 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         button.isEnabled = item.isEnabled
         button.reduceMotion = reduceMotion
         button.theme = theme
+        if item.flyoutItems != nil || button.hasModelOwnedFlyout {
+            button.flyoutItems = item.flyoutItems
+            button.hasModelOwnedFlyout = item.flyoutItems != nil
+        }
         if let toggle = button as? FluentAppBarToggleButton, case .toggle(let isOn) = item.kind {
             // Model updates must not invoke the action. User toggles report the current native value,
             // including repeated clicks when the application has not replaced its command array.
@@ -353,10 +357,11 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             }
             toggle.onClick = nil
         } else {
-            button.onClick = { [weak self] in
+            button.onClick = { [weak self, weak button] in
                 let generation = self?.overflowGeneration
+                let hasFlyout = button?.flyoutItems?.isEmpty == false
                 item.action()
-                if let self, self.isOpen, self.overflowGeneration == generation {
+                if !hasFlyout, let self, self.isOpen, self.overflowGeneration == generation {
                     self.dismissOverflow(animated: true, notify: true)
                 }
             }
