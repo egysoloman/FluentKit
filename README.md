@@ -1598,6 +1598,8 @@ the More glyph retains its foreground color under High Contrast hover and press 
 Native AppBar controls and CommandBar More honor `theme = .custom(colorScheme: .system)` through
 containing-view/window appearance changes and reparenting. Explicit light/dark themes also select
 adaptive image variants; changing an AppBar button's theme updates its open attached flyout.
+Assigning `flyoutItems` also updates its open rows and actions; stable IDs retain selection across
+reordering. Enabling `reduceMotion` settles existing menu entrances and applies to nested menus.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,

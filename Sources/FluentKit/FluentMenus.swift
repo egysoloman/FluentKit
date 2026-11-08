@@ -290,6 +290,10 @@ public final class FluentMenuFlyout {
         panel.appearance = fluentAppKitAppearance(for: self.theme) ?? parentWindow?.effectiveAppearance
         transitionHost?.update(theme: self.theme)
         positionPanel()
+        // A policy update applies to the entrance already in flight as well as future children.
+        // Keep the fully open geometry and the existing presenter/focus when motion is reduced.
+        transitionHost?.animationCoordinator.reduceMotion = self.reduceMotion
+        if self.reduceMotion { transitionHost?.settlePresentation() }
         if let childRow, let index = presenter.index(of: childRow), items[index].isEnabled, items[index].hasSubmenu {
             childIndex = index
             childFlyout?.update(items: items[index].submenu, theme: self.theme, reduceMotion: self.reduceMotion)

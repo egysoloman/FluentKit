@@ -4,6 +4,10 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AppBar attached flyouts receive live item and motion-policy updates, retaining stable rows,
+  submenus and focus while refreshing titles, enabled states and actions. Enabling reduced motion
+  settles existing MenuFlyout entrance animations across all open levels.
+
 - AppBar commands, separators and CommandBar More resolve `system` themes from their containing
   view/window and refresh cached colors on appearance changes and reparenting. Explicit light/dark
   choices also govern adaptive image variants and cached accent colors. Updating an AppBar button's

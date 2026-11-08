@@ -68,6 +68,8 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     public var keyboardAcceleratorTextOverride = "" {
         didSet { guard oldValue != keyboardAcceleratorTextOverride else { return }; invalidateIntrinsicContentSize(); needsDisplay = true }
     }
+    /// Updates an open flyout in place; stable item IDs preserve rows and keyboard selection.
+    /// Setting nil or an empty array dismisses the flyout.
     public var flyoutItems: [FluentMenuItem]? {
         didSet {
             if (oldValue?.isEmpty == false) != (flyoutItems?.isEmpty == false) {
@@ -75,6 +77,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
                 needsLayout = true
             }
             if flyoutItems?.isEmpty != false { dismissFlyout(animated: false) }
+            else { updatePresentedFlyout() }
             updateAccessibilityMetadata()
             needsDisplay = true
         }
@@ -86,7 +89,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             guard oldValue != theme else { return }
             updateFonts()
             updateAppearance(animated: false)
-            menuFlyout?.update(items: flyoutItems ?? [], theme: theme)
+            updatePresentedFlyout()
         }
     }
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
@@ -94,6 +97,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             animationCoordinator.reduceMotion = reduceMotion
             if reduceMotion { [surfaceLayer, checkedBorderLayer, focusOuterLayer, focusInnerLayer].forEach { $0.removeAllAnimations() } }
             updateAppearance(animated: false)
+            if oldValue != reduceMotion { updatePresentedFlyout() }
         }
     }
     public var fluentControlSize: FluentControlSize = .regular {
@@ -394,6 +398,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     public func showFlyout() { presentFlyout() }
     public func hideFlyout(animated: Bool = true) { dismissFlyout(animated: animated) }
+
+    private func updatePresentedFlyout() {
+        menuFlyout?.update(items: flyoutItems ?? [], theme: theme, reduceMotion: reduceMotion)
+    }
 
     open func invokeAction() { onClick?() }
 

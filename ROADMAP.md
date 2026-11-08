@@ -88,6 +88,7 @@ is not required. The macOS composition and developer overrides remain intentiona
    items. AppBar command content and the More glyph remain above state backgrounds, with native
    foreground checks for appearance, image updates and resizing. Native AppBar/More system themes
    follow their host; explicit themes also select adaptive images and update attached flyouts.
+   Attached flyouts receive live items and motion policy while retaining stable rows and focus.
    Shared popup High Contrast borders have
    been checked against contrasting backdrops; continue wider contrast acceptance, application
    integration and the remaining hierarchical contracts.
