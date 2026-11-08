@@ -1606,6 +1606,12 @@ windows. Window coordinator transactions preserve the Button's local declarative
 For a directly owned CommandBarFlyout, use `update(theme:reduceMotion:)` to change its appearance
 or motion policy while preserving current command and toggle values. Enabling reduced motion
 settles an active entrance or expansion; restoring motion affects later transitions.
+Direct MenuFlyout and CommandBarFlyout instances without a `theme` argument inherit their anchor's
+effective AppKit appearance and window theme tokens. Explicit light/dark themes and their custom
+colors/materials remain local across window theme changes. `theme: FluentTheme()` requests System
+appearance at the anchor, including ancestor overrides in ordinary AppKit windows. A supplied
+`theme` in an update becomes explicit even when equal to the displayed value; updates without a
+theme retain the existing inheritance policy. Open menu branches, controls and focus are retained.
 Material recipe layers apply theme colors together with their content, without an independent
 implicit crossfade. This does not disable the popup's explicit entrance and expansion animations.
 

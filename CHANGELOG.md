@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Standalone MenuFlyout and CommandBarFlyout preserve explicit themes across window coordinator
+  updates, including an explicit update equal to the currently displayed theme. Without a theme
+  argument they inherit the anchor's appearance and window theme tokens. Requested System themes
+  follow window/ancestor appearance changes in ordinary AppKit windows too, retaining custom
+  colors and materials. Updates keep open panels, rows, submenus, focus and toggle values.
+  Existing initializer call sites and explicit initializer function signatures remain supported.
+
 - AppBar, CommandBar More, MenuFlyout and collection rows reject late hover entries from
   hidden, removed or fully clipped controls and hidden windows before transferring hover or
   scheduling peer-menu changes. Visible disabled items still release a sibling's hover.

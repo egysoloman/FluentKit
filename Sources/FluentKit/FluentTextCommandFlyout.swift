@@ -196,7 +196,7 @@ public final class FluentCommandBarFlyout {
         primaryCommands: [FluentCommandBarItem],
         secondaryCommands: [FluentCommandBarItem] = [],
         alwaysExpanded: Bool = false,
-        theme: FluentTheme = .current,
+        theme: FluentTheme,
         reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
     ) {
         self.primaryCommands = primaryCommands
@@ -212,9 +212,21 @@ public final class FluentCommandBarFlyout {
         )
     }
 
+    /// With no explicit theme, inherit the anchor's appearance and its window's theme tokens.
+    public convenience init(
+        primaryCommands: [FluentCommandBarItem],
+        secondaryCommands: [FluentCommandBarItem] = [],
+        alwaysExpanded: Bool = false,
+        reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+    ) {
+        self.init(primaryCommands: primaryCommands, secondaryCommands: secondaryCommands,
+                  alwaysExpanded: alwaysExpanded, theme: FluentTheme(), reduceMotion: reduceMotion)
+        presenter.inheritAppearanceTheme()
+    }
+
     public convenience init(
         alwaysExpanded: Bool = false,
-        theme: FluentTheme = .current,
+        theme: FluentTheme,
         reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
         @FluentCommandBarBuilder primaryCommands: () -> [FluentCommandBarItem],
         @FluentCommandBarBuilder secondaryCommands: () -> [FluentCommandBarItem] = { [] }
@@ -226,6 +238,16 @@ public final class FluentCommandBarFlyout {
             theme: theme,
             reduceMotion: reduceMotion
         )
+    }
+
+    public convenience init(
+        alwaysExpanded: Bool = false,
+        reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+        @FluentCommandBarBuilder primaryCommands: () -> [FluentCommandBarItem],
+        @FluentCommandBarBuilder secondaryCommands: () -> [FluentCommandBarItem] = { [] }
+    ) {
+        self.init(primaryCommands: primaryCommands(), secondaryCommands: secondaryCommands(),
+                  alwaysExpanded: alwaysExpanded, reduceMotion: reduceMotion)
     }
 
     public func present(relativeTo anchor: NSView, at point: NSPoint? = nil) {
@@ -357,9 +379,11 @@ final class FluentTextCommandFlyout {
     private var applicationObserver: NSObjectProtocol?
     private var materialView: FluentMaterialView?
     private var animationRoot: NSView?
-    private weak var appearanceCoordinator: FluentAppearanceCoordinator?
-    private var appearanceRegistration: UUID?
-    var appearanceThemeProvider: (() -> FluentTheme?)?
+    private let appearanceContext: FluentPopupAppearanceContext
+    var appearanceThemeProvider: (() -> FluentTheme?)? {
+        get { appearanceContext.themeProvider }
+        set { appearanceContext.themeProvider = newValue }
+    }
     private var expansionGeneration = 0
     private var anchorScreenPoint: NSPoint = .zero
     private var screenObserver: FluentPopupScreenObserver?
@@ -380,6 +404,7 @@ final class FluentTextCommandFlyout {
         self.commands = commands
         self.refreshCommands = refreshCommands
         self.theme = theme
+        appearanceContext = FluentPopupAppearanceContext(theme: theme)
         self.reduceMotion = reduceMotion
         self.alwaysExpanded = alwaysExpanded
         self.presenterIdentifier = presenterIdentifier
@@ -390,7 +415,10 @@ final class FluentTextCommandFlyout {
     func present(relativeTo anchor: NSView, at point: NSPoint) {
         dismiss(animated: false, notify: false)
         guard let parentWindow = anchor.window, commands.contains(where: { !$0.isSeparator }) else { return }
-        registerAppearanceUpdates(from: parentWindow)
+        appearanceContext.observe(anchor: anchor, prepare: { [weak self] in
+            self?.settlePresentationAnimations()
+        }, update: { [weak self] theme in self?.applyResolvedTheme(theme) })
+        theme = appearanceContext.resolvedTheme
         anchorScreenPoint = parentWindow.convertPoint(toScreen: anchor.convert(point, to: nil))
 
         let primary = commands.filter(\.isPrimary)
@@ -581,7 +609,7 @@ final class FluentTextCommandFlyout {
         view = nil
         materialView = nil
         animationRoot = nil
-        unregisterAppearanceUpdates()
+        appearanceContext.invalidate()
         if notify { onDismiss?() }
     }
 
@@ -614,31 +642,14 @@ final class FluentTextCommandFlyout {
         }
     }
 
-    private func registerAppearanceUpdates(from window: NSWindow) {
-        guard let coordinator = window.fluentAppearanceCoordinator else { return }
-        if appearanceCoordinator === coordinator, appearanceRegistration != nil { return }
-        unregisterAppearanceUpdates()
-        appearanceCoordinator = coordinator
-        appearanceRegistration = coordinator.register(
-            owner: self,
-            prepareForAppearanceChange: { [weak self] in
-                self?.settlePresentationAnimations()
-            }
-        ) { [weak self] theme in
-            guard let self else { return }
-            self.apply(theme: self.appearanceThemeProvider?() ?? theme)
-        }
-    }
-
-    private func unregisterAppearanceUpdates() {
-        if let appearanceRegistration {
-            appearanceCoordinator?.unregister(appearanceRegistration)
-        }
-        appearanceRegistration = nil
-        appearanceCoordinator = nil
-    }
+    func inheritAppearanceTheme() { appearanceContext.requestedTheme = nil }
 
     func apply(theme: FluentTheme) {
+        appearanceContext.requestedTheme = theme
+        applyResolvedTheme(appearanceContext.resolvedTheme)
+    }
+
+    private func applyResolvedTheme(_ theme: FluentTheme) {
         guard self.theme != theme else { return }
         settlePresentationAnimations()
         self.theme = theme

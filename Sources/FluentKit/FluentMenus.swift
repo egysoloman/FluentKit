@@ -197,11 +197,13 @@ public final class FluentMenuFlyout {
     private var anchorPoint: NSPoint?
     private var placement: FluentMenuPlacement = .automatic
     private weak var transitionHost: FluentPopupTransitionHost?
-    private weak var appearanceCoordinator: FluentAppearanceCoordinator?
-    private var appearanceRegistration: UUID?
+    private let appearanceContext: FluentPopupAppearanceContext
     // A control/declarative host owns its local theme override. Read it after the coordinator
     // has updated that owner, rather than overwriting it with the window's root theme.
-    var appearanceThemeProvider: (() -> FluentTheme?)?
+    var appearanceThemeProvider: (() -> FluentTheme?)? {
+        get { appearanceContext.themeProvider }
+        set { appearanceContext.themeProvider = newValue }
+    }
     private var layoutDirection: NSUserInterfaceLayoutDirection = .leftToRight
     private var presentationRevision: UInt = 0
     /// `FlyoutBase::m_inputDeviceTypeUsedToOpen`, captured when the root menu opens.
@@ -222,22 +224,36 @@ public final class FluentMenuFlyout {
 
     public init(
         items: [FluentMenuItem],
-        theme: FluentTheme = .current,
+        theme: FluentTheme,
         minimumWidth: CGFloat = 180,
         matchesAnchorWidth: Bool = true,
         reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
     ) {
         self.items = items
         self.theme = theme
+        appearanceContext = FluentPopupAppearanceContext(theme: theme)
         self.minimumWidth = max(0, minimumWidth)
         self.matchesAnchorWidth = matchesAnchorWidth
         self.reduceMotion = reduceMotion
         owner = nil
     }
 
+    /// With no explicit theme, inherit the anchor's appearance and its window's theme tokens.
+    public convenience init(
+        items: [FluentMenuItem],
+        minimumWidth: CGFloat = 180,
+        matchesAnchorWidth: Bool = true,
+        reduceMotion: Bool = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+    ) {
+        self.init(items: items, theme: FluentTheme(), minimumWidth: minimumWidth,
+                  matchesAnchorWidth: matchesAnchorWidth, reduceMotion: reduceMotion)
+        appearanceContext.requestedTheme = nil
+    }
+
     private init(items: [FluentMenuItem], theme: FluentTheme, owner: FluentMenuFlyout) {
         self.items = items
         self.theme = theme
+        appearanceContext = FluentPopupAppearanceContext(theme: theme)
         minimumWidth = 180
         matchesAnchorWidth = false
         reduceMotion = owner.reduceMotion
@@ -287,7 +303,10 @@ public final class FluentMenuFlyout {
         anchorView = anchor
         anchorPoint = point
         self.placement = placement
-        registerAppearanceUpdates(from: anchorWindow)
+        appearanceContext.observe(anchor: anchor, prepare: { [weak self] in
+            self?.prepareForAppearanceChange()
+        }, update: { [weak self] theme in self?.apply(theme: theme) })
+        theme = appearanceContext.resolvedTheme
         layoutDirection = anchor.userInterfaceLayoutDirection
         presentAnchoredPanel(focusFirstItem: keyboard ?? (inputDeviceTypeUsedToOpen == .keyboard))
     }
@@ -305,10 +324,15 @@ public final class FluentMenuFlyout {
     /// Update a live menu without reopening its panel or replacing retained rows/submenus.
     /// Supply unique item IDs within each level when inserting or reordering menu items.
     public func update(items: [FluentMenuItem], theme: FluentTheme? = nil, reduceMotion: Bool? = nil) {
+        if let theme { appearanceContext.requestedTheme = theme }
+        updatePresentation(items: items, theme: appearanceContext.resolvedTheme, reduceMotion: reduceMotion)
+    }
+
+    private func updatePresentation(items: [FluentMenuItem], theme: FluentTheme, reduceMotion: Bool? = nil) {
         let childRow = childIndex.flatMap { presenter?.row(at: $0) }
-        let appearanceChanged = theme.map { $0 != self.theme } ?? false
+        let appearanceChanged = theme != self.theme
         self.items = items
-        if let theme { self.theme = theme }
+        self.theme = theme
         if let reduceMotion { self.reduceMotion = reduceMotion }
         guard let panel, let presenter else { return }
         guard !items.isEmpty, let anchor = anchorView, anchor.window === parentWindow else {
@@ -755,6 +779,7 @@ public final class FluentMenuFlyout {
     }
 
     private func dismissBranch(animated _: Bool) {
+        appearanceContext.invalidate()
         anchorObserver?.invalidate()
         anchorObserver = nil
         closeChild()
@@ -772,7 +797,6 @@ public final class FluentMenuFlyout {
         presenter = nil
         transitionHost = nil
         anchorView = nil
-        if owner == nil { unregisterAppearanceUpdates() }
         popupPanel.parent?.removeChildWindow(popupPanel)
         popupPanel.orderOut(nil)
         // MenuFlyout unload is intentionally immediate in FluentKit. Only entrance motion is
@@ -840,33 +864,9 @@ public final class FluentMenuFlyout {
         globalMonitor = nil
     }
 
-    private func registerAppearanceUpdates(from window: NSWindow) {
-        guard owner == nil, let coordinator = window.fluentAppearanceCoordinator else { return }
-        if appearanceCoordinator === coordinator, appearanceRegistration != nil { return }
-        unregisterAppearanceUpdates()
-        appearanceCoordinator = coordinator
-        appearanceRegistration = coordinator.register(
-            owner: self,
-            prepareForAppearanceChange: { [weak self] in
-                self?.prepareForAppearanceChange()
-            }
-        ) { [weak self] theme in
-            guard let self else { return }
-            self.apply(theme: self.appearanceThemeProvider?() ?? theme)
-        }
-    }
-
-    private func unregisterAppearanceUpdates() {
-        if let appearanceRegistration {
-            appearanceCoordinator?.unregister(appearanceRegistration)
-        }
-        appearanceRegistration = nil
-        appearanceCoordinator = nil
-    }
-
     private func apply(theme: FluentTheme) {
         guard self.theme != theme else { return }
-        update(items: items, theme: theme)
+        updatePresentation(items: items, theme: theme)
     }
 
     private func prepareForAppearanceChange() {
@@ -880,7 +880,7 @@ public final class FluentMenuFlyout {
         anchorObserver?.invalidate()
         removeLifecycleObservers()
         removeOutsideClickMonitors()
-        unregisterAppearanceUpdates()
+        appearanceContext.invalidate()
         childFlyout?.dismissBranch(animated: false)
         if let panel {
             panel.parent?.removeChildWindow(panel)
