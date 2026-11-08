@@ -151,7 +151,11 @@ final class KeyboardFocusCycleTests: XCTestCase {
             context: .init(reduceMotion: true))
         let w = window(root); defer { w.close() }
         shown.wrappedValue = true
-        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.05)); root.layoutSubtreeIfNeeded()
+        waitForUI({
+            let titles = Set(all(root).compactMap { ($0 as? FluentButton)?.title })
+            return titles.contains("Cancel") && titles.contains("Inside")
+        }())
+        root.layoutSubtreeIfNeeded()
         let buttons = all(root).compactMap { $0 as? FluentButton }
         let cancel = try XCTUnwrap(buttons.first { $0.title == "Cancel" })
         let inside = try XCTUnwrap(buttons.first { $0.title == "Inside" })

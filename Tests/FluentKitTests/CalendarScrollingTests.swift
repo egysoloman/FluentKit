@@ -104,7 +104,7 @@ final class CalendarScrollingTests: XCTestCase {
         XCTAssertEqual(grid.contentView.bounds.origin, origin)
         XCTAssertEqual(grid.visibleCells.map(ObjectIdentifier.init), cells.map(ObjectIdentifier.init))
         state.wrappedValue = [date(2026, 2, 14)]
-        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+        waitForUI(grid.cell(for: date(2026, 2, 14))?.selected == true)
         XCTAssertEqual(grid.contentView.bounds.origin, origin)
         XCTAssertTrue(try XCTUnwrap(grid.cell(for: date(2026, 2, 14))).selected)
     }

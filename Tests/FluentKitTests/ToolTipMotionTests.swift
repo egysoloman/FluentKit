@@ -204,7 +204,7 @@ final class ToolTipMotionTests: XCTestCase {
         XCTAssertLessThanOrEqual(panel.frame.width, 320)
         XCTAssertGreaterThan(panel.frame.height, 29)
         second.removeFromSuperview()
-        wait(0.02)
+        waitForUI(window.childWindows?.isEmpty != false)
         XCTAssertTrue(window.childWindows?.isEmpty != false)
         wait(0.3)
         XCTAssertTrue(window.childWindows?.isEmpty != false)
