@@ -1801,6 +1801,10 @@ private final class FluentSectionedCollectionCell: NSView {
     private var reorderTarget = false
     private var reduceMotion = false
     private weak var hoverCoordinator: FluentHoverCoordinator<FluentSectionedCollectionCell>?
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in
+        guard let self else { return }
+        self.hoverCoordinator?.remove(self)
+    }
     private var onAccessibilityPress: (() -> Bool)?
 
     override init(frame frameRect: NSRect) {
@@ -1870,7 +1874,8 @@ private final class FluentSectionedCollectionCell: NSView {
     }
 
     override func mouseEntered(with event: NSEvent) {
-        guard enabled else { return }
+        // A disabled item still takes the pointer away from its enabled sibling. Its own
+        // setPointerOver keeps it unpainted while the coordinator releases the old owner.
         hoverCoordinator?.update(self, hovering: true)
     }
 
@@ -1888,10 +1893,17 @@ private final class FluentSectionedCollectionCell: NSView {
         super.viewWillMove(toWindow: newWindow)
     }
 
+    override func viewDidHide() {
+        super.viewDidHide()
+        hoverCoordinator?.remove(self)
+    }
+
     func setPointerOver(_ value: Bool) {
         let next = enabled && value
         guard pointerOver != next || (!next && pressed) else { return }
         pointerOver = next
+        if next { pointerLifetime.observe(window) }
+        else { pointerLifetime.invalidate() }
         if !next { pressed = false }
         applyAppearance(animated: true)
     }

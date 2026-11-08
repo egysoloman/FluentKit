@@ -1,5 +1,50 @@
 import AppKit
 
+/// Tracks only an active pointer interaction. AppKit need not deliver an exit when a window
+/// deactivates or orders out; releasing the observation on reset keeps idle controls cheap.
+final class FluentPointerLifetime {
+    private weak var window: NSWindow?
+    private var observers: [NSObjectProtocol] = []
+    private var visibility: NSKeyValueObservation?
+    private let reset: () -> Void
+
+    init(reset: @escaping () -> Void) { self.reset = reset }
+
+    func observe(_ window: NSWindow?) {
+        guard self.window !== window else { return }
+        invalidate()
+        guard let window else { return }
+        self.window = window
+        // Ordering out a non-key/already-occluded window can omit both resign-key and
+        // occlusion notifications. Its public visibility property still changes synchronously.
+        visibility = window.observe(\.isVisible) { [weak self] window, _ in
+            if !window.isVisible { self?.reset() }
+        }
+        let center = NotificationCenter.default
+        for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification,
+                     NSWindow.willMiniaturizeNotification, NSWindow.didChangeOcclusionStateNotification] {
+            observers.append(center.addObserver(forName: name, object: window, queue: .main) { [weak self] note in
+                guard let self else { return }
+                if note.name != NSWindow.didChangeOcclusionStateNotification || self.window?.isVisible != true {
+                    self.reset()
+                }
+            })
+        }
+        observers.append(center.addObserver(forName: NSApplication.willResignActiveNotification,
+            object: NSApp, queue: .main) { [weak self] _ in self?.reset() })
+    }
+
+    func invalidate() {
+        visibility?.invalidate()
+        visibility = nil
+        observers.forEach(NotificationCenter.default.removeObserver)
+        observers.removeAll()
+        window = nil
+    }
+
+    deinit { invalidate() }
+}
+
 struct FluentPointerInteractionState: Equatable {
     private(set) var isPointerOver = false
     private(set) var isPressed = false

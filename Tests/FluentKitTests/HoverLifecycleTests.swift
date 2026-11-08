@@ -12,12 +12,13 @@ final class HoverLifecycleTests: XCTestCase {
         }
     }
 
-    private func collection(_ layout: FluentCollectionLayout) throws -> (NSWindow, FluentSectionedCollectionView<String, Int>) {
+    private func collection(_ layout: FluentCollectionLayout, disabled: Int? = nil) throws -> (NSWindow, FluentSectionedCollectionView<String, Int>) {
         _ = NSApplication.shared
         var snapshot = FluentCollectionSnapshot<String, Int>()
         snapshot.appendSections(["items"])
         snapshot.appendItems(Array(0..<100), toSection: "items")
-        let collection = FluentCollection(snapshot: snapshot, layout: layout, itemStyle: HoverStyle()) {
+        let collection = FluentCollection(snapshot: snapshot, layout: layout,
+            isEnabled: { $0 != disabled }, itemStyle: HoverStyle()) {
             FluentText("Item \($0)")
         }
         let view = try XCTUnwrap(collection._makeView(in: FluentRenderContext(reduceMotion: true))
@@ -124,5 +125,97 @@ final class HoverLifecycleTests: XCTestCase {
         view.contentView.scroll(to: NSPoint(x: 0, y: 600))
         view.reflectScrolledClipView(view.contentView)
         XCTAssertFalse(try isHovered(cell), "A scrolled-away cell must not retain pointer paint")
+    }
+
+    func testHiddenAncestorClearsButtonAndCollectionHoverWithoutAnExit() throws {
+        let (window, view) = try collection(.list())
+        defer { window.close() }
+        let cell = try XCTUnwrap(view.nativeCollectionView.item(at: IndexPath(item: 0, section: 0))?.view)
+        let button = FluentButton(title: "Hover")
+        button.reduceMotion = true
+        view.addSubview(button)
+        button.mouseEntered(with: try event(.mouseEntered))
+        cell.mouseEntered(with: try event(.mouseEntered))
+        view.isHidden = true
+        view.isHidden = false
+        XCTAssertEqual(button.controlState, .normal)
+        XCTAssertFalse(try isHovered(cell), "Showing an unchanged hierarchy must not restore stale hover")
+    }
+
+    func testWindowResigningKeyClearsOnlyItsOwnCollectionHover() throws {
+        let (window, view) = try collection(.adaptiveGrid(minimumItemWidth: 80))
+        let (otherWindow, other) = try collection(.list())
+        defer { window.close(); otherWindow.close() }
+        let path = IndexPath(item: 0, section: 0)
+        let cell = try XCTUnwrap(view.nativeCollectionView.item(at: path)?.view)
+        let otherCell = try XCTUnwrap(other.nativeCollectionView.item(at: path)?.view)
+        view.nativeCollectionView.selectionIndexPaths = [path]
+        cell.mouseEntered(with: try event(.mouseEntered))
+        otherCell.mouseEntered(with: try event(.mouseEntered))
+        NotificationCenter.default.post(name: NSWindow.didResignKeyNotification, object: window)
+        XCTAssertFalse(try isHovered(cell))
+        XCTAssertTrue(try isHovered(otherCell))
+        XCTAssertEqual(view.nativeCollectionView.selectionIndexPaths, [path])
+    }
+
+    func testButtonTrackingRefreshReconcilesAStationaryPointerAfterScrolling() throws {
+        _ = NSApplication.shared
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 240, height: 180),
+                              styleMask: [.titled], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        let button = FluentButton(title: "Scrolled away")
+        window.contentView?.addSubview(button)
+        button.frame = NSRect(x: 0, y: 600, width: 100, height: 32)
+        button.mouseEntered(with: try event(.mouseEntered))
+        button.updateTrackingAreas()
+        XCTAssertEqual(button.controlState, .normal)
+    }
+
+    func testEnteringDisabledCollectionItemReleasesPreviousHoverWithoutAnExit() throws {
+        let (window, view) = try collection(.list(), disabled: 1)
+        defer { window.close() }
+        let first = try XCTUnwrap(view.nativeCollectionView.item(at: IndexPath(item: 0, section: 0))?.view)
+        let disabled = try XCTUnwrap(view.nativeCollectionView.item(at: IndexPath(item: 1, section: 0))?.view)
+        first.mouseEntered(with: try event(.mouseEntered))
+        disabled.mouseEntered(with: try event(.mouseEntered))
+        XCTAssertFalse(try isHovered(first))
+        XCTAssertFalse(try isHovered(disabled))
+    }
+
+    func testButtonWindowLifecycleClearsHoverButRetainsKeyboardFocusState() throws {
+        _ = NSApplication.shared
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 240, height: 180),
+                              styleMask: [.titled], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        let button = FluentButton(title: "Hover")
+        window.contentView?.addSubview(button)
+        for notification in [NSWindow.didResignKeyNotification, NSWindow.willMiniaturizeNotification,
+                             NSWindow.didChangeOcclusionStateNotification] {
+            button.mouseEntered(with: try event(.mouseEntered))
+            NotificationCenter.default.post(name: notification, object: window)
+            XCTAssertEqual(button.controlState, .normal)
+        }
+        button.controlState = .focused
+        button.isHidden = true
+        button.isHidden = false
+        XCTAssertEqual(button.controlState, .focused)
+    }
+
+    func testNativeOrderOutClearsHoverWithoutKeyOrOcclusionNotifications() throws {
+        let (window, view) = try collection(.list())
+        defer { window.close() }
+        let button = FluentButton(title: "Persistent panel")
+        button.reduceMotion = true
+        view.addSubview(button)
+        window.orderFrontRegardless()
+        view.layoutSubtreeIfNeeded()
+        let cell = try XCTUnwrap(view.nativeCollectionView.item(at: IndexPath(item: 0, section: 0))?.view)
+        button.mouseEntered(with: try event(.mouseEntered))
+        cell.mouseEntered(with: try event(.mouseEntered))
+        window.orderOut(nil)
+        XCTAssertEqual(button.controlState, .normal)
+        XCTAssertFalse(try isHovered(cell))
     }
 }

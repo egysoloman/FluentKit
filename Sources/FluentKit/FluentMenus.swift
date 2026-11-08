@@ -1110,6 +1110,11 @@ private final class FluentMenuPresenterView: NSView {
         }
     }
 
+    override func viewDidHide() {
+        super.viewDidHide()
+        resetPointerState()
+    }
+
     override func keyDown(with event: NSEvent) {
         guard acceptsCommands else { return }
         pointerRow = nil

@@ -79,6 +79,7 @@ public final class FluentButton: NSButton {
     private var menuFlyout: FluentMenuFlyout?
     private var commandBarFlyoutPresenter: FluentCommandBarFlyout?
     private var isPointerOver = false
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.clearPointerHover() }
 
     public init(title: String = "Button", role: FluentButtonRole = .standard) {
         self.role = role
@@ -200,8 +201,19 @@ public final class FluentButton: NSButton {
     public override func updateTrackingAreas() {
         super.updateTrackingAreas()
         if trackingAreas.isEmpty {
-            addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow], owner: self, userInfo: nil))
+            addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self, userInfo: nil))
         }
+        if isPointerOver {
+            let point = window.map { convert($0.mouseLocationOutsideOfEventStream, from: nil) }
+            if isHiddenOrHasHiddenAncestor || point.map({ !visibleRect.contains($0) }) != false {
+                clearPointerHover()
+            }
+        }
+    }
+
+    public override func viewDidHide() {
+        super.viewDidHide()
+        clearPointerHover()
     }
 
     public override func layout() {
@@ -242,6 +254,7 @@ public final class FluentButton: NSButton {
     public override func mouseEntered(with event: NSEvent) {
         guard isEnabled else { return }
         isPointerOver = true
+        pointerLifetime.observe(window)
         controlState = .pointerOver
     }
 
@@ -252,13 +265,16 @@ public final class FluentButton: NSButton {
     }
 
     private func clearPointerHover() {
+        pointerLifetime.invalidate()
+        let hadPointerState = isPointerOver || controlState == .pointerOver || controlState == .pressed
         isPointerOver = false
-        controlState = isEnabled ? .normal : .disabled
+        if hadPointerState { controlState = isEnabled ? .normal : .disabled }
     }
 
     public override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
+        pointerLifetime.observe(window)
         controlState = .pressed
         super.mouseDown(with: event)
         if isEnabled {

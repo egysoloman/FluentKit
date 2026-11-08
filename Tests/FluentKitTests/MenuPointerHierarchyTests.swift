@@ -48,6 +48,17 @@ final class MenuPointerHierarchyTests: XCTestCase {
 
     private func observePastPointerDelay() { RunLoop.main.run(until: Date().addingTimeInterval(0.26)) }
 
+    func testHidingAndRevealingMenuClearsPointerHighlight() throws {
+        let fixture = Fixture()
+        defer { fixture.close() }
+        let row = try XCTUnwrap(fixture.rows(fixture.root).last)
+        fixture.pointer(row, entering: true)
+        XCTAssertGreaterThan(try backgroundAlpha(row), 0)
+        fixture.root.contentView?.isHidden = true
+        fixture.root.contentView?.isHidden = false
+        XCTAssertEqual(try backgroundAlpha(row), 0, accuracy: 0.001)
+    }
+
     private func backgroundAlpha(_ row: NSView) throws -> CGFloat {
         let bitmap = try XCTUnwrap(row.bitmapImageRepForCachingDisplay(in: row.bounds))
         row.cacheDisplay(in: row.bounds, to: bitmap)
