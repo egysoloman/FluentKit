@@ -4,6 +4,9 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CommandBarFlyout ignores late hover-entry events from removed, hidden or fully clipped
+  primary commands, More and secondary rows, preserving the current visible command's hover.
+
 - Button-owned MenuFlyout and CommandBarFlyout receive live theme and reduced-motion updates;
   MenuFlyout also receives item updates throughout its open submenu chain. System themes follow
   window/ancestor appearance, and local declarative themes survive root coordinator updates.

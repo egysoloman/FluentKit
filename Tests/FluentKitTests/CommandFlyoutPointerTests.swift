@@ -38,10 +38,13 @@ final class CommandFlyoutPointerTests: XCTestCase {
                 secondaryCommands: primary ? [] : commands, alwaysExpanded: true))
         }
         func enter(_ button: NSButton) throws {
+            button.mouseEntered(with: try enterEvent(button))
+        }
+        func enterEvent(_ button: NSButton) throws -> NSEvent {
             let point = button.convert(NSPoint(x: button.bounds.midX, y: button.bounds.midY), to: nil)
-            button.mouseEntered(with: try XCTUnwrap(NSEvent.enterExitEvent(with: .mouseEntered, location: point,
+            return try XCTUnwrap(NSEvent.enterExitEvent(with: .mouseEntered, location: point,
                 modifierFlags: [], timestamp: 0, windowNumber: panel.windowNumber, context: nil,
-                eventNumber: 1, trackingNumber: 0, userData: nil)))
+                eventNumber: 1, trackingNumber: 0, userData: nil))
         }
         func render(_ view: NSView) throws -> NSBitmapImageRep {
             let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
@@ -137,6 +140,51 @@ final class CommandFlyoutPointerTests: XCTestCase {
         XCTAssertNotEqual(try f.pixel(row), rowNormal)
         try f.enter(first)
         XCTAssertEqual(try f.pixel(row), rowNormal)
+    }
+
+    func testLateEnterFromRetiredPrimarySecondaryAndMoreCannotClearTheCurrentHover() throws {
+        for kind in ["primary", "secondary", "more"] {
+            let f = Fixture(primary: kind != "secondary"); defer { f.close() }
+            if kind == "more" {
+                f.flyout.update(configuration: .init(primaryCommands: f.commands,
+                    secondaryCommands: [.init("Extra") {}]))
+            }
+            let retired = try f.button(kind == "more" ? "More" : "One")
+            let lateEnter = try f.enterEvent(retired)
+            if kind == "more" {
+                f.flyout.update(configuration: .init(primaryCommands: f.commands,
+                    secondaryCommands: [.init("Extra") {}], alwaysExpanded: true))
+            } else { f.update([f.commands[1]]) }
+            XCTAssertNil(retired.superview)
+            let current = try f.button("Two"), normal = try f.pixel(current)
+            try f.enter(current)
+            let hovered = try f.pixel(current)
+            XCTAssertNotEqual(hovered, normal)
+            retired.mouseEntered(with: lateEnter)
+            XCTAssertEqual(try f.pixel(current), hovered, kind)
+            XCTAssertFalse(retired.accessibilityPerformPress())
+        }
+    }
+
+    func testHiddenOrFullyClippedPeerCannotTakeHoverUntilItBecomesVisibleAgain() throws {
+        for clipped in [false, true] {
+            let f = Fixture(primary: true); defer { f.close() }
+            let first = try f.button("One"), current = try f.button("Two")
+            let lateEnter = try f.enterEvent(first), frame = first.frame
+            if clipped { first.frame = frame.offsetBy(dx: 2000, dy: 0) }
+            else { first.isHidden = true }
+            let normal = try f.pixel(current)
+            try f.enter(current)
+            let hovered = try f.pixel(current)
+            XCTAssertNotEqual(hovered, normal)
+            first.mouseEntered(with: lateEnter)
+            XCTAssertEqual(try f.pixel(current), hovered,
+                "clipped=\(clipped), frame=\(first.frame), visible=\(first.visibleRect), parent=\(String(describing: first.superview?.bounds))")
+            if clipped { first.frame = frame }
+            else { first.isHidden = false }
+            try f.enter(first)
+            XCTAssertEqual(try f.pixel(current), normal, "A visible peer can take pointer ownership again")
+        }
     }
 
     func testSecondaryCheckmarkTurnsDownBeforeItsLongRisingStroke() throws {
