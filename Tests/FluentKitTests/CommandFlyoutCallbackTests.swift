@@ -3,7 +3,7 @@ import XCTest
 
 @MainActor
 final class CommandFlyoutCallbackTests: XCTestCase {
-    private final class Fixture {
+    @MainActor private final class Fixture {
         let window: NSWindow
         let anchor = NSView(frame: NSRect(x: 180, y: 280, width: 320, height: 48))
         init() {
