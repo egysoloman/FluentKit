@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AppBar command labels and icons render above checked, hover and pressed backgrounds. The
+  CommandBar More glyph uses the same foreground ordering, preserving its High Contrast color.
+  Label, image, theme and size updates repaint the foreground without adding a hit-test or
+  accessibility target.
+
 - AppBarButton, CommandBar's More button and PipsPager cancel transient hover and pending
   activation when their window orders out or the application deactivates. Command buttons also
   cancel on hiding, reparenting, disabling and focus loss. CommandBar coordinates hover ownership,

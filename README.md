@@ -1593,6 +1593,8 @@ icons, including live updates. A system theme inherits the anchor window's appea
 CommandBar shares hover ownership across commands and More, including disabled items. Hiding,
 reparenting, disabling, focus loss and window ordering cancel pending input without clearing
 checked commands or expanded-menu paint.
+AppBar labels and icons remain above state backgrounds, including opaque checked fills;
+the More glyph retains its foreground color under High Contrast hover and press states.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,

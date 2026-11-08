@@ -124,6 +124,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     private let checkedBorderMask = CAShapeLayer()
     private let focusOuterLayer = CAShapeLayer()
     private let focusInnerLayer = CAShapeLayer()
+    private let foregroundView = FluentControlForegroundView(frame: .zero)
     private let animationCoordinator = FluentAnimationCoordinator()
 
     public init(
@@ -146,6 +147,11 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     public override var isFlipped: Bool { true }
     public override var acceptsFirstResponder: Bool { isEnabled }
+    open override var needsDisplay: Bool {
+        didSet {
+            if needsDisplay, !foregroundView.needsDisplay { foregroundView.needsDisplay = true }
+        }
+    }
 
     public var presentation: FluentAppBarPresentation {
         useOverflowStyle ? .overflow : primaryPresentation
@@ -343,6 +349,12 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     public override func draw(_ dirtyRect: NSRect) {
+        // Backing contents render below every sublayer. Draw the label and icon in their
+        // own transparent child so animated/opaque chrome cannot cover them.
+        foregroundView.setNeedsDisplay(dirtyRect)
+    }
+
+    private func drawForeground(_ dirtyRect: NSRect) {
         let foreground = resolvedForeground
         switch presentation {
         case .fullSize:
@@ -486,6 +498,8 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         }
         focusOuterLayer.name = "FluentKit.AppBarButton.FocusOuter"
         focusInnerLayer.name = "FluentKit.AppBarButton.FocusInner"
+        foregroundView.drawContent = { [weak self] rect in self?.drawForeground(rect) }
+        addSubview(foregroundView)
         animationCoordinator.reduceMotion = reduceMotion
         setAccessibilityRole(.button)
         setAccessibilityTitle(label)
@@ -512,6 +526,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private func updateGeometry() {
+        if foregroundView.frame != bounds { foregroundView.frame = bounds }
         let rect = surfaceFrame
         let radius = theme.designTokens.controlCornerRadius * fluentControlSize.metricScale
         CATransaction.begin()

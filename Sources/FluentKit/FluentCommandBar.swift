@@ -805,6 +805,7 @@ private final class FluentCommandBarMoreButton: NSControl {
     private var pressed: Bool { pointerPressed || pressedKey != nil }
     private var trackingPress = false
     private let surface = CALayer()
+    private let foregroundView = FluentControlForegroundView(frame: .zero)
     weak var hoverCoordinator: FluentHoverCoordinator<NSControl>?
     private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
 
@@ -814,6 +815,8 @@ private final class FluentCommandBarMoreButton: NSControl {
         identifier = NSUserInterfaceItemIdentifier("FluentKit.CommandBar.MoreButton")
         layer?.addSublayer(surface)
         surface.cornerCurve = .continuous
+        foregroundView.drawContent = { [weak self] rect in self?.drawForeground(rect) }
+        addSubview(foregroundView)
         setAccessibilityRole(.button)
         fluentSetDefaultAccessibilityTitle("More")
         setAccessibilityExpanded(false)
@@ -821,6 +824,11 @@ private final class FluentCommandBarMoreButton: NSControl {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { isEnabled }
+    override var needsDisplay: Bool {
+        didSet {
+            if needsDisplay, !foregroundView.needsDisplay { foregroundView.needsDisplay = true }
+        }
+    }
     override var isEnabled: Bool {
         didSet {
             guard oldValue != isEnabled else { return }
@@ -831,6 +839,7 @@ private final class FluentCommandBarMoreButton: NSControl {
     }
     override func layout() {
         super.layout()
+        if foregroundView.frame != bounds { foregroundView.frame = bounds }
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
         let pixel = 1 / max(scale, 1)
         surface.frame = CGRect(x: 2, y: min(6, bounds.height), width: max(0, bounds.width - 8), height: max(0, bounds.height - 12))
@@ -938,7 +947,9 @@ private final class FluentCommandBarMoreButton: NSControl {
         return true
     }
     override func draw(_ dirtyRect: NSRect) {
-        super.draw(dirtyRect)
+        foregroundView.setNeedsDisplay(dirtyRect)
+    }
+    private func drawForeground(_ dirtyRect: NSRect) {
         guard let image = NSImage(systemSymbolName: "ellipsis", accessibilityDescription: "More") else { return }
         let color = isEnabled ? (pressed ? theme.textSecondary : theme.textPrimary) : theme.textDisabled
         let configured = image.withSymbolConfiguration(
