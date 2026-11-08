@@ -80,6 +80,10 @@ final class CommandFlyoutCallbackTests: XCTestCase {
             let old = try XCTUnwrap(f.window.childWindows?.first)
             let row = try f.button("Run", in: old)
             XCTAssertTrue(row.accessibilityPerformPress())
+            if primary {
+                XCTAssertTrue(flyout.isPresented)
+                flyout.dismiss()
+            }
             XCTAssertFalse(flyout.isPresented)
             XCTAssertFalse(row.accessibilityPerformPress())
             XCTAssertEqual(calls, 1)

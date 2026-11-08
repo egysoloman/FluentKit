@@ -240,12 +240,16 @@ final class FluentTextEditingSession {
 
         // `FlyoutBase::OnOpening`: touch and pen set InputDevicePrefersPrimaryCommands and get the
         // compact icon-first command bar; mouse and keyboard use the secondary row presenter.
-        let commands = textCommands(prefersPrimaryCommands: Self.prefersPrimaryCommands(for: event, in: window))
+        let prefersPrimary = Self.prefersPrimaryCommands(for: event, in: window)
+        let commands = textCommands(prefersPrimaryCommands: prefersPrimary)
         guard !commands.isEmpty else { return true }
         let presented = FluentTextCommandFlyout(
             commands: commands,
             theme: theme,
-            reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+            reduceMotion: NSWorkspace.shared.accessibilityDisplayShouldReduceMotion,
+            refreshCommands: { [weak self] in
+                self?.textCommands(prefersPrimaryCommands: prefersPrimary) ?? []
+            }
         )
         flyout = presented
         presented.onDismiss = { [weak self, weak presented] in
@@ -332,9 +336,9 @@ final class FluentTextEditingSession {
     }
 
     private func textCommands(prefersPrimaryCommands: Bool) -> [FluentTextCommand] {
-        guard let control, let editor else { return [] }
+        guard let control, let editor, control.currentEditor() === editor else { return [] }
         let hasSelection = editor.selectedRange().length > 0
-        let hasText = !control.stringValue.isEmpty
+        let hasText = !editor.string.isEmpty
         let editable = control.isEnabled && control.isEditable && editor.isEditable
         let canPaste = editable && NSPasteboard.general.availableType(from: [.string, .rtf, .rtfd]) != nil
         var commands: [FluentTextCommand] = []

@@ -1582,6 +1582,11 @@ CommandBarFlyout and TextCommandBarFlyout share the source 40pt primary geometry
 clip, but TextBox-family controls keep their private, editor-derived secondary-only mouse command
 composition. Neither path is implemented as a MenuFlyout, and all three presenters dismiss
 immediately without an exit animation.
+Primary commands remain open for repeated actions. Toggle commands update their visual and
+accessibility values before calling the action, and retain their state for the flyout instance.
+Secondary commands close the flyout; a primary action can explicitly call `dismiss()` when needed.
+Touch/pen text commands refresh after execution: cut/copy/paste availability and history rows
+follow the existing native field editor without replacing it or reopening the panel.
 CommandBarFlyout dismissal is idempotent. Commands or dismissal callbacks can open a replacement
 without an old invocation closing it. Dismissed controls and collapsed secondary rows cannot
 invoke commands again, including through retained accessibility elements.

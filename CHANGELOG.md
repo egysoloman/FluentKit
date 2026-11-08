@@ -4,7 +4,14 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
-- CommandBarFlyout and editor command flyouts retire invoked, dismissed and collapsed controls,
+- CommandBarFlyout primary commands now remain open after execution, matching WinUI. Primary
+  actions can call `dismiss()` to close explicitly; secondary commands still close the flyout.
+  Toggles publish alternating values, update their check appearance and accessibility value before
+  callbacks, and retain their state across presentations of the same instance. Touch/pen text
+  menus refresh available commands after editing while preserving the native editor and panel;
+  content changes settle any pending entrance/overflow clip animation.
+
+- CommandBarFlyout and editor command flyouts retire consumed, dismissed and collapsed controls,
   preventing stale or reentrant command execution. Reopening from a command/dismiss callback
   preserves the new panel; repeated `dismiss()` calls do not repeat dismissal notifications.
   AppBar leaf commands still close their outer overflow when their action removes the anchor
