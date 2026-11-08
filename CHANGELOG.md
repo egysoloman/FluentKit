@@ -10,11 +10,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
   longer draws a light material or retains the previous adaptive tint.
   Opening a child menu keeps the parent Mica backdrop active; fallback begins when the entire
   window family loses key status.
-
 - Buttons and collection items release hover when hidden, their window deactivates or orders
   out, or tracking moves outside the visible area. Disabled collection items release the old
   hover owner, and hidden MenuFlyout presenters clear pointer highlights. Selection and keyboard
   focus remain separate from transient pointer state.
+
+- CommandBar overflow panels follow the bar's explicit appearance on opening and live theme
+  updates, so adaptive image icons choose the matching variant even in an oppositely themed
+  window. System themes continue to use the anchor window's appearance; panel and focus identity
+  remain stable during updates.
 
 - MenuBar coordinates hover ownership and clears stale presses on popup dismissal, focus loss,
   hiding, removal and reparenting. Keyboard/access-key/accessibility opens and cross-root keyboard

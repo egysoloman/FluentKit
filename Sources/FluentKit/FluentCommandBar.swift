@@ -371,6 +371,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         primaryControls.compactMap { $0 as? FluentAppBarSeparator }.forEach { $0.theme = theme }
         secondaryControls.compactMap { $0 as? FluentAppBarSeparator }.forEach { $0.theme = theme }
         moreButton.theme = theme
+        overflowPanel?.appearance = fluentAppKitAppearance(for: theme) ?? window?.effectiveAppearance
         overflowHost?.update(theme: theme)
         overflowPresenter?.theme = theme
         needsDisplay = true
@@ -631,7 +632,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             overflowPresenter = presenter
             installDismissMonitors()
         }
-        panel.appearance = anchorWindow.effectiveAppearance
+        panel.appearance = fluentAppKitAppearance(for: theme) ?? anchorWindow.effectiveAppearance
         presenter.userInterfaceLayoutDirection = userInterfaceLayoutDirection
         controls.forEach { $0.userInterfaceLayoutDirection = userInterfaceLayoutDirection }
         let size = presenter.preferredSize

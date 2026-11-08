@@ -1582,6 +1582,8 @@ MenuBar preserves input origin across top-level switching: keyboard and accessib
 focus the first enabled row, while pointer handoff leaves row selection clear. `openItem(at:)`
 is idempotent for an already-open entry; `toggleItem(at:)` provides explicit toggling. Hover is
 exclusive within the bar, and cancelled presses cannot reappear after dismissal or lifecycle changes.
+CommandBar overflow panels use the bar's explicit theme for native appearance and adaptive image
+icons, including live updates. A system theme inherits the anchor window's appearance.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,

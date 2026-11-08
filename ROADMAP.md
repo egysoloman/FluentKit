@@ -82,8 +82,10 @@ is not required. The macOS composition and developer overrides remain intentiona
    stale sibling opens, closes abandoned branches with a grace period and preserves expanded paint
    and accessibility state separately from selection, including High Contrast and vertical scrollers.
    MenuBar preserves input origin across top-level switches, coordinates hover and press lifecycles,
-   and keeps an already-open panel for repeated opening commands. Continue application acceptance,
-   shared popup High Contrast border resolution and the remaining hierarchical contracts.
+   and keeps an already-open panel for repeated opening commands. CommandBar overflow panels
+   preserve explicit appearance through live updates. Shared popup High Contrast borders have
+   been checked against contrasting backdrops; continue wider contrast acceptance, application
+   integration and the remaining hierarchical contracts.
    Retain PipsPager High Contrast resource and full application-flow acceptance.
 
 ## Platform acceptance still required
