@@ -4,6 +4,11 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AppBar commands, separators and CommandBar More resolve `system` themes from their containing
+  view/window and refresh cached colors on appearance changes and reparenting. Explicit light/dark
+  choices also govern adaptive image variants and cached accent colors. Updating an AppBar button's
+  theme refreshes its open attached flyout while retaining the presenter and focus.
+
 - AppBar command labels and icons render above checked, hover and pressed backgrounds. The
   CommandBar More glyph uses the same foreground ordering, preserving its High Contrast color.
   Label, image, theme and size updates repaint the foreground without adding a hit-test or

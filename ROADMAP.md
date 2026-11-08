@@ -86,7 +86,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    preserve explicit appearance through live updates. CommandBar and PipsPager cancel stale input
    on native window ordering and application deactivation, and release hover on entry into disabled
    items. AppBar command content and the More glyph remain above state backgrounds, with native
-   foreground checks for appearance, image updates and resizing. Shared popup High Contrast borders have
+   foreground checks for appearance, image updates and resizing. Native AppBar/More system themes
+   follow their host; explicit themes also select adaptive images and update attached flyouts.
+   Shared popup High Contrast borders have
    been checked against contrasting backdrops; continue wider contrast acceptance, application
    integration and the remaining hierarchical contracts.
    PipsPager resolves High Contrast resources in the requested appearance, follows its containing

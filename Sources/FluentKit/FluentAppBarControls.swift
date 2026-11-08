@@ -86,6 +86,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             guard oldValue != theme else { return }
             updateFonts()
             updateAppearance(animated: false)
+            menuFlyout?.update(items: flyoutItems ?? [], theme: theme)
         }
     }
     public var reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
@@ -152,6 +153,8 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             if needsDisplay, !foregroundView.needsDisplay { foregroundView.needsDisplay = true }
         }
     }
+
+    private var effectiveTheme: FluentTheme { fluentResolvedTheme(theme, using: effectiveAppearance) }
 
     public var presentation: FluentAppBarPresentation {
         useOverflowStyle ? .overflow : primaryPresentation
@@ -346,6 +349,11 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     open override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
         updateInteractionLifetime()
+        updateAppearance(animated: false)
+    }
+    open override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        updateAppearance(animated: false)
     }
 
     public override func draw(_ dirtyRect: NSRect) {
@@ -403,6 +411,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private var resolvedBackground: NSColor {
+        let theme = effectiveTheme
         if useOverflowStyle, isCheckedForAppearance {
             switch interactionState {
             case .pointerOver: return theme.subtleFillSecondary
@@ -424,6 +433,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private var resolvedForeground: NSColor {
+        let theme = effectiveTheme
         if useOverflowStyle { // Overflow checked states retain normal text and expose a check slot.
             switch interactionState {
             case .pressed: return theme.textSecondary
@@ -551,24 +561,34 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     private func updateAppearance(animated: Bool) {
         updateGeometry()
-        let background = resolvedBackground.cgColor
-        animationCoordinator.animateState([
-            FluentLayerAnimationChange(layer: surfaceLayer, key: "fluent.appbar.background", keyPath: "backgroundColor", toValue: background) { [weak surfaceLayer] in
-                surfaceLayer?.backgroundColor = background
-            }
-        ], motion: FluentMotionToken(duration: Self.backgroundTransitionDuration, curve: .linear), animated: animated)
+        let requestedAppearance = fluentAppKitAppearance(for: theme)
+        if foregroundView.appearance?.name != requestedAppearance?.name {
+            foregroundView.appearance = requestedAppearance
+        }
+        let theme = effectiveTheme
+        let drawingAppearance = fluentAppKitAppearance(for: theme) ?? effectiveAppearance
+        // Resolve adaptive accent colors before caching CGColors. State updates can arrive
+        // outside drawing, under the application's or another window's appearance.
+        drawingAppearance.performAsCurrentDrawingAppearance {
+            let background = resolvedBackground.cgColor
+            animationCoordinator.animateState([
+                FluentLayerAnimationChange(layer: surfaceLayer, key: "fluent.appbar.background", keyPath: "backgroundColor", toValue: background) { [weak surfaceLayer] in
+                    surfaceLayer?.backgroundColor = background
+                }
+            ], motion: FluentMotionToken(duration: Self.backgroundTransitionDuration, curve: .linear), animated: animated)
 
-        let checkedBorderVisible = isCheckedForAppearance && !useOverflowStyle && isEnabled && interactionState != .pressed
-        let showsFocus = FluentFocusVisibility.isKeyboardFocusVisible(for: self)
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        checkedBorderLayer.colors = theme.accentElevationBorderColors.map(\.cgColor)
-        checkedBorderLayer.opacity = checkedBorderVisible ? 1 : 0
-        focusOuterLayer.strokeColor = theme.focusStrokeOuter.cgColor
-        focusInnerLayer.strokeColor = theme.focusStrokeInner.cgColor
-        focusOuterLayer.opacity = showsFocus ? 1 : 0
-        focusInnerLayer.opacity = showsFocus ? 1 : 0
-        CATransaction.commit()
+            let checkedBorderVisible = isCheckedForAppearance && !useOverflowStyle && isEnabled && interactionState != .pressed
+            let showsFocus = FluentFocusVisibility.isKeyboardFocusVisible(for: self)
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+            checkedBorderLayer.colors = theme.accentElevationBorderColors.map(\.cgColor)
+            checkedBorderLayer.opacity = checkedBorderVisible ? 1 : 0
+            focusOuterLayer.strokeColor = theme.focusStrokeOuter.cgColor
+            focusInnerLayer.strokeColor = theme.focusStrokeInner.cgColor
+            focusOuterLayer.opacity = showsFocus ? 1 : 0
+            focusInnerLayer.opacity = showsFocus ? 1 : 0
+            CATransaction.commit()
+        }
         needsDisplay = true
     }
 
@@ -600,6 +620,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private func drawOverflowContent(color: NSColor) {
+        let theme = effectiveTheme
         let scale = fluentControlSize.metricScale
         let rtl = userInterfaceLayoutDirection == .rightToLeft
         if reservesOverflowToggleSlot, isCheckedForAppearance {
@@ -732,7 +753,7 @@ public final class FluentAppBarSeparator: NSView, FluentControlSizeConfigurable 
     public var isCompact = false { didSet { if oldValue != isCompact { invalidateIntrinsicContentSize(); needsLayout = true } } }
     public var dynamicOverflowOrder = 0
     public var isInOverflow: Bool { useOverflowStyle }
-    public var theme: FluentTheme = .current { didSet { dividerLayer.backgroundColor = theme.divider.cgColor } }
+    public var theme: FluentTheme = .current { didSet { updateAppearance() } }
     public var fluentControlSize: FluentControlSize = .regular { didSet { invalidateIntrinsicContentSize(); needsLayout = true } }
     private let dividerLayer = CALayer()
 
@@ -741,7 +762,7 @@ public final class FluentAppBarSeparator: NSView, FluentControlSizeConfigurable 
         wantsLayer = true
         dividerLayer.name = "FluentKit.AppBarSeparator.Divider"
         layer?.addSublayer(dividerLayer)
-        dividerLayer.backgroundColor = theme.divider.cgColor
+        updateAppearance()
         setAccessibilityElement(false)
     }
 
@@ -752,6 +773,24 @@ public final class FluentAppBarSeparator: NSView, FluentControlSizeConfigurable 
 
     public required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     public override var isFlipped: Bool { true }
+
+    public override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateAppearance()
+    }
+
+    public override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        updateAppearance()
+    }
+
+    private func updateAppearance() {
+        let theme = fluentResolvedTheme(theme, using: effectiveAppearance)
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        dividerLayer.backgroundColor = theme.divider.cgColor
+        CATransaction.commit()
+    }
 
     public override var intrinsicContentSize: NSSize {
         let scale = fluentControlSize.metricScale

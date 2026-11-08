@@ -791,7 +791,9 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
 
 private final class FluentCommandBarMoreButton: NSControl {
     var onInvoke: (() -> Void)?
-    var theme: FluentTheme = .current { didSet { updateAppearance() } }
+    var theme: FluentTheme = .current {
+        didSet { updateAppearance(animated: false); needsLayout = true }
+    }
     var reduceMotion = false
     var isExpanded = false {
         didSet {
@@ -806,6 +808,7 @@ private final class FluentCommandBarMoreButton: NSControl {
     private var trackingPress = false
     private let surface = CALayer()
     private let foregroundView = FluentControlForegroundView(frame: .zero)
+    private var effectiveTheme: FluentTheme { fluentResolvedTheme(theme, using: effectiveAppearance) }
     weak var hoverCoordinator: FluentHoverCoordinator<NSControl>?
     private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
 
@@ -840,6 +843,7 @@ private final class FluentCommandBarMoreButton: NSControl {
     override func layout() {
         super.layout()
         if foregroundView.frame != bounds { foregroundView.frame = bounds }
+        let theme = effectiveTheme
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
         let pixel = 1 / max(scale, 1)
         surface.frame = CGRect(x: 2, y: min(6, bounds.height), width: max(0, bounds.width - 8), height: max(0, bounds.height - 12))
@@ -941,6 +945,14 @@ private final class FluentCommandBarMoreButton: NSControl {
         if newWindow !== window { cancelInteraction() }
         super.viewWillMove(toWindow: newWindow)
     }
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateAppearance(animated: false)
+    }
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        updateAppearance(animated: false)
+    }
     override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
         onInvoke?()
@@ -950,6 +962,7 @@ private final class FluentCommandBarMoreButton: NSControl {
         foregroundView.setNeedsDisplay(dirtyRect)
     }
     private func drawForeground(_ dirtyRect: NSRect) {
+        let theme = effectiveTheme
         guard let image = NSImage(systemSymbolName: "ellipsis", accessibilityDescription: "More") else { return }
         let color = isEnabled ? (pressed ? theme.textSecondary : theme.textPrimary) : theme.textDisabled
         let configured = image.withSymbolConfiguration(
@@ -966,6 +979,11 @@ private final class FluentCommandBarMoreButton: NSControl {
         )
     }
     private func updateAppearance(animated: Bool = true) {
+        let requestedAppearance = fluentAppKitAppearance(for: theme)
+        if foregroundView.appearance?.name != requestedAppearance?.name {
+            foregroundView.appearance = requestedAppearance
+        }
+        let theme = effectiveTheme
         CATransaction.begin()
         CATransaction.setDisableActions(reduceMotion || !animated)
         let fill: NSColor = pressed

@@ -14,6 +14,7 @@ private final class AppBarLifecycleOverrideCheck: FluentAppBarButton {
     override func viewWillMove(toSuperview newSuperview: NSView?) { super.viewWillMove(toSuperview: newSuperview) }
     override func viewWillMove(toWindow newWindow: NSWindow?) { super.viewWillMove(toWindow: newWindow) }
     override func viewDidMoveToWindow() { super.viewDidMoveToWindow() }
+    override func viewDidChangeEffectiveAppearance() { super.viewDidChangeEffectiveAppearance() }
 }
 
 @main struct AppearanceAudit {

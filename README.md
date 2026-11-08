@@ -1595,6 +1595,9 @@ reparenting, disabling, focus loss and window ordering cancel pending input with
 checked commands or expanded-menu paint.
 AppBar labels and icons remain above state backgrounds, including opaque checked fills;
 the More glyph retains its foreground color under High Contrast hover and press states.
+Native AppBar controls and CommandBar More honor `theme = .custom(colorScheme: .system)` through
+containing-view/window appearance changes and reparenting. Explicit light/dark themes also select
+adaptive image variants; changing an AppBar button's theme updates its open attached flyout.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,
