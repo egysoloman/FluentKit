@@ -45,11 +45,29 @@ final class ScrollerLayoutRegressionTests: XCTestCase {
         for style in [NSScroller.Style.overlay, .legacy, .overlay, .legacy] {
             scroll.scrollerStyle = style
             // No resize, forced parent layout, or synthetic scrollWheel event.
-            settle()
+            // Viewport invalidation is deferred past NSScrollView.tile(). Wait for its
+            // observable result; 120 ms can expire before a loaded runner services layout.
+            waitForUI({
+                let viewport = scroll.contentView.bounds
+                let extent = horizontal ? viewport.height : viewport.width
+                let overlayExtent = horizontal ? overlaySize.height : overlaySize.width
+                let styleApplied = style == .legacy
+                    ? extent < overlayExtent
+                    : abs(extent - overlayExtent) < 0.01
+                let documentExtent = horizontal ? document.frame.height : document.frame.width
+                let rowsFit = document.subviews.allSatisfy {
+                    (horizontal ? $0.frame.maxY : $0.frame.maxX) <= extent
+                }
+                let origin = horizontal ? viewport.minX : viewport.minY
+                let collectionVisible = (document as? NSCollectionView).map { !$0.visibleItems().isEmpty } ?? true
+                return styleApplied && abs(documentExtent - extent) < 0.01 && rowsFit &&
+                    abs(origin - 100) <= 1 && collectionVisible
+            }(), file: file, line: line)
             let viewport = scroll.contentView.bounds
             XCTAssertEqual(scroll.frame.size, outerSize, file: file, line: line)
             XCTAssertEqual(horizontal ? document.frame.height : document.frame.width,
-                horizontal ? viewport.height : viewport.width, accuracy: 0.01, file: file, line: line)
+                horizontal ? viewport.height : viewport.width, accuracy: 0.01,
+                "style=\(style), direction=\(direction), horizontal=\(horizontal)", file: file, line: line)
             XCTAssertEqual(horizontal ? viewport.minX : viewport.minY, 100, accuracy: 1, file: file, line: line)
             if style == .legacy {
                 XCTAssertLessThan(horizontal ? viewport.height : viewport.width,
