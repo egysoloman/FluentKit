@@ -963,8 +963,9 @@ private final class FluentCommandBarMoreButton: NSControl {
         if changed { updateAppearance() }
     }
     private func updatePointerHover(_ value: Bool) {
-        if let hoverCoordinator { hoverCoordinator.update(self, hovering: value) }
-        else { setPointerHover(value) }
+        let eligible = value && fluentCanAcquirePointerHover(self)
+        if let hoverCoordinator { hoverCoordinator.update(self, hovering: eligible) }
+        else { setPointerHover(eligible) }
     }
     private func updateInteractionLifetime() {
         if pointerOver || trackingPress || pressedKey != nil { pointerLifetime.observe(window) }

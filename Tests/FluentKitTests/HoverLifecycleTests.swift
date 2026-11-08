@@ -27,6 +27,8 @@ final class HoverLifecycleTests: XCTestCase {
             styleMask: [.titled], backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
         window.contentView = view
+        // Hover entry requires a visible target, as the native tracking area does.
+        window.orderFront(nil)
         view.layoutSubtreeIfNeeded()
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.05))
         return (window, view)

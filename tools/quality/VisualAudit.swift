@@ -17,6 +17,8 @@ private final class Canvas: NSView { override var isFlipped: Bool { true } }
             let window = NSWindow(contentRect: canvas.bounds, styleMask: [.titled], backing: .buffered, defer: false)
             window.isReleasedWhenClosed = false
             window.contentView = canvas
+            // Tracking events require a visible window, just like real hover input.
+            window.orderFront(nil)
             func label(_ text: String, x: CGFloat, y: CGFloat, size: CGFloat = 14) {
                 let label = NSTextField(labelWithString: text)
                 label.font = .systemFont(ofSize: size)

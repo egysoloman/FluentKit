@@ -1876,7 +1876,7 @@ private final class FluentSectionedCollectionCell: NSView {
     override func mouseEntered(with event: NSEvent) {
         // A disabled item still takes the pointer away from its enabled sibling. Its own
         // setPointerOver keeps it unpainted while the coordinator releases the old owner.
-        hoverCoordinator?.update(self, hovering: true)
+        hoverCoordinator?.update(self, hovering: fluentCanAcquirePointerHover(self))
     }
 
     override func mouseExited(with event: NSEvent) {
@@ -1912,7 +1912,7 @@ private final class FluentSectionedCollectionCell: NSView {
     /// Reconcile only the current owner, keeping viewport work independent of the item count.
     func reconcilePointerLocation() {
         guard pointerOver else { return }
-        guard !isHiddenOrHasHiddenAncestor, let window,
+        guard fluentCanAcquirePointerHover(self), let window,
               visibleRect.contains(convert(window.mouseLocationOutsideOfEventStream, from: nil)) else {
             hoverCoordinator?.remove(self)
             return

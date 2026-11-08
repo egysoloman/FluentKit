@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AppBar, CommandBar More, MenuFlyout and collection rows reject late hover entries from
+  hidden, removed or fully clipped controls and hidden windows before transferring hover or
+  scheduling peer-menu changes. Visible disabled items still release a sibling's hover.
+  MenuFlyout clears pointer highlights when a non-key panel orders out, preserving keyboard
+  selection and the pointer bridge to an open child while its parent remains visible.
+
 - CommandBarFlyout ignores late hover-entry events from removed, hidden or fully clipped
   primary commands, More and secondary rows, preserving the current visible command's hover.
 

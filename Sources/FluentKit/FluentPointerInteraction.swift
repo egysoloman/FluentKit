@@ -1,5 +1,14 @@
 import AppKit
 
+/// A queued tracking event can outlive its visible target. Check before transferring hover
+/// ownership or scheduling peer flyouts; enabled state is deliberately separate so a visible
+/// disabled item can still release the previous item's hover.
+@MainActor
+func fluentCanAcquirePointerHover(_ view: NSView) -> Bool {
+    !view.isHiddenOrHasHiddenAncestor && view.window?.isVisible == true
+        && view.visibleRect.intersects(view.bounds)
+}
+
 /// Tracks the window lifetime of an active hover, press or focused control. AppKit need not
 /// deliver an exit when a window deactivates or orders out; idle controls can release observation.
 final class FluentPointerLifetime {

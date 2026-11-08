@@ -1620,6 +1620,10 @@ CommandBar shares hover ownership across commands and More, including disabled i
 reparenting, disabling, focus loss and window ordering cancel pending input. Checked values and
 paint for menus that remain open are preserved; hiding, reparenting or disabling an attached menu's
 anchor closes that menu.
+Late hover entries from hidden, removed or fully clipped AppBar commands, More, MenuFlyout
+rows and collection cells cannot take a visible sibling's hover or close its attached menu.
+Visible disabled items still release the previous hover. MenuFlyout also clears pointer paint
+when a non-key panel orders out, without clearing keyboard selection.
 AppBar labels and icons remain above state backgrounds, including opaque checked fills;
 the More glyph retains its foreground color under High Contrast hover and press states.
 Native AppBar controls and CommandBar More honor `theme = .custom(colorScheme: .system)` through

@@ -1151,8 +1151,7 @@ private class FluentTextCommandControl: NSButton {
     private func updatePointerHover(_ value: Bool) {
         // Late enter events from removed/hidden/clipped controls cannot take a current peer's
         // hover. Visible disabled commands still clear a sibling whose exit was missed.
-        let eligible = value && !isHiddenOrHasHiddenAncestor && window?.isVisible == true
-            && visibleRect.intersects(bounds)
+        let eligible = value && fluentCanAcquirePointerHover(self)
         if let hoverCoordinator { hoverCoordinator.update(self, hovering: eligible) }
         else { setPointerHover(eligible) }
     }

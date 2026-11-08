@@ -1016,6 +1016,13 @@ private final class FluentMenuPresenterView: NSView {
     }
     private var windowObserver: NSObjectProtocol?
     private weak var pointerRow: FluentMenuItemRow?
+    // A non-key panel can order out without a resign-key notification. Observe active pointer
+    // paint as well, preserving the parent/child bridge only while that parent remains visible.
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in
+        guard let self else { return }
+        self.resetPointerState(preservingPointerOwner:
+            self.window?.isVisible == true && self.window?.childWindows?.isEmpty == false)
+    }
 
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { true }
@@ -1251,6 +1258,7 @@ private final class FluentMenuPresenterView: NSView {
     }
 
     private func setHoveredRow(_ row: FluentMenuItemRow, index: Int, hovering: Bool) {
+        let hovering = hovering && fluentCanAcquirePointerHover(row)
         let wasCurrent = pointerRow === row
         hoverCoordinator.update(row, hovering: hovering)
         if hovering {
@@ -1270,9 +1278,12 @@ private final class FluentMenuPresenterView: NSView {
                 updateSelection()
             }
         }
+        if pointerRow != nil { pointerLifetime.observe(window) }
+        else { pointerLifetime.invalidate() }
     }
 
     func resetPointerState(preservingPointerOwner: Bool = false) {
+        pointerLifetime.invalidate()
         if !preservingPointerOwner { pointerRow = nil }
         hoverCoordinator.reset(items: itemRows.values)
         itemRows.values.forEach { $0.resetPointerState() }

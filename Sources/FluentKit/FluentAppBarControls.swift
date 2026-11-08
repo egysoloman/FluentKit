@@ -350,9 +350,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     private func updatePointerHover(_ value: Bool) {
-        if value { commandBarOwner?.pointerEnteredCommand(self) }
-        if let hoverCoordinator { hoverCoordinator.update(self, hovering: value) }
-        else { setPointerHover(value) }
+        let eligible = value && fluentCanAcquirePointerHover(self)
+        if eligible { commandBarOwner?.pointerEnteredCommand(self) }
+        if let hoverCoordinator { hoverCoordinator.update(self, hovering: eligible) }
+        else { setPointerHover(eligible) }
     }
 
     private func updateInteractionLifetime() {
