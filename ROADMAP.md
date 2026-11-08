@@ -86,7 +86,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    preserve explicit appearance through live updates. Shared popup High Contrast borders have
    been checked against contrasting backdrops; continue wider contrast acceptance, application
    integration and the remaining hierarchical contracts.
-   Retain PipsPager High Contrast resource and full application-flow acceptance.
+   PipsPager resolves High Contrast resources in the requested appearance, follows its containing
+   window for system themes and distinguishes navigation border states. Continue full
+   application-flow, contrast and physical input acceptance.
 
 ## Platform acceptance still required
 

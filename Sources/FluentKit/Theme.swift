@@ -979,7 +979,7 @@ public struct FluentTheme: Equatable {
         state: FluentControlState
     ) -> NSColor {
         if isHighContrast {
-            return switch state {
+            let color: NSColor = switch state {
             case .pointerOver, .pressed:
                 .selectedMenuItemTextColor
             case .disabled:
@@ -989,6 +989,7 @@ public struct FluentTheme: Equatable {
             default:
                 .controlTextColor
             }
+            return resolvedHighContrastColor(color)
         }
         return switch state {
         case .pointerOver, .pressed: textSecondary
@@ -1002,20 +1003,24 @@ public struct FluentTheme: Equatable {
         state: FluentControlState
     ) -> NSColor {
         guard isHighContrast else { return .clear }
-        return switch state {
+        let color: NSColor = switch state {
         case .pointerOver, .pressed: .selectedContentBackgroundColor
         case .selected where selected: .selectedContentBackgroundColor
         default: .controlBackgroundColor
         }
+        return resolvedHighContrastColor(color)
     }
 
     public func pipsPagerNavigationForeground(for state: FluentControlState) -> NSColor {
         if isHighContrast {
-            return switch state {
-            case .pointerOver, .pressed: .selectedContentBackgroundColor
+            let color: NSColor = switch state {
+            // The highlight is foreground here; AppKit's adaptive emphasis stays legible
+            // against ButtonFace in dark appearance, like the expanded menu chevron.
+            case .pointerOver, .pressed: .linkColor
             case .disabled: .disabledControlTextColor
             default: .controlTextColor
             }
+            return resolvedHighContrastColor(color)
         }
         return switch state {
         case .pointerOver, .pressed: textSecondary
@@ -1025,7 +1030,16 @@ public struct FluentTheme: Equatable {
     }
 
     public func pipsPagerNavigationBackground(for state: FluentControlState) -> NSColor {
-        isHighContrast ? .controlBackgroundColor : .clear
+        isHighContrast ? resolvedHighContrastColor(.controlBackgroundColor) : .clear
+    }
+
+    public func pipsPagerNavigationBorder(for state: FluentControlState) -> NSColor {
+        guard isHighContrast else { return .clear }
+        let color: NSColor = switch state {
+        case .pointerOver, .pressed: .linkColor
+        default: .controlBackgroundColor
+        }
+        return resolvedHighContrastColor(color)
     }
 
     /// Breadcrumb items use WinUI's text-fill state ladder and intentionally keep transparent

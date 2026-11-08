@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- PipsPager resolves High Contrast colors before caching them in layers, so explicit light/dark
+  themes render correctly inside an oppositely themed host. System themes follow the containing
+  window through appearance changes. Navigation borders now use their idle, hover, pressed and
+  disabled resources, exposed through `pipsPagerNavigationBorder(for:)`. Highlighted navigation
+  arrows and borders use adaptive emphasis to keep sufficient contrast in dark appearance.
+
 - Mica and Acrylic resolve inherited light/dark appearance from their containing window. Theme
   changes refresh the complete recipe, adaptive tint colors and configured fallback colors,
   while preserving developer opacity overrides. A dark window inside a light application no

@@ -756,6 +756,11 @@ pip is centered with source-style scrolling, while edge hiding, pointer-only vis
 RTL mirroring, focus-without-selection arrow navigation, and Selection accessibility remain part
 of the same bound control lifecycle.
 
+PipsPager resolves High Contrast colors in its requested appearance, including updates outside
+drawing callbacks. A system color scheme follows the containing window. Navigation borders use
+the button-face resource at rest and while disabled, and adaptive emphasis on hover or press;
+`theme.pipsPagerNavigationBorder(for:)` exposes that state mapping for custom renderers.
+
 Changing PipsPager's Reduce Motion policy updates its existing pip and navigation buttons
 immediately, without waiting for layout or changing selection. Navigation presses scale only
 the icon to 0.875; hit areas, backgrounds and focus rings keep their size. Hover belongs to one

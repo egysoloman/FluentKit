@@ -31,6 +31,7 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         isEnabled && (pressedKey != nil || (trackingGeneration == generation && isHighlighted))
     }
     var canReceiveInput: Bool { isEnabled && window?.isVisible == true && !isHiddenOrHasHiddenAncestor }
+    var effectiveTheme: FluentTheme { fluentResolvedTheme(theme, using: effectiveAppearance) }
     override var acceptsFirstResponder: Bool { isEnabled }
 
     init() {
@@ -50,6 +51,10 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
     override func layout() { super.layout(); refreshAppearance(animated: false) }
     override func setFrameSize(_ size: NSSize) { super.setFrameSize(size); refreshAppearance(animated: false) }
     override func viewDidChangeBackingProperties() { super.viewDidChangeBackingProperties(); refreshAppearance(animated: false) }
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        refreshAppearance(animated: false)
+    }
     override func updateTrackingAreas() { super.updateTrackingAreas(); trackingHost.update() }
 
     override func draw(_ dirtyRect: NSRect) {
@@ -204,6 +209,7 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
             animated: animated && canReceiveInput)
     }
     func updateFocus(_ focus: CAShapeLayer) {
+        let theme = effectiveTheme
         focus.frame = bounds.insetBy(dx: 1, dy: 1)
         focus.path = CGPath(roundedRect: focus.bounds,
             cornerWidth: theme.designTokens.controlCornerRadius * fluentControlSize.metricScale,
@@ -242,6 +248,7 @@ final class FluentPipsPagerPipButton: FluentPipsPagerButton {
 
     override func refreshAppearance(animated: Bool) {
         guard layer != nil, bounds.width > 0, bounds.height > 0 else { return }
+        let theme = effectiveTheme
         let state: FluentControlState = !isEnabled ? .disabled : pressed ? .pressed : pointerOver ? .pointerOver : isSelectedPip ? .selected : .normal
         let scale = fluentControlSize.metricScale
         let side: CGFloat = (pressed ? 4 : (isSelectedPip || pointerOver) ? 6 : 4) * scale
@@ -308,6 +315,7 @@ final class FluentPipsPagerNavigationButton: FluentPipsPagerButton {
 
     override func refreshAppearance(animated: Bool) {
         guard layer != nil, bounds.width > 0, bounds.height > 0 else { return }
+        let theme = effectiveTheme
         let state: FluentControlState = !isEnabled ? .disabled : pressed ? .pressed : pointerOver ? .pointerOver : .normal
         let scale = fluentControlSize.metricScale
         let background = theme.pipsPagerNavigationBackground(for: state).cgColor
@@ -318,7 +326,7 @@ final class FluentPipsPagerNavigationButton: FluentPipsPagerButton {
         chromeLayer.frame = bounds
         chromeLayer.cornerRadius = theme.designTokens.controlCornerRadius * scale
         chromeLayer.borderWidth = theme.isHighContrast ? theme.controlStrokeWidth : 0
-        chromeLayer.borderColor = theme.isHighContrast ? theme.controlStrokeStrong.cgColor : NSColor.clear.cgColor
+        chromeLayer.borderColor = theme.pipsPagerNavigationBorder(for: state).cgColor
         iconLayer.bounds = CGRect(x: 0, y: 0, width: 10 * scale, height: 10 * scale)
         iconLayer.position = CGPoint(x: bounds.midX, y: bounds.midY)
         updateFocus(focusLayer)
