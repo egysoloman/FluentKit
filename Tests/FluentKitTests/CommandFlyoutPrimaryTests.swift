@@ -284,7 +284,7 @@ final class CommandFlyoutPrimaryTests: XCTestCase {
         XCTAssertNil(layer.mask)
         XCTAssertEqual(layer.opacity, 1)
         XCTAssertTrue(layer.animationKeys()?.isEmpty != false)
-        XCTAssertFalse(oldSecondary.accessibilityPerformPress())
+        XCTAssertTrue(try f.button("Secondary", in: panel) === oldSecondary)
         RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
         XCTAssertEqual(layer.opacity, 1)
         XCTAssertTrue(layer.animationKeys()?.isEmpty != false)

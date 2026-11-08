@@ -108,10 +108,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     }
     public var isOverflowButtonVisible: Bool { resolvedOverflowButtonVisible }
 
-    private enum CommandIdentity: Hashable {
-        case explicit(AnyHashable, occurrence: Int)
-        case position(primary: Bool, index: Int)
-    }
+    private typealias CommandIdentity = FluentCommandBarItemIdentity
     private var primaryIdentities: [CommandIdentity] = []
     private var secondaryIdentities: [CommandIdentity] = []
     private var isSettingCommands = false
@@ -255,17 +252,9 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         let oldControls = primaryControls + secondaryControls
         let focus = captureCommandFocus()
         var candidates = Dictionary(uniqueKeysWithValues: zip(primaryIdentities + secondaryIdentities, oldControls))
-        var occurrences: [AnyHashable: Int] = [:]
-        func identities(_ commands: [FluentCommandBarItem], primary: Bool) -> [CommandIdentity] {
-            commands.enumerated().map { index, item in
-                guard let id = item.id else { return .position(primary: primary, index: index) }
-                let occurrence = occurrences[id, default: 0]
-                occurrences[id] = occurrence + 1
-                return .explicit(id, occurrence: occurrence)
-            }
-        }
-        primaryIdentities = identities(primaryCommands, primary: true)
-        secondaryIdentities = identities(secondaryCommands, primary: false)
+        let identities = CommandIdentity.resolve(primary: primaryCommands, secondary: secondaryCommands)
+        primaryIdentities = identities.primary
+        secondaryIdentities = identities.secondary
         func control(_ item: FluentCommandBarItem, identity: CommandIdentity, primaryIndex: Int?) -> NSView {
             let candidate = candidates.removeValue(forKey: identity)
             let view: NSView

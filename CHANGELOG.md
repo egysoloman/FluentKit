@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CommandBarFlyout receives live configuration updates, including Button attachments. Stable
+  command IDs retain controls and focus while titles, actions, enabled/checked states and
+  AlwaysExpanded change. Removed controls become inert, empty configurations close the panel,
+  and updates settle pending entrance/expansion animations without reopening it. Callback
+  updates cannot revive consumed commands or overwrite a replacement presentation.
+  Primary commands, More and secondary rows share hover ownership and clear stale highlights
+  after reordering, hiding, disabling or window deactivation. Secondary checkmarks now respect
+  the native button's flipped drawing coordinates.
+
 - CommandBarFlyout primary commands now remain open after execution, matching WinUI. Primary
   actions can call `dismiss()` to close explicitly; secondary commands still close the flyout.
   Toggles publish alternating values, update their check appearance and accessibility value before

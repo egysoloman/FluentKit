@@ -1590,6 +1590,15 @@ follow the existing native field editor without replacing it or reopening the pa
 CommandBarFlyout dismissal is idempotent. Commands or dismissal callbacks can open a replacement
 without an old invocation closing it. Dismissed controls and collapsed secondary rows cannot
 invoke commands again, including through retained accessibility elements.
+Changing a Button's `commandBarFlyoutConfiguration` updates its open panel. For a directly owned
+flyout, call `update(configuration:)`. Both paths refresh labels, actions, enabled/checked states
+and `alwaysExpanded` without reopening the panel. Use unique command IDs to retain controls and
+focus across reordering; omitted IDs follow their group and position. Incoming toggle values
+override local toggle state. Removed or disabled focused commands move focus to an enabled
+command, and an empty or separator-only configuration closes the presentation. Turning off
+`alwaysExpanded` restores More while keeping the overflow open until the user collapses it.
+Primary buttons, More and secondary rows share one hover owner; moving or retiring a command,
+hiding it, disabling it or deactivating its window clears its transient highlight.
 
 Submenus open after a short pointer hover delay or immediately from keyboard/accessibility input.
 MenuBar preserves input origin across top-level switching: keyboard and accessibility openings

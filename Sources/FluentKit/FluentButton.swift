@@ -66,7 +66,9 @@ public final class FluentButton: NSButton {
     public var flyoutPlacement: FluentMenuPlacement = .below
     public var commandBarFlyoutConfiguration: FluentCommandBarFlyoutConfiguration? {
         didSet {
-            if commandBarFlyoutConfiguration == nil, commandBarFlyoutPresenter != nil {
+            if let configuration = commandBarFlyoutConfiguration {
+                commandBarFlyoutPresenter?.update(configuration: configuration)
+            } else if commandBarFlyoutPresenter != nil {
                 dismissCommandBarFlyout()
             }
             updateAttachedFlyoutAccessibility()
@@ -419,6 +421,7 @@ public final class FluentButton: NSButton {
     private func presentFlyoutIfNeeded() {
         guard isEnabled, menuFlyout == nil, commandBarFlyoutPresenter == nil, window != nil else { return }
         if let configuration = commandBarFlyoutConfiguration {
+            guard (configuration.primaryCommands + configuration.secondaryCommands).contains(where: { !$0.isSeparator }) else { return }
             let presented = FluentCommandBarFlyout(
                 primaryCommands: configuration.primaryCommands,
                 secondaryCommands: configuration.secondaryCommands,

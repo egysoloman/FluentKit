@@ -175,9 +175,9 @@ public struct FluentCommandBarFlyoutConfiguration {
 /// Primary commands stay open for repeated actions; secondary commands dismiss the flyout.
 /// Call `dismiss()` from a primary action when it should close the presentation.
 public final class FluentCommandBarFlyout {
-    public let primaryCommands: [FluentCommandBarItem]
-    public let secondaryCommands: [FluentCommandBarItem]
-    public let alwaysExpanded: Bool
+    public private(set) var primaryCommands: [FluentCommandBarItem]
+    public private(set) var secondaryCommands: [FluentCommandBarItem]
+    public private(set) var alwaysExpanded: Bool
 
     private let presenter: FluentTextCommandFlyout
 
@@ -198,8 +198,7 @@ public final class FluentCommandBarFlyout {
         self.secondaryCommands = secondaryCommands
         self.alwaysExpanded = alwaysExpanded
         presenter = FluentTextCommandFlyout(
-            commands: Self.resolve(primaryCommands, isPrimary: true)
-                + Self.resolve(secondaryCommands, isPrimary: false),
+            commands: Self.resolve(primary: primaryCommands, secondary: secondaryCommands),
             theme: theme,
             reduceMotion: reduceMotion,
             alwaysExpanded: alwaysExpanded,
@@ -233,13 +232,32 @@ public final class FluentCommandBarFlyout {
 
     public func dismiss() { presenter.dismiss(animated: false) }
 
+    /// Updates both command groups together, including an already-open presentation. Incoming
+    /// toggle values are authoritative. An empty configuration closes the current presentation.
+    public func update(configuration: FluentCommandBarFlyoutConfiguration) {
+        primaryCommands = configuration.primaryCommands
+        secondaryCommands = configuration.secondaryCommands
+        alwaysExpanded = configuration.alwaysExpanded
+        presenter.update(commands: Self.resolve(primary: primaryCommands, secondary: secondaryCommands),
+                         alwaysExpanded: alwaysExpanded)
+    }
+
+    private static func resolve(
+        primary: [FluentCommandBarItem], secondary: [FluentCommandBarItem]
+    ) -> [FluentTextCommand] {
+        let identities = FluentCommandBarItemIdentity.resolve(primary: primary, secondary: secondary)
+        return resolve(primary, identities: identities.primary, isPrimary: true)
+            + resolve(secondary, identities: identities.secondary, isPrimary: false)
+    }
+
     private static func resolve(
         _ items: [FluentCommandBarItem],
+        identities: [FluentCommandBarItemIdentity],
         isPrimary: Bool
     ) -> [FluentTextCommand] {
-        items.map { item in
+        zip(items, identities).map { item, identity in
             FluentTextCommand(
-                kind: .custom(UUID()),
+                kind: .commandBar(identity),
                 title: item.title,
                 accelerator: item.accelerator,
                 systemImageName: item.systemImageName,
@@ -264,6 +282,7 @@ enum FluentTextCommandKind: Hashable {
     case redo
     case selectAll
     case custom(UUID)
+    case commandBar(FluentCommandBarItemIdentity)
 }
 
 struct FluentTextCommand {
@@ -316,7 +335,7 @@ final class FluentTextCommandFlyout {
     private let refreshCommands: (() -> [FluentTextCommand])?
     private var theme: FluentTheme
     private let reduceMotion: Bool
-    private let alwaysExpanded: Bool
+    private var alwaysExpanded: Bool
     private let presenterIdentifier: String
     private let presenterTitle: String
     private let animationCoordinator: FluentAnimationCoordinator
@@ -358,7 +377,7 @@ final class FluentTextCommandFlyout {
 
     func present(relativeTo anchor: NSView, at point: NSPoint) {
         dismiss(animated: false, notify: false)
-        guard let parentWindow = anchor.window, !commands.isEmpty else { return }
+        guard let parentWindow = anchor.window, commands.contains(where: { !$0.isSeparator }) else { return }
         registerAppearanceUpdates(from: parentWindow)
         anchorScreenPoint = parentWindow.convertPoint(toScreen: anchor.convert(point, to: nil))
 
@@ -404,14 +423,7 @@ final class FluentTextCommandFlyout {
             } else if let refreshCommands = self.refreshCommands {
                 let refreshed = refreshCommands()
                 guard self.panel === panel, self.view === commandView else { return }
-                self.commands = refreshed
-                guard refreshed.contains(where: { !$0.isSeparator }) else {
-                    self.dismiss(animated: false)
-                    return
-                }
-                self.settlePresentationAnimations()
-                commandView.update(commands: refreshed)
-                self.resize(expanded: commandView.isExpanded, animated: false)
+                self.update(commands: refreshed, alwaysExpanded: self.alwaysExpanded)
             }
         }
         commandView.onExpandedChange = { [weak self] expanded in
@@ -497,6 +509,22 @@ final class FluentTextCommandFlyout {
             self.anchorScreenPoint = window.convertPoint(toScreen: anchor.convert(point, to: nil))
             self.resize(expanded: view.isExpanded, animated: false)
         }
+    }
+
+    func update(commands: [FluentTextCommand], alwaysExpanded: Bool) {
+        self.commands = commands
+        self.alwaysExpanded = alwaysExpanded
+        // A secondary command has already consumed its presentation before its callback runs.
+        // Save a callback's new configuration for next time without reviving that old surface.
+        guard let view, let panel, view.isActive else { return }
+        guard commands.contains(where: { !$0.isSeparator }) else {
+            dismiss(animated: false)
+            return
+        }
+        settlePresentationAnimations()
+        view.update(commands: commands, alwaysExpanded: alwaysExpanded)
+        guard self.panel === panel, self.view === view else { return }
+        resize(expanded: view.isExpanded, animated: false)
     }
 
     func dismiss(animated: Bool, notify: Bool = true) {
@@ -718,12 +746,17 @@ private final class FluentTextCommandBarView: NSView {
     private var theme: FluentTheme
     private var primaryViews: [NSView] = []
     private var primaryButtons: [FluentTextCommandButton] = []
+    private var primaryIdentities: [FluentTextCommandKind] = []
+    private var secondaryIdentities: [FluentTextCommandKind] = []
     private var moreButton: FluentTextCommandButton?
-    private let alwaysExpanded: Bool
-    private var isActive = true
+    private var alwaysExpanded: Bool
+    private(set) var isActive = true
     private var isInvokingCommand = false
     private var secondaryViews: [NSView] = []
     private var secondaryRows: [FluentTextCommandRow] = []
+    private let hoverCoordinator = FluentHoverCoordinator<FluentTextCommandControl> { control, hovering in
+        control.setPointerHover(hovering)
+    }
     private(set) var isExpanded: Bool
     let primaryAtBottom: Bool
 
@@ -766,13 +799,18 @@ private final class FluentTextCommandBarView: NSView {
 
     private func rebuildPrimaryViews() {
         let oldViews = primaryViews
-        let oldButtons = primaryButtons
-        primaryViews = commands.filter(\.isPrimary).map { command in
+        let candidates = Dictionary(uniqueKeysWithValues: zip(primaryIdentities, oldViews))
+        let primary = commands.filter(\.isPrimary)
+        primaryIdentities = primary.map(\.kind)
+        primaryViews = primary.map { command in
+            let candidate = candidates[command.kind]
             if command.isSeparator {
-                return FluentCommandBarSeparatorView(theme: theme, orientation: .vertical)
+                return (candidate as? FluentCommandBarSeparatorView)
+                    ?? FluentCommandBarSeparatorView(theme: theme, orientation: .vertical)
             }
-            let button = oldButtons.first { $0.command.kind == command.kind }
+            let button = (candidate as? FluentTextCommandButton)
                 ?? FluentTextCommandButton(command: command, theme: theme, showsIcon: true)
+            button.hoverCoordinator = hoverCoordinator
             button.update(command: command)
             return button
         }
@@ -797,6 +835,7 @@ private final class FluentTextCommandBarView: NSView {
             let moreButton = moreButton ?? FluentTextCommandButton(
                 title: "More", accelerator: "", systemImageName: "ellipsis", theme: theme)
             self.moreButton = moreButton
+            moreButton.hoverCoordinator = hoverCoordinator
             moreButton.onInvoke = { [weak self] in
                 guard let self, self.isActive, !self.isInvokingCommand else { return false }
                 self.isExpanded.toggle()
@@ -831,10 +870,14 @@ private final class FluentTextCommandBarView: NSView {
         return true
     }
 
-    func update(commands: [FluentTextCommand]) {
+    func update(commands: [FluentTextCommand], alwaysExpanded: Bool) {
         guard isActive else { return }
         let focusedControl = window?.firstResponder as? NSView
+        let focusedKind = (focusedControl as? FluentTextCommandButton)?.command.kind
+            ?? (focusedControl as? FluentTextCommandRow)?.command.kind
+        let ownedFocus = focusedControl?.superview === self
         self.commands = commands
+        self.alwaysExpanded = alwaysExpanded
         let hasPrimary = commands.contains { $0.isPrimary && !$0.isSeparator }
         let hasSecondary = commands.contains { !$0.isPrimary && !$0.isSeparator }
         if !hasPrimary { isExpanded = hasSecondary }
@@ -842,9 +885,17 @@ private final class FluentTextCommandBarView: NSView {
         else if alwaysExpanded { isExpanded = true }
         rebuildPrimaryViews()
         rebuildSecondaryRows()
-        if let focusedControl, focusedControl.superview == nil {
-            let replacement = primaryButtons.first(where: \.isEnabled)
-                ?? moreButton ?? secondaryRows.first(where: \.isEnabled).map { $0 as NSButton }
+        if ownedFocus, let focusedControl,
+           focusedControl.superview !== self || (focusedControl as? NSControl)?.isEnabled == false {
+            var candidates: [NSButton] = primaryButtons
+            if let moreButton { candidates.append(moreButton) }
+            candidates.append(contentsOf: secondaryRows)
+            let matching = candidates.first { button in
+                button.isEnabled && focusedKind != nil
+                    && ((button as? FluentTextCommandButton)?.command.kind
+                        ?? (button as? FluentTextCommandRow)?.command.kind) == focusedKind
+            }
+            let replacement = matching ?? candidates.first(where: \.isEnabled)
             _ = window?.makeFirstResponder(replacement ?? self)
         }
         needsLayout = true
@@ -853,6 +904,7 @@ private final class FluentTextCommandBarView: NSView {
 
     func deactivate() {
         isActive = false
+        hoverCoordinator.reset()
         onCommand = nil
         onExpandedChange = nil
         onDismiss = nil
@@ -929,34 +981,45 @@ private final class FluentTextCommandBarView: NSView {
     }
 
     private func rebuildSecondaryRows() {
-        retireSecondaryRows()
-        secondaryViews.forEach { $0.removeFromSuperview() }
+        let oldViews = secondaryViews
+        let candidates = Dictionary(uniqueKeysWithValues: zip(secondaryIdentities, oldViews))
         secondaryViews.removeAll()
         secondaryRows.removeAll()
-        guard isExpanded else {
-            updateAccessibilityChildren()
-            return
-        }
-        let secondary = commands.filter { !$0.isPrimary }
+        let secondary = isExpanded ? commands.filter { !$0.isPrimary } : []
+        secondaryIdentities = secondary.map(\.kind)
         let reservesToggleSlot = secondary.contains { !$0.isSeparator && ($0.toggleAction != nil || $0.isChecked) }
         let reservesIconSlot = secondary.contains { !$0.isSeparator && $0.showsSecondaryIcon }
         for command in secondary {
+            let candidate = candidates[command.kind]
             if command.isSeparator {
-                let separator = FluentCommandBarSeparatorView(theme: theme, orientation: .horizontal)
+                let separator = (candidate as? FluentCommandBarSeparatorView)
+                    ?? FluentCommandBarSeparatorView(theme: theme, orientation: .horizontal)
                 secondaryViews.append(separator)
-                addSubview(separator)
+                if separator.superview !== self { addSubview(separator) }
                 continue
             }
-            let row = FluentTextCommandRow(
+            let row = (candidate as? FluentTextCommandRow) ?? FluentTextCommandRow(
                 command: command,
                 theme: theme,
                 reservesToggleSlot: reservesToggleSlot,
                 reservesIconSlot: reservesIconSlot
             )
-            row.onInvoke = { [weak self] in self?.invoke(kind: command.kind) ?? false }
+            row.hoverCoordinator = hoverCoordinator
+            row.update(command: command, reservesToggleSlot: reservesToggleSlot, reservesIconSlot: reservesIconSlot)
+            row.onInvoke = { [weak self, weak row] in
+                guard let self, let row else { return false }
+                return self.invoke(kind: row.command.kind)
+            }
             secondaryRows.append(row)
             secondaryViews.append(row)
-            addSubview(row)
+            if row.superview !== self { addSubview(row) }
+        }
+        for old in oldViews where !secondaryViews.contains(where: { $0 === old }) {
+            if let row = old as? FluentTextCommandRow {
+                row.onInvoke = nil
+                row.isEnabled = false
+            }
+            old.removeFromSuperview()
         }
         updateAccessibilityChildren()
     }
@@ -1036,11 +1099,70 @@ private final class FluentTextCommandBarView: NSView {
     }
 }
 
-private final class FluentTextCommandButton: NSButton {
+/// Primary buttons, More and overflow rows share hover ownership. Native tracking can omit
+/// an exit when a row moves, disappears or its window deactivates.
+private class FluentTextCommandControl: NSButton {
+    weak var hoverCoordinator: FluentHoverCoordinator<FluentTextCommandControl>?
+    private(set) var isPointerOver = false
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.updatePointerHover(false) }
+    private lazy var trackingHost = FluentTrackingAreaHost(
+        view: self, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect])
+
+    override var isEnabled: Bool {
+        didSet { if !isEnabled { updatePointerHover(false) } }
+    }
+
+    override var frame: NSRect {
+        didSet { if oldValue != frame { updatePointerHover(false) } }
+    }
+
+    func setPointerHover(_ value: Bool) {
+        let next = value && isEnabled && !isHiddenOrHasHiddenAncestor && window?.isVisible == true
+        if isPointerOver != next { isPointerOver = next; needsDisplay = true }
+        if next { pointerLifetime.observe(window) }
+        else { pointerLifetime.invalidate() }
+    }
+
+    private func updatePointerHover(_ value: Bool) {
+        // Disabled commands still take ownership to clear a sibling whose exit was missed.
+        if let hoverCoordinator { hoverCoordinator.update(self, hovering: value) }
+        else { setPointerHover(value) }
+    }
+
+    override func mouseEntered(with event: NSEvent) { updatePointerHover(true) }
+    override func mouseExited(with event: NSEvent) { updatePointerHover(false) }
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        trackingHost.update()
+        if isPointerOver {
+            let point = window.map { convert($0.mouseLocationOutsideOfEventStream, from: nil) }
+            if isHiddenOrHasHiddenAncestor || point.map({ !visibleRect.contains($0) }) != false {
+                updatePointerHover(false)
+            }
+        }
+    }
+
+    override func viewDidHide() {
+        super.viewDidHide()
+        updatePointerHover(false)
+    }
+
+    override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { updatePointerHover(false) }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { updatePointerHover(false) }
+        super.viewWillMove(toWindow: newWindow)
+    }
+}
+
+private final class FluentTextCommandButton: FluentTextCommandControl {
     private(set) var command: FluentTextCommand
     var theme: FluentTheme { didSet { updateImage(); needsDisplay = true } }
     var onInvoke: (() -> Bool)?
-    private var isPointerOver = false
 
     init(command: FluentTextCommand, theme: FluentTheme, showsIcon: Bool) {
         self.command = command
@@ -1069,15 +1191,6 @@ private final class FluentTextCommandButton: NSButton {
         updateImage()
         needsDisplay = true
     }
-
-    override func updateTrackingAreas() {
-        trackingAreas.forEach { removeTrackingArea($0) }
-        super.updateTrackingAreas()
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self, userInfo: nil))
-    }
-
-    override func mouseEntered(with event: NSEvent) { isPointerOver = true; needsDisplay = true }
-    override func mouseExited(with event: NSEvent) { isPointerOver = false; needsDisplay = true }
 
     override func mouseDown(with event: NSEvent) {
         guard isEnabled else { return }
@@ -1153,13 +1266,12 @@ private final class FluentTextCommandButton: NSButton {
     }
 }
 
-private final class FluentTextCommandRow: NSButton {
+private final class FluentTextCommandRow: FluentTextCommandControl {
     private(set) var command: FluentTextCommand
     var theme: FluentTheme { didSet { needsDisplay = true } }
     var onInvoke: (() -> Bool)?
-    private var isPointerOver = false
-    private let reservesToggleSlot: Bool
-    private let reservesIconSlot: Bool
+    private var reservesToggleSlot: Bool
+    private var reservesIconSlot: Bool
 
     init(
         command: FluentTextCommand,
@@ -1182,28 +1294,20 @@ private final class FluentTextCommandRow: NSButton {
         update(command: command)
         target = self
         action = #selector(invoke)
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self, userInfo: nil))
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func update(command: FluentTextCommand) {
+    func update(command: FluentTextCommand, reservesToggleSlot: Bool? = nil, reservesIconSlot: Bool? = nil) {
         self.command = command
+        if let reservesToggleSlot { self.reservesToggleSlot = reservesToggleSlot }
+        if let reservesIconSlot { self.reservesIconSlot = reservesIconSlot }
         isEnabled = command.isEnabled
         setAccessibilityTitle(command.title)
         setAccessibilityValue(command.toggleAction != nil ? (command.isChecked ? "On" : "Off") : nil)
         setAccessibilityHelp(command.accelerator.isEmpty ? nil : "Keyboard shortcut \(command.accelerator)")
         needsDisplay = true
     }
-
-    override func updateTrackingAreas() {
-        trackingAreas.forEach { removeTrackingArea($0) }
-        super.updateTrackingAreas()
-        addTrackingArea(NSTrackingArea(rect: .zero, options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: self, userInfo: nil))
-    }
-
-    override func mouseEntered(with event: NSEvent) { isPointerOver = true; needsDisplay = true }
-    override func mouseExited(with event: NSEvent) { isPointerOver = false; needsDisplay = true }
 
     override func draw(_ dirtyRect: NSRect) {
         let state = resolvedVisualState
@@ -1223,9 +1327,10 @@ private final class FluentTextCommandRow: NSButton {
         if reservesToggleSlot {
             if command.isChecked {
                 let check = NSBezierPath()
+                let down: CGFloat = isFlipped ? 1 : -1
                 check.move(to: NSPoint(x: 13, y: bounds.midY))
-                check.line(to: NSPoint(x: 17, y: bounds.midY - 4))
-                check.line(to: NSPoint(x: 24, y: bounds.midY + 4))
+                check.line(to: NSPoint(x: 17, y: bounds.midY + 4 * down))
+                check.line(to: NSPoint(x: 24, y: bounds.midY - 4 * down))
                 check.lineWidth = 1.7
                 check.lineCapStyle = .round
                 foreground.setStroke()
