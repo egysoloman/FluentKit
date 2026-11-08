@@ -378,9 +378,14 @@ final class FluentTextCommandFlyout {
             presenterTitle: presenterTitle
         )
         commandView.frame = NSRect(origin: .zero, size: contentSize)
-        commandView.onCommand = { [weak self] command in
+        commandView.onCommand = { [weak self, weak commandView] command in
+            guard let self, let commandView, self.view === commandView, let panel = self.panel else { return }
+            // Consume this presentation before user code can invoke its retained controls again.
+            commandView.deactivate()
             command.action()
-            self?.dismiss(animated: false)
+            // A command may replace this presentation. Only its original panel may be closed.
+            guard self.panel === panel else { return }
+            self.dismiss(animated: false)
         }
         commandView.onExpandedChange = { [weak self] expanded in
             self?.resize(expanded: expanded)
@@ -471,15 +476,13 @@ final class FluentTextCommandFlyout {
         screenObserver = nil
         expansionGeneration += 1
         removeOutsideClickMonitor()
+        view?.deactivate()
         if let rootLayer = animationRoot?.layer {
             var animatedLayers = [rootLayer]
             if let mask = rootLayer.mask { animatedLayers.append(mask) }
             animationCoordinator.cancelAll(on: animatedLayers)
         }
-        guard let panel else {
-            if notify { onDismiss?() }
-            return
-        }
+        guard let panel else { return }
 
         if animated, !reduceMotion, let rootLayer = animationRoot?.layer {
             animationCoordinator.animateTransition(
@@ -763,6 +766,26 @@ private final class FluentTextCommandBarView: NSView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    func deactivate() {
+        onCommand = nil
+        onExpandedChange = nil
+        onDismiss = nil
+        for button in primaryButtons {
+            button.onInvoke = nil
+            button.isEnabled = false
+        }
+        moreButton?.onInvoke = nil
+        moreButton?.isEnabled = false
+        retireSecondaryRows()
+    }
+
+    private func retireSecondaryRows() {
+        for row in secondaryRows {
+            row.onInvoke = nil
+            row.isEnabled = false
+        }
+    }
+
     override func layout() {
         super.layout()
         let secondary = commands.filter { !$0.isPrimary }
@@ -820,6 +843,7 @@ private final class FluentTextCommandBarView: NSView {
     }
 
     private func rebuildSecondaryRows() {
+        retireSecondaryRows()
         secondaryViews.forEach { $0.removeFromSuperview() }
         secondaryViews.removeAll()
         secondaryRows.removeAll()

@@ -1582,6 +1582,9 @@ CommandBarFlyout and TextCommandBarFlyout share the source 40pt primary geometry
 clip, but TextBox-family controls keep their private, editor-derived secondary-only mouse command
 composition. Neither path is implemented as a MenuFlyout, and all three presenters dismiss
 immediately without an exit animation.
+CommandBarFlyout dismissal is idempotent. Commands or dismissal callbacks can open a replacement
+without an old invocation closing it. Dismissed controls and collapsed secondary rows cannot
+invoke commands again, including through retained accessibility elements.
 
 Submenus open after a short pointer hover delay or immediately from keyboard/accessibility input.
 MenuBar preserves input origin across top-level switching: keyboard and accessibility openings
@@ -1606,6 +1609,8 @@ Forward-arrow (mirrored in RTL), Enter/Space and accessibility press open the br
 invoking the parent command. Back/Escape close one level and restore its anchor's focus; selecting
 a leaf closes the entire command menu. Hover opens after a short delay, with time to cross the
 gap into a child. Primary toolbar buttons keep their ordinary flyout placement and click behavior.
+Leaf actions may remove their own command or attachment and still close the outer menu;
+explicitly opened replacement branches retain their presentation.
 Configure this through the native `FluentAppBarButton.flyoutItems`; `FluentCommandBarItem` and
 the separate `FluentCommandBarFlyout` do not yet expose attached submenu configuration.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes

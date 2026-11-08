@@ -527,11 +527,9 @@ public final class FluentMenuFlyout {
 
         presenter.onDismiss = { [weak self, weak presenter] in
             guard let self, let presenter, self.presenter === presenter else { return }
-            let root = self.root
-            let invoked = root.onRootItemInvoked
-            root.dismiss()
-            invoked?()
+            self.root.dismiss()
         }
+        presenter.onItemInvoked = root.onRootItemInvoked
         presenter.onEscape = { [weak self] in self?.closeFromKeyboard(dismissRoot: true) }
         presenter.onSelection = { [weak self] index, row, keyboard in
             guard let self else { return }
@@ -978,6 +976,7 @@ private final class FluentMenuViewport: NSView {
 private final class FluentMenuPresenterView: NSView {
     private(set) var preferredSize = NSSize.zero
     var onDismiss: (() -> Void)?
+    var onItemInvoked: (() -> Void)?
     var onEscape: (() -> Void)?
     var onSelection: ((Int, FluentMenuItemRow, Bool) -> Void)?
     var onPointerRowChange: ((Int, Bool) -> Void)?
@@ -1134,6 +1133,7 @@ private final class FluentMenuPresenterView: NSView {
         typeaheadResetWorkItem?.cancel()
         resetPointerState()
         onDismiss = nil
+        onItemInvoked = nil
         onEscape = nil
         onSelection = nil
         onPointerRowChange = nil
@@ -1305,11 +1305,14 @@ private final class FluentMenuPresenterView: NSView {
             onSubmenu?(index, row, keyboard)
             return
         }
+        // The outer command chain still needs its completion when this action removes the
+        // current row or anchor. Its captured presentation token protects newer flyouts.
+        let invoked = onItemInvoked
         items[index].action()
         // Invoking an item can replace the root. Its retired presenter has no authority
         // to close the application's newly opened menu after the callback returns.
-        guard acceptsCommands else { return }
-        onDismiss?()
+        if acceptsCommands { onDismiss?() }
+        invoked?()
     }
 
     func item(at index: Int) -> FluentMenuItem? {

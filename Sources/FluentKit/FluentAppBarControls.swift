@@ -760,12 +760,13 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
             self.updateAccessibilityMetadata()
             self.updateAppearance(animated: true)
         }
+        let onItemInvoked = commandBarOwner?.beginAttachedFlyoutPresentation(for: self)
         if hasOverflowFlyout {
             flyout.onRootBack = { [weak self, weak flyout] in
                 guard let self, self.menuFlyout === flyout else { return }
                 self.closeFlyoutFromKeyboard()
             }
-            flyout.onRootItemInvoked = commandBarOwner?.submenuInvocationHandler(for: self)
+            flyout.onRootItemInvoked = onItemInvoked
             flyout.onRootPointerPresence = { [weak self, weak flyout] hovering in
                 guard let self, self.menuFlyout === flyout else { return }
                 if hovering {

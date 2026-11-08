@@ -92,6 +92,8 @@ is not required. The macOS composition and developer overrides remain intentiona
    Native AppBar overflow attachments now use cascading placement, level-aware keyboard input,
    pointer handoff and whole-chain leaf dismissal. The shared command model and separate
    CommandBarFlyout still need attached-menu configuration and hierarchy integration.
+   CommandBarFlyout callback replacement and retired-control invocation are guarded; AppBar leaf
+   completion survives removal of its own anchor without closing callback-opened replacements.
    Shared popup High Contrast borders have
    been checked against contrasting backdrops; continue wider contrast acceptance, application
    integration and the remaining hierarchical contracts.

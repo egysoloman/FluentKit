@@ -116,6 +116,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private var secondaryIdentities: [CommandIdentity] = []
     private var isSettingCommands = false
     private var overflowGeneration = 0
+    private var attachedFlyoutGeneration: UInt = 0
     private let overflowGroupSeparator = FluentAppBarSeparator(useOverflowStyle: true)
     private var primaryControls: [NSView] = []
     private var secondaryControls: [NSView] = []
@@ -399,12 +400,14 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         }
     }
 
-    func submenuInvocationHandler(for owner: FluentAppBarButton) -> (() -> Void)? {
+    func beginAttachedFlyoutPresentation(for owner: FluentAppBarButton) -> (() -> Void)? {
+        attachedFlyoutGeneration &+= 1
         guard isOpen, owner.window === overflowPanel else { return nil }
         let generation = overflowGeneration
-        return { [weak self, weak owner] in
-            guard let self, let owner, self.isOpen, self.overflowGeneration == generation,
-                  owner.window === self.overflowPanel else { return }
+        let attachedGeneration = attachedFlyoutGeneration
+        return { [weak self] in
+            guard let self, self.isOpen, self.overflowGeneration == generation,
+                  self.attachedFlyoutGeneration == attachedGeneration else { return }
             self.dismissOverflow(animated: true, notify: true)
         }
     }

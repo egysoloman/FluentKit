@@ -4,6 +4,12 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- CommandBarFlyout and editor command flyouts retire invoked, dismissed and collapsed controls,
+  preventing stale or reentrant command execution. Reopening from a command/dismiss callback
+  preserves the new panel; repeated `dismiss()` calls do not repeat dismissal notifications.
+  AppBar leaf commands still close their outer overflow when their action removes the anchor
+  or attached menu, while preserving replacement branches opened by that action.
+
 - AppBar attached menus in CommandBar overflow open beside their owner, mirror in RTL, and
   accept forward-arrow, Enter/Space, accessibility and delayed hover opening. Back/Escape close
   one level and return focus; leaf commands close the whole chain without closing a replacement
