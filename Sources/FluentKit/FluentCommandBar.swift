@@ -84,6 +84,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             secondaryButtons.forEach { $0.reduceMotion = reduceMotion }
             moreButton.reduceMotion = reduceMotion
             overflowHost?.animationCoordinator.reduceMotion = reduceMotion
+            if reduceMotion { overflowHost?.settlePresentation() }
         }
     }
     public var fluentControlSize: FluentControlSize = .regular {
