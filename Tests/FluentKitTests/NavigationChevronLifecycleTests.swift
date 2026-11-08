@@ -34,6 +34,11 @@ final class NavigationChevronLifecycleTests: XCTestCase {
         view.layoutSubtreeIfNeeded()
         let button = try XCTUnwrap(all(view).compactMap { $0 as? NSButton }.first { $0.accessibilityTitle() == "Group" })
         let chevron = try XCTUnwrap(button.layer?.sublayers?.first { $0.name == "FluentKit.NavigationView.ItemChevron" } as? FluentChevronPrimitiveLayer)
+        // These checks test cancellation and timeline identity, not elapsed playback. Keep the
+        // 250ms animation available even if AppKit dispatch/layout takes longer on a busy runner.
+        let localTime = chevron.convertTime(CACurrentMediaTime(), from: nil)
+        chevron.speed = 0
+        chevron.timeOffset = localTime
         return (window, view, button, chevron, selection)
     }
 
