@@ -181,6 +181,11 @@ public final class FluentCommandBarFlyout {
 
     private let presenter: FluentTextCommandFlyout
 
+    var appearanceThemeProvider: (() -> FluentTheme?)? {
+        get { presenter.appearanceThemeProvider }
+        set { presenter.appearanceThemeProvider = newValue }
+    }
+
     public var onDismiss: (() -> Void)? {
         didSet { presenter.onDismiss = { [weak self] in self?.onDismiss?() } }
     }
@@ -240,6 +245,12 @@ public final class FluentCommandBarFlyout {
         alwaysExpanded = configuration.alwaysExpanded
         presenter.update(commands: Self.resolve(primary: primaryCommands, secondary: secondaryCommands),
                          alwaysExpanded: alwaysExpanded)
+    }
+
+    /// Updates an open or future presentation without resubmitting command/toggle values.
+    /// Enabling reduced motion settles a pending entrance or expansion immediately.
+    public func update(theme: FluentTheme? = nil, reduceMotion: Bool? = nil) {
+        presenter.updateAppearance(theme: theme, reduceMotion: reduceMotion)
     }
 
     private static func resolve(
@@ -334,7 +345,7 @@ final class FluentTextCommandFlyout {
     private var commands: [FluentTextCommand]
     private let refreshCommands: (() -> [FluentTextCommand])?
     private var theme: FluentTheme
-    private let reduceMotion: Bool
+    private var reduceMotion: Bool
     private var alwaysExpanded: Bool
     private let presenterIdentifier: String
     private let presenterTitle: String
@@ -348,6 +359,7 @@ final class FluentTextCommandFlyout {
     private var animationRoot: NSView?
     private weak var appearanceCoordinator: FluentAppearanceCoordinator?
     private var appearanceRegistration: UUID?
+    var appearanceThemeProvider: (() -> FluentTheme?)?
     private var expansionGeneration = 0
     private var anchorScreenPoint: NSPoint = .zero
     private var screenObserver: FluentPopupScreenObserver?
@@ -612,7 +624,10 @@ final class FluentTextCommandFlyout {
             prepareForAppearanceChange: { [weak self] in
                 self?.settlePresentationAnimations()
             }
-        ) { [weak self] theme in self?.apply(theme: theme) }
+        ) { [weak self] theme in
+            guard let self else { return }
+            self.apply(theme: self.appearanceThemeProvider?() ?? theme)
+        }
     }
 
     private func unregisterAppearanceUpdates() {
@@ -625,6 +640,7 @@ final class FluentTextCommandFlyout {
 
     func apply(theme: FluentTheme) {
         guard self.theme != theme else { return }
+        settlePresentationAnimations()
         self.theme = theme
         panel?.appearance = fluentAppKitAppearance(for: theme)
         materialView?.configure(theme: theme, role: .transient, fallback: { $0.flyoutSurfaceFill })
@@ -633,6 +649,15 @@ final class FluentTextCommandFlyout {
         view?.update(theme: theme)
         if let view { resize(expanded: view.isExpanded, animated: false) }
         panel?.contentView?.needsDisplay = true
+    }
+
+    func updateAppearance(theme: FluentTheme?, reduceMotion: Bool?) {
+        if let reduceMotion {
+            self.reduceMotion = reduceMotion
+            animationCoordinator.reduceMotion = reduceMotion
+            if reduceMotion { settlePresentationAnimations() }
+        }
+        if let theme { apply(theme: theme) }
     }
 
     private func settlePresentationAnimations() {

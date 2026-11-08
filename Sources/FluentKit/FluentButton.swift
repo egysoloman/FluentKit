@@ -20,6 +20,7 @@ public final class FluentButton: NSButton {
             font = theme.typography.font(for: .body).withSize(theme.typography.font(for: .body).pointSize * fluentControlSize.metricScale)
             invalidateIntrinsicContentSize()
             refreshAppearance(animated: false)
+            updateAttachedFlyoutAppearance()
         }
     }
     public var fluentStyle: (any FluentButtonStyle)? { didSet { invalidateIntrinsicContentSize(); refreshAppearance(animated: false) } }
@@ -38,6 +39,7 @@ public final class FluentButton: NSButton {
                 elevationBorderLayer.removeAllAnimations()
             }
             refreshAppearance(animated: false)
+            updateAttachedFlyoutAppearance()
         }
     }
     public var role: FluentButtonRole { didSet { refreshAppearance(animated: false) } }
@@ -57,7 +59,9 @@ public final class FluentButton: NSButton {
     /// `Button.Flyout` contract while keeping the native button as the event target.
     public var flyoutItems: [FluentMenuItem]? {
         didSet {
-            if flyoutItems == nil, menuFlyout != nil {
+            if let flyoutItems {
+                menuFlyout?.update(items: flyoutItems, theme: effectiveFlyoutTheme, reduceMotion: reduceMotion)
+            } else if menuFlyout != nil {
                 dismissMenuFlyout(animated: false)
             }
             updateAttachedFlyoutAccessibility()
@@ -368,6 +372,7 @@ public final class FluentButton: NSButton {
     public override func viewDidChangeEffectiveAppearance() {
         super.viewDidChangeEffectiveAppearance()
         fluentNotifyAppearanceCoordinator(from: self)
+        if theme.colorScheme == .system { updateAttachedFlyoutAppearance() }
         needsDisplay = true
     }
 
@@ -426,9 +431,10 @@ public final class FluentButton: NSButton {
                 primaryCommands: configuration.primaryCommands,
                 secondaryCommands: configuration.secondaryCommands,
                 alwaysExpanded: configuration.alwaysExpanded,
-                theme: theme,
+                theme: effectiveFlyoutTheme,
                 reduceMotion: reduceMotion
             )
+            presented.appearanceThemeProvider = { [weak self] in self?.effectiveFlyoutTheme }
             commandBarFlyoutPresenter = presented
             presented.onDismiss = { [weak self, weak presented] in
                 guard let self, self.commandBarFlyoutPresenter === presented else { return }
@@ -445,9 +451,10 @@ public final class FluentButton: NSButton {
         guard let flyoutItems, !flyoutItems.isEmpty else { return }
         let presented = FluentMenuFlyout(
             items: flyoutItems,
-            theme: theme,
+            theme: effectiveFlyoutTheme,
             reduceMotion: reduceMotion
         )
+        presented.appearanceThemeProvider = { [weak self] in self?.effectiveFlyoutTheme }
         menuFlyout = presented
         presented.onDismiss = { [weak self, weak presented] in
             guard let self, self.menuFlyout === presented else { return }
@@ -459,6 +466,19 @@ public final class FluentButton: NSButton {
         controlState = isPointerOver ? .pointerOver : .normal
         fluentSetDefaultAccessibilityValue("Open")
         presented.present(relativeTo: self, placement: flyoutPlacement)
+    }
+
+    private var effectiveFlyoutTheme: FluentTheme {
+        fluentResolvedTheme(theme, using: effectiveAppearance)
+    }
+
+    private func updateAttachedFlyoutAppearance() {
+        if let flyoutItems {
+            menuFlyout?.update(items: flyoutItems, theme: effectiveFlyoutTheme, reduceMotion: reduceMotion)
+        }
+        // Appearance changes must not resubmit the command model: its original toggle values
+        // may differ from the current local state of the still-open command flyout.
+        commandBarFlyoutPresenter?.update(theme: effectiveFlyoutTheme, reduceMotion: reduceMotion)
     }
 
     private func dismissMenuFlyout(animated: Bool) {

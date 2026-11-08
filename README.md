@@ -1599,6 +1599,15 @@ command, and an empty or separator-only configuration closes the presentation. T
 `alwaysExpanded` restores More while keeping the overflow open until the user collapses it.
 Primary buttons, More and secondary rows share one hover owner; moving or retiring a command,
 hiding it, disabling it or deactivating its window clears its transient highlight.
+Button attachments also receive live `theme` and `reduceMotion` changes; ordinary MenuFlyout
+attachments receive updated `flyoutItems`, including their open submenus. A Button's System
+theme follows its effective AppKit appearance, including containing-view overrides in plain
+windows. Window coordinator transactions preserve the Button's local declarative color scheme.
+For a directly owned CommandBarFlyout, use `update(theme:reduceMotion:)` to change its appearance
+or motion policy while preserving current command and toggle values. Enabling reduced motion
+settles an active entrance or expansion; restoring motion affects later transitions.
+Material recipe layers apply theme colors together with their content, without an independent
+implicit crossfade. This does not disable the popup's explicit entrance and expansion animations.
 
 Submenus open after a short pointer hover delay or immediately from keyboard/accessibility input.
 MenuBar preserves input origin across top-level switching: keyboard and accessibility openings

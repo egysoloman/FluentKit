@@ -4,6 +4,15 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- Button-owned MenuFlyout and CommandBarFlyout receive live theme and reduced-motion updates;
+  MenuFlyout also receives item updates throughout its open submenu chain. System themes follow
+  window/ancestor appearance, and local declarative themes survive root coordinator updates.
+  CommandBarFlyout adds `update(theme:reduceMotion:)` to update appearance without resetting
+  toggled commands. Theme changes and reduced motion settle active popup animations. Retired
+  MenuFlyout rows report their accessibility action as unavailable.
+  Material fallback, tint, luminosity and noise layers update together without unintended
+  implicit color/opacity transitions; explicit popup animations remain available.
+
 - CommandBarFlyout receives live configuration updates, including Button attachments. Stable
   command IDs retain controls and focus while titles, actions, enabled/checked states and
   AlwaysExpanded change. Removed controls become inert, empty configurations close the panel,

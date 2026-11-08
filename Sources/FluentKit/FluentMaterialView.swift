@@ -222,6 +222,13 @@ public final class FluentMaterialView: NSVisualEffectView {
 
     private func installRecipeLayers() {
         layerUsesCoreImageFilters = true
+        // These layers resolve one material recipe, not independent color transitions. Core
+        // Animation otherwise crossfades them for 0.25s while text and native blur have already
+        // changed theme, even in a reduced-motion popup. Explicit popup animations stay intact.
+        for recipeLayer in [fallbackLayer, tintLayer, luminosityLayer, noiseLayer] {
+            recipeLayer.actions = ["backgroundColor": NSNull(), "opacity": NSNull(),
+                                   "hidden": NSNull(), "contents": NSNull(), "compositingFilter": NSNull()]
+        }
         fallbackLayer.masksToBounds = true
         luminosityLayer.name = "FluentKit.Material.Luminosity"
         luminosityLayer.compositingFilter = luminosityBlend

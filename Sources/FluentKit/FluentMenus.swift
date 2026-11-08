@@ -199,6 +199,9 @@ public final class FluentMenuFlyout {
     private weak var transitionHost: FluentPopupTransitionHost?
     private weak var appearanceCoordinator: FluentAppearanceCoordinator?
     private var appearanceRegistration: UUID?
+    // A control/declarative host owns its local theme override. Read it after the coordinator
+    // has updated that owner, rather than overwriting it with the window's root theme.
+    var appearanceThemeProvider: (() -> FluentTheme?)?
     private var layoutDirection: NSUserInterfaceLayoutDirection = .leftToRight
     private var presentationRevision: UInt = 0
     /// `FlyoutBase::m_inputDeviceTypeUsedToOpen`, captured when the root menu opens.
@@ -303,6 +306,7 @@ public final class FluentMenuFlyout {
     /// Supply unique item IDs within each level when inserting or reordering menu items.
     public func update(items: [FluentMenuItem], theme: FluentTheme? = nil, reduceMotion: Bool? = nil) {
         let childRow = childIndex.flatMap { presenter?.row(at: $0) }
+        let appearanceChanged = theme.map { $0 != self.theme } ?? false
         self.items = items
         if let theme { self.theme = theme }
         if let reduceMotion { self.reduceMotion = reduceMotion }
@@ -320,7 +324,7 @@ public final class FluentMenuFlyout {
         // A policy update applies to the entrance already in flight as well as future children.
         // Keep the fully open geometry and the existing presenter/focus when motion is reduced.
         transitionHost?.animationCoordinator.reduceMotion = self.reduceMotion
-        if self.reduceMotion { transitionHost?.settlePresentation() }
+        if self.reduceMotion || appearanceChanged { transitionHost?.settlePresentation() }
         if let childRow, let index = presenter.index(of: childRow), items[index].isEnabled, items[index].hasSubmenu {
             childIndex = index
             childFlyout?.update(items: items[index].submenu, theme: self.theme, reduceMotion: self.reduceMotion)
@@ -846,7 +850,10 @@ public final class FluentMenuFlyout {
             prepareForAppearanceChange: { [weak self] in
                 self?.prepareForAppearanceChange()
             }
-        ) { [weak self] theme in self?.apply(theme: theme) }
+        ) { [weak self] theme in
+            guard let self else { return }
+            self.apply(theme: self.appearanceThemeProvider?() ?? theme)
+        }
     }
 
     private func unregisterAppearanceUpdates() {
@@ -1520,8 +1527,8 @@ private final class FluentMenuItemRow: NSControl {
     }
 
     override func accessibilityPerformPress() -> Bool {
-        guard item.isEnabled else { return false }
-        onInvoke?(true)
+        guard item.isEnabled, let onInvoke else { return false }
+        onInvoke(true)
         return true
     }
 

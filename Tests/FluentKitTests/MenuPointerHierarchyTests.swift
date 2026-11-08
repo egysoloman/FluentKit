@@ -265,7 +265,7 @@ final class MenuPointerHierarchyTests: XCTestCase {
         f.pointer(row, entering: false); f.pointer(f.rows(root)[1], entering: true)
         f.menu.dismiss(animated: false)
         XCTAssertFalse(row.isAccessibilityExpanded())
-        XCTAssertTrue(row.accessibilityPerformPress())
+        XCTAssertFalse(row.accessibilityPerformPress(), "A retired row must report that its action is unavailable")
         observePastPointerDelay()
         XCTAssertFalse(f.menu.isPresented); XCTAssertFalse(child.isVisible)
     }
