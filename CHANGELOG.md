@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AppBar attached menus in CommandBar overflow open beside their owner, mirror in RTL, and
+  accept forward-arrow, Enter/Space, accessibility and delayed hover opening. Back/Escape close
+  one level and return focus; leaf commands close the whole chain without closing a replacement
+  opened by their callback. Parent event monitors preserve child input and ignore unrelated-window
+  Escape. Pointer handoff, peer menus and hidden/removed anchors cancel stale delayed work.
+  Adding or removing an attached menu during a press cancels that press and its pending release.
+
 - AppBar attached flyouts receive live item and motion-policy updates, retaining stable rows,
   submenus and focus while refreshing titles, enabled states and actions. Enabling reduced motion
   settles existing MenuFlyout entrance animations across all open levels, including the outer

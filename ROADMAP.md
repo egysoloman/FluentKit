@@ -89,6 +89,9 @@ is not required. The macOS composition and developer overrides remain intentiona
    foreground checks for appearance, image updates and resizing. Native AppBar/More system themes
    follow their host; explicit themes also select adaptive images and update attached flyouts.
    Attached flyouts receive live items and motion policy while retaining stable rows and focus.
+   Native AppBar overflow attachments now use cascading placement, level-aware keyboard input,
+   pointer handoff and whole-chain leaf dismissal. The shared command model and separate
+   CommandBarFlyout still need attached-menu configuration and hierarchy integration.
    Shared popup High Contrast borders have
    been checked against contrasting backdrops; continue wider contrast acceptance, application
    integration and the remaining hierarchical contracts.

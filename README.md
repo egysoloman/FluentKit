@@ -1591,8 +1591,9 @@ exclusive within the bar, and cancelled presses cannot reappear after dismissal 
 CommandBar overflow panels use the bar's explicit theme for native appearance and adaptive image
 icons, including live updates. A system theme inherits the anchor window's appearance.
 CommandBar shares hover ownership across commands and More, including disabled items. Hiding,
-reparenting, disabling, focus loss and window ordering cancel pending input without clearing
-checked commands or expanded-menu paint.
+reparenting, disabling, focus loss and window ordering cancel pending input. Checked values and
+paint for menus that remain open are preserved; hiding, reparenting or disabling an attached menu's
+anchor closes that menu.
 AppBar labels and icons remain above state backgrounds, including opaque checked fills;
 the More glyph retains its foreground color under High Contrast hover and press states.
 Native AppBar controls and CommandBar More honor `theme = .custom(colorScheme: .system)` through
@@ -1600,6 +1601,13 @@ containing-view/window appearance changes and reparenting. Explicit light/dark t
 adaptive image variants; changing an AppBar button's theme updates its open attached flyout.
 Assigning `flyoutItems` also updates its open rows and actions; stable IDs retain selection across
 reordering. Enabling `reduceMotion` settles existing menu entrances and applies to nested menus.
+An AppBar button's attached menu opens beside it when the button is in CommandBar overflow.
+Forward-arrow (mirrored in RTL), Enter/Space and accessibility press open the branch without
+invoking the parent command. Back/Escape close one level and restore its anchor's focus; selecting
+a leaf closes the entire command menu. Hover opens after a short delay, with time to cross the
+gap into a child. Primary toolbar buttons keep their ordinary flyout placement and click behavior.
+Configure this through the native `FluentAppBarButton.flyoutItems`; `FluentCommandBarItem` and
+the separate `FluentCommandBarFlyout` do not yet expose attached submenu configuration.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,

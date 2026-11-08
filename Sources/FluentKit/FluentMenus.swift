@@ -210,6 +210,12 @@ public final class FluentMenuFlyout {
     /// MenuBar installs this on a root flyout so physical Left/Right can move between top-level
     /// items. Ordinary MenuFlyout instances leave it nil and retain submenu close/open behavior.
     var onRootHorizontalNavigation: ((Int) -> Void)?
+    // AppBar overflow commands own a MenuFlyout root that participates in the outer command menu.
+    var onRootBack: (() -> Void)?
+    var onRootItemInvoked: (() -> Void)?
+    var onRootPointerPresence: ((Bool) -> Void)?
+    private var isAttachedSubmenu = false
+    private var isSubmenu: Bool { owner != nil || isAttachedSubmenu }
 
     public init(
         items: [FluentMenuItem],
@@ -253,6 +259,17 @@ public final class FluentMenuFlyout {
         at point: NSPoint? = nil,
         placement: FluentMenuPlacement = .automatic
     ) {
+        isAttachedSubmenu = false
+        presentRoot(relativeTo: anchor, at: point, placement: placement, keyboard: nil, inputDevice: nil)
+    }
+
+    func presentAsSubmenu(relativeTo anchor: NSView, keyboard: Bool, inputDevice: FluentInputDeviceType?) {
+        isAttachedSubmenu = true
+        presentRoot(relativeTo: anchor, at: nil, placement: .automatic, keyboard: keyboard, inputDevice: inputDevice)
+    }
+
+    private func presentRoot(relativeTo anchor: NSView, at point: NSPoint?, placement: FluentMenuPlacement,
+                             keyboard: Bool?, inputDevice: FluentInputDeviceType?) {
         guard owner == nil else {
             owner?.present(relativeTo: anchor, at: point, placement: placement)
             return
@@ -263,14 +280,24 @@ public final class FluentMenuFlyout {
         // onDismiss may have opened a replacement or explicitly cancelled this request.
         guard presentationRevision == revision else { return }
         guard !items.isEmpty, let anchorWindow = anchor.window else { return }
-        inputDeviceTypeUsedToOpen = FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
+        inputDeviceTypeUsedToOpen = inputDevice ?? FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: anchorWindow)
         anchorView = anchor
         anchorPoint = point
         self.placement = placement
         registerAppearanceUpdates(from: anchorWindow)
         layoutDirection = anchor.userInterfaceLayoutDirection
-        presentAnchoredPanel(focusFirstItem: inputDeviceTypeUsedToOpen == .keyboard)
+        presentAnchoredPanel(focusFirstItem: keyboard ?? (inputDeviceTypeUsedToOpen == .keyboard))
     }
+
+    func focusFirstItem() {
+        guard let panel, let presenter else { return }
+        cancelPointerDelaysForKeyboard()
+        panel.makeKeyAndOrderFront(nil)
+        panel.makeFirstResponder(presenter)
+        presenter.focusFirstItem()
+    }
+
+    var hasKeyboardFocus: Bool { containsKeyWindow }
 
     /// Update a live menu without reopening its panel or replacing retained rows/submenus.
     /// Supply unique item IDs within each level when inserting or reordering menu items.
@@ -331,7 +358,7 @@ public final class FluentMenuFlyout {
         let anchorRect = anchorWindow.convertToScreen(anchor.convert(anchor.bounds, to: nil))
         let rtl = layoutDirection == .rightToLeft
         let targetPoint: NSPoint
-        if owner != nil {
+        if isSubmenu {
             targetPoint = NSPoint(x: rtl ? anchorRect.minX - 2 : anchorRect.maxX + 2, y: anchorRect.maxY)
         } else if placement == .automatic, let point = anchorPoint {
             targetPoint = anchorWindow.convertPoint(toScreen: anchor.convert(point, to: nil))
@@ -344,7 +371,7 @@ public final class FluentMenuFlyout {
         let size = NSSize(width: max(resolvedMinimumWidth(for: anchor), min(preferredSize.width, max(1, visibleFrame.width - 8))),
                           height: min(preferredSize.height, max(1, visibleFrame.height - 8)))
         var origin: NSPoint
-        if owner != nil {
+        if isSubmenu {
             origin = NSPoint(x: rtl ? anchorRect.minX - size.width - 2 : anchorRect.maxX + 2,
                              y: anchorRect.maxY - size.height + 2)
             if origin.x < visibleFrame.minX + 4 || origin.x > visibleFrame.maxX - size.width - 4 {
@@ -500,7 +527,10 @@ public final class FluentMenuFlyout {
 
         presenter.onDismiss = { [weak self, weak presenter] in
             guard let self, let presenter, self.presenter === presenter else { return }
-            self.root.dismiss()
+            let root = self.root
+            let invoked = root.onRootItemInvoked
+            root.dismiss()
+            invoked?()
         }
         presenter.onEscape = { [weak self] in self?.closeFromKeyboard(dismissRoot: true) }
         presenter.onSelection = { [weak self] index, row, keyboard in
@@ -560,7 +590,7 @@ public final class FluentMenuFlyout {
         prepareSurfaceEntrance(
             host: transitionHost,
             edge: revealEdge,
-            motion: owner == nil ? FluentMotion.menuOpen : FluentMotion.submenuOpen
+            motion: isSubmenu ? FluentMotion.submenuOpen : FluentMotion.menuOpen
         )
         panel.makeKeyAndOrderFront(nil)
         panel.makeFirstResponder(presenter)
@@ -581,7 +611,7 @@ public final class FluentMenuFlyout {
             host: host,
             edge: edge,
             motion: motion,
-            closedRatio: owner == nil ? 0.5 : 0.67,
+            closedRatio: isSubmenu ? 0.67 : 0.5,
             reduceMotion: reduceMotion
         )
     }
@@ -635,6 +665,7 @@ public final class FluentMenuFlyout {
     }
 
     private func pointerEnteredBranch() {
+        if owner == nil { onRootPointerPresence?(true); return }
         guard let owner, owner.childFlyout === self else { return }
         owner.cancelPendingSubmenu()
         owner.cancelChildClose()
@@ -648,6 +679,7 @@ public final class FluentMenuFlyout {
         presenter?.resetPointerState()
         scheduleChildClose()
         if let owner, owner.childFlyout === self { owner.pointerExitedBranch() }
+        else if owner == nil { onRootPointerPresence?(false) }
     }
 
     private func cancelPointerDelaysForKeyboard() {
@@ -713,6 +745,8 @@ public final class FluentMenuFlyout {
             owner.presenter?.window?.makeKeyAndOrderFront(nil)
             if let presenter = owner.presenter { owner.presenter?.window?.makeFirstResponder(presenter) }
             if let index { owner.presenter?.focusItem(at: index) }
+        } else if let onRootBack {
+            onRootBack()
         } else if dismissRoot {
             dismissBranch(animated: false)
         }

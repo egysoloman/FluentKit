@@ -338,6 +338,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
 
     private func configure(button: FluentAppBarButton, item: FluentCommandBarItem) {
         button.hoverCoordinator = hoverCoordinator
+        button.commandBarOwner = self
         button.label = item.title
         button.systemImageName = item.systemImageName
         button.labelPosition = item.labelPosition
@@ -354,15 +355,57 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
             toggle.onIsCheckedChanged = nil
             toggle.setCheckedFromBinding(isOn)
             toggle.onIsCheckedChanged = { [weak self] value in
+                let generation = self?.overflowGeneration
                 if let action = item.toggleAction { action(value) } else { item.action() }
-                if self?.isOpen == true { self?.dismissOverflow(animated: true, notify: true) }
+                if let self, self.isOpen, self.overflowGeneration == generation {
+                    self.dismissOverflow(animated: true, notify: true)
+                }
             }
             toggle.onClick = nil
         } else {
             button.onClick = { [weak self] in
+                let generation = self?.overflowGeneration
                 item.action()
-                if self?.isOpen == true { self?.dismissOverflow(animated: true, notify: true) }
+                if let self, self.isOpen, self.overflowGeneration == generation {
+                    self.dismissOverflow(animated: true, notify: true)
+                }
             }
+        }
+    }
+
+    var overflowOpeningDevice: FluentInputDeviceType { overflowInputDeviceType }
+
+    func closePeerFlyouts(except owner: FluentAppBarButton? = nil) {
+        for button in primaryButtons + secondaryButtons where button !== owner {
+            button.cancelPendingFlyoutOpen()
+            if button.isFlyoutPresented { button.hideFlyout(animated: false) }
+        }
+    }
+
+    func pointerEnteredCommand(_ owner: FluentAppBarButton) {
+        guard isOpen, owner.window === overflowPanel else { return }
+        for button in primaryButtons + secondaryButtons where button !== owner {
+            button.cancelPendingFlyoutOpen()
+            button.scheduleFlyoutClose()
+        }
+    }
+
+    func pointerEnteredSubmenu(of owner: FluentAppBarButton) {
+        guard isOpen, owner.window === overflowPanel else { return }
+        for button in primaryButtons + secondaryButtons where button !== owner {
+            button.setPointerHover(false)
+            button.cancelPendingFlyoutOpen()
+            button.scheduleFlyoutClose()
+        }
+    }
+
+    func submenuInvocationHandler(for owner: FluentAppBarButton) -> (() -> Void)? {
+        guard isOpen, owner.window === overflowPanel else { return nil }
+        let generation = overflowGeneration
+        return { [weak self, weak owner] in
+            guard let self, let owner, self.isOpen, self.overflowGeneration == generation,
+                  owner.window === self.overflowPanel else { return }
+            self.dismissOverflow(animated: true, notify: true)
         }
     }
 
@@ -671,6 +714,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
 
     private func dismissOverflow(animated: Bool, notify: Bool) {
         guard isOpen || overflowPanel != nil else { return }
+        closePeerFlyouts()
         removeDismissMonitors()
         overflowGeneration += 1
         let generation = overflowGeneration
@@ -746,15 +790,26 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private func installDismissMonitors() {
         localMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown, .keyDown]) { [weak self] event in
             guard let self, let panel = self.overflowPanel else { return event }
-            if event.type == .keyDown, event.keyCode == 53 {
-                self.dismissOverflow(animated: true, notify: true)
-                return nil
-            }
             if event.window === panel {
+                if event.type == .keyDown, event.keyCode == 53 {
+                    self.dismissOverflow(animated: true, notify: true)
+                    return nil
+                }
                 if event.type == .keyDown, self.overflowPresenter?.handleNavigation(event) == true { return nil }
                 return event
             }
+            // Child MenuFlyouts own their keyboard level and mouse targets. Closing the outer
+            // presenter here would unload the leaf before its deferred invocation runs.
+            var ancestor = event.window?.parent
+            while let candidate = ancestor {
+                if candidate === panel { return event }
+                ancestor = candidate.parent
+            }
             if event.window === self.window {
+                if event.type == .keyDown, event.keyCode == 53 {
+                    self.dismissOverflow(animated: true, notify: true)
+                    return nil
+                }
                 if event.type != .keyDown,
                    !self.bounds.contains(self.convert(event.locationInWindow, from: nil)) {
                     self.dismissOverflow(animated: true, notify: true)
@@ -1087,6 +1142,9 @@ private final class FluentCommandBarOverflowPresenter: NSView {
         case 115: destination = 0 // Home
         case 119: destination = focusable.count - 1 // End
         default: return false
+        }
+        for case let button as FluentAppBarButton in controls where button !== focusable[destination] {
+            button.hideFlyout(animated: false)
         }
         window?.makeFirstResponder(focusable[destination])
         return true

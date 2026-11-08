@@ -73,16 +73,24 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     public var flyoutItems: [FluentMenuItem]? {
         didSet {
             if (oldValue?.isEmpty == false) != (flyoutItems?.isEmpty == false) {
+                // A release from the old command must not activate a newly attached menu or
+                // leave the old keyboard/pointer press painted after the interaction changes.
+                cancelInteraction()
                 invalidateIntrinsicContentSize()
                 needsLayout = true
             }
             if flyoutItems?.isEmpty != false { dismissFlyout(animated: false) }
-            else { updatePresentedFlyout() }
+            else {
+                updatePresentedFlyout()
+                if isPointerOver { scheduleFlyoutOpen() }
+            }
             updateAccessibilityMetadata()
             needsDisplay = true
         }
     }
-    public var flyoutPlacement: FluentMenuPlacement = .below
+    public var flyoutPlacement: FluentMenuPlacement = .below {
+        didSet { if !useOverflowStyle { menuFlyout?.reposition(placement: flyoutPlacement) } }
+    }
     public var onClick: (() -> Void)?
     public var theme: FluentTheme = .current {
         didSet {
@@ -122,8 +130,14 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     private var isTrackingPress = false
     private var isKeyboardPressed = false
     weak var hoverCoordinator: FluentHoverCoordinator<NSControl>?
+    weak var commandBarOwner: FluentCommandBar?
     private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
     private var menuFlyout: FluentMenuFlyout?
+    private var pendingFlyoutOpen: DispatchWorkItem?
+    private var pendingFlyoutClose: DispatchWorkItem?
+    private var flyoutOpenRevision: UInt = 0
+    private var flyoutCloseRevision: UInt = 0
+    private var hasOverflowFlyout: Bool { useOverflowStyle && flyoutItems?.isEmpty == false }
     private let surfaceLayer = CALayer()
     private let checkedBorderLayer = CAGradientLayer()
     private let checkedBorderMask = CAShapeLayer()
@@ -148,7 +162,11 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     public required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    deinit { menuFlyout?.dismiss(animated: false) }
+    deinit {
+        pendingFlyoutOpen?.cancel()
+        pendingFlyoutClose?.cancel()
+        menuFlyout?.dismiss(animated: false)
+    }
 
     public override var isFlipped: Bool { true }
     public override var acceptsFirstResponder: Bool { isEnabled }
@@ -269,6 +287,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     public override func keyDown(with event: NSEvent) {
         guard isEnabled else { return }
         FluentFocusVisibility.markKeyboardInteraction(in: window)
+        if isSubmenuOpenKey(event) {
+            if !event.isARepeat { presentFlyout(keyboard: true) }
+            return
+        }
         if (event.keyCode == 36 || event.keyCode == 49), !event.isARepeat {
             isKeyboardPressed = true
             updateInteractionLifetime()
@@ -282,11 +304,12 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     public override func keyUp(with event: NSEvent) {
         guard isEnabled else { return }
+        if isSubmenuOpenKey(event) { return }
         if (event.keyCode == 36 || event.keyCode == 49), isKeyboardPressed {
             isKeyboardPressed = false
             updateInteractionLifetime()
             updateAppearance(animated: true)
-            invoke()
+            invoke(keyboard: true)
         } else {
             super.keyUp(with: event)
         }
@@ -316,10 +339,18 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         let changed = isPointerOver != next
         isPointerOver = next
         updateInteractionLifetime()
+        if next, hasOverflowFlyout {
+            cancelPendingFlyoutClose()
+            scheduleFlyoutOpen()
+        } else if !next {
+            cancelPendingFlyoutOpen()
+            scheduleFlyoutClose()
+        }
         if changed { updateAppearance(animated: true) }
     }
 
     private func updatePointerHover(_ value: Bool) {
+        if value { commandBarOwner?.pointerEnteredCommand(self) }
         if let hoverCoordinator { hoverCoordinator.update(self, hovering: value) }
         else { setPointerHover(value) }
     }
@@ -336,18 +367,31 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         isPressed = false
         isKeyboardPressed = false
         updatePointerHover(false)
+        cancelPendingFlyoutOpen()
+        cancelPendingFlyoutClose()
         // Checked and expanded states belong to the command, not the cancelled input.
         updateAppearance(animated: false)
     }
 
     open override func cancelOperation(_ sender: Any?) { cancelInteraction() }
-    open override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
+    open override func viewDidHide() {
+        super.viewDidHide()
+        cancelInteraction()
+        if isFlyoutPresented { dismissFlyout(animated: false) }
+    }
     open override func viewWillMove(toSuperview newSuperview: NSView?) {
-        if newSuperview !== superview { cancelInteraction() }
+        if newSuperview !== superview {
+            cancelInteraction()
+            if isFlyoutPresented { dismissFlyout(animated: false) }
+        }
         super.viewWillMove(toSuperview: newSuperview)
     }
     open override func viewWillMove(toWindow newWindow: NSWindow?) {
-        if newWindow !== window { cancelInteraction(); pointerLifetime.invalidate() }
+        if newWindow !== window {
+            cancelInteraction()
+            if isFlyoutPresented { dismissFlyout(animated: false) }
+            pointerLifetime.invalidate()
+        }
         super.viewWillMove(toWindow: newWindow)
     }
     open override func viewDidMoveToWindow() {
@@ -392,7 +436,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     public override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
-        invoke()
+        invoke(keyboard: true)
         return true
     }
 
@@ -681,35 +725,112 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         configured.draw(in: FluentIconSource.systemSymbol(name).fittedRect(imageSize: configured.size, in: rect), from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: true, hints: nil)
     }
 
-    private func invoke() {
-        invokeAction()
-        guard flyoutItems?.isEmpty == false else { return }
-        if isFlyoutPresented { dismissFlyout(animated: true) } else { presentFlyout() }
+    private func isSubmenuOpenKey(_ event: NSEvent) -> Bool {
+        hasOverflowFlyout && event.modifierFlags.intersection([.command, .control, .option]).isEmpty &&
+            [UInt16(36), 49, userInterfaceLayoutDirection == .rightToLeft ? 123 : 124].contains(event.keyCode)
     }
 
-    private func presentFlyout() {
-        guard isEnabled, !isFlyoutPresented, let items = flyoutItems, !items.isEmpty, window != nil else { return }
-        let flyout = FluentMenuFlyout(items: items, theme: theme, reduceMotion: reduceMotion)
+    private func invoke(keyboard: Bool = false) {
+        if hasOverflowFlyout { presentFlyout(keyboard: keyboard); return }
+        invokeAction()
+        guard flyoutItems?.isEmpty == false else { return }
+        if isFlyoutPresented { dismissFlyout(animated: true) } else { presentFlyout(keyboard: keyboard) }
+    }
+
+    private func presentFlyout(keyboard: Bool? = nil) {
+        guard isEnabled, let items = flyoutItems, !items.isEmpty, let window, !isHiddenOrHasHiddenAncestor else { return }
+        cancelPendingFlyoutOpen()
+        cancelPendingFlyoutClose()
+        if isFlyoutPresented {
+            if keyboard == true { menuFlyout?.focusFirstItem() }
+            return
+        }
+        if hasOverflowFlyout { commandBarOwner?.closePeerFlyouts(except: self) }
+        let flyout = FluentMenuFlyout(items: items, theme: theme, matchesAnchorWidth: !useOverflowStyle, reduceMotion: reduceMotion)
         menuFlyout = flyout
         isFlyoutPresented = true
         updateAccessibilityMetadata()
         updateAppearance(animated: true)
         flyout.onDismiss = { [weak self, weak flyout] in
             guard let self, self.menuFlyout === flyout else { return }
+            self.cancelPendingFlyoutOpen()
+            self.cancelPendingFlyoutClose()
             self.menuFlyout = nil
             self.isFlyoutPresented = false
             self.updateAccessibilityMetadata()
             self.updateAppearance(animated: true)
         }
-        flyout.present(relativeTo: self, placement: flyoutPlacement)
+        if hasOverflowFlyout {
+            flyout.onRootBack = { [weak self, weak flyout] in
+                guard let self, self.menuFlyout === flyout else { return }
+                self.closeFlyoutFromKeyboard()
+            }
+            flyout.onRootItemInvoked = commandBarOwner?.submenuInvocationHandler(for: self)
+            flyout.onRootPointerPresence = { [weak self, weak flyout] hovering in
+                guard let self, self.menuFlyout === flyout else { return }
+                if hovering {
+                    self.cancelPendingFlyoutClose()
+                    self.commandBarOwner?.pointerEnteredSubmenu(of: self)
+                } else { self.scheduleFlyoutClose() }
+            }
+            let keyboard = keyboard ?? (FluentInputDeviceTracker.shared.deviceTypeForCurrentInteraction(in: window) == .keyboard)
+            flyout.presentAsSubmenu(relativeTo: self, keyboard: keyboard, inputDevice: commandBarOwner?.overflowOpeningDevice)
+        } else { flyout.present(relativeTo: self, placement: flyoutPlacement) }
     }
 
     private func dismissFlyout(animated: Bool) {
+        cancelPendingFlyoutOpen()
+        cancelPendingFlyoutClose()
         menuFlyout?.dismiss(animated: animated)
         menuFlyout = nil
         isFlyoutPresented = false
         updateAccessibilityMetadata()
         updateAppearance(animated: false)
+    }
+
+    private func closeFlyoutFromKeyboard() {
+        let parent = window
+        let wasKey = menuFlyout?.hasKeyboardFocus == true
+        dismissFlyout(animated: false)
+        guard let parent, window === parent, !isHiddenOrHasHiddenAncestor else { return }
+        parent.makeFirstResponder(self)
+        if wasKey { parent.makeKeyAndOrderFront(nil) }
+    }
+
+    func cancelPendingFlyoutOpen() {
+        flyoutOpenRevision &+= 1
+        pendingFlyoutOpen?.cancel()
+        pendingFlyoutOpen = nil
+    }
+
+    private func scheduleFlyoutOpen() {
+        guard hasOverflowFlyout, isEnabled, !isFlyoutPresented, pendingFlyoutOpen == nil else { return }
+        let revision = flyoutOpenRevision
+        let work = DispatchWorkItem { [weak self] in
+            guard let self, self.flyoutOpenRevision == revision, self.isPointerOver,
+                  self.window?.isVisible == true, !self.isHiddenOrHasHiddenAncestor else { return }
+            self.pendingFlyoutOpen = nil
+            self.presentFlyout(keyboard: false)
+        }
+        pendingFlyoutOpen = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
+    }
+
+    private func cancelPendingFlyoutClose() {
+        flyoutCloseRevision &+= 1
+        pendingFlyoutClose?.cancel()
+        pendingFlyoutClose = nil
+    }
+
+    func scheduleFlyoutClose() {
+        guard hasOverflowFlyout, isFlyoutPresented, pendingFlyoutClose == nil else { return }
+        let revision = flyoutCloseRevision
+        let work = DispatchWorkItem { [weak self] in
+            guard let self, self.flyoutCloseRevision == revision else { return }
+            self.dismissFlyout(animated: false)
+        }
+        pendingFlyoutClose = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.18, execute: work)
     }
 
     private func updateAccessibilityMetadata() {
