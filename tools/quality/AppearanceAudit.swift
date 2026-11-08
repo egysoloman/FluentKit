@@ -1,5 +1,17 @@
 import AppKit
 import FluentKit
+
+// Compile as a normal client, without @testable: new lifecycle overrides must preserve
+// the extension points that AppBarButton previously inherited from AppKit.
+private final class AppBarLifecycleOverrideCheck: FluentAppBarButton {
+    override func mouseMoved(with event: NSEvent) { super.mouseMoved(with: event) }
+    override func cancelOperation(_ sender: Any?) { super.cancelOperation(sender) }
+    override func viewDidHide() { super.viewDidHide() }
+    override func viewWillMove(toSuperview newSuperview: NSView?) { super.viewWillMove(toSuperview: newSuperview) }
+    override func viewWillMove(toWindow newWindow: NSWindow?) { super.viewWillMove(toWindow: newWindow) }
+    override func viewDidMoveToWindow() { super.viewDidMoveToWindow() }
+}
+
 @main struct AppearanceAudit {
     @MainActor static func main() throws {
         _ = NSApplication.shared

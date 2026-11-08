@@ -116,6 +116,8 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     private var isPressed = false
     private var isTrackingPress = false
     private var isKeyboardPressed = false
+    weak var hoverCoordinator: FluentHoverCoordinator<NSControl>?
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
     private var menuFlyout: FluentMenuFlyout?
     private let surfaceLayer = CALayer()
     private let checkedBorderLayer = CAGradientLayer()
@@ -185,10 +187,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         didSet {
             guard oldValue != isEnabled else { return }
             if !isEnabled {
-                isPointerOver = false
-                isPressed = false
-                isTrackingPress = false
-                isKeyboardPressed = false
+                cancelInteraction()
                 dismissFlyout(animated: false)
             }
             setAccessibilityEnabled(isEnabled)
@@ -213,16 +212,16 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
     }
 
     public override func mouseEntered(with event: NSEvent) {
-        guard isEnabled else { return }
-        isPointerOver = true
-        updateAppearance(animated: true)
+        updatePointerHover(true)
+    }
+
+    open override func mouseMoved(with event: NSEvent) {
+        updatePointerHover(visibleRect.contains(convert(event.locationInWindow, from: nil)))
     }
 
     public override func mouseExited(with event: NSEvent) {
-        guard isEnabled else { return }
-        isPointerOver = false
         if !isTrackingPress { isPressed = false }
-        updateAppearance(animated: true)
+        updatePointerHover(false)
     }
 
     public override func mouseDown(with event: NSEvent) {
@@ -232,14 +231,15 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         FluentFocusVisibility.markPointerInteraction(in: window)
         isTrackingPress = true
         isPressed = true
+        updatePointerHover(true)
         updateAppearance(animated: true)
     }
 
     public override func mouseDragged(with event: NSEvent) {
         guard isTrackingPress else { return }
         let inside = bounds.contains(convert(event.locationInWindow, from: nil))
-        isPointerOver = inside
         isPressed = inside
+        updatePointerHover(inside)
         updateAppearance(animated: true)
     }
 
@@ -248,7 +248,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         let inside = bounds.contains(convert(event.locationInWindow, from: nil))
         isTrackingPress = false
         isPressed = false
-        isPointerOver = inside
+        updatePointerHover(inside)
         updateAppearance(animated: true)
         if inside { invoke() }
     }
@@ -258,10 +258,10 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         FluentFocusVisibility.markKeyboardInteraction(in: window)
         if (event.keyCode == 36 || event.keyCode == 49), !event.isARepeat {
             isKeyboardPressed = true
+            updateInteractionLifetime()
             updateAppearance(animated: true)
         } else if event.keyCode == 53 {
-            isKeyboardPressed = false
-            updateAppearance(animated: true)
+            cancelInteraction()
         } else {
             super.keyDown(with: event)
         }
@@ -271,6 +271,7 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
         guard isEnabled else { return }
         if (event.keyCode == 36 || event.keyCode == 49), isKeyboardPressed {
             isKeyboardPressed = false
+            updateInteractionLifetime()
             updateAppearance(animated: true)
             invoke()
         } else {
@@ -280,15 +281,65 @@ open class FluentAppBarButton: NSControl, FluentControlSizeConfigurable {
 
     public override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
-        if result { updateAppearance(animated: false) }
+        if result {
+            pointerLifetime.observe(window)
+            updateAppearance(animated: false)
+        }
         return result
     }
 
     public override func resignFirstResponder() -> Bool {
-        isKeyboardPressed = false
         let result = super.resignFirstResponder()
-        if result { updateAppearance(animated: false) }
+        if result {
+            cancelInteraction()
+            pointerLifetime.invalidate()
+        }
         return result
+    }
+
+    func setPointerHover(_ value: Bool) {
+        // A disabled command still takes ownership so a missed exit cannot leave its sibling lit.
+        let next = value && isEnabled
+        let changed = isPointerOver != next
+        isPointerOver = next
+        updateInteractionLifetime()
+        if changed { updateAppearance(animated: true) }
+    }
+
+    private func updatePointerHover(_ value: Bool) {
+        if let hoverCoordinator { hoverCoordinator.update(self, hovering: value) }
+        else { setPointerHover(value) }
+    }
+
+    private func updateInteractionLifetime() {
+        if isPointerOver || isTrackingPress || isKeyboardPressed ||
+            (window?.isVisible == true && window?.firstResponder === self) {
+            pointerLifetime.observe(window)
+        } else { pointerLifetime.invalidate() }
+    }
+
+    private func cancelInteraction() {
+        isTrackingPress = false
+        isPressed = false
+        isKeyboardPressed = false
+        updatePointerHover(false)
+        // Checked and expanded states belong to the command, not the cancelled input.
+        updateAppearance(animated: false)
+    }
+
+    open override func cancelOperation(_ sender: Any?) { cancelInteraction() }
+    open override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
+    open override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+    open override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { cancelInteraction(); pointerLifetime.invalidate() }
+        super.viewWillMove(toWindow: newWindow)
+    }
+    open override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        updateInteractionLifetime()
     }
 
     public override func draw(_ dirtyRect: NSRect) {

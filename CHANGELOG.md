@@ -4,6 +4,13 @@ All notable FluentKit changes are recorded here. Versions follow Semantic Versio
 
 ## Unreleased
 
+- AppBarButton, CommandBar's More button and PipsPager cancel transient hover and pending
+  activation when their window orders out or the application deactivates. Command buttons also
+  cancel on hiding, reparenting, disabling and focus loss. CommandBar coordinates hover ownership,
+  including entry into disabled commands; disabled PipsPager navigation releases the old hover.
+  Checked commands, selected pages and expanded-menu paint survive input cancellation. More
+  activates only on release of the matching nonrepeated key press.
+
 - PipsPager resolves High Contrast colors before caching them in layers, so explicit light/dark
   themes render correctly inside an oppositely themed host. System themes follow the containing
   window through appearance changes. Navigation borders now use their idle, hover, pressed and

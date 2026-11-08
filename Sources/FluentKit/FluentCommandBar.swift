@@ -121,6 +121,10 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     private var primaryButtons: [FluentAppBarButton] { primaryControls.compactMap { $0 as? FluentAppBarButton } }
     private var secondaryButtons: [FluentAppBarButton] { secondaryControls.compactMap { $0 as? FluentAppBarButton } }
     private let moreButton = FluentCommandBarMoreButton()
+    private lazy var hoverCoordinator = FluentHoverCoordinator<NSControl> { control, hovering in
+        if let button = control as? FluentAppBarButton { button.setPointerHover(hovering) }
+        else if let button = control as? FluentCommandBarMoreButton { button.setPointerHover(hovering) }
+    }
     private weak var overflowPanel: FluentCommandBarPanel?
     private weak var overflowHost: FluentPopupTransitionHost?
     private weak var overflowPresenter: FluentCommandBarOverflowPresenter?
@@ -238,6 +242,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
         fluentSetDefaultAccessibilityTitle("Command bar")
         setAccessibilityExpanded(false)
         moreButton.onInvoke = { [weak self] in self?.toggleOverflow() }
+        moreButton.hoverCoordinator = hoverCoordinator
         addSubview(moreButton)
         if let contentView { addSubview(contentView) }
         reconcileControls()
@@ -331,6 +336,7 @@ public final class FluentCommandBar: NSView, FluentControlSizeConfigurable {
     }
 
     private func configure(button: FluentAppBarButton, item: FluentCommandBarItem) {
+        button.hoverCoordinator = hoverCoordinator
         button.label = item.title
         button.systemImageName = item.systemImageName
         button.labelPosition = item.labelPosition
@@ -794,9 +800,13 @@ private final class FluentCommandBarMoreButton: NSControl {
         }
     }
     private var pointerOver = false
-    private var pressed = false
+    private var pointerPressed = false
+    private var pressedKey: UInt16?
+    private var pressed: Bool { pointerPressed || pressedKey != nil }
     private var trackingPress = false
     private let surface = CALayer()
+    weak var hoverCoordinator: FluentHoverCoordinator<NSControl>?
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -811,6 +821,14 @@ private final class FluentCommandBarMoreButton: NSControl {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     override var isFlipped: Bool { true }
     override var acceptsFirstResponder: Bool { isEnabled }
+    override var isEnabled: Bool {
+        didSet {
+            guard oldValue != isEnabled else { return }
+            if !isEnabled { cancelInteraction() }
+            updateAppearance()
+            setAccessibilityEnabled(isEnabled)
+        }
+    }
     override func layout() {
         super.layout()
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
@@ -823,40 +841,96 @@ private final class FluentCommandBarMoreButton: NSControl {
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
         trackingAreas.filter { $0.owner === self }.forEach(removeTrackingArea)
-        addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .activeInKeyWindow, .inVisibleRect], owner: self))
+        addTrackingArea(NSTrackingArea(rect: bounds, options: [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow, .inVisibleRect], owner: self))
     }
-    override func mouseEntered(with event: NSEvent) { pointerOver = true; updateAppearance() }
-    override func mouseExited(with event: NSEvent) { pointerOver = false; if !trackingPress { pressed = false }; updateAppearance() }
+    override func mouseEntered(with event: NSEvent) { updatePointerHover(true) }
+    override func mouseMoved(with event: NSEvent) {
+        updatePointerHover(visibleRect.contains(convert(event.locationInWindow, from: nil)))
+    }
+    override func mouseExited(with event: NSEvent) {
+        if !trackingPress { pointerPressed = false }
+        updatePointerHover(false)
+    }
     override func mouseDown(with event: NSEvent) {
         guard isEnabled, bounds.contains(convert(event.locationInWindow, from: nil)) else { return }
         FluentFocusVisibility.markPointerInteraction(in: window)
         trackingPress = true
-        pressed = true
+        pointerPressed = true
+        updatePointerHover(true)
         updateAppearance()
     }
     override func mouseDragged(with event: NSEvent) {
         guard trackingPress else { return }
-        pressed = bounds.contains(convert(event.locationInWindow, from: nil))
+        pointerPressed = bounds.contains(convert(event.locationInWindow, from: nil))
+        updatePointerHover(pointerPressed)
         updateAppearance()
     }
     override func mouseUp(with event: NSEvent) {
         guard trackingPress else { return }
         let inside = bounds.contains(convert(event.locationInWindow, from: nil))
         trackingPress = false
-        pressed = false
+        pointerPressed = false
+        updatePointerHover(inside)
         updateAppearance()
         if inside { onInvoke?() }
     }
     override func keyDown(with event: NSEvent) {
-        if event.keyCode == 36 || event.keyCode == 49 { pressed = true; updateAppearance() }
+        guard isEnabled else { return }
+        if event.keyCode == 36 || event.keyCode == 49 {
+            guard !event.isARepeat, pressedKey == nil else { return }
+            FluentFocusVisibility.markKeyboardInteraction(in: window)
+            pressedKey = event.keyCode
+            updateInteractionLifetime()
+            updateAppearance()
+        }
+        else if event.keyCode == 53 { cancelInteraction() }
         else { super.keyDown(with: event) }
     }
     override func keyUp(with event: NSEvent) {
-        if (event.keyCode == 36 || event.keyCode == 49), pressed {
-            pressed = false
-            updateAppearance()
-            onInvoke?()
-        } else { super.keyUp(with: event) }
+        guard event.keyCode == 36 || event.keyCode == 49 else { super.keyUp(with: event); return }
+        guard pressedKey == event.keyCode else { return }
+        pressedKey = nil
+        updateInteractionLifetime()
+        updateAppearance()
+        if isEnabled { onInvoke?() }
+    }
+    func setPointerHover(_ value: Bool) {
+        let next = value && isEnabled
+        let changed = pointerOver != next
+        pointerOver = next
+        updateInteractionLifetime()
+        if changed { updateAppearance() }
+    }
+    private func updatePointerHover(_ value: Bool) {
+        if let hoverCoordinator { hoverCoordinator.update(self, hovering: value) }
+        else { setPointerHover(value) }
+    }
+    private func updateInteractionLifetime() {
+        if pointerOver || trackingPress || pressedKey != nil { pointerLifetime.observe(window) }
+        else { pointerLifetime.invalidate() }
+    }
+    private func cancelInteraction() {
+        trackingPress = false
+        pointerPressed = false
+        pressedKey = nil
+        updatePointerHover(false)
+        updateAppearance(animated: false)
+        surface.removeAllAnimations()
+    }
+    override func cancelOperation(_ sender: Any?) { cancelInteraction() }
+    override func resignFirstResponder() -> Bool {
+        let result = super.resignFirstResponder()
+        if result { cancelInteraction() }
+        return result
+    }
+    override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
+    override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+    override func viewWillMove(toWindow newWindow: NSWindow?) {
+        if newWindow !== window { cancelInteraction() }
+        super.viewWillMove(toWindow: newWindow)
     }
     override func accessibilityPerformPress() -> Bool {
         guard isEnabled else { return false }
@@ -880,9 +954,9 @@ private final class FluentCommandBarMoreButton: NSControl {
             hints: nil
         )
     }
-    private func updateAppearance() {
+    private func updateAppearance(animated: Bool = true) {
         CATransaction.begin()
-        CATransaction.setDisableActions(reduceMotion)
+        CATransaction.setDisableActions(reduceMotion || !animated)
         let fill: NSColor = pressed
             ? theme.subtleFillTertiary
             : ((pointerOver || isExpanded) ? theme.subtleFillSecondary : .clear)

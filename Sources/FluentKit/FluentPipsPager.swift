@@ -166,7 +166,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
     private var pointerOverControl = false
     private var keyboardFocusWithin = false
     private var suppressesSelectionNotification = false
-    private var windowObservers: [NSObjectProtocol] = []
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
     private lazy var hoverCoordinator = FluentHoverCoordinator<FluentPipsPagerButton> { button, hovering in
         button.setPointerHover(hovering)
     }
@@ -307,6 +307,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
 
     public override func mouseEntered(with event: NSEvent) {
         pointerOverControl = true
+        updateInteractionLifetime()
         updateNavigationButtons()
     }
 
@@ -314,6 +315,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         let local = convert(event.locationInWindow, from: nil)
         guard !bounds.insetBy(dx: 1, dy: 1).contains(local) else { return }
         pointerOverControl = false
+        updateInteractionLifetime()
         hoverCoordinator.reset()
         updateNavigationButtons()
     }
@@ -321,6 +323,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
     private func cancelInteraction() {
         pointerOverControl = false
         keyboardFocusWithin = false
+        pointerLifetime.invalidate()
         hoverCoordinator.reset()
         realizedPipButtons.values.forEach { $0.cancelInteraction() }
         previousButton.cancelInteraction()
@@ -330,6 +333,11 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
 
     public override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
 
+    public override func viewWillMove(toSuperview newSuperview: NSView?) {
+        if newSuperview !== superview { cancelInteraction() }
+        super.viewWillMove(toSuperview: newSuperview)
+    }
+
     public override func viewWillMove(toWindow newWindow: NSWindow?) {
         if newWindow !== window { cancelInteraction() }
         super.viewWillMove(toWindow: newWindow)
@@ -337,14 +345,12 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
 
     public override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
-        windowObservers.forEach(NotificationCenter.default.removeObserver)
-        windowObservers.removeAll()
-        if let window {
-            for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification, NSWindow.willMiniaturizeNotification] {
-                windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window,
-                    queue: .main) { [weak self] _ in self?.cancelInteraction() })
-            }
-        }
+        updateInteractionLifetime()
+    }
+
+    private func updateInteractionLifetime() {
+        if pointerOverControl || keyboardFocusWithin { pointerLifetime.observe(window) }
+        else { pointerLifetime.invalidate() }
     }
 
     public override func accessibilityRole() -> NSAccessibility.Role? { .menu }
@@ -653,6 +659,7 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
                 }
             }
             self.keyboardFocusWithin = responder.map { $0 === self || $0.isDescendant(of: self) } ?? false
+            self.updateInteractionLifetime()
             self.updateNavigationButtons()
         }
     }
@@ -681,7 +688,6 @@ public final class FluentPipsPager: NSControl, FluentControlSizeConfigurable {
         viewport.layer?.removeAllAnimations()
     }
 
-    deinit { windowObservers.forEach(NotificationCenter.default.removeObserver) }
 }
 
 public struct FluentPipsPagerView: FluentUpdatablePrimitiveView {

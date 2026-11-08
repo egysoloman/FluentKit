@@ -1,7 +1,7 @@
 import AppKit
 
-/// Tracks only an active pointer interaction. AppKit need not deliver an exit when a window
-/// deactivates or orders out; releasing the observation on reset keeps idle controls cheap.
+/// Tracks the window lifetime of an active hover, press or focused control. AppKit need not
+/// deliver an exit when a window deactivates or orders out; idle controls can release observation.
 final class FluentPointerLifetime {
     private weak var window: NSWindow?
     private var observers: [NSObjectProtocol] = []

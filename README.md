@@ -764,7 +764,8 @@ the button-face resource at rest and while disabled, and adaptive emphasis on ho
 Changing PipsPager's Reduce Motion policy updates its existing pip and navigation buttons
 immediately, without waiting for layout or changing selection. Navigation presses scale only
 the icon to 0.875; hit areas, backgrounds and focus rings keep their size. Hover belongs to one
-button at a time and clears on hiding or window deactivation. Space and Return activate on
+button at a time, including transitions into disabled navigation, and clears when hidden or when
+the application deactivates or its window orders out. Space and Return activate on
 release, with repeated key-down events ignored. State transitions use FluentKit's motion tokens;
 they do not reproduce every keyframe in the Windows template.
 
@@ -1589,6 +1590,9 @@ is idempotent for an already-open entry; `toggleItem(at:)` provides explicit tog
 exclusive within the bar, and cancelled presses cannot reappear after dismissal or lifecycle changes.
 CommandBar overflow panels use the bar's explicit theme for native appearance and adaptive image
 icons, including live updates. A system theme inherits the anchor window's appearance.
+CommandBar shares hover ownership across commands and More, including disabled items. Hiding,
+reparenting, disabling, focus loss and window ordering cancel pending input without clearing
+checked commands or expanded-menu paint.
 Moving between menu levels preserves the open branch across the gap; leaving the chain closes
 children after a grace period. Entering a descendant cancels stale sibling-open work. Expanded
 branches retain their own paint and accessibility-expanded state independently of keyboard selection,

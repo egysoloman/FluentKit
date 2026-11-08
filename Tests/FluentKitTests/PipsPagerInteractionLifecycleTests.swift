@@ -153,7 +153,7 @@ final class PipsPagerInteractionLifecycleTests: XCTestCase {
     }
 
     func testNativeCapturedReleaseCannotInvokeAfterLifecycleCancellation() {
-        for reason in ["hide", "disable", "resign", "reparent", "escape"] {
+        for reason in ["hide", "disable", "resign", "reparent", "escape", "orderOut", "deactivate"] {
             let button = FluentPipsPagerNavigationButton()
             button.reduceMotion = false
             let window = mount(button)
@@ -165,6 +165,8 @@ final class PipsPagerInteractionLifecycleTests: XCTestCase {
                 case "hide": window.contentView?.isHidden = true; window.contentView?.isHidden = false
                 case "disable": button.isEnabled = false; button.isEnabled = true
                 case "resign": NotificationCenter.default.post(name: NSWindow.didResignKeyNotification, object: window)
+                case "orderOut": window.orderOut(nil); window.orderFront(nil)
+                case "deactivate": NotificationCenter.default.post(name: NSApplication.willResignActiveNotification, object: NSApp)
                 case "reparent":
                     button.removeFromSuperview()
                     window.contentView?.addSubview(button)

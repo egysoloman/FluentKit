@@ -22,7 +22,7 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
     private var trackingGeneration: UInt64?
     private var pointerInvoked = false
     private var pressedKey: UInt16?
-    private var windowObservers: [NSObjectProtocol] = []
+    private lazy var pointerLifetime = FluentPointerLifetime { [weak self] in self?.cancelInteraction() }
     private lazy var trackingHost = FluentTrackingAreaHost(view: self,
         options: [.mouseEnteredAndExited, .mouseMoved, .activeInKeyWindow, .inVisibleRect])
     let animationCoordinator = FluentAnimationCoordinator(reduceMotion: false)
@@ -63,9 +63,11 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
     }
 
     func setPointerHover(_ value: Bool) {
-        guard pointerOver != value else { return }
-        pointerOver = value
-        refreshAppearance(animated: true)
+        let next = value && isEnabled
+        let changed = pointerOver != next
+        pointerOver = next
+        updateInteractionLifetime()
+        if changed { refreshAppearance(animated: true) }
     }
 
     private func updateHover(_ value: Bool) {
@@ -73,9 +75,14 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         else { setPointerHover(value) }
     }
 
-    override func mouseEntered(with event: NSEvent) { if canReceiveInput { updateHover(true) } }
+    override func mouseEntered(with event: NSEvent) {
+        // Disabled navigation still releases the previously hovered pip.
+        if window?.isVisible == true, !isHiddenOrHasHiddenAncestor { updateHover(true) }
+    }
     override func mouseMoved(with event: NSEvent) {
-        if canReceiveInput { updateHover(visibleRect.contains(convert(event.locationInWindow, from: nil))) }
+        if window?.isVisible == true, !isHiddenOrHasHiddenAncestor {
+            updateHover(visibleRect.contains(convert(event.locationInWindow, from: nil)))
+        }
     }
     override func mouseExited(with event: NSEvent) { updateHover(false) }
 
@@ -106,10 +113,12 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         if [UInt16(49), 36, 76].contains(event.keyCode) {
             guard canReceiveInput, !event.isARepeat, pressedKey == nil, trackingGeneration == nil else { return }
             pressedKey = event.keyCode
+            updateInteractionLifetime()
             refreshAppearance(animated: true)
             return
         }
         pressedKey = nil
+        updateInteractionLifetime()
         refreshAppearance(animated: true)
         if event.keyCode == 53 { cancelOperation(nil); return }
         if handleNavigationKey(event.keyCode) { return }
@@ -120,6 +129,7 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         guard [UInt16(49), 36, 76].contains(event.keyCode) else { super.keyUp(with: event); return }
         guard pressedKey == event.keyCode else { return }
         pressedKey = nil
+        updateInteractionLifetime()
         refreshAppearance(animated: true)
         if canReceiveInput { performInvocation() }
     }
@@ -155,6 +165,12 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         refreshAppearance(animated: false)
         removeVisualAnimations()
     }
+    private func updateInteractionLifetime() {
+        if pointerOver || pressedKey != nil || trackingGeneration == generation ||
+            (window?.isVisible == true && window?.firstResponder === self) {
+            pointerLifetime.observe(window)
+        } else { pointerLifetime.invalidate() }
+    }
     override var isEnabled: Bool {
         didSet {
             guard oldValue != isEnabled else { return }
@@ -165,12 +181,12 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
     }
     override func becomeFirstResponder() -> Bool {
         let accepted = super.becomeFirstResponder()
-        if accepted { focusChanged() }
+        if accepted { pointerLifetime.observe(window); focusChanged() }
         return accepted
     }
     override func resignFirstResponder() -> Bool {
         let accepted = super.resignFirstResponder()
-        if accepted { cancelInteraction(); focusChanged() }
+        if accepted { cancelInteraction(); pointerLifetime.invalidate(); focusChanged() }
         return accepted
     }
     private func focusChanged() {
@@ -183,20 +199,13 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         super.viewWillMove(toSuperview: newSuperview)
     }
     override func viewWillMove(toWindow newWindow: NSWindow?) {
-        if newWindow !== window { cancelInteraction() }
+        if newWindow !== window { cancelInteraction(); pointerLifetime.invalidate() }
         super.viewWillMove(toWindow: newWindow)
     }
     override func viewDidHide() { super.viewDidHide(); cancelInteraction() }
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
-        windowObservers.forEach(NotificationCenter.default.removeObserver)
-        windowObservers.removeAll()
-        if let window {
-            for name in [NSWindow.didResignKeyNotification, NSWindow.willCloseNotification, NSWindow.willMiniaturizeNotification] {
-                windowObservers.append(NotificationCenter.default.addObserver(forName: name, object: window,
-                    queue: .main) { [weak self] _ in self?.cancelInteraction() })
-            }
-        }
+        updateInteractionLifetime()
         refreshAppearance(animated: false)
     }
 
@@ -219,7 +228,6 @@ class FluentPipsPagerButton: NSButton, FluentControlSizeConfigurable {
         focus.lineWidth = theme.focusStrokeWidth
         focus.opacity = FluentFocusVisibility.isKeyboardFocusVisible(for: self) ? 1 : 0
     }
-    deinit { windowObservers.forEach(NotificationCenter.default.removeObserver) }
 }
 
 final class FluentPipsPagerPipButton: FluentPipsPagerButton {
